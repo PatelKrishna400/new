@@ -6,7 +6,7 @@
 
 const UPGRADES_DEF = [
   { id: 'tapPower', icon: '👆', name: 'Tap Power', desc: 'Coins earned per tap', key: 'tapPower', baseVal: 1, perLevel: 1, baseCost: 500, costMult: 1.8 },
-  { id: 'energyCap', icon: '🔋', name: 'Energy Capacity', desc: 'Maximum energy pool', key: 'maxEnergy', baseVal: 500, perLevel: 50, baseCost: 800, costMult: 1.6 },
+  { id: 'energyCap', icon: '🔋', name: 'Energy Capacity', desc: 'Maximum energy pool', key: 'maxEnergy', baseVal: 10, perLevel: 5, baseCost: 100, costMult: 1.5 },
   { id: 'energyRegen', icon: '⚡', name: 'Energy Regen', desc: 'Energy regeneration speed', key: 'regenMult', baseVal: 1, perLevel: .25, baseCost: 600, costMult: 1.7 },
   { id: 'critChance', icon: '💥', name: 'Critical Chance', desc: 'Chance for critical tap', key: 'criticalChance', baseVal: .05, perLevel: .02, baseCost: 1000, costMult: 2.0 },
   { id: 'comboDur', icon: '🔥', name: 'Combo Duration', desc: 'How long combos last', key: 'comboMs', baseVal: 2000, perLevel: 200, baseCost: 700, costMult: 1.6 },

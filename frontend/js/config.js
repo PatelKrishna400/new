@@ -63,7 +63,7 @@ const CACHE_TTL = {
 const DEFAULT_ECONOMY = {
   /* Starting Player Values */
   startingCoins: 100,
-  startingEnergy: 500,
+  startingEnergy: 10,
   startingTapPower: 1,
   startingLevel: 1,
   startingXp: 0,
@@ -86,7 +86,7 @@ const DEFAULT_ECONOMY = {
   comboMultipliers: [2, 3, 5, 10],
 
   /* Energy */
-  energyMax: 500,
+  energyMax: 10,
   energyRegenPerSec: 1 / 3,   // ~1 per 3 seconds
 
   /* Ads / collection */
