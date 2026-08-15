@@ -61,12 +61,24 @@ const CACHE_TTL = {
 
 /* ── Default economy (overridden by Firestore gameConfig/economy) ── */
 const DEFAULT_ECONOMY = {
-  /* Tap */
-  coinsPerTap: 10,
-  criticalChanceBase: 0.05,
-  criticalMultiplier: 10,
+  /* Starting Player Values */
+  startingCoins: 100,
+  startingEnergy: 500,
+  startingTapPower: 1,
+  startingLevel: 1,
+  startingXp: 0,
+
+  /* Tap Progression */
+  coinsPerTap: 1,
+  tapPowerLevelMultiplier: 0.35, // tapPower = floor(1 + level * 0.35)
+  criticalChanceBase: 0.03,       // 3% critical win chance
+  criticalMultiplier: 2,          // 2× normal reward on critical
   perfectTapWindowMs: 800,
-  perfectTapMultiplier: 3,
+  perfectTapMultiplier: 2,
+
+  /* Win Reward System */
+  baseWinReward: 5,
+  winIncrement: 1.8,
 
   /* Combo */
   comboResetMs: 2000,
@@ -82,13 +94,16 @@ const DEFAULT_ECONOMY = {
   maximumRewardAdsPerDay: 10,
   maximumRewardAdsPerSession: 5,
   minimumSecondsBetweenAdReqs: 60,
-  adRewardCoins: 500,
-  offlineRewardCoinsPerHour: 100,
+  adRewardCoins: 100,
+  offlineRewardCoinsPerHour: 50,
   offlineRewardAdMultiplier: 2,
-  chestBaseReward: 500,
+  chestBaseReward: 25,
   chestAdMultiplier: 2,
   energyCollectAmount: 100,
-  dailyBonusCoins: 1000,
+  dailyBonusCoins: 10,
+
+  /* 7-Day Daily Bonus Cycle */
+  dailyBonusCycle: [10, 15, 20, 30, 40, 60, 100],
 
   /* Progression */
   xpPerTap: 1,
@@ -105,8 +120,12 @@ const DEFAULT_ECONOMY = {
   revenueReserve: 0.30,
   globalPayoutPaused: false,
 
-  /* Referral */
-  referralRewardCoins: 2000,
+  /* Referral Rewards (Gradual) */
+  referralJoinCoins: 10,
+  referralActiveCoins: 25,
+  referralLvl5Coins: 50,
+  referralLvl10Coins: 100,
+  referralRewardCoins: 185,
 
   /* Revenue tracking (estimates – display only) */
   estimatedCPM: 2.0,
@@ -157,12 +176,56 @@ const PARTICLE_COUNT = { low: 5, med: 12, high: 22 };
 const BG_PARTICLE_COUNT = { low: 0, med: 18, high: 38 };
 
 /* ══════════════════════════════════════════
-   UTILITY FUNCTIONS
+   PROGRESSION & ECONOMY FORMULAS
 ══════════════════════════════════════════ */
 
-/** XP required to advance from level `lvl` to `lvl + 1` */
+/** Tap power formula for a given player level: floor(1 + lvl * 0.35) */
+function tapPowerForLevel(lvl) {
+  return Math.floor(1 + (lvl || 1) * 0.35);
+}
+
+/** Win reward formula based on win count & player level */
+function winRewardForCount(winCount, lvl) {
+  const base = Math.floor(5 + (winCount * 1.8) + (Math.sqrt(winCount) * 2));
+  const maxLimit = lvl >= 100 ? 500 : lvl >= 50 ? 250 : lvl >= 30 ? 150 : lvl >= 20 ? 100 : lvl >= 10 ? 60 : lvl >= 5 ? 35 : 20;
+  return Math.min(maxLimit, base);
+}
+
+/** Win streak bonus */
+function winStreakBonus(streak) {
+  if (streak >= 30) return 50;
+  if (streak >= 20) return 30;
+  if (streak >= 10) return 15;
+  if (streak >= 5) return 5;
+  return 0;
+}
+
+/** 7-Day daily bonus cycle reward */
+function dailyRewardForDay(dayNumber) {
+  const cycle = DEFAULT_ECONOMY.dailyBonusCycle;
+  const idx = Math.max(0, (dayNumber - 1) % cycle.length);
+  return cycle[idx];
+}
+
+/** Level-up reward for a given target level */
+function levelUpReward(lvl) {
+  const rewards = { 2: 10, 3: 15, 4: 20, 5: 25, 10: 100, 20: 250, 50: 750, 100: 2000 };
+  return rewards[lvl] || Math.floor(lvl * 5);
+}
+
+/** Upgrade cost formula: floor(100 * pow(1.25, level - 1)) */
+function upgradeCost(upgradeLevel) {
+  return Math.floor(100 * Math.pow(1.25, Math.max(1, upgradeLevel) - 1));
+}
+
+/** XP required to advance from level `lvl` to `lvl + 1`: 100, 150, 220, 300, 400... */
 function xpForLevel(lvl) {
-  return Math.floor(1000 * Math.pow(1.35, lvl - 1));
+  if (lvl === 1) return 100;
+  if (lvl === 2) return 150;
+  if (lvl === 3) return 220;
+  if (lvl === 4) return 300;
+  if (lvl === 5) return 400;
+  return Math.floor(100 * Math.pow(1.35, lvl - 1));
 }
 
 /** Format a large number: 1.23M, 456K, 1,234 */

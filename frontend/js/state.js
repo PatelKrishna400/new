@@ -16,12 +16,12 @@ const STATE = {
   economy: { ...DEFAULT_ECONOMY },
 
   /* ── Player core (synced from Firestore) ── */
-  coins: 0,
-  energy: 500,
-  maxEnergy: 500,
-  level: 1,
-  xp: 0,
-  tapPower: 1,
+  coins: DEFAULT_ECONOMY.startingCoins,
+  energy: DEFAULT_ECONOMY.startingEnergy,
+  maxEnergy: DEFAULT_ECONOMY.startingEnergy,
+  level: DEFAULT_ECONOMY.startingLevel,
+  xp: DEFAULT_ECONOMY.startingXp,
+  tapPower: DEFAULT_ECONOMY.startingTapPower,
   criticalChance: DEFAULT_ECONOMY.criticalChanceBase,
   totalTaps: 0,
   totalAdViews: 0,
@@ -98,13 +98,14 @@ function syncState(data) {
   if (!data) return;
 
   /* Core numeric fields */
-  STATE.coins = data.coins ?? 0;
-  STATE.energy = data.energy ?? DEFAULT_ECONOMY.energyMax;
-  STATE.maxEnergy = data.maxEnergy ?? DEFAULT_ECONOMY.energyMax;
-  STATE.level = data.level ?? 1;
-  STATE.xp = data.xp ?? 0;
-  STATE.tapPower = data.tapPower ?? 1;
+  STATE.coins = data.coins ?? DEFAULT_ECONOMY.startingCoins;
+  STATE.energy = data.energy ?? DEFAULT_ECONOMY.startingEnergy;
+  STATE.maxEnergy = data.maxEnergy ?? DEFAULT_ECONOMY.startingEnergy;
+  STATE.level = data.level ?? DEFAULT_ECONOMY.startingLevel;
+  STATE.xp = data.xp ?? DEFAULT_ECONOMY.startingXp;
+  STATE.tapPower = data.tapPower ?? tapPowerForLevel(STATE.level);
   STATE.criticalChance = data.criticalChance ?? DEFAULT_ECONOMY.criticalChanceBase;
+
   STATE.totalTaps = data.totalTaps ?? 0;
   STATE.totalAdViews = data.totalAdViews ?? 0;
   STATE.boostMultiplier = data.boostMultiplier ?? 1;
