@@ -1,0 +1,16 @@
+{
+  "name": "tap-empire-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tap Empire — Firebase Cloud Functions + Telegram bot",
+  "scripts": {
+    "deploy":        "firebase deploy --only functions",
+    "deploy:bot":    "node bot/bot.js",
+    "shell":         "firebase functions:shell",
+    "serve":         "firebase emulators:start --only functions,firestore",
+    "logs":          "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  }
+}

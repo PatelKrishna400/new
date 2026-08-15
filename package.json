@@ -1,0 +1,22 @@
+{
+  "name": "tap-empire",
+  "version": "2.0.0",
+  "description": "Production-ready Tap-to-Earn Telegram Mini App",
+  "main": "backend/functions/index.js",
+  "scripts": {
+    "start": "python -m http.server 8080 --directory frontend",
+    "dev": "python -m http.server 8080 --directory frontend",
+    "test": "node -e \"const fs = require('fs'), path = require('path'), { execSync } = require('child_process'); function check(dir) { fs.readdirSync(dir).forEach(f => { const p = path.join(dir, f); if (fs.statSync(p).isDirectory()) { if (f !== 'node_modules') check(p); } else if (p.endsWith('.js')) { execSync('node -c ' + p); } }); } check('frontend/js'); check('backend/functions'); check('backend/bot'); console.log('All JS files syntax verified successfully!');\"",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "telegram-mini-app",
+    "tap-game",
+    "firebase",
+    "vercel",
+    "telegram-stars",
+    "monetag"
+  ],
+  "author": "Antigravity Team",
+  "license": "MIT"
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Tap Empire</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+
+  <!-- Telegram WebApp SDK — MUST be first script -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Firebase SDK v10 compat (safe public CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+
+  <!-- Monetag Rewarded Interstitial — Zone ID: 11577158
+       Source: https://monetag.com → Dashboard → Zone → Get Tag -->
+  <script src="https://alwingulla.com/88/tag.min.js" data-zone="11577158" async data-cfasync="false"></script>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════ -->
+  <div id="app" style="display:flex">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+      <div class="top-user">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">Player</div>
+          <div class="user-badges">
+            <span class="user-level-badge" id="user-level-badge">LV. <span id="user-level-num">1</span></span>
+            <span class="user-streak-badge" id="top-streak-badge">🔥 <span id="top-streak-num">0</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="top-right">
+        <button class="top-settings-btn" id="settings-btn" aria-label="Settings" onclick="openSettingsModal()">⚙️</button>
+      </div>
+    </header>
+
+    <!-- RESOURCE BAR -->
+    <div class="resource-bar" id="resource-bar">
+      <div class="res-item res-coins" id="top-coins-wrap">
+        <span class="res-icon">💰</span>
+        <span class="res-value" id="top-coins">0</span>
+      </div>
+      <div class="res-item res-energy" id="top-energy-wrap">
+        <span class="res-icon">⚡</span>
+        <span class="res-value" id="top-energy">500</span>
+      </div>
+      <div class="res-item res-stars" id="top-stars-wrap" onclick="openStarsShopModal()">
+        <span class="res-icon">⭐</span>
+        <span class="res-value" id="top-stars">Shop</span>
+      </div>
+    </div>
+
+    <!-- OFFLINE BANNER -->
+    <div class="offline-banner" id="offline-banner" style="display:none">
+      📡 Offline — reconnecting…
+    </div>
+
+    <!-- SCREENS -->
+    <main class="screens-container">
+      <div id="screen-home" class="screen active"></div>
+      <div id="screen-boost" class="screen"></div>
+      <div id="screen-tasks" class="screen"></div>
+      <div id="screen-rank" class="screen"></div>
+      <div id="screen-wallet" class="screen"></div>
+      <div id="screen-profile" class="screen"></div>
+      <div id="screen-events" class="screen"></div>
+      <div id="screen-referral" class="screen"></div>
+      <div id="screen-admin" class="screen"></div>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="nav-btn active" data-screen="home">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </button>
+      <button class="nav-btn" data-screen="boost">
+        <span class="nav-icon">⚡</span><span class="nav-label">Boost</span>
+      </button>
+      <button class="nav-btn" data-screen="tasks">
+        <span class="nav-icon">🎯</span><span class="nav-label">Tasks</span>
+      </button>
+      <button class="nav-btn" data-screen="rank">
+        <span class="nav-icon">🏆</span><span class="nav-label">Rank</span>
+      </button>
+      <button class="nav-btn" data-screen="wallet">
+        <span class="nav-icon">💰</span><span class="nav-label">Wallet</span>
+      </button>
+      <button class="nav-btn" data-screen="profile">
+        <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
+      </button>
+    </nav>
+
+  </div><!-- /app -->
+
+  <!-- Background particle canvas -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- reCAPTCHA container for Phone Auth (invisible) -->
+  <div id="recaptcha-container"></div>
+
+  <!-- Toast notification -->
+  <div id="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- Modal -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none" role="dialog" aria-modal="true"
+    aria-labelledby="modal-box">
+    <div class="modal-box" id="modal-box"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+     JS MODULES — order matters
+══════════════════════════════════════ -->
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/telegram.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/stars.js"></script>
+  <script src="js/spin.js"></script>
+  <script src="js/chest.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/energy.js"></script>
+  <script src="js/combo.js"></script>
+  <script src="js/tap.js"></script>
+  <script src="js/collection.js"></script>
+  <script src="js/missions.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/daily.js"></script>
+  <script src="js/upgrades.js"></script>
+  <script src="js/withdrawal.js"></script>
+  <script src="js/screens/home.js"></script>
+  <script src="js/screens/boost.js"></script>
+  <script src="js/screens/tasks.js"></script>
+  <script src="js/screens/rank.js"></script>
+  <script src="js/screens/wallet.js"></script>
+  <script src="js/screens/profile.js"></script>
+  <script src="js/screens/events.js"></script>
+  <script src="js/screens/referral.js"></script>
+  <script src="js/screens/admin.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
