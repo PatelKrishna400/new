@@ -78,10 +78,13 @@ function handleTap(e) {
 
   const now = Date.now();
 
-  /* ── Client-side rate limiting ── */
+  /* ── Client-side rate limiting (Combo expands allowed taps/sec limit) ── */
   STATE.tapTimestamps = STATE.tapTimestamps.filter(t => now - t < 1000);
   STATE.tapTimestamps.push(now);
-  if (STATE.tapTimestamps.length > (STATE.economy.tapRateLimit || 20)) {
+  const comboLimitBonus = typeof getComboTapLimitBonus === 'function' ? getComboTapLimitBonus() : 0;
+  const effectiveTapRateLimit = (STATE.economy.tapRateLimit || 20) + comboLimitBonus;
+
+  if (STATE.tapTimestamps.length > effectiveTapRateLimit) {
     STATE.riskScore = Math.min(100, STATE.riskScore + 3);
     if (STATE.riskScore >= 30 && STATE.riskStatus === 'ok') {
       STATE.riskStatus = 'watch';

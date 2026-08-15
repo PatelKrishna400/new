@@ -37,11 +37,22 @@ function getComboMultiplier() {
   return mult;
 }
 
+/** Dynamic tap limit boost tied to active combo streak */
+function getComboTapLimitBonus() {
+  const combo = STATE.comboCount || 0;
+  if (combo >= 50) return 30; // +30 Taps/sec limit
+  if (combo >= 20) return 20; // +20 Taps/sec limit
+  if (combo >= 10) return 10; // +10 Taps/sec limit
+  if (combo >= 5)  return 5;  // +5 Taps/sec limit
+  return 0;
+}
+
 function updateComboUI() {
   const area = document.getElementById('combo-area');
   if (!area) return;
 
   const mult = getComboMultiplier();
+  const limitBonus = getComboTapLimitBonus();
 
   if (STATE.comboCount > 0 && mult > 1) {
     area.innerHTML = `
@@ -49,6 +60,7 @@ function updateComboUI() {
         <span class="combo-badge">
           COMBO ×${mult}
           <span class="combo-mult-sub">(${STATE.comboCount})</span>
+          ${limitBonus > 0 ? `<span class="combo-limit-sub">+${limitBonus} Tap/s Limit</span>` : ''}
         </span>
         <div class="combo-timer-bar">
           <div class="combo-timer-fill" id="combo-fill"></div>
@@ -58,7 +70,7 @@ function updateComboUI() {
   } else if (STATE.comboCount > 0) {
     area.innerHTML = `
       <span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px">
-        ${STATE.comboCount} taps — keep going!
+        ${STATE.comboCount} taps ${limitBonus > 0 ? `(+${limitBonus} Tap/s Limit)` : '— keep going!'}
       </span>`;
     _stopComboRaf();
   } else {
