@@ -75,7 +75,10 @@ function renderBoostScreen() {
         </div>
 
         <div class="hero-progress-wrap">
-          <div class="hero-progress-label">Level ${tapPowerLvl} Progress</div>
+          <div class="hero-progress-label">
+            Level ${tapPowerLvl} Progress
+            ${(STATE.tapPowerExpiry && STATE.tapPowerExpiry > now) ? ` · ⏱️ ${Math.ceil((STATE.tapPowerExpiry - now) / 60000)}m timer` : ''}
+          </div>
           <div class="hero-progress-track">
             <div class="hero-progress-fill" style="width:${Math.min(100, (tapPowerLvl / 20) * 100)}%"></div>
           </div>
@@ -83,7 +86,7 @@ function renderBoostScreen() {
 
         <button class="btn btn-gold hero-upgrade-btn ${canBuyTapPower ? '' : 'disabled'}"
                 onclick="buyUpgrade('tapPower');renderBoostScreen()" ${canBuyTapPower ? '' : 'disabled'}>
-          UPGRADE · 💰 ${fmt(tapPowerCost)}
+          UPGRADE (30 MIN TIMER) · 💰 ${fmt(tapPowerCost)}
         </button>
       </div>
 
@@ -107,7 +110,7 @@ function renderBoostScreen() {
           <div class="boost-card-icon">⚡</div>
           <div class="boost-card-info">
             <div class="boost-card-name">ENERGY REFILL</div>
-            <div class="boost-card-sub">+100 Energy pool</div>
+            <div class="boost-card-sub">+10 Energy pool (Watch Ad for +10 more)</div>
           </div>
           <button class="boost-card-btn btn-gold" onclick="activateBoostAction('energy')">
             ACTIVATE

@@ -50,6 +50,20 @@ function applyUpgrades() {
   });
 }
 
+function checkTapPowerTimer() {
+  if (STATE.tapPowerExpiry && Date.now() > STATE.tapPowerExpiry) {
+    const lvls = _getUpgradeLevels();
+    if (lvls['tapPower'] && lvls['tapPower'] > 0) {
+      lvls['tapPower'] = Math.max(0, lvls['tapPower'] - 1);
+      _saveUpgradeLevels(lvls);
+      applyUpgrades();
+      showToast(`⏱️ 30-min Tap Power timer finished! Level adjusted to ${lvls['tapPower']}`);
+    }
+    STATE.tapPowerExpiry = 0;
+    persistUser({ tapPower: STATE.tapPower, tapPowerExpiry: 0 });
+  }
+}
+
 async function buyUpgrade(id) {
   const upg = UPGRADES_DEF.find(u => u.id === id);
   if (!upg) return;
@@ -61,11 +75,22 @@ async function buyUpgrade(id) {
   STATE.coins -= cost;
   updateCoinUI();
   applyUpgrades();
+
+  /* 30-minute timed boost duration for Tap Power upgrades */
+  if (id === 'tapPower') {
+    const timerMs = STATE.economy.tapPowerTimerMs || (30 * 60 * 1000);
+    STATE.tapPowerExpiry = Date.now() + timerMs;
+  }
+
   SFX.upgrade();
   haptic('medium');
-  showToast(`⬆️ ${upg.name} → Level ${lvls[id]}!`);
+  if (id === 'tapPower') {
+    showToast(`⬆️ Tap Power → Level ${lvls[id]} (Active for 30 min)!`);
+  } else {
+    showToast(`⬆️ ${upg.name} → Level ${lvls[id]}!`);
+  }
   updateMissionProgress('upgrade', 1);
-  await persistUser({ coins: STATE.coins, tapPower: STATE.tapPower, maxEnergy: STATE.maxEnergy, criticalChance: STATE.criticalChance });
+  await persistUser({ coins: STATE.coins, tapPower: STATE.tapPower, tapPowerExpiry: STATE.tapPowerExpiry || 0, maxEnergy: STATE.maxEnergy, criticalChance: STATE.criticalChance });
 }
 
 async function buyStarsItem(itemId) {
@@ -89,15 +114,6 @@ async function buyStarsItem(itemId) {
 }
 
 async function _initStarsPurchase(itemId) {
-  /*
-    PRODUCTION FLOW:
-    1. POST /api/stars/create-invoice { itemId, initData }
-    2. Backend calls Telegram: createInvoiceLink { currency:"XTR", prices }
-    3. Backend returns { invoiceLink }
-    4. Frontend: TG.openInvoice(invoiceLink, cb)
-    5. On cb status='paid': reload player from server
-    6. Backend handles successful_payment webhook → grants item
-  */
   showToast('⭐ Configure /api/stars/create-invoice on your backend');
   try {
     const resp = await callAPI('/stars/create-invoice', { itemId, initData: getInitData() });
@@ -132,10 +148,10 @@ async function activateBoostAction(type) {
       showToast('🚀 2× Tap Power activated for 10 min!', 'success');
     }
   } else if (type === 'energy') {
-    const addAmt = 100;
+    const addAmt = STATE.economy.energyCollectAmount || 10; // +10 Energy limit for ads watch
     STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + addAmt);
     updateEnergyUI();
-    showToast(`⚡ Restored +${addAmt} Energy!`, 'success');
+    showToast(`⚡ Restored +${addAmt} Energy! Watch ad for +${addAmt} more`, 'success');
     await persistUser({ energy: STATE.energy, lastEnergyUpdate: Date.now() });
   } else if (type === 'lucky') {
     STATE.criticalChance = Math.min(0.5, (STATE.criticalChance || 0.05) + 0.15);

@@ -22,6 +22,7 @@ const STATE = {
   level: DEFAULT_ECONOMY.startingLevel,
   xp: DEFAULT_ECONOMY.startingXp,
   tapPower: DEFAULT_ECONOMY.startingTapPower,
+  tapPowerExpiry: 0,           // epoch ms for 30-minute tap power level boost
   criticalChance: DEFAULT_ECONOMY.criticalChanceBase,
   totalTaps: 0,
   totalAdViews: 0,

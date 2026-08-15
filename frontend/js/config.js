@@ -99,7 +99,8 @@ const DEFAULT_ECONOMY = {
   offlineRewardAdMultiplier: 2,
   chestBaseReward: 25,
   chestAdMultiplier: 2,
-  energyCollectAmount: 100,
+  energyCollectAmount: 10,  // Changed from 100 to 10 per collect / ad watch
+  tapPowerTimerMs: 30 * 60 * 1000, // 30 minutes timed level boost
   dailyBonusCoins: 10,
 
   /* 7-Day Daily Bonus Cycle */
