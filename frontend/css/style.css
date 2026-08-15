@@ -248,6 +248,182 @@ button, .btn, .nav-btn, .action-card {
   margin-top: 2px;
 }
 
+/* ── BOOST CENTER CARDS & COMPONENTS ── */
+.boost-upgrade-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-icon {
+  font-size: 28px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+
+.card-lvl-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.boost-stat-compare {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xs);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.stat-box {
+  text-align: center;
+}
+
+.stat-lbl {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.stat-val {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--white);
+  margin-top: 2px;
+}
+
+.stat-val.highlight {
+  color: var(--success);
+}
+
+.stat-arrow {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.boost-meta-bar {
+  display: flex;
+  justify-content: space-around;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.active-boosts-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.empty-active-boosts {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  padding: 8px 0;
+}
+
+.active-boost-item {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xs);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.active-boost-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.active-boost-timer {
+  color: var(--warning);
+}
+
+.active-boost-track {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.active-boost-fill {
+  height: 100%;
+  background: var(--grad-gold);
+  border-radius: 50px;
+  transition: width 0.5s ease;
+}
+
+.boost-stats-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.boost-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+}
+
+.bstat-col {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xs);
+  padding: 8px 4px;
+  text-align: center;
+}
+
+.bstat-lbl {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.bstat-val {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--white);
+  margin-top: 2px;
+}
+
 /* ── Withdrawal Progress Card ── */
 .withdraw-progress-card {
   background: var(--card);
