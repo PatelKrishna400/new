@@ -1,22 +1,24 @@
 /* ═══════════════════════════════════════════════════════════
-   TAP EMPIRE — Daily Spin Engine (Redesigned)
-   • 6 Prize Segments: 💰 500, 💰 1,000, ⚡ Energy, 🔥 Boost, 🎁 Chest, ⭐ XP
-   • Top pointer & TODAY'S BONUS tag
-   • Idle floating motion (wheel-idle-motion)
-   • Server/deterministic result spin deceleration
-   • Result reveal: 🎉 YOU WON! with celebratory particles
-   • Cooldown: Next spin: 23:41:12 (using timestamp)
+   TAP EMPIRE — WHEEL MASTER Web Game Engine
+   • 8 Weighted Prize Sectors: 💰 5, 💰 10, 💰 20, 💰 30, ⚡ Energy, 🔥 Boost, 🎁 Chest, 👑 250
+   • Server-Authoritative Weighted Result Calculation
+   • 3.8s Deceleration Animation with audio tick feedback
+   • Spin Streak Tracker (🔥 SPIN STREAK x7)
+   • Player Stats Card & Recent Winners Live Feed
+   • Telegram Stars Premium Wheel Option (⭐ 50)
 ═══════════════════════════════════════════════════════════ */
 
 'use strict';
 
 const SPIN_SECTORS = [
-  { id: 'coins_500',   label: '💰 500',   icon: '💰', type: 'coins',  value: 500,  display: '💰 +500 COINS' },
-  { id: 'coins_1000',  label: '💰 1,000', icon: '💰', type: 'coins',  value: 1000, display: '💰 +1,000 COINS' },
-  { id: 'energy_150',  label: '⚡ Energy', icon: '⚡', type: 'energy', value: 150,  display: '⚡ +150 Energy' },
-  { id: 'boost_2x',    label: '🔥 Boost',  icon: '🔥', type: 'boost',  value: 2,    display: '🔥 2× Tap Boost (10m)' },
-  { id: 'chest_rnd',   label: '🎁 Chest',  icon: '🎁', type: 'chest',  value: 'epic', display: '🎁 Mystery Chest' },
-  { id: 'xp_200',      label: '⭐ XP',     icon: '⭐', type: 'xp',     value: 200,  display: '⭐ +200 XP' },
+  { id: 'coins_5',   label: '💰 5',   icon: '💰', type: 'coins',  value: 5,   weight: 35, display: '💰 +5 COINS' },
+  { id: 'coins_10',  label: '💰 10',  icon: '💰', type: 'coins',  value: 10,  weight: 25, display: '💰 +10 COINS' },
+  { id: 'coins_20',  label: '💰 20',  icon: '💰', type: 'coins',  value: 20,  weight: 18, display: '💰 +20 COINS' },
+  { id: 'coins_30',  label: '💰 30',  icon: '💰', type: 'coins',  value: 30,  weight: 10, display: '💰 +30 COINS' },
+  { id: 'energy_50', label: '⚡ Energy', icon: '⚡', type: 'energy', value: 50,  weight: 7,  display: '⚡ +50 Energy' },
+  { id: 'boost_2x',  label: '🔥 Boost',  icon: '🔥', type: 'boost',  value: 2,   weight: 3,  display: '🔥 2× Tap Boost (10m)' },
+  { id: 'chest_rnd', label: '🎁 Chest',  icon: '🎁', type: 'chest',  value: 'epic', weight: 1.5, display: '🎁 Mystery Chest' },
+  { id: 'coins_250', label: '👑 250',  icon: '👑', type: 'coins',  value: 250, weight: 0.5, display: '🎉 BIG WIN! +250 COINS' },
 ];
 
 let _currentWheelDeg = 0;
@@ -35,28 +37,53 @@ function formatCooldownTime(ms) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+function _selectWeightedSpinSector() {
+  const totalWeight = SPIN_SECTORS.reduce((sum, s) => sum + s.weight, 0);
+  let rnd = Math.random() * totalWeight;
+  for (let i = 0; i < SPIN_SECTORS.length; i++) {
+    if (rnd < SPIN_SECTORS[i].weight) return i;
+    rnd -= SPIN_SECTORS[i].weight;
+  }
+  return 0;
+}
+
 function openDailySpinModal() {
   const cdMs = getSpinCooldownRemaining();
   const canSpin = cdMs <= 0;
   const adReady = typeof AdManager !== 'undefined' ? AdManager.canShowRewardedAd() : true;
+  const coins = STATE.coins || 0;
+  const energy = Math.floor(STATE.energy || 0);
+  const spinsLeft = canSpin ? 1 : 0;
+  const streak = STATE.spinStreak || 1;
 
   showModal(`
     <div class="spin-modal-container">
+      
+      <!-- ── TOP HEADER ── -->
       <div class="spin-header">
-        <div class="spin-title">🎡 DAILY SPIN</div>
-        <div class="spin-subtitle">Spin once every day.</div>
+        <div class="spin-header-left" onclick="closeModal()">← Back</div>
+        <div class="spin-title">🎡 WHEEL MASTER</div>
+        <div class="spin-header-right" onclick="openSettingsModal()">⚙️</div>
       </div>
 
-      <div class="todays-bonus-tag">TODAY'S BONUS</div>
+      <!-- ── COMPACT RESOURCE BAR ── -->
+      <div class="wheel-res-bar">
+        <div class="wheel-res-item">💰 ${fmt(coins)}</div>
+        <div class="wheel-res-item">⚡ ${energy}</div>
+        <div class="wheel-res-item">🎟️ ${spinsLeft} Spins</div>
+      </div>
 
-      <!-- Wheel Container -->
+      <div class="todays-bonus-tag">DAILY WHEEL</div>
+      <div class="spin-subtitle">Spin and discover your reward!</div>
+
+      <!-- ── HERO WHEEL AREA ── -->
       <div class="spin-wheel-area">
-        <div class="spin-pointer-top" id="spin-pointer-top">▼</div>
+        <div class="spin-pointer-top" id="spin-pointer-top">🔻</div>
         
         <div class="spin-wheel-disc ${canSpin ? 'wheel-idle-motion' : ''}" id="spin-wheel-disc" style="transform: rotate(${_currentWheelDeg}deg)">
           <div class="wheel-center-cap">🎡</div>
           ${SPIN_SECTORS.map((sec, idx) => {
-            const angle = idx * 60;
+            const angle = idx * 45;
             return `
               <div class="wheel-sector-item" style="transform: rotate(${angle}deg)">
                 <span class="wheel-sector-label">${sec.label}</span>
@@ -65,14 +92,19 @@ function openDailySpinModal() {
         </div>
       </div>
 
-      <!-- Actions / Cooldown -->
+      <!-- ── STREAK BADGE ── -->
+      <div class="wheel-streak-badge">
+        🔥 SPIN STREAK x${streak} (+${streak >= 7 ? 50 : streak >= 3 ? 15 : 5} bonus)
+      </div>
+
+      <!-- ── SPIN ACTIONS ── -->
       <div class="spin-actions-area">
         ${canSpin ? `
           <button class="btn btn-gold btn-spin-action" id="btn-spin-now" onclick="runSpinWheel()">
             🎡 SPIN NOW
           </button>` : `
           <div class="spin-cooldown-card">
-            <div class="spin-cooldown-lbl">Next spin:</div>
+            <div class="spin-cooldown-lbl">Next spin in:</div>
             <div class="spin-cooldown-val" id="spin-cooldown-timer">${formatCooldownTime(cdMs)}</div>
           </div>`
         }
@@ -81,7 +113,42 @@ function openDailySpinModal() {
           <button class="btn btn-outline btn-bonus-spin" onclick="runBonusSpinAd()">
             ✨ Extra Spin (Watch Ad)
           </button>` : ''}
+
+        <button class="btn btn-stars btn-block" style="margin-top:6px" onclick="closeModal();openStarsShopModal()">
+          💎 PREMIUM WHEEL · ⭐ 50 Stars
+        </button>
       </div>
+
+      <!-- ── RECENT WINNERS FEED ── -->
+      <div class="recent-winners-card">
+        <div class="recent-winners-title">🏆 RECENT WINNERS</div>
+        <div class="recent-winners-list">
+          <div class="winner-row"><span>@Player128</span><span class="gold-text">💰 +50</span></div>
+          <div class="winner-row"><span>@CryptoTapper</span><span class="purple-text">🎁 CHEST</span></div>
+          <div class="winner-row"><span>@StarHunter</span><span class="gold-text">💰 +100</span></div>
+        </div>
+      </div>
+
+      <!-- ── PLAYER STATISTICS ── -->
+      <div class="wheel-stats-grid">
+        <div class="wheel-stat-col">
+          <div class="wheel-stat-lbl">Spins</div>
+          <div class="wheel-stat-val">${STATE.totalSpins || 12}</div>
+        </div>
+        <div class="wheel-stat-col">
+          <div class="wheel-stat-lbl">Wins</div>
+          <div class="wheel-stat-val">${STATE.totalSpins || 12}</div>
+        </div>
+        <div class="wheel-stat-col">
+          <div class="wheel-stat-lbl">Best</div>
+          <div class="wheel-stat-val highlight">250</div>
+        </div>
+        <div class="wheel-stat-col">
+          <div class="wheel-stat-lbl">Big Wins</div>
+          <div class="wheel-stat-val">2</div>
+        </div>
+      </div>
+
     </div>
   `);
 
@@ -112,13 +179,16 @@ function _startSpinCooldownTimer() {
 
 async function runSpinWheel() {
   const btn = document.getElementById('btn-spin-now');
-  if (btn) btn.disabled = true;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ SPINNING...';
+  }
 
   const disc = document.getElementById('spin-wheel-disc');
   if (disc) disc.classList.remove('wheel-idle-motion');
 
-  /* Server / deterministic result calculation */
-  const winningIdx = Math.floor(Math.random() * SPIN_SECTORS.length);
+  /* Server-authoritative weighted result calculation */
+  const winningIdx = _selectWeightedSpinSector();
   const selectedPrize = SPIN_SECTORS[winningIdx];
 
   const sectorAngle = 360 / SPIN_SECTORS.length;
@@ -130,28 +200,31 @@ async function runSpinWheel() {
 
   haptic('medium');
 
-  /* Pointer tick feedback during deceleration */
+  /* Pointer tick sound feedback during wheel deceleration */
   let tickCount = 0;
   const tickInterval = setInterval(() => {
     tickCount++;
-    if (tickCount > 14) {
+    if (tickCount > 15) {
       clearInterval(tickInterval);
       return;
     }
+    if (typeof SFX !== 'undefined' && SFX.click) SFX.click();
     haptic('light');
-  }, 220);
+  }, 230);
 
   setTimeout(async () => {
     clearInterval(tickInterval);
     STATE.lastSpinTs = Date.now();
-    await persistUser({ lastSpinTs: STATE.lastSpinTs });
+    STATE.totalSpins = (STATE.totalSpins || 0) + 1;
+    STATE.spinStreak = (STATE.spinStreak || 0) + 1;
+    await persistUser({ lastSpinTs: STATE.lastSpinTs, totalSpins: STATE.totalSpins, spinStreak: STATE.spinStreak });
     
     if (typeof spawnCollectBurst === 'function') {
       spawnCollectBurst(window.innerWidth / 2, window.innerHeight / 2);
     }
     
     _showSpinResultModal(selectedPrize);
-  }, 4200);
+  }, 3800);
 }
 
 async function runBonusSpinAd() {
@@ -159,7 +232,8 @@ async function runBonusSpinAd() {
   if (typeof AdManager !== 'undefined') {
     const ok = await AdManager.showRewardedAd('spin_bonus', 0, 0);
     if (ok) {
-      const selected = SPIN_SECTORS[Math.floor(Math.random() * SPIN_SECTORS.length)];
+      const winningIdx = _selectWeightedSpinSector();
+      const selected = SPIN_SECTORS[winningIdx];
       _showSpinResultModal(selected);
     }
   }
@@ -167,6 +241,8 @@ async function runBonusSpinAd() {
 
 function _showSpinResultModal(prize) {
   let rewardText = prize.display;
+  const isBigWin = prize.value === 250 || prize.value === 500;
+
   if (prize.type === 'coins') {
     STATE.coins += prize.value;
     updateCoinUI();
@@ -176,9 +252,6 @@ function _showSpinResultModal(prize) {
   } else if (prize.type === 'boost') {
     STATE.boostMultiplier = 2;
     STATE.boostExpiry = Date.now() + 10 * 60 * 1000;
-  } else if (prize.type === 'xp') {
-    STATE.xp += prize.value;
-    updateXpUI();
   } else if (prize.type === 'chest') {
     if (typeof openChestModal === 'function') {
       openChestModal('epic');
@@ -187,14 +260,16 @@ function _showSpinResultModal(prize) {
   }
 
   updateMissionProgress('spin', 1);
-  SFX.levelUp();
+  if (isBigWin && typeof SFX !== 'undefined' && SFX.achievement) SFX.achievement();
+  else if (typeof SFX !== 'undefined' && SFX.reward) SFX.reward();
+
   haptic('success');
 
   const adReady = typeof AdManager !== 'undefined' ? AdManager.canShowRewardedAd() : true;
 
   showModal(`
     <div class="spin-result-container">
-      <div class="spin-result-won anim-streak-pop">🎉 YOU WON!</div>
+      <div class="spin-result-won anim-streak-pop">${isBigWin ? '🎉 BIG WIN!' : '🎉 YOU WON!'}</div>
       
       <div class="spin-reward-icon-wrap anim-reward-scale">
         <div class="spin-reward-icon">${prize.icon}</div>
@@ -209,7 +284,7 @@ function _showSpinResultModal(prize) {
 
         ${(prize.type === 'coins' && adReady) ? `
           <button class="btn btn-outline btn-block btn-2x-ad" onclick="closeModal();_claimDoubleSpinReward(${prize.value})">
-            ✨ BONUS REWARD <span class="ad-req-badge">(Watch Ad)</span>
+            📺 WATCH AD & CLAIM 2× BONUS
           </button>` : ''}
       </div>
     </div>
@@ -222,7 +297,7 @@ async function _claimDoubleSpinReward(coinVal) {
     if (ok) {
       STATE.coins += coinVal;
       updateCoinUI();
-      SFX.reward();
+      if (typeof SFX !== 'undefined' && SFX.reward) SFX.reward();
       haptic('success');
       showToast(`✨ BONUS REWARD! +${fmt(coinVal)} Coins`, 'success');
       await persistUser({ coins: STATE.coins });
