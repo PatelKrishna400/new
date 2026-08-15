@@ -38,8 +38,16 @@ function playTone(freq, type = 'sine', dur = 0.1, vol = 0.10) {
   } catch (_) { }
 }
 
+let _lastTapSoundTs = 0;
+
 const SFX = {
-  tap() { playTone(880, 'sine', 0.07, 0.09); },
+  tap() {
+    const now = Date.now();
+    if (now - _lastTapSoundTs < 80) return; // Throttle to max ~12 sounds/sec
+    _lastTapSoundTs = now;
+    playTone(880, 'sine', 0.07, 0.09);
+  },
+  click() { playTone(600, 'sine', 0.05, 0.08); },
   critical() { playTone(1320, 'triangle', 0.16, 0.14); playTone(1760, 'sine', 0.10, 0.07); },
   perfect() { [523, 659, 880, 1047].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.20, 0.13), i * 75)); },
   combo() { playTone(660, 'triangle', 0.12, 0.11); },

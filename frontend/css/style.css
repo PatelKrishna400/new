@@ -83,6 +83,124 @@ button, .btn, .nav-btn, .action-card {
   --t-slow: 0.4s ease;
 }
 
+/* ── Universal Hidden Scrollbars ── */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ── Task Tabs & Filters ── */
+.task-tabs-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.task-tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-tab-btn.active {
+  background: var(--grad-primary);
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.task-filters-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+}
+
+.filter-chip {
+  padding: 6px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-chip.active {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+}
+
+.task-diff-tag {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+}
+
+.diff-easy { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+.diff-medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+.diff-hard { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+/* ── Withdrawal Progress Card ── */
+.withdraw-progress-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.withdraw-prog-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.withdraw-prog-lbl { color: var(--muted); }
+
+.withdraw-prog-track {
+  background: var(--card2);
+  border-radius: 50px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.withdraw-prog-fill {
+  height: 100%;
+  background: var(--grad-gold);
+  border-radius: 50px;
+  transition: width 0.5s ease;
+}
+
+.withdraw-prog-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: right;
+}
+
 /* ── Reset & Base ── */
 *,
 *::before,

@@ -111,7 +111,7 @@ const DEFAULT_ECONOMY = {
   tapRateLimit: 20,      // max taps/second before warning
 
   /* Economy / withdrawal */
-  minimumWithdrawalCoins: 100000,
+  minimumWithdrawalCoins: 10000000, // Minimum withdrawal: 10,000,000 coins ($10 estimated value)
   minimumWithdrawalStars: 10,
   coinsPerStar: 10000,
   maximumDailyWithdrawalCoins: 500000,

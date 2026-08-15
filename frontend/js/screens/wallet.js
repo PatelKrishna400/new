@@ -15,15 +15,19 @@ function renderWalletScreen() {
   const el = document.getElementById('screen-wallet');
   if (!el) return;
 
-  const coins = STATE.coins || 1250000;
-  const coinsPerDollar = 100000; // 100k coins = $1.00 estimate
+  const coins = STATE.coins || 0;
+  const targetCoins = STATE.economy?.minimumWithdrawalCoins || 10000000;
+  const coinsPerDollar = 1000000; // 1,000,000 coins = $1.00 estimate (10,000,000 = $10.00)
   const estVal = (coins / coinsPerDollar).toFixed(2);
   const eligibleVal = typeof calculateEligibleWithdrawal === 'function' ? calculateEligibleWithdrawal().toFixed(2) : (coins / coinsPerDollar).toFixed(2);
-  const minCoins = STATE.economy?.minimumWithdrawalCoins || 100000;
+  const minCoins = targetCoins;
   const minDollars = (minCoins / coinsPerDollar).toFixed(2);
 
+  const progPct = Math.min(100, (coins / targetCoins) * 100);
+  const remainingCoins = Math.max(0, targetCoins - coins);
+
   const pendingCount = STATE.pendingWithdrawal ? 1 : 0;
-  const pendingAmount = STATE.pendingWithdrawal ? (STATE.pendingWithdrawal.amount || 1.00).toFixed(2) : '0.00';
+  const pendingAmount = STATE.pendingWithdrawal ? (STATE.pendingWithdrawal.amount || 10.00).toFixed(2) : '0.00';
   const completedAmount = (STATE.completedWithdrawalsTotal || 0).toFixed(2);
 
   const activeStatus = STATE.pendingWithdrawal ? (STATE.pendingWithdrawal.status || 'pending') : null;
@@ -45,7 +49,21 @@ function renderWalletScreen() {
           Estimated value: <strong style="color:var(--gold)">$${estVal}</strong>
         </div>
         <div class="wallet-card-est-notice">
-          (Estimate only — not an actual payable bank balance)
+          (Estimate only — minimum withdrawal is 10,000,000 coins / $10)
+        </div>
+      </div>
+
+      <!-- ── WITHDRAWAL PROGRESS CARD ── -->
+      <div class="withdraw-progress-card">
+        <div class="withdraw-prog-row">
+          <span class="withdraw-prog-lbl">WITHDRAWAL PROGRESS</span>
+          <span class="withdraw-prog-val">${fmt(coins)} / 10,000,000 (${progPct.toFixed(1)}%)</span>
+        </div>
+        <div class="withdraw-prog-track">
+          <div class="withdraw-prog-fill" style="width:${progPct.toFixed(1)}%"></div>
+        </div>
+        <div class="withdraw-prog-sub">
+          ${coins >= targetCoins ? '✅ Minimum threshold reached!' : `Remaining: ${fmt(remainingCoins)} coins`}
         </div>
       </div>
 
