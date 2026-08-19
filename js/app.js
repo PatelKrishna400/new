@@ -475,10 +475,29 @@ function closeScratchCardModal() {
 }
 
 /* ── 🎡 SPIN WHEEL & 🧰 MYSTERY CHEST MODAL & ACTION ENGINE ── */
-function openSpinWheelModal() {
+async function openSpinWheelModal() {
   const modal = document.getElementById('spin-wheel-modal');
+  const loadingOverlay = document.getElementById('spin-loading-overlay');
+
   if (modal) modal.classList.add('active');
+  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
   haptic('selection');
+
+  // Sync latest spin tickets & wheel state from Firebase Realtime Database
+  if (typeof loadUserDataFromFirebase === 'function') {
+    const saved = await loadUserDataFromFirebase();
+    if (saved && saved.goals) {
+      STATE.goals = { ...STATE.goals, ...saved.goals };
+    }
+  }
+
+  updateUI();
+  selectSpinnerType(_activeSpinnerType || 'normal');
+
+  setTimeout(() => {
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+  }, 400);
 }
 
 function closeSpinWheelModal() {

@@ -591,6 +591,15 @@
     <!-- ── 🎡 DEDICATED SPIN WHEEL FULL MOBILE PAGE ── -->
     <div id="spin-wheel-modal" class="modal-overlay full-page-modal">
       <div class="feature-modal-card spin-modal-card">
+        <!-- 🔄 SPIN WHEEL DATA SYNC LOADING OVERLAY -->
+        <div class="spin-loading-overlay hidden" id="spin-loading-overlay">
+          <div class="spin-loading-card">
+            <div class="spin-sync-spinner"></div>
+            <span class="spin-loading-title">🔄 SYNCING FIREBASE SPIN DATA</span>
+            <p class="spin-loading-sub">Loading live tickets & spinner rewards...</p>
+          </div>
+        </div>
+
         <div class="full-page-top-bar">
           <button class="btn-full-page-back" onclick="closeSpinWheelModal()">⬅️ BACK TO HOME</button>
           <span class="full-page-top-title">🎡 LUCKY SPIN WHEEL</span>

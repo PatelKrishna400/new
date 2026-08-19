@@ -1923,6 +1923,59 @@ button {
   margin-top: 4px;
 }
 
+/* 🔄 SPIN WHEEL DATA SYNC LOADING OVERLAY STYLES */
+.spin-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-md);
+  transition: opacity 0.3s ease;
+}
+
+.spin-loading-overlay.hidden {
+  display: none !important;
+}
+
+.spin-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 20px;
+}
+
+.spin-sync-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid rgba(245, 183, 0, 0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+  box-shadow: 0 0 14px var(--gold-glow);
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+
+.spin-loading-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+.spin-loading-sub {
+  font-size: 10px;
+  color: var(--muted);
+}
+
 /* ── 🎡 4 SPINNER TYPES SELECTOR BAR STYLES ── */
 .spinner-types-bar {
   display: flex;
