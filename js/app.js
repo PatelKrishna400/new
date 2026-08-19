@@ -503,7 +503,136 @@ function handleCardEnterWithAd(mode) {
   else if (mode === 'scratch') openScratchCardModal();
 }
 
-/* ── 🎡 SPIN WHEEL INTERACTIVE ACTION ── */
+/* ── 🎡 4 SPINNER TYPES & SLICE DEFINITIONS ── */
+let _activeSpinnerType = 'normal';
+
+const SPINNER_DEFINITIONS = {
+  normal: {
+    name: '🥉 NORMAL SPINNER',
+    desc: 'Spin the wheel to win energy (5-10⚡), coins, and keys!',
+    costText: '🎡 SPIN WHEEL (1 🎟️ TICKET)',
+    ticketCost: 1,
+    prizes: [
+      { type: 'energy', min: 5, max: 10, label: '⚡ 5-10', name: '⚡ Energy' },
+      { type: 'coins', val: 1000, label: '💰 1K', name: '💰 1,000 Coins' },
+      { type: 'keys', val: 1, label: '🔑 +1', name: '🔑 +1 Master Key' },
+      { type: 'energy', min: 5, max: 10, label: '⚡ 5-10', name: '⚡ Energy' },
+      { type: 'coins', val: 5000, label: '💰 5K', name: '💰 5,000 Coins' },
+      { type: 'tickets', val: 1, label: '🎟️ +1', name: '🎟️ +1 Spin Ticket' }
+    ],
+    svgSlices: [
+      { color: '#22C55E', text: '⚡ 5-10' },
+      { color: '#F5B700', text: '💰 1K' },
+      { color: '#00F0FF', text: '🔑 +1' },
+      { color: '#22C55E', text: '⚡ 5-10' },
+      { color: '#F5B700', text: '💰 5K' },
+      { color: '#EC4899', text: '🎟️ +1' }
+    ]
+  },
+  silver: {
+    name: '🥈 SILVER SPINNER',
+    desc: 'Spin the silver wheel to win 15-30⚡ energy, 25K coins & keys!',
+    costText: '🎡 SPIN SILVER (1 🎟️ TICKET)',
+    ticketCost: 1,
+    prizes: [
+      { type: 'energy', min: 15, max: 30, label: '⚡ 15-30', name: '⚡ 25 Energy' },
+      { type: 'coins', val: 10000, label: '💰 10K', name: '💰 10,000 Coins' },
+      { type: 'keys', val: 2, label: '🔑 +2', name: '🔑 +2 Master Keys' },
+      { type: 'tickets', val: 3, label: '🎟️ +3', name: '🎟️ +3 Spin Tickets' },
+      { type: 'coins', val: 25000, label: '💰 25K', name: '💰 25,000 Coins' },
+      { type: 'xp', val: 25, label: '🔥 +25 XP', name: '🔥 +25 Bonus XP' }
+    ],
+    svgSlices: [
+      { color: '#3B82F6', text: '⚡ 15-30' },
+      { color: '#94A3B8', text: '💰 10K' },
+      { color: '#00F0FF', text: '🔑 +2' },
+      { color: '#EC4899', text: '🎟️ +3' },
+      { color: '#E2E8F0', text: '💰 25K' },
+      { color: '#F97316', text: '🔥 +25 XP' }
+    ]
+  },
+  golden: {
+    name: '🥇 GOLDEN SPINNER',
+    desc: 'Spin the golden wheel for 50-100⚡ energy, 100K coins & 5 keys!',
+    costText: '🎡 SPIN GOLDEN (1 🎟️ TICKET)',
+    ticketCost: 1,
+    prizes: [
+      { type: 'energy', min: 50, max: 100, label: '⚡ 50-100', name: '⚡ 75 Energy' },
+      { type: 'coins', val: 50000, label: '💰 50K', name: '💰 50,000 Coins' },
+      { type: 'keys', val: 5, label: '🔑 +5', name: '🔑 +5 Master Keys' },
+      { type: 'tickets', val: 5, label: '🎟️ +5', name: '🎟️ +5 Spin Tickets' },
+      { type: 'coins', val: 100000, label: '💰 100K', name: '💰 100,000 Coins' },
+      { type: 'jackpot', val: 100000, keys: 5, label: '💎 MEGA', name: '💎 GOLDEN MEGA TREASURE (+100K Coins & +5 Keys)' }
+    ],
+    svgSlices: [
+      { color: '#22C55E', text: '⚡ 50-100' },
+      { color: '#F5B700', text: '💰 50K' },
+      { color: '#00F0FF', text: '🔑 +5' },
+      { color: '#EC4899', text: '🎟️ +5' },
+      { color: '#F5B700', text: '💰 100K' },
+      { color: '#A855F7', text: '💎 MEGA' }
+    ]
+  },
+  jackpot: {
+    name: '💎 JACKPOT SPINNER',
+    desc: 'Spin the high-roller jackpot wheel for up to 1 MILLION COINS!',
+    costText: '🎡 SPIN JACKPOT (1 🎟️ TICKET)',
+    ticketCost: 1,
+    prizes: [
+      { type: 'coins', val: 250000, label: '💰 250K', name: '💰 250,000 Coins' },
+      { type: 'keys', val: 10, label: '🔑 +10', name: '🔑 +10 Master Keys' },
+      { type: 'tickets', val: 10, label: '🎟️ +10', name: '🎟️ +10 Spin Tickets' },
+      { type: 'coins', val: 500000, label: '💰 500K', name: '💰 500,000 Coins' },
+      { type: 'jackpot', val: 1000000, keys: 10, label: '💎 1 MIL', name: '💎 1,000,000 COINS JACKPOT!' },
+      { type: 'xp', val: 200, label: '🔥 +200 XP', name: '🔥 +200 Bonus XP' }
+    ],
+    svgSlices: [
+      { color: '#A855F7', text: '💰 250K' },
+      { color: '#00F0FF', text: '🔑 +10' },
+      { color: '#EC4899', text: '🎟️ +10' },
+      { color: '#A855F7', text: '💰 500K' },
+      { color: '#F5B700', text: '💎 1 MIL' },
+      { color: '#F97316', text: '🔥 +200' }
+    ]
+  }
+};
+
+function selectSpinnerType(type) {
+  if (!SPINNER_DEFINITIONS[type]) return;
+  _activeSpinnerType = type;
+
+  document.querySelectorAll('.spinner-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === `stype-${type}`);
+  });
+
+  const config = SPINNER_DEFINITIONS[type];
+  const subDesc = document.getElementById('spin-sub-desc');
+  const spinBtn = document.getElementById('btn-wheel-spin');
+  const discSvg = document.getElementById('wheel-disc-svg');
+
+  if (subDesc) subDesc.textContent = config.desc;
+  if (spinBtn) spinBtn.textContent = config.costText;
+
+  if (discSvg) {
+    let svgHtml = `<circle cx="100" cy="100" r="96" fill="#1E293B" stroke="#F5B700" stroke-width="4" />`;
+    config.svgSlices.forEach((slice, idx) => {
+      const rot = idx * 60;
+      svgHtml += `
+        <g transform="rotate(${rot} 100 100)">
+          <path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="${slice.color}" opacity="0.95"/>
+          <text x="125" y="42" font-size="12" font-weight="bold" fill="#000">${slice.text}</text>
+        </g>`;
+    });
+    svgHtml += `
+      <circle cx="100" cy="100" r="26" fill="#0F172A" stroke="#F5B700" stroke-width="3" />
+      <text x="100" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#F5B700">SPIN</text>`;
+    discSvg.innerHTML = svgHtml;
+  }
+
+  haptic('selection');
+}
+
+/* ── 🎡 SPIN WHEEL INTERACTIVE ACTION (WITH SLICE CENTER STOPPING FIX) ── */
 let _isSpinning = false;
 function spinWheelAction() {
   if (_isSpinning) return;
@@ -524,20 +653,19 @@ function spinWheelAction() {
 
   if (spinBtn) spinBtn.disabled = true;
 
-  const PRIZES = [
-    { type: 'coins', val: 5000, name: '💰 5,000 Coins' },
-    { type: 'keys', val: 2, name: '🔑 +2 Master Keys' },
-    { type: 'tickets', val: 3, name: '🎟️ +3 Spin Tickets' },
-    { type: 'energy', val: 100, name: '⚡ +100 Energy' },
-    { type: 'jackpot', val: 20000, keys: 2, name: '💎 JACKPOT! (+20K Coins & +2 Keys)' },
-    { type: 'xp', val: 10, name: '🔥 +10 Bonus XP' }
-  ];
+  const sDef = SPINNER_DEFINITIONS[_activeSpinnerType] || SPINNER_DEFINITIONS.normal;
+  const prizeIdx = Math.floor(Math.random() * sDef.prizes.length);
+  const prize = sDef.prizes[prizeIdx];
 
-  const prizeIdx = Math.floor(Math.random() * PRIZES.length);
-  const prize = PRIZES[prizeIdx];
+  // 🎯 POINTER CENTER STOPPING POSITION FIX:
+  // Each slice spans 60 degrees.
+  // Stopping at (prizeIdx * 60) + 30 deg positions the pointer DIRECTLY in the CENTER body of the slice!
+  // Add variance (+/- 8 deg) to stay within center range while never touching corner borders!
+  const sliceCenterOffset = 30;
+  const variance = Math.floor(Math.random() * 16) - 8;
+  const exactStopAngle = (prizeIdx * 60) + sliceCenterOffset + variance;
 
-  const sliceAngle = 60;
-  const targetAngle = (360 * 5) + (360 - (prizeIdx * sliceAngle));
+  const targetAngle = 1800 + (360 - exactStopAngle);
 
   STATE.wheelAngle = (STATE.wheelAngle || 0) + targetAngle;
 
@@ -552,19 +680,29 @@ function spinWheelAction() {
     _isSpinning = false;
     if (spinBtn) spinBtn.disabled = false;
 
-    if (prize.type === 'coins') STATE.coins += prize.val;
-    else if (prize.type === 'keys') STATE.goals.keysBalance += prize.val;
-    else if (prize.type === 'tickets') STATE.goals.ticketsBalance += prize.val;
-    else if (prize.type === 'energy') STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + prize.val);
-    else if (prize.type === 'jackpot') {
+    let rewardMsg = prize.name;
+
+    if (prize.type === 'energy') {
+      const energyWon = prize.min ? (Math.floor(Math.random() * (prize.max - prize.min + 1)) + prize.min) : 10;
+      STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + energyWon);
+      rewardMsg = `⚡ +${energyWon} Energy`;
+    } else if (prize.type === 'coins') {
       STATE.coins += prize.val;
-      STATE.goals.keysBalance += prize.keys;
-    } else if (prize.type === 'xp') addXP(prize.val);
+    } else if (prize.type === 'keys') {
+      STATE.goals.keysBalance += prize.val;
+    } else if (prize.type === 'tickets') {
+      STATE.goals.ticketsBalance += prize.val;
+    } else if (prize.type === 'jackpot') {
+      STATE.coins += prize.val;
+      if (prize.keys) STATE.goals.keysBalance += prize.keys;
+    } else if (prize.type === 'xp') {
+      addXP(prize.val);
+    }
 
     SFX.collect();
     haptic('success');
     createConfettiBurst();
-    showToast(`🎉 WON ${prize.name}!`);
+    showToast(`🎉 WON ${rewardMsg}!`);
 
     if (typeof saveUserDataToFirebase === 'function') {
       saveUserDataToFirebase(STATE);

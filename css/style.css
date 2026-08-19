@@ -1923,6 +1923,42 @@ button {
   margin-top: 4px;
 }
 
+/* ── 🎡 4 SPINNER TYPES SELECTOR BAR STYLES ── */
+.spinner-types-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.spinner-type-btn {
+  flex: 1;
+  padding: 6px 2px;
+  font-size: 9px;
+  font-weight: 900;
+  border-radius: 8px;
+  background: var(--card2);
+  color: var(--muted);
+  border: 1px solid var(--border-gold);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.spinner-type-btn:hover {
+  transform: translateY(-1px);
+}
+
+.spinner-type-btn.active {
+  background: linear-gradient(135deg, #F5B700 0%, #EAB308 100%);
+  color: #000;
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
 .wheel-pointer-arrow {
   position: absolute;
   top: -8px;

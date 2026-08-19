@@ -598,20 +598,36 @@
         
         <div class="modal-header-badge">
           <h2>🎡 LUCKY SPIN WHEEL</h2>
-          <p>Spin the wheel to win jackpot rewards!</p>
+          <p id="spin-sub-desc">Spin the wheel to win energy (5-10⚡), coins, and keys!</p>
+        </div>
+
+        <!-- ── 🎡 4 SPINNER TYPE SELECTOR TABS ── -->
+        <div class="spinner-types-bar">
+          <button class="spinner-type-btn active" id="stype-normal" onclick="selectSpinnerType('normal')">
+            🥉 NORMAL
+          </button>
+          <button class="spinner-type-btn" id="stype-silver" onclick="selectSpinnerType('silver')">
+            🥈 SILVER
+          </button>
+          <button class="spinner-type-btn" id="stype-golden" onclick="selectSpinnerType('golden')">
+            🥇 GOLDEN
+          </button>
+          <button class="spinner-type-btn" id="stype-jackpot" onclick="selectSpinnerType('jackpot')">
+            💎 JACKPOT
+          </button>
         </div>
 
         <div class="spin-wheel-interactive-wrapper" onclick="spinWheelAction()">
           <div class="wheel-pointer-arrow" id="wheel-pointer-arrow">👇</div>
           <div class="spin-wheel-disc" id="spin-wheel-disc">
-            <svg class="wheel-disc-svg" viewBox="0 0 200 200">
+            <svg class="wheel-disc-svg" id="wheel-disc-svg" viewBox="0 0 200 200">
               <circle cx="100" cy="100" r="96" fill="#1E293B" stroke="#F5B700" stroke-width="4" />
-              <g transform="rotate(0 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#F5B700" opacity="0.95"/><text x="125" y="42" font-size="13" font-weight="bold" fill="#000">💰 5K</text></g>
-              <g transform="rotate(60 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#00F0FF" opacity="0.95"/><text x="125" y="42" font-size="13" font-weight="bold" fill="#000">🔑 +2</text></g>
-              <g transform="rotate(120 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#EC4899" opacity="0.95"/><text x="125" y="42" font-size="13" font-weight="bold" fill="#FFF">🎟️ +3</text></g>
-              <g transform="rotate(180 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#22C55E" opacity="0.95"/><text x="125" y="42" font-size="13" font-weight="bold" fill="#000">⚡ 100</text></g>
-              <g transform="rotate(240 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#A855F7" opacity="0.95"/><text x="125" y="42" font-size="11" font-weight="bold" fill="#FFF">💎 JACKPOT</text></g>
-              <g transform="rotate(300 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#F97316" opacity="0.95"/><text x="125" y="42" font-size="13" font-weight="bold" fill="#FFF">🔥 +10 XP</text></g>
+              <g transform="rotate(0 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#22C55E" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#000">⚡ 5-10</text></g>
+              <g transform="rotate(60 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#F5B700" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#000">💰 1K</text></g>
+              <g transform="rotate(120 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#00F0FF" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#000">🔑 +1</text></g>
+              <g transform="rotate(180 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#22C55E" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#000">⚡ 5-10</text></g>
+              <g transform="rotate(240 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#F5B700" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#000">💰 5K</text></g>
+              <g transform="rotate(300 100 100)"><path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="#EC4899" opacity="0.95"/><text x="125" y="42" font-size="12" font-weight="bold" fill="#FFF">🎟️ +1</text></g>
               <circle cx="100" cy="100" r="26" fill="#0F172A" stroke="#F5B700" stroke-width="3" />
               <text x="100" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#F5B700">SPIN</text>
             </svg>
@@ -622,7 +638,7 @@
           <button class="btn-mode-spin" id="btn-wheel-spin" onclick="spinWheelAction()">
             🎡 SPIN WHEEL (1 🎟️ TICKET)
           </button>
-          <span class="mode-balance-badge" id="mode-tickets-badge">🎟️ 3 Tickets Left</span>
+          <span class="mode-balance-badge" id="mode-tickets-badge">🎟️ 0 Tickets Left</span>
         </div>
 
         <!-- WATCH AD FOR +3 TICKETS -->
