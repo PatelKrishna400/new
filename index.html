@@ -197,14 +197,14 @@
             </div>
           </div>
 
-          <!-- ── 🎡 SPINNER & 🧰 MYSTERY CHEST SEPARATE SQUARE CARDS (BELOW TAP CIRCLE) ── -->
+          <!-- ── 🎡 SPINNER, 🧰 MYSTERY CHEST & 🎫 SCRATCH CARD SEPARATE SQUARE CARDS ── -->
           <div class="home-square-cards-container">
             <!-- SQUARE CARD 1: 🎡 SPINNER -->
             <div class="home-square-card spin-sq-card">
               <div class="sq-card-icon-wrap">🎡</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">SPIN WHEEL</span>
-                <span class="sq-card-sub" id="sq-tickets-text">🎟️ 3 Tickets Available</span>
+                <span class="sq-card-sub" id="sq-tickets-text">🎟️ 0 Tickets</span>
               </div>
               <button class="btn-card-enter" onclick="handleCardEnterWithAd('wheel')">
                 ENTER ➔
@@ -216,9 +216,21 @@
               <div class="sq-card-icon-wrap">🧰</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">MYSTERY CHEST</span>
-                <span class="sq-card-sub" id="sq-keys-text">🔑 0 Keys Available</span>
+                <span class="sq-card-sub" id="sq-keys-text">🔑 0 Keys</span>
               </div>
               <button class="btn-card-enter" onclick="handleCardEnterWithAd('chest')">
+                ENTER ➔
+              </button>
+            </div>
+
+            <!-- SQUARE CARD 3: 🎫 SCRATCH CARD -->
+            <div class="home-square-card scratch-sq-card">
+              <div class="sq-card-icon-wrap">🎫</div>
+              <div class="sq-card-info">
+                <span class="sq-card-title">SCRATCH CARD</span>
+                <span class="sq-card-sub">✨ Bonus Rewards</span>
+              </div>
+              <button class="btn-card-enter" onclick="openScratchCardModal()">
                 ENTER ➔
               </button>
             </div>
@@ -386,6 +398,52 @@
               <div class="pstat-info">
                 <span class="pstat-label">GOAL LEVEL</span>
                 <span class="pstat-val" id="profile-goal-lvl">Goal Lvl 1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 👥 REFERRAL SYSTEM / INVITE FRIENDS CARD -->
+          <div class="profile-referral-card">
+            <div class="ref-card-header">
+              <div class="ref-header-left">
+                <span class="ref-icon">👥</span>
+                <div class="ref-title-group">
+                  <span class="ref-card-title">REFER & INVITE FRIENDS</span>
+                  <span class="ref-card-sub">Earn 💰 +5,000 Coins & 🔑 +2 Keys per friend!</span>
+                </div>
+              </div>
+              <span class="ref-count-badge" id="ref-invited-count">0 Invited</span>
+            </div>
+
+            <!-- REFERRAL LINK DISPLAY BOX -->
+            <div class="ref-link-box">
+              <input type="text" class="ref-link-input" id="ref-link-input" readonly value="https://t.me/tap_king_bot?start=ref_user_local" />
+              <button class="btn-copy-ref-link" onclick="copyReferralLink()">📋 COPY</button>
+            </div>
+
+            <!-- SHARE BUTTONS ROW -->
+            <div class="ref-actions-row">
+              <button class="btn-share-telegram" onclick="shareReferralTelegram()">
+                ✈️ SHARE TO TELEGRAM (+5K COINS)
+              </button>
+            </div>
+
+            <!-- MILESTONE REWARDS ROW -->
+            <div class="ref-milestones-list">
+              <div class="ref-milestone-item">
+                <span class="ref-m-label">👥 1 Friend</span>
+                <span class="ref-m-reward">💰 5K + 🔑 2 Keys</span>
+                <button class="btn-claim-ref-reward" id="btn-claim-ref-1" disabled onclick="claimReferralReward(1)">🔒 CLAIM</button>
+              </div>
+              <div class="ref-milestone-item">
+                <span class="ref-m-label">👥 5 Friends</span>
+                <span class="ref-m-reward">💰 30K + 🎟️ 5 Tickets</span>
+                <button class="btn-claim-ref-reward" id="btn-claim-ref-5" disabled onclick="claimReferralReward(5)">🔒 CLAIM</button>
+              </div>
+              <div class="ref-milestone-item">
+                <span class="ref-m-label">👥 10 Friends</span>
+                <span class="ref-m-reward">💰 100K + 💎 1K Gems</span>
+                <button class="btn-claim-ref-reward" id="btn-claim-ref-10" disabled onclick="claimReferralReward(10)">🔒 CLAIM</button>
               </div>
             </div>
           </div>

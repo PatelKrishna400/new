@@ -1169,6 +1169,85 @@ function renderProfileScreen() {
   if (pTickets) pTickets.textContent = `${STATE.goals.ticketsBalance || 0} Tickets`;
   if (pGoalLvl) pGoalLvl.textContent = `Goal Lvl ${STATE.goals.level || 1}`;
   if (pUserId) pUserId.textContent = `ID: ${_userId || 'Local'}`;
+
+  // Update Referral System UI
+  STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+  const refLinkInput = document.getElementById('ref-link-input');
+  const refCountBadge = document.getElementById('ref-invited-count');
+  if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=ref_${_userId || 'local'}`;
+  if (refCountBadge) refCountBadge.textContent = `${STATE.referrals.invitedCount || 0} Invited`;
+
+  [1, 5, 10].forEach(m => {
+    const btn = document.getElementById(`btn-claim-ref-${m}`);
+    if (btn) {
+      if (STATE.referrals.claimed[m]) {
+        btn.disabled = true;
+        btn.className = 'btn-claim-ref-reward';
+        btn.textContent = '✅ CLAIMED';
+      } else if (STATE.referrals.invitedCount >= m) {
+        btn.disabled = false;
+        btn.className = 'btn-claim-ref-reward ready';
+        btn.textContent = '🎁 CLAIM';
+      } else {
+        btn.disabled = true;
+        btn.className = 'btn-claim-ref-reward';
+        btn.textContent = `🔒 (${STATE.referrals.invitedCount || 0}/${m})`;
+      }
+    }
+  });
+}
+
+/* ── 👥 REFERRAL SYSTEM FUNCTIONS ── */
+function copyReferralLink() {
+  const linkInput = document.getElementById('ref-link-input');
+  if (linkInput) {
+    linkInput.select();
+    navigator.clipboard.writeText(linkInput.value).then(() => {
+      showToast('📋 Referral Link copied to clipboard!');
+      haptic('success');
+    }).catch(() => {
+      showToast('📋 Link: ' + linkInput.value);
+    });
+  }
+}
+
+function shareReferralTelegram() {
+  const userRef = _userId || 'local';
+  const text = encodeURIComponent(`🎮 Play Tap King with me! Tap to earn coins, spin the wheel, unlock mystery chests and win jackpot rewards!\n\nJoin using my link: https://t.me/tap_king_bot?start=ref_${userRef}`);
+  window.open(`https://t.me/share/url?url=https://t.me/tap_king_bot?start=ref_${userRef}&text=${text}`, '_blank');
+  showToast('✈️ Opening Telegram share...');
+}
+
+function claimReferralReward(milestone) {
+  STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+  if (STATE.referrals.invitedCount < milestone) {
+    showToast(`🔒 Invite ${milestone} friends to unlock this reward!`);
+    return;
+  }
+  if (STATE.referrals.claimed[milestone]) {
+    showToast(`✅ Already claimed!`);
+    return;
+  }
+
+  STATE.referrals.claimed[milestone] = true;
+  if (milestone === 1) {
+    STATE.coins += 5000;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
+    showToast('🎉 Claimed 💰 +5,000 Coins & 🔑 +2 Keys!');
+  } else if (milestone === 5) {
+    STATE.coins += 30000;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
+    showToast('🎉 Claimed 💰 +30,000 Coins & 🎟️ +5 Spin Tickets!');
+  } else if (milestone === 10) {
+    STATE.coins += 100000;
+    showToast('🎉 Claimed 💰 +100,000 Coins & 💎 +1,000 Gems!');
+  }
+
+  SFX.collect();
+  haptic('success');
+  createConfettiBurst();
+  updateUI();
+  renderProfileScreen();
 }
 
 function openRestartConfirmModal() {
