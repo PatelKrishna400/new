@@ -328,6 +328,90 @@
         </div>
       </div>
 
+      <!-- ── 👤 PROFILE SCREEN (WITH FIREBASE RESTART DATA ENGINE) ── -->
+      <div id="screen-profile" class="screen">
+        <div class="profile-scroll-area">
+          
+          <!-- HEADER -->
+          <div class="profile-header-center">
+            <div class="profile-avatar-circle">👤</div>
+            <h1 class="profile-main-title" id="profile-name">⭐ LEVEL 1 TAPPER</h1>
+            <span class="profile-user-id-badge" id="profile-user-id">ID: user_local</span>
+          </div>
+
+          <!-- PLAYER STATS GRID CARDS -->
+          <div class="profile-stats-grid">
+            <div class="profile-stat-card">
+              <span class="pstat-icon">⭐</span>
+              <div class="pstat-info">
+                <span class="pstat-label">LEVEL</span>
+                <span class="pstat-val" id="profile-level">LV. 1 / 100</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-card">
+              <span class="pstat-icon">🔥</span>
+              <div class="pstat-info">
+                <span class="pstat-label">TOTAL XP</span>
+                <span class="pstat-val" id="profile-xp">0 XP</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-card">
+              <span class="pstat-icon">💰</span>
+              <div class="pstat-info">
+                <span class="pstat-label">COINS</span>
+                <span class="pstat-val" id="profile-coins">0 Coins</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-card">
+              <span class="pstat-icon">🔑</span>
+              <div class="pstat-info">
+                <span class="pstat-label">KEYS</span>
+                <span class="pstat-val" id="profile-keys">0 Keys</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-card">
+              <span class="pstat-icon">🎟️</span>
+              <div class="pstat-info">
+                <span class="pstat-label">TICKETS</span>
+                <span class="pstat-val" id="profile-tickets">0 Tickets</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-card">
+              <span class="pstat-icon">🎯</span>
+              <div class="pstat-info">
+                <span class="pstat-label">GOAL LEVEL</span>
+                <span class="pstat-val" id="profile-goal-lvl">Goal Lvl 1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- FIREBASE CLOUD DATA STATUS CARD -->
+          <div class="profile-cloud-card">
+            <div class="cloud-card-left">
+              <span class="cloud-icon">🔥</span>
+              <div class="cloud-info">
+                <span class="cloud-title">FIREBASE REALTIME SYNC</span>
+                <span class="cloud-status">Cloud Database Connected ✅</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DANGER ZONE: RESTART GAME DATA BUTTON -->
+          <div class="profile-danger-zone">
+            <button class="btn-restart-game-data" id="btn-restart-game-data" onclick="openRestartConfirmModal()">
+              🔄 RESTART GAME DATA (RESET ALL PROGRESS)
+            </button>
+            <p class="restart-warning-sub">Resets Level to 1, 0 Coins, 0 XP, 0 Keys & wipes Firebase Realtime Database</p>
+          </div>
+
+        </div>
+      </div>
+
     </main>
 
     <!-- ── BOTTOM NAVIGATION (5 TABS) ── -->
@@ -582,6 +666,37 @@
         <div class="scratch-modal-actions">
           <button class="btn-scratch-ad-claim" id="btn-scratch-ad-action" onclick="openMonetagAdModal('scratch_card')">
             🎥 WATCH AD TO SCRATCH & CLAIM!
+          </button>
+      </div>
+    </div>
+
+    <!-- ── ⚠️ RESTART GAME DATA CONFIRMATION MODAL ── -->
+    <div id="restart-confirm-modal" class="modal-overlay">
+      <div class="restart-modal-card">
+        <button class="boost-modal-close-icon" onclick="closeRestartConfirmModal()">✕</button>
+        
+        <div class="restart-header">
+          <div class="restart-warning-icon">⚠️</div>
+          <h2>RESTART GAME DATA?</h2>
+          <p>This action will permanently reset your progress back to zero and wipe your cloud data in Firebase!</p>
+        </div>
+
+        <div class="restart-details-box">
+          <ul>
+            <li>✨ <b>Level 1</b> (Reset from current level)</li>
+            <li>💰 <b>0 Coins</b> (All balance cleared)</li>
+            <li>🔥 <b>0 XP</b> (Level progression reset)</li>
+            <li>🔑 <b>0 Master Keys</b> & 🎟️ <b>0 Spin Tickets</b></li>
+            <li>🔥 <b>Firebase Realtime Database</b>: Cleared!</li>
+          </ul>
+        </div>
+
+        <div class="restart-modal-actions">
+          <button class="btn-confirm-restart-data" onclick="confirmRestartGameData()">
+            🔴 YES, RESTART ALL DATA
+          </button>
+          <button class="btn-cancel-restart" onclick="closeRestartConfirmModal()">
+            ⚪ CANCEL
           </button>
         </div>
       </div>

@@ -1132,6 +1132,8 @@ function switchScreen(targetId) {
         renderTasksScreen();
       } else if (targetId === 'rank') {
         renderLeaderboard();
+      } else if (targetId === 'profile') {
+        renderProfileScreen();
       }
 
       loadingEl.classList.add('loading-hide');
@@ -1142,9 +1144,83 @@ function switchScreen(targetId) {
     if (targetId === 'boost') renderBoostScreen();
     else if (targetId === 'tasks') renderTasksScreen();
     else if (targetId === 'rank') renderLeaderboard();
+    else if (targetId === 'profile') renderProfileScreen();
   }
 
   haptic('selection');
+}
+
+/* ── 👤 PROFILE SCREEN & RESTART DATA ENGINE ── */
+function renderProfileScreen() {
+  const pName = document.getElementById('profile-name');
+  const pLvl = document.getElementById('profile-level');
+  const pXp = document.getElementById('profile-xp');
+  const pCoins = document.getElementById('profile-coins');
+  const pKeys = document.getElementById('profile-keys');
+  const pTickets = document.getElementById('profile-tickets');
+  const pGoalLvl = document.getElementById('profile-goal-lvl');
+  const pUserId = document.getElementById('profile-user-id');
+
+  if (pName) pName.textContent = `⭐ LEVEL ${STATE.level || 1} TAPPER`;
+  if (pLvl) pLvl.textContent = `LV. ${STATE.level || 1} / 100`;
+  if (pXp) pXp.textContent = `${Number((STATE.xp || 0).toFixed(1))} XP`;
+  if (pCoins) pCoins.textContent = `${fmt(STATE.coins || 0)} Coins`;
+  if (pKeys) pKeys.textContent = `${STATE.goals.keysBalance || 0} Keys`;
+  if (pTickets) pTickets.textContent = `${STATE.goals.ticketsBalance || 0} Tickets`;
+  if (pGoalLvl) pGoalLvl.textContent = `Goal Lvl ${STATE.goals.level || 1}`;
+  if (pUserId) pUserId.textContent = `ID: ${_userId || 'Local'}`;
+}
+
+function openRestartConfirmModal() {
+  const modal = document.getElementById('restart-confirm-modal');
+  if (modal) modal.classList.add('active');
+  haptic('warning');
+}
+
+function closeRestartConfirmModal() {
+  const modal = document.getElementById('restart-confirm-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function confirmRestartGameData() {
+  STATE.coins = 0;
+  STATE.energy = 500;
+  STATE.maxEnergy = 500;
+  STATE.level = 1;
+  STATE.xp = 0;
+  STATE.xpNeeded = 100;
+  STATE.goals = {
+    level: 1,
+    coinsTarget: 30,
+    coinsProgress: 0,
+    coinsReward: 5,
+    keysTarget: 50,
+    keysProgress: 0,
+    keysReward: 1,
+    spinsTarget: 20,
+    spinsProgress: 0,
+    spinsReward: 1,
+    keysBalance: 0,
+    ticketsBalance: 0,
+    claimed: { coins: false, keys: false, spins: false }
+  };
+  STATE.claimedXPLevels = {};
+  STATE.unclaimedXPLevels = [];
+  STATE.tasksProgress = {};
+  STATE.claimedTasks = {};
+
+  if (typeof restartFirebaseUserData === 'function') {
+    await restartFirebaseUserData();
+  } else {
+    localStorage.removeItem('tg_game_state');
+    localStorage.removeItem('te_game_state');
+  }
+
+  closeRestartConfirmModal();
+  showToast('🔄 Game data successfully restarted in Firebase & LocalStorage!');
+  createConfettiBurst();
+  updateUI();
+  switchScreen('home');
 }
 
 /* ── 🏆 LEADERBOARD ENGINE ── */

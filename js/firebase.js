@@ -111,3 +111,49 @@ function incrementFirebaseStat(statPath, amount = 1) {
     console.warn('[Firebase Increment] Exception:', e);
   }
 }
+
+/* ── FIREBASE RESTART DATA ENGINE ── */
+async function restartFirebaseUserData() {
+  try {
+    const defaultData = {
+      coins: 0,
+      energy: 500,
+      maxEnergy: 500,
+      level: 1,
+      xp: 0,
+      goals: {
+        level: 1,
+        coinsTarget: 30,
+        coinsProgress: 0,
+        coinsReward: 5,
+        keysTarget: 50,
+        keysProgress: 0,
+        keysReward: 1,
+        spinsTarget: 20,
+        spinsProgress: 0,
+        spinsReward: 1,
+        keysBalance: 0,
+        ticketsBalance: 0,
+        claimed: { coins: false, keys: false, spins: false }
+      },
+      tasksProgress: {},
+      claimedTasks: {},
+      claimedXPLevels: {},
+      unclaimedXPLevels: [],
+      lastSaved: Date.now()
+    };
+
+    localStorage.removeItem('tg_game_state');
+    localStorage.removeItem('te_game_state');
+    localStorage.setItem('tg_game_state', JSON.stringify(defaultData));
+
+    if (_rtdb) {
+      await _rtdb.ref('players/' + _userId).set(defaultData);
+      console.log('[Firebase Restart] Data cleared in Firebase Realtime Database for user:', _userId);
+    }
+    return true;
+  } catch (err) {
+    console.warn('[Firebase Restart Warning]:', err);
+    return false;
+  }
+}
