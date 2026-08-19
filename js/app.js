@@ -1658,6 +1658,31 @@ function upgradeBoostWithAd(id) {
   openMonetagAdModal('boost_' + id);
 }
 
+/* ── SCREEN NAVIGATION ── */
+function switchScreen(targetId) {
+  const targetScreen = document.getElementById(`screen-${targetId}`);
+  if (!targetScreen) return;
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  targetScreen.classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.screen === targetId);
+  });
+
+  if (targetId === 'boost') {
+    renderBoostScreen();
+  } else if (targetId === 'tasks') {
+    renderTasksScreen();
+  } else if (targetId === 'rank') {
+    renderLeaderboard();
+  } else if (targetId === 'profile') {
+    renderProfileScreen();
+  }
+
+  haptic('selection');
+}
+
 /* ── REAL-TIME 1S BOOST CIRCULAR RING & TIMER EXPIRY LEVEL REDUCTION TICKER ── */
 setInterval(() => {
   let stateChanged = false;
@@ -1697,54 +1722,7 @@ setInterval(() => {
   }
 }, 1000);
 
-/* ── NAVIGATION HANDLER (WITH LOADING SCREEN TRANSITION) ── */
-function switchScreen(targetId) {
-  const targetScreen = document.getElementById(`screen-${targetId}`);
-  if (!targetScreen) {
-    showToast(`Screen '${targetId.toUpperCase()}' coming soon!`);
-    return;
-  }
 
-  // Quick smooth loading transition (350ms)
-  const loadingEl = document.getElementById('loading-screen');
-  if (loadingEl) {
-    loadingEl.classList.remove('loading-hide');
-    const fillEl = document.getElementById('loading-progress-fill');
-    const pctEl = document.getElementById('loading-pct-text');
-    if (fillEl) fillEl.style.width = '100%';
-    if (pctEl) pctEl.textContent = '100%';
-
-    setTimeout(() => {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      targetScreen.classList.add('active');
-
-      document.querySelectorAll('.nav-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.screen === targetId);
-      });
-
-      if (targetId === 'boost') {
-        renderBoostScreen();
-      } else if (targetId === 'tasks') {
-        renderTasksScreen();
-      } else if (targetId === 'rank') {
-        renderLeaderboard();
-      } else if (targetId === 'profile') {
-        renderProfileScreen();
-      }
-
-      loadingEl.classList.add('loading-hide');
-    }, 350);
-  } else {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    targetScreen.classList.add('active');
-    if (targetId === 'boost') renderBoostScreen();
-    else if (targetId === 'tasks') renderTasksScreen();
-    else if (targetId === 'rank') renderLeaderboard();
-    else if (targetId === 'profile') renderProfileScreen();
-  }
-
-  haptic('selection');
-}
 
 function openReferralModalFromHome() {
   switchScreen('profile');
