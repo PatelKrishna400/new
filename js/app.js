@@ -1452,6 +1452,11 @@ function claimReferralReward(milestone) {
   SFX.collect();
   haptic('success');
   createConfettiBurst();
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
   updateUI();
   renderProfileScreen();
 }
@@ -1735,6 +1740,10 @@ function claimXPLevelReward(lvl) {
   SFX.collect();
   haptic('success');
   showToast(`🎉 CLAIMED LEVEL ${lvl} REWARD: ${rewardTxt}!`);
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
 
   renderXPLevelsList();
   updateUI();
