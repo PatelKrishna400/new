@@ -1668,51 +1668,70 @@ function switchScreen(targetId) {
   haptic('selection');
 }
 
-/* ── 👤 PROFILE SCREEN & RESTART DATA ENGINE ── */
-function renderProfileScreen() {
-  const pName = document.getElementById('profile-name');
-  const pLvl = document.getElementById('profile-level');
-  const pXp = document.getElementById('profile-xp');
-  const pCoins = document.getElementById('profile-coins');
-  const pKeys = document.getElementById('profile-keys');
-  const pTickets = document.getElementById('profile-tickets');
-  const pGoalLvl = document.getElementById('profile-goal-lvl');
-  const pUserId = document.getElementById('profile-user-id');
+/* ── 👤 PROFILE SCREEN & RESTART DATA ENGINE (SAFE PROPER WORK FIX) ── */
+async function renderProfileScreen() {
+  try {
+    // Safely initialize state objects if missing
+    STATE.goals = STATE.goals || { level: 1, keysBalance: 0, ticketsBalance: 0 };
+    STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
 
-  if (pName) pName.textContent = `⭐ LEVEL ${STATE.level || 1} TAPPER`;
-  if (pLvl) pLvl.textContent = `LV. ${STATE.level || 1} / 100`;
-  if (pXp) pXp.textContent = `${Number((STATE.xp || 0).toFixed(1))} XP`;
-  if (pCoins) pCoins.textContent = `${fmt(STATE.coins || 0)} Coins`;
-  if (pKeys) pKeys.textContent = `${STATE.goals.keysBalance || 0} Keys`;
-  if (pTickets) pTickets.textContent = `${STATE.goals.ticketsBalance || 0} Tickets`;
-  if (pGoalLvl) pGoalLvl.textContent = `Goal Lvl ${STATE.goals.level || 1}`;
-  if (pUserId) pUserId.textContent = `ID: ${_userId || 'Local'}`;
-
-  // Update Referral System UI
-  STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
-  const refLinkInput = document.getElementById('ref-link-input');
-  const refCountBadge = document.getElementById('ref-invited-count');
-  if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=ref_${_userId || 'local'}`;
-  if (refCountBadge) refCountBadge.textContent = `${STATE.referrals.invitedCount || 0} Invited`;
-
-  [1, 5, 10].forEach(m => {
-    const btn = document.getElementById(`btn-claim-ref-${m}`);
-    if (btn) {
-      if (STATE.referrals.claimed[m]) {
-        btn.disabled = true;
-        btn.className = 'btn-claim-ref-reward';
-        btn.textContent = '✅ CLAIMED';
-      } else if (STATE.referrals.invitedCount >= m) {
-        btn.disabled = false;
-        btn.className = 'btn-claim-ref-reward ready';
-        btn.textContent = '🎁 CLAIM';
-      } else {
-        btn.disabled = true;
-        btn.className = 'btn-claim-ref-reward';
-        btn.textContent = `🔒 (${STATE.referrals.invitedCount || 0}/${m})`;
+    // Sync latest profile & goals directly from Firebase Realtime Database
+    if (typeof loadUserDataFromFirebase === 'function') {
+      const saved = await loadUserDataFromFirebase();
+      if (saved) {
+        if (saved.coins !== undefined) STATE.coins = saved.coins;
+        if (saved.level !== undefined) STATE.level = saved.level;
+        if (saved.xp !== undefined) STATE.xp = saved.xp;
+        if (saved.goals) STATE.goals = { ...STATE.goals, ...saved.goals };
+        if (saved.referrals) STATE.referrals = { ...STATE.referrals, ...saved.referrals };
       }
     }
-  });
+
+    const pName = document.getElementById('profile-name');
+    const pLvl = document.getElementById('profile-level');
+    const pXp = document.getElementById('profile-xp');
+    const pCoins = document.getElementById('profile-coins');
+    const pKeys = document.getElementById('profile-keys');
+    const pTickets = document.getElementById('profile-tickets');
+    const pGoalLvl = document.getElementById('profile-goal-lvl');
+    const pUserId = document.getElementById('profile-user-id');
+
+    if (pName) pName.textContent = `⭐ LEVEL ${STATE.level || 1} TAPPER`;
+    if (pLvl) pLvl.textContent = `LV. ${STATE.level || 1} / 100`;
+    if (pXp) pXp.textContent = `${Number((STATE.xp || 0).toFixed(1))} XP`;
+    if (pCoins) pCoins.textContent = `${fmt(STATE.coins || 0)} Coins`;
+    if (pKeys) pKeys.textContent = `${STATE.goals?.keysBalance || 0} Keys`;
+    if (pTickets) pTickets.textContent = `${STATE.goals?.ticketsBalance || 0} Tickets`;
+    if (pGoalLvl) pGoalLvl.textContent = `Goal Lvl ${STATE.goals?.level || 1}`;
+    if (pUserId) pUserId.textContent = `ID: ${_userId || 'Local'}`;
+
+    // Update Referral System UI safely
+    const refLinkInput = document.getElementById('ref-link-input');
+    const refCountBadge = document.getElementById('ref-invited-count');
+    if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=ref_${_userId || 'local'}`;
+    if (refCountBadge) refCountBadge.textContent = `${STATE.referrals?.invitedCount || 0} Invited`;
+
+    [1, 5, 10].forEach(m => {
+      const btn = document.getElementById(`btn-claim-ref-${m}`);
+      if (btn) {
+        if (STATE.referrals?.claimed?.[m]) {
+          btn.disabled = true;
+          btn.className = 'btn-claim-ref-reward';
+          btn.textContent = '✅ CLAIMED';
+        } else if ((STATE.referrals?.invitedCount || 0) >= m) {
+          btn.disabled = false;
+          btn.className = 'btn-claim-ref-reward ready';
+          btn.textContent = '🎁 CLAIM';
+        } else {
+          btn.disabled = true;
+          btn.className = 'btn-claim-ref-reward';
+          btn.textContent = `🔒 (${STATE.referrals?.invitedCount || 0}/${m})`;
+        }
+      }
+    });
+  } catch (err) {
+    console.warn('[Profile Render Safe Error]:', err);
+  }
 }
 
 /* ── 👥 REFERRAL SYSTEM FUNCTIONS ── */
