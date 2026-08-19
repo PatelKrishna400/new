@@ -6,20 +6,20 @@
 ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --bg: #060913;
-  --card: rgba(15, 23, 42, 0.85);
-  --card2: rgba(30, 41, 59, 0.7);
-  --border: rgba(255, 255, 255, 0.1);
-  --border-gold: rgba(245, 183, 0, 0.35);
+  --bg: #050811;
+  --card: rgba(15, 23, 42, 0.88);
+  --card2: rgba(30, 41, 59, 0.75);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-gold: rgba(245, 183, 0, 0.4);
   --gold: #F5B700;
-  --gold-glow: rgba(245, 183, 0, 0.4);
+  --gold-glow: rgba(245, 183, 0, 0.5);
   --electric-blue: #00F0FF;
   --green: #22C55E;
   --red: #EF4444;
   --white: #FFFFFF;
   --muted: #94A3B8;
   
-  --grad-bg: radial-gradient(circle at 50% 20%, #111A33 0%, #060913 80%);
+  --grad-bg: radial-gradient(circle at 50% 0%, #17254A 0%, #0B132B 45%, #050811 100%);
   --grad-gold: linear-gradient(135deg, #FFE169 0%, #F5B700 100%);
   --grad-btn-tap: radial-gradient(circle at 35% 35%, #FFE169 0%, #F5B700 50%, #B48200 100%);
   
@@ -55,7 +55,7 @@ button {
   cursor: pointer;
 }
 
-/* ── App Shell ── */
+/* ── App Shell & Ambient Cyber Grid Background ── */
 #app {
   position: fixed;
   inset: 0;
@@ -65,6 +65,41 @@ button {
   max-width: 480px;
   margin: 0 auto;
   overflow: hidden;
+}
+
+#app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(rgba(0, 240, 255, 0.12) 1px, transparent 1px),
+    radial-gradient(rgba(245, 183, 0, 0.1) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app::after {
+  content: '';
+  position: absolute;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 183, 0, 0.25) 0%, rgba(0, 240, 255, 0.12) 50%, transparent 80%);
+  filter: blur(45px);
+  pointer-events: none;
+  z-index: 0;
+  animation: topFlarePulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes topFlarePulse {
+  0% { transform: translateX(-50%) scale(0.9); opacity: 0.6; }
+  100% { transform: translateX(-50%) scale(1.15); opacity: 0.95; }
 }
 
 #particle-canvas {
