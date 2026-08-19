@@ -255,8 +255,10 @@ function updateUI() {
 
   const sqTicketsText = document.getElementById('sq-tickets-text');
   const sqKeysText = document.getElementById('sq-keys-text');
+  const sqRefInvitedText = document.getElementById('sq-ref-invited-text');
   if (sqTicketsText) sqTicketsText.textContent = `🎟️ ${STATE.goals.ticketsBalance || 0} Tickets Available`;
   if (sqKeysText) sqKeysText.textContent = `🔑 ${STATE.goals.keysBalance || 0} Keys Available`;
+  if (sqRefInvitedText) sqRefInvitedText.textContent = `👥 ${STATE.referrals?.invitedCount || 0} Invited`;
 
   const totalStroke = 126; // SVG r=20 circumference = 2 * PI * 20 ≈ 125.6
 
@@ -1744,6 +1746,16 @@ function switchScreen(targetId) {
   }
 
   haptic('selection');
+}
+
+function openReferralModalFromHome() {
+  switchScreen('profile');
+  setTimeout(() => {
+    const refCard = document.querySelector('.profile-referral-card');
+    if (refCard) {
+      refCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 300);
 }
 
 /* ── 👤 PROFILE SCREEN & RESTART DATA ENGINE (SAFE PROPER WORK FIX) ── */
