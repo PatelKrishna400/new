@@ -752,6 +752,7 @@ const SPINNER_DEFINITIONS = {
     costText: '🎡 SPIN WHEEL (1 🎟️ TICKET)',
     ticketCost: 1,
     outerStroke: '#F5B700',
+    rivetColor: '#F5B700',
     centerBg: '#0F172A',
     centerStroke: '#F5B700',
     centerText: '<text x="100" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#F5B700">SPIN</text>',
@@ -778,6 +779,7 @@ const SPINNER_DEFINITIONS = {
     costText: '🎡 SPIN SILVER (1 🎟️ TICKET)',
     ticketCost: 1,
     outerStroke: '#E2E8F0',
+    rivetColor: '#CBD5E1',
     centerBg: '#1E293B',
     centerStroke: '#CBD5E1',
     centerText: '<text x="100" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#E2E8F0">SILVER</text>',
@@ -804,6 +806,7 @@ const SPINNER_DEFINITIONS = {
     costText: '🎡 SPIN GOLDEN (1 🎟️ TICKET)',
     ticketCost: 1,
     outerStroke: '#FFD700',
+    rivetColor: '#FFD700',
     centerBg: '#451A03',
     centerStroke: '#FFD700',
     centerText: '<text x="100" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#FFD700">GOLD</text>',
@@ -830,6 +833,7 @@ const SPINNER_DEFINITIONS = {
     costText: '🎡 SPIN JACKPOT (1 🎟️ TICKET)',
     ticketCost: 1,
     outerStroke: '#00F0FF',
+    rivetColor: '#00F0FF',
     centerBg: '#3B0764',
     centerStroke: '#00F0FF',
     centerText: '<text x="100" y="98" text-anchor="middle" font-size="18">🎁</text><text x="100" y="114" text-anchor="middle" font-size="7" font-weight="900" fill="#00F0FF">JACKPOT</text>',
@@ -864,23 +868,49 @@ function selectSpinnerType(type) {
   const subDesc = document.getElementById('spin-sub-desc');
   const spinBtn = document.getElementById('btn-wheel-spin');
   const discSvg = document.getElementById('wheel-disc-svg');
+  const glowAura = document.getElementById('wheel-glow-aura');
 
   if (subDesc) subDesc.textContent = config.desc;
   if (spinBtn) spinBtn.textContent = config.costText;
 
+  if (glowAura) {
+    glowAura.className = `wheel-theme-glow-aura ${type}-theme-aura`;
+  }
+
   if (discSvg) {
-    let svgHtml = `<circle cx="100" cy="100" r="96" fill="#1E293B" stroke="${config.outerStroke}" stroke-width="4" />`;
+    let rivetsHtml = '';
+    const rivetColor = config.rivetColor || '#F5B700';
+    for (let r = 0; r < 12; r++) {
+      const rad = (r * 30) * Math.PI / 180;
+      const rx = 100 + 92 * Math.sin(rad);
+      const ry = 100 - 92 * Math.cos(rad);
+      rivetsHtml += `<circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="2.5" fill="${rivetColor}" stroke="#000" stroke-width="0.5"/>`;
+    }
+
+    let svgHtml = `
+      <defs>
+        <radialGradient id="wheelRimGrad_${type}" cx="50%" cy="50%" r="50%">
+          <stop offset="70%" stop-color="#1E293B"/>
+          <stop offset="100%" stop-color="#0F172A"/>
+        </radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="98" fill="url(#wheelRimGrad_${type})" stroke="${config.outerStroke}" stroke-width="5" />`;
+
     config.svgSlices.forEach((slice, idx) => {
       const rot = idx * 60;
       svgHtml += `
         <g transform="rotate(${rot} 100 100)">
-          <path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="${slice.color}" opacity="0.95"/>
-          <text x="125" y="42" font-size="12" font-weight="bold" fill="#000">${slice.text}</text>
+          <path d="M100 100 L100 4 A96 96 0 0 1 183 52 Z" fill="${slice.color}" opacity="0.95" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+          <text x="125" y="42" font-size="12" font-weight="900" fill="#000" letter-spacing="0.5">${slice.text}</text>
         </g>`;
     });
+
+    svgHtml += rivetsHtml;
     svgHtml += `
-      <circle cx="100" cy="100" r="26" fill="${config.centerBg}" stroke="${config.centerStroke}" stroke-width="3" />
+      <circle cx="100" cy="100" r="28" fill="${config.centerBg}" stroke="${config.centerStroke}" stroke-width="3" />
+      <circle cx="100" cy="100" r="23" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="3,3" />
       ${config.centerText}`;
+
     discSvg.innerHTML = svgHtml;
   }
 

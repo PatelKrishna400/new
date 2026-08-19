@@ -1923,6 +1923,43 @@ button {
   margin-top: 4px;
 }
 
+/* ── 🎡 ULTRA-PREMIUM SPIN WHEEL ANIMATIONS & THEME AURAS ── */
+.wheel-theme-glow-aura {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  animation: auraPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes auraPulse {
+  0% { transform: scale(0.96); opacity: 0.7; }
+  100% { transform: scale(1.04); opacity: 1; }
+}
+
+.normal-theme-aura {
+  background: radial-gradient(circle at center, rgba(34, 197, 94, 0.3) 0%, rgba(245, 183, 0, 0.15) 50%, transparent 70%);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+}
+
+.silver-theme-aura {
+  background: radial-gradient(circle at center, rgba(203, 213, 225, 0.4) 0%, rgba(56, 189, 248, 0.2) 50%, transparent 70%);
+  box-shadow: 0 0 30px rgba(203, 213, 225, 0.5);
+}
+
+.golden-theme-aura {
+  background: radial-gradient(circle at center, rgba(245, 183, 0, 0.5) 0%, rgba(217, 119, 6, 0.25) 50%, transparent 70%);
+  box-shadow: 0 0 40px rgba(245, 183, 0, 0.6);
+}
+
+.jackpot-theme-aura {
+  background: radial-gradient(circle at center, rgba(168, 85, 247, 0.5) 0%, rgba(0, 240, 255, 0.3) 50%, transparent 70%);
+  box-shadow: 0 0 45px rgba(0, 240, 255, 0.6);
+}
+
 /* 🔄 SPIN WHEEL DATA SYNC LOADING OVERLAY STYLES */
 .spin-loading-overlay {
   position: absolute;
