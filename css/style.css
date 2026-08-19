@@ -3214,3 +3214,114 @@ button {
   border: none;
   cursor: pointer;
 }
+
+/* ── 📱 MOBILE VIEW OPTIMIZATIONS FOR SPIN WHEEL, CHEST & SCRATCH CARD ── */
+@media (max-width: 480px) {
+  .spin-modal-card,
+  .chest-modal-card,
+  .scratch-modal-card {
+    padding: 10px 12px calc(24px + env(safe-area-inset-bottom, 12px)) 12px !important;
+    gap: 10px !important;
+  }
+
+  .full-page-top-bar {
+    padding-bottom: 8px !important;
+  }
+
+  .full-page-top-title {
+    font-size: 11px !important;
+  }
+
+  .btn-full-page-back {
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+  }
+
+  .modal-header-badge h2 {
+    font-size: 15px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .modal-header-badge p {
+    font-size: 10px !important;
+  }
+
+  /* 4-Type Tab Selector Bar Mobile View */
+  .spinner-types-bar {
+    gap: 3px !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .spinner-type-btn {
+    padding: 6px 2px !important;
+    font-size: 8.5px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Spin Wheel Disc Mobile Scale */
+  .spin-wheel-interactive-wrapper {
+    width: 140px !important;
+    height: 140px !important;
+  }
+
+  .wheel-pointer-arrow {
+    font-size: 20px !important;
+    top: -12px !important;
+  }
+
+  /* Mystery Chest Mobile Scale */
+  .mystery-chest-interactive-wrapper {
+    padding: 16px 12px !important;
+  }
+
+  .chest-emoji-box {
+    font-size: 52px !important;
+  }
+
+  .chest-mouse-arrow-hand {
+    font-size: 20px !important;
+    right: 20px !important;
+    top: -8px !important;
+  }
+
+  /* Scratch Card Mobile Scale */
+  .scratch-modal-card {
+    width: 94% !important;
+    max-width: 440px !important;
+    padding: 14px 12px !important;
+    gap: 10px !important;
+  }
+
+  .scratch-card-surface {
+    padding: 24px 12px !important;
+    min-height: 110px !important;
+  }
+
+  .scratch-pattern-bg {
+    font-size: 11px !important;
+  }
+
+  .scratch-lock-txt {
+    font-size: 9.5px !important;
+  }
+
+  /* Mode Action Bars Mobile buttons */
+  .btn-mode-spin,
+  .btn-mode-open-chest,
+  .btn-scratch-ad-claim {
+    padding: 11px 10px !important;
+    font-size: 11px !important;
+    border-radius: 10px !important;
+  }
+
+  .mode-balance-badge {
+    font-size: 10px !important;
+  }
+
+  .btn-spin-ad-tickets {
+    padding: 9px 10px !important;
+    font-size: 10px !important;
+    border-radius: 10px !important;
+  }
+}
