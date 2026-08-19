@@ -474,6 +474,169 @@ function closeScratchCardModal() {
   if (modal) modal.classList.remove('active');
 }
 
+/* ── 🎡 SPIN WHEEL & 🧰 MYSTERY CHEST MODAL & ACTION ENGINE ── */
+function openSpinWheelModal() {
+  const modal = document.getElementById('spin-wheel-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function closeSpinWheelModal() {
+  const modal = document.getElementById('spin-wheel-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function openMysteryChestModal() {
+  const modal = document.getElementById('mystery-chest-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function closeMysteryChestModal() {
+  const modal = document.getElementById('mystery-chest-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function handleCardEnterWithAd(mode) {
+  if (mode === 'wheel') openSpinWheelModal();
+  else if (mode === 'chest') openMysteryChestModal();
+  else if (mode === 'scratch') openScratchCardModal();
+}
+
+/* ── 🎡 SPIN WHEEL INTERACTIVE ACTION ── */
+let _isSpinning = false;
+function spinWheelAction() {
+  if (_isSpinning) return;
+
+  const tickets = STATE.goals.ticketsBalance || 0;
+  if (tickets < 1) {
+    haptic('warning');
+    showToast('🎟️ Out of Spin Tickets! Watch an ad to get +3 tickets!');
+    return;
+  }
+
+  // Deduct 1 ticket
+  STATE.goals.ticketsBalance -= 1;
+  _isSpinning = true;
+
+  const disc = document.getElementById('spin-wheel-disc');
+  const spinBtn = document.getElementById('btn-wheel-spin');
+
+  if (spinBtn) spinBtn.disabled = true;
+
+  const PRIZES = [
+    { type: 'coins', val: 5000, name: '💰 5,000 Coins' },
+    { type: 'keys', val: 2, name: '🔑 +2 Master Keys' },
+    { type: 'tickets', val: 3, name: '🎟️ +3 Spin Tickets' },
+    { type: 'energy', val: 100, name: '⚡ +100 Energy' },
+    { type: 'jackpot', val: 20000, keys: 2, name: '💎 JACKPOT! (+20K Coins & +2 Keys)' },
+    { type: 'xp', val: 10, name: '🔥 +10 Bonus XP' }
+  ];
+
+  const prizeIdx = Math.floor(Math.random() * PRIZES.length);
+  const prize = PRIZES[prizeIdx];
+
+  const sliceAngle = 60;
+  const targetAngle = (360 * 5) + (360 - (prizeIdx * sliceAngle));
+
+  STATE.wheelAngle = (STATE.wheelAngle || 0) + targetAngle;
+
+  if (disc) {
+    disc.style.transform = `rotate(${STATE.wheelAngle}deg)`;
+  }
+
+  SFX.combo();
+  haptic('medium');
+
+  setTimeout(() => {
+    _isSpinning = false;
+    if (spinBtn) spinBtn.disabled = false;
+
+    if (prize.type === 'coins') STATE.coins += prize.val;
+    else if (prize.type === 'keys') STATE.goals.keysBalance += prize.val;
+    else if (prize.type === 'tickets') STATE.goals.ticketsBalance += prize.val;
+    else if (prize.type === 'energy') STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + prize.val);
+    else if (prize.type === 'jackpot') {
+      STATE.coins += prize.val;
+      STATE.goals.keysBalance += prize.keys;
+    } else if (prize.type === 'xp') addXP(prize.val);
+
+    SFX.collect();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 WON ${prize.name}!`);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    updateUI();
+  }, 3600);
+}
+
+/* ── 🧰 MYSTERY CHEST INTERACTIVE ACTION ── */
+let _isChestOpening = false;
+function openChestAction() {
+  if (_isChestOpening) return;
+
+  const keys = STATE.goals.keysBalance || 0;
+  if (keys < 1) {
+    haptic('warning');
+    showToast('🔑 Out of Master Keys! Watch an ad to get +3 keys!');
+    return;
+  }
+
+  STATE.goals.keysBalance -= 1;
+  _isChestOpening = true;
+
+  const chestEmoji = document.getElementById('chest-emoji-box');
+  const chestBtn = document.getElementById('btn-chest-open');
+
+  if (chestBtn) chestBtn.disabled = true;
+  if (chestEmoji) chestEmoji.classList.add('opening-shake');
+
+  SFX.combo();
+  haptic('medium');
+
+  setTimeout(() => {
+    if (chestEmoji) {
+      chestEmoji.classList.remove('opening-shake');
+      chestEmoji.textContent = '🎁';
+    }
+
+    _isChestOpening = false;
+    if (chestBtn) chestBtn.disabled = false;
+
+    const LOOT_TABLE = [
+      { coins: 15000, keys: 1, name: '💰 15,000 Coins & 🔑 +1 Key' },
+      { coins: 25000, tickets: 3, name: '💰 25,000 Coins & 🎟️ +3 Tickets' },
+      { keys: 3, tickets: 3, name: '🔑 +3 Keys & 🎟️ +3 Tickets' },
+      { coins: 50000, keys: 2, name: '💎 MEGA TREASURE! 💰 50K & 🔑 +2 Keys' }
+    ];
+
+    const loot = LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)];
+
+    if (loot.coins) STATE.coins += loot.coins;
+    if (loot.keys) STATE.goals.keysBalance += loot.keys;
+    if (loot.tickets) STATE.goals.ticketsBalance += loot.tickets;
+
+    SFX.collect();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 UNLOCKED CHEST! Won ${loot.name}!`);
+
+    setTimeout(() => {
+      if (chestEmoji) chestEmoji.textContent = '🧰';
+    }, 2000);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    updateUI();
+  }, 1200);
+}
+
 /* ── 📺 MONETAG REWARDED AD POPUP LOGIC ── */
 let _activeClaimType = null;
 let _adTimerInterval = null;

@@ -200,37 +200,37 @@
           <!-- ── 🎡 SPINNER, 🧰 MYSTERY CHEST & 🎫 SCRATCH CARD SEPARATE SQUARE CARDS ── -->
           <div class="home-square-cards-container">
             <!-- SQUARE CARD 1: 🎡 SPINNER -->
-            <div class="home-square-card spin-sq-card">
+            <div class="home-square-card spin-sq-card" onclick="openSpinWheelModal()">
               <div class="sq-card-icon-wrap">🎡</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">SPIN WHEEL</span>
                 <span class="sq-card-sub" id="sq-tickets-text">🎟️ 0 Tickets</span>
               </div>
-              <button class="btn-card-enter" onclick="handleCardEnterWithAd('wheel')">
+              <button class="btn-card-enter" onclick="event.stopPropagation(); openSpinWheelModal()">
                 ENTER ➔
               </button>
             </div>
 
             <!-- SQUARE CARD 2: 🧰 MYSTERY CHEST -->
-            <div class="home-square-card chest-sq-card">
+            <div class="home-square-card chest-sq-card" onclick="openMysteryChestModal()">
               <div class="sq-card-icon-wrap">🧰</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">MYSTERY CHEST</span>
                 <span class="sq-card-sub" id="sq-keys-text">🔑 0 Keys</span>
               </div>
-              <button class="btn-card-enter" onclick="handleCardEnterWithAd('chest')">
+              <button class="btn-card-enter" onclick="event.stopPropagation(); openMysteryChestModal()">
                 ENTER ➔
               </button>
             </div>
 
             <!-- SQUARE CARD 3: 🎫 SCRATCH CARD -->
-            <div class="home-square-card scratch-sq-card">
+            <div class="home-square-card scratch-sq-card" onclick="openScratchCardModal()">
               <div class="sq-card-icon-wrap">🎫</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">SCRATCH CARD</span>
                 <span class="sq-card-sub">✨ Bonus Rewards</span>
               </div>
-              <button class="btn-card-enter" onclick="openScratchCardModal()">
+              <button class="btn-card-enter" onclick="event.stopPropagation(); openScratchCardModal()">
                 ENTER ➔
               </button>
             </div>
