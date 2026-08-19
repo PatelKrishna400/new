@@ -660,6 +660,15 @@
     <!-- ── 🧰 DEDICATED MYSTERY CHEST FULL MOBILE PAGE ── -->
     <div id="mystery-chest-modal" class="modal-overlay full-page-modal">
       <div class="feature-modal-card chest-modal-card">
+        <!-- 🔄 MYSTERY CHEST DATA SYNC LOADING OVERLAY -->
+        <div class="spin-loading-overlay hidden" id="chest-loading-overlay">
+          <div class="spin-loading-card">
+            <div class="spin-sync-spinner"></div>
+            <span class="spin-loading-title">🔄 SYNCING FIREBASE CHEST DATA</span>
+            <p class="spin-loading-sub">Loading live master keys & chest treasure...</p>
+          </div>
+        </div>
+
         <div class="full-page-top-bar">
           <button class="btn-full-page-back" onclick="closeMysteryChestModal()">⬅️ BACK TO HOME</button>
           <span class="full-page-top-title">🧰 SECRET MYSTERY CHEST</span>
@@ -667,7 +676,23 @@
 
         <div class="modal-header-badge">
           <h2>🧰 SECRET MYSTERY CHEST</h2>
-          <p>Tap the chest to unlock secret treasure!</p>
+          <p id="chest-sub-desc">Tap the chest to unlock secret treasure!</p>
+        </div>
+
+        <!-- ── 🧰 4 CHEST TYPE SELECTOR TABS ── -->
+        <div class="spinner-types-bar">
+          <button class="spinner-type-btn active" id="ctype-wooden" onclick="selectChestType('wooden')">
+            🪵 WOODEN
+          </button>
+          <button class="spinner-type-btn" id="ctype-silver" onclick="selectChestType('silver')">
+            🥈 SILVER
+          </button>
+          <button class="spinner-type-btn" id="ctype-golden" onclick="selectChestType('golden')">
+            🥇 GOLDEN
+          </button>
+          <button class="spinner-type-btn" id="ctype-jackpot" onclick="selectChestType('jackpot')">
+            💎 JACKPOT
+          </button>
         </div>
 
         <div class="mystery-chest-interactive-wrapper" onclick="openChestAction()">

@@ -505,10 +505,29 @@ function closeSpinWheelModal() {
   if (modal) modal.classList.remove('active');
 }
 
-function openMysteryChestModal() {
+async function openMysteryChestModal() {
   const modal = document.getElementById('mystery-chest-modal');
+  const loadingOverlay = document.getElementById('chest-loading-overlay');
+
   if (modal) modal.classList.add('active');
+  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
   haptic('selection');
+
+  // Sync latest master keys & chest state from Firebase Realtime Database
+  if (typeof loadUserDataFromFirebase === 'function') {
+    const saved = await loadUserDataFromFirebase();
+    if (saved && saved.goals) {
+      STATE.goals = { ...STATE.goals, ...saved.goals };
+    }
+  }
+
+  updateUI();
+  selectChestType(_activeChestType || 'wooden');
+
+  setTimeout(() => {
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+  }, 400);
 }
 
 function closeMysteryChestModal() {
@@ -520,6 +539,135 @@ function handleCardEnterWithAd(mode) {
   if (mode === 'wheel') openSpinWheelModal();
   else if (mode === 'chest') openMysteryChestModal();
   else if (mode === 'scratch') openScratchCardModal();
+}
+
+/* ── 🧰 4 CHEST TYPES & LOOT TABLE DEFINITIONS ── */
+let _activeChestType = 'wooden';
+
+const CHEST_DEFINITIONS = {
+  wooden: {
+    name: '🪵 WOODEN CHEST',
+    desc: 'Tap the wooden chest to unlock 5-10⚡ energy & 15K coins!',
+    costText: '🧰 OPEN WOODEN CHEST (1 🔑 KEY)',
+    keyCost: 1,
+    lootTable: [
+      { energy: 8, coins: 5000, name: '⚡ +8 Energy & 💰 5,000 Coins' },
+      { coins: 10000, keys: 1, name: '💰 10,000 Coins & 🔑 +1 Key' },
+      { energy: 10, coins: 15000, name: '⚡ +10 Energy & 💰 15,000 Coins' }
+    ]
+  },
+  silver: {
+    name: '🥈 SILVER CHEST',
+    desc: 'Tap the silver chest for 15-30⚡ energy, 50K coins & tickets!',
+    costText: '🧰 OPEN SILVER CHEST (2 🔑 KEYS)',
+    keyCost: 2,
+    lootTable: [
+      { energy: 25, coins: 25000, name: '⚡ +25 Energy & 💰 25,000 Coins' },
+      { coins: 50000, tickets: 3, name: '💰 50,000 Coins & 🎟️ +3 Tickets' },
+      { keys: 2, tickets: 3, name: '🔑 +2 Keys & 🎟️ +3 Tickets' }
+    ]
+  },
+  golden: {
+    name: '🥇 GOLDEN CHEST',
+    desc: 'Tap the golden chest for 50-100⚡ energy, 250K coins & 5 keys!',
+    costText: '🧰 OPEN GOLDEN CHEST (5 🔑 KEYS)',
+    keyCost: 5,
+    lootTable: [
+      { energy: 75, coins: 100000, name: '⚡ +75 Energy & 💰 100,000 Coins' },
+      { coins: 250000, keys: 5, name: '💰 250,000 Coins & 🔑 +5 Keys' },
+      { tickets: 5, keys: 5, name: '🎟️ +5 Tickets & 🔑 +5 Keys' }
+    ]
+  },
+  jackpot: {
+    name: '💎 JACKPOT CHEST',
+    desc: 'Tap the jackpot chest for up to 2 MILLION COINS & +10 KEYS!',
+    costText: '🧰 OPEN JACKPOT CHEST (10 🔑 KEYS)',
+    keyCost: 10,
+    lootTable: [
+      { coins: 500000, keys: 5, tickets: 5, name: '💰 500,000 Coins, 🔑 +5 Keys & 🎟️ +5 Tickets' },
+      { coins: 1000000, keys: 10, name: '💎 1,000,000 COINS & 🔑 +10 KEYS!' },
+      { coins: 2000000, keys: 10, tickets: 10, name: '💎 2 MILLION COINS JACKPOT & +10 KEYS!' }
+    ]
+  }
+};
+
+function selectChestType(type) {
+  if (!CHEST_DEFINITIONS[type]) return;
+  _activeChestType = type;
+
+  document.querySelectorAll('.spinner-type-btn').forEach(btn => {
+    if (btn.id.startsWith('ctype-')) {
+      btn.classList.toggle('active', btn.id === `ctype-${type}`);
+    }
+  });
+
+  const config = CHEST_DEFINITIONS[type];
+  const subDesc = document.getElementById('chest-sub-desc');
+  const chestBtn = document.getElementById('btn-chest-open');
+
+  if (subDesc) subDesc.textContent = config.desc;
+  if (chestBtn) chestBtn.textContent = config.costText;
+
+  haptic('selection');
+}
+
+/* ── 🧰 MYSTERY CHEST INTERACTIVE ACTION ── */
+let _isChestOpening = false;
+function openChestAction() {
+  if (_isChestOpening) return;
+
+  const cDef = CHEST_DEFINITIONS[_activeChestType] || CHEST_DEFINITIONS.wooden;
+  const keys = STATE.goals.keysBalance || 0;
+
+  if (keys < cDef.keyCost) {
+    haptic('warning');
+    showToast(`🔑 Out of Master Keys! Needs ${cDef.keyCost} Keys.`);
+    return;
+  }
+
+  STATE.goals.keysBalance -= cDef.keyCost;
+  _isChestOpening = true;
+
+  const chestEmoji = document.getElementById('chest-emoji-box');
+  const chestBtn = document.getElementById('btn-chest-open');
+
+  if (chestBtn) chestBtn.disabled = true;
+  if (chestEmoji) chestEmoji.classList.add('opening-shake');
+
+  SFX.combo();
+  haptic('medium');
+
+  setTimeout(() => {
+    if (chestEmoji) {
+      chestEmoji.classList.remove('opening-shake');
+      chestEmoji.textContent = '🎁';
+    }
+
+    _isChestOpening = false;
+    if (chestBtn) chestBtn.disabled = false;
+
+    const loot = cDef.lootTable[Math.floor(Math.random() * cDef.lootTable.length)];
+
+    if (loot.energy) STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + loot.energy);
+    if (loot.coins) STATE.coins += loot.coins;
+    if (loot.keys) STATE.goals.keysBalance += loot.keys;
+    if (loot.tickets) STATE.goals.ticketsBalance += loot.tickets;
+
+    SFX.collect();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 UNLOCKED CHEST! Won ${loot.name}!`);
+
+    setTimeout(() => {
+      if (chestEmoji) chestEmoji.textContent = '🧰';
+    }, 2000);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    updateUI();
+  }, 1200);
 }
 
 /* ── 🎡 4 SPINNER TYPES & SLICE DEFINITIONS ── */
@@ -729,69 +877,6 @@ function spinWheelAction() {
 
     updateUI();
   }, 3600);
-}
-
-/* ── 🧰 MYSTERY CHEST INTERACTIVE ACTION ── */
-let _isChestOpening = false;
-function openChestAction() {
-  if (_isChestOpening) return;
-
-  const keys = STATE.goals.keysBalance || 0;
-  if (keys < 1) {
-    haptic('warning');
-    showToast('🔑 Out of Master Keys! Watch an ad to get +3 keys!');
-    return;
-  }
-
-  STATE.goals.keysBalance -= 1;
-  _isChestOpening = true;
-
-  const chestEmoji = document.getElementById('chest-emoji-box');
-  const chestBtn = document.getElementById('btn-chest-open');
-
-  if (chestBtn) chestBtn.disabled = true;
-  if (chestEmoji) chestEmoji.classList.add('opening-shake');
-
-  SFX.combo();
-  haptic('medium');
-
-  setTimeout(() => {
-    if (chestEmoji) {
-      chestEmoji.classList.remove('opening-shake');
-      chestEmoji.textContent = '🎁';
-    }
-
-    _isChestOpening = false;
-    if (chestBtn) chestBtn.disabled = false;
-
-    const LOOT_TABLE = [
-      { coins: 15000, keys: 1, name: '💰 15,000 Coins & 🔑 +1 Key' },
-      { coins: 25000, tickets: 3, name: '💰 25,000 Coins & 🎟️ +3 Tickets' },
-      { keys: 3, tickets: 3, name: '🔑 +3 Keys & 🎟️ +3 Tickets' },
-      { coins: 50000, keys: 2, name: '💎 MEGA TREASURE! 💰 50K & 🔑 +2 Keys' }
-    ];
-
-    const loot = LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)];
-
-    if (loot.coins) STATE.coins += loot.coins;
-    if (loot.keys) STATE.goals.keysBalance += loot.keys;
-    if (loot.tickets) STATE.goals.ticketsBalance += loot.tickets;
-
-    SFX.collect();
-    haptic('success');
-    createConfettiBurst();
-    showToast(`🎉 UNLOCKED CHEST! Won ${loot.name}!`);
-
-    setTimeout(() => {
-      if (chestEmoji) chestEmoji.textContent = '🧰';
-    }, 2000);
-
-    if (typeof saveUserDataToFirebase === 'function') {
-      saveUserDataToFirebase(STATE);
-    }
-
-    updateUI();
-  }, 1200);
 }
 
 /* ── 📺 MONETAG REWARDED AD POPUP LOGIC (WITH SECURITY VERIFICATION) ── */
