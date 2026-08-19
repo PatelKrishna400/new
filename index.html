@@ -782,9 +782,9 @@
       </div>
     </div>
 
-    <!-- ── 🎫 WIN SCRATCH CARD POPUP MODAL (GOAL LEVEL COMPLETED) ── -->
-    <div id="scratch-card-modal" class="modal-overlay">
-      <div class="scratch-modal-card">
+    <!-- ── 🎫 DEDICATED SCRATCH CARD FULL MOBILE PAGE ── -->
+    <div id="scratch-card-modal" class="modal-overlay full-page-modal">
+      <div class="feature-modal-card scratch-modal-card">
         <!-- 🔄 SCRATCH CARD DATA SYNC LOADING OVERLAY -->
         <div class="spin-loading-overlay hidden" id="scratch-loading-overlay">
           <div class="spin-loading-card">
@@ -797,9 +797,12 @@
           </div>
         </div>
 
-        <button class="boost-modal-close-icon" onclick="closeScratchCardModal()">✕</button>
+        <div class="full-page-top-bar">
+          <button class="btn-full-page-back" onclick="closeScratchCardModal()">⬅️ BACK TO HOME</button>
+          <span class="full-page-top-title">🎫 BONUS SCRATCH CARD</span>
+        </div>
         
-        <div class="scratch-header">
+        <div class="modal-header-badge">
           <span class="scratch-level-badge" id="scratch-modal-lvl-badge">GOAL LEVEL 1 COMPLETE! 🎉</span>
           <h2>🎫 WIN BONUS SCRATCH CARD</h2>
           <p id="scratch-sub-desc">Watch a quick Monetag Ad to scratch your card & claim jackpot rewards!</p>
@@ -838,10 +841,11 @@
           </div>
         </div>
 
-        <div class="scratch-modal-actions">
+        <div class="mode-action-bar">
           <button class="btn-scratch-ad-claim" id="btn-scratch-ad-action" onclick="openMonetagAdModal('scratch_card')">
             🎥 WATCH AD TO SCRATCH & CLAIM!
           </button>
+        </div>
       </div>
     </div>
 
