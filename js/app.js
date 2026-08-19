@@ -1759,7 +1759,7 @@ async function renderProfileScreen() {
     if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=ref_${_userId || 'local'}`;
     if (refCountBadge) refCountBadge.textContent = `${STATE.referrals?.invitedCount || 0} Invited`;
 
-    [1, 5, 10].forEach(m => {
+    [1, 5, 10, 25].forEach(m => {
       const btn = document.getElementById(`btn-claim-ref-${m}`);
       if (btn) {
         if (STATE.referrals?.claimed?.[m]) {
@@ -1777,12 +1777,33 @@ async function renderProfileScreen() {
         }
       }
     });
+
+    selectReferralTab(_activeRefTab || 1);
   } catch (err) {
     console.warn('[Profile Render Safe Error]:', err);
   }
 }
 
-/* ── 👥 REFERRAL SYSTEM FUNCTIONS ── */
+/* ── 👥 4 REFERRAL SYSTEM TABS ENGINE ── */
+let _activeRefTab = 1;
+
+function selectReferralTab(m) {
+  _activeRefTab = m;
+
+  document.querySelectorAll('.ref-tabs-bar .spinner-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === `reftab-${m}`);
+  });
+
+  [1, 5, 10, 25].forEach(val => {
+    const item = document.getElementById(`ref-item-${val}`);
+    if (item) {
+      item.style.display = (val === m) ? 'flex' : 'none';
+    }
+  });
+
+  haptic('selection');
+}
+
 function copyReferralLink() {
   const linkInput = document.getElementById('ref-link-input');
   if (linkInput) {
@@ -1805,8 +1826,8 @@ function shareReferralTelegram() {
 
 function claimReferralReward(milestone) {
   STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
-  if (STATE.referrals.invitedCount < milestone) {
-    showToast(`🔒 Invite ${milestone} friends to unlock this reward!`);
+  if ((STATE.referrals.invitedCount || 0) < milestone) {
+    showToast(`🔒 Invite ${milestone} friends to unlock this reward! (${STATE.referrals.invitedCount || 0}/${milestone})`);
     return;
   }
   if (STATE.referrals.claimed[milestone]) {
@@ -1815,17 +1836,24 @@ function claimReferralReward(milestone) {
   }
 
   STATE.referrals.claimed[milestone] = true;
+
   if (milestone === 1) {
     STATE.coins += 5000;
     STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
-    showToast('🎉 Claimed 💰 +5,000 Coins & 🔑 +2 Keys!');
+    showToast('🎉 Claimed 💰 +5,000 Coins & 🔑 +2 Master Keys!');
   } else if (milestone === 5) {
     STATE.coins += 30000;
     STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
     showToast('🎉 Claimed 💰 +30,000 Coins & 🎟️ +5 Spin Tickets!');
   } else if (milestone === 10) {
     STATE.coins += 100000;
-    showToast('🎉 Claimed 💰 +100,000 Coins & 💎 +1,000 Gems!');
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
+    showToast('🎉 Claimed 💰 +100,000 Coins & 🔑 +5 Master Keys!');
+  } else if (milestone === 25) {
+    STATE.coins += 500000;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10;
+    showToast('🎉 JACKPOT! Claimed 💰 +500,000 Coins, 🔑 +10 Keys & 🎟️ +10 Tickets!');
   }
 
   SFX.collect();

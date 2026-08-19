@@ -427,22 +427,43 @@
               </button>
             </div>
 
-            <!-- MILESTONE REWARDS ROW -->
+            <!-- ── 👥 4 REFERRAL MILESTONE TABS ── -->
+            <div class="spinner-types-bar ref-tabs-bar">
+              <button class="spinner-type-btn active" id="reftab-1" onclick="selectReferralTab(1)">
+                👥 1 FRIEND
+              </button>
+              <button class="spinner-type-btn" id="reftab-5" onclick="selectReferralTab(5)">
+                👥 5 FRIENDS
+              </button>
+              <button class="spinner-type-btn" id="reftab-10" onclick="selectReferralTab(10)">
+                👥 10 FRIENDS
+              </button>
+              <button class="spinner-type-btn" id="reftab-25" onclick="selectReferralTab(25)">
+                💎 25 FRIENDS
+              </button>
+            </div>
+
+            <!-- 4 MILESTONE REWARDS LIST -->
             <div class="ref-milestones-list">
-              <div class="ref-milestone-item">
-                <span class="ref-m-label">👥 1 Friend</span>
-                <span class="ref-m-reward">💰 5K + 🔑 2 Keys</span>
+              <div class="ref-milestone-item" id="ref-item-1">
+                <span class="ref-m-label">👥 1 Friend Milestone</span>
+                <span class="ref-m-reward">💰 5,000 Coins + 🔑 2 Master Keys</span>
                 <button class="btn-claim-ref-reward" id="btn-claim-ref-1" disabled onclick="claimReferralReward(1)">🔒 CLAIM</button>
               </div>
-              <div class="ref-milestone-item">
-                <span class="ref-m-label">👥 5 Friends</span>
-                <span class="ref-m-reward">💰 30K + 🎟️ 5 Tickets</span>
+              <div class="ref-milestone-item" id="ref-item-5">
+                <span class="ref-m-label">👥 5 Friends Milestone</span>
+                <span class="ref-m-reward">💰 30,000 Coins + 🎟️ 5 Spin Tickets</span>
                 <button class="btn-claim-ref-reward" id="btn-claim-ref-5" disabled onclick="claimReferralReward(5)">🔒 CLAIM</button>
               </div>
-              <div class="ref-milestone-item">
-                <span class="ref-m-label">👥 10 Friends</span>
-                <span class="ref-m-reward">💰 100K + 💎 1K Gems</span>
+              <div class="ref-milestone-item" id="ref-item-10">
+                <span class="ref-m-label">👥 10 Friends Milestone</span>
+                <span class="ref-m-reward">💰 100,000 Coins + 🔑 5 Master Keys</span>
                 <button class="btn-claim-ref-reward" id="btn-claim-ref-10" disabled onclick="claimReferralReward(10)">🔒 CLAIM</button>
+              </div>
+              <div class="ref-milestone-item" id="ref-item-25">
+                <span class="ref-m-label">💎 25 Friends Jackpot</span>
+                <span class="ref-m-reward">💰 500,000 Coins + 🔑 10 Keys + 🎟️ 10 Tickets</span>
+                <button class="btn-claim-ref-reward" id="btn-claim-ref-25" disabled onclick="claimReferralReward(25)">🔒 CLAIM</button>
               </div>
             </div>
           </div>
