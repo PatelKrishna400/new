@@ -637,12 +637,17 @@ function openChestAction() {
   }, 1200);
 }
 
-/* ── 📺 MONETAG REWARDED AD POPUP LOGIC ── */
+/* ── 📺 MONETAG REWARDED AD POPUP LOGIC (WITH SECURITY VERIFICATION) ── */
 let _activeClaimType = null;
 let _adTimerInterval = null;
+let _adStartTimestamp = 0;
+let _adSessionToken = null;
 
 function openMonetagAdModal(type) {
   _activeClaimType = type;
+  _adStartTimestamp = Date.now();
+  _adSessionToken = Math.random().toString(36).substring(2, 10);
+
   const modal = document.getElementById('ad-modal');
   const statusTxt = document.getElementById('ad-status-txt');
   const timerTxt = document.getElementById('ad-timer-txt');
@@ -703,6 +708,16 @@ function openMonetagAdModal(type) {
 
 function confirmClaimReward() {
   if (!_activeClaimType) return;
+
+  // Security Check: Verify elapsed ad duration (must be at least 4.5s)
+  const elapsed = (Date.now() - _adStartTimestamp) / 1000;
+  if (elapsed < 4.5 || !_adSessionToken) {
+    showToast('🛡️ Security Warning: Ad incomplete! Reward rejected.');
+    haptic('error');
+    closeMonetagAdModal();
+    return;
+  }
+  _adSessionToken = null; // Consume token
 
   const type = _activeClaimType;
 
@@ -897,10 +912,28 @@ function startGradualComboDrain() {
   }, 2000); // 2 SECONDS TIMER PER LEVEL DECAY STEP
 }
 
+/* ── 🛡️ SECURITY & ANTI-AUTO-CLICKER ENGINE ── */
+let _tapTimestamps = [];
+const MAX_TAPS_PER_SEC = 18; // Max 18 taps per second allowed
+
+function isTapSecurityValid() {
+  const now = Date.now();
+  _tapTimestamps = _tapTimestamps.filter(t => now - t < 1000);
+  if (_tapTimestamps.length >= MAX_TAPS_PER_SEC) {
+    showToast('🛡️ Anti-Bot Protection: Tap rate too fast!');
+    haptic('warning');
+    return false;
+  }
+  _tapTimestamps.push(now);
+  return true;
+}
+
 /* ── MAIN TAP ENGINE ── */
 let _touchHandled = false;
 
 function handleTap(e) {
+  if (!isTapSecurityValid()) return;
+
   if (e.type === 'touchstart') {
     _touchHandled = true;
   } else if (e.type === 'click' && _touchHandled) {
