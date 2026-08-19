@@ -1251,9 +1251,21 @@ function createRipple(btn, clientX, clientY) {
   }, 500);
 }
 
-/* ── GRADUAL COMBO DECAY ENGINE (1-BY-1 LEVEL DROP WITH 2 SEC TIMER) ── */
+/* ── ⚡ 2-SECOND INACTIVITY -1 TAP DECAY ENGINE ── */
 let _comboDecayTimeout = null;
 let _comboDecayInterval = null;
+
+function recalculateComboLevel() {
+  if (STATE.continuousTaps >= 100) {
+    STATE.combo = 4;
+  } else if (STATE.continuousTaps >= 40) {
+    STATE.combo = 3;
+  } else if (STATE.continuousTaps >= 10) {
+    STATE.combo = 2;
+  } else {
+    STATE.combo = 1;
+  }
+}
 
 function scheduleComboDecay() {
   if (_comboDecayTimeout) clearTimeout(_comboDecayTimeout);
@@ -1261,39 +1273,29 @@ function scheduleComboDecay() {
 
   _comboDecayTimeout = setTimeout(() => {
     startGradualComboDrain();
-  }, 2000); // 2 SECONDS TIMER INACTIVITY BEFORE COMBO DECAY STARTS
+  }, 2000); // 2 SECONDS INACTIVITY AFTER TAPPING STOPS BEFORE DECAY STARTS
 }
 
 function startGradualComboDrain() {
   if (_comboDecayInterval) clearInterval(_comboDecayInterval);
 
   _comboDecayInterval = setInterval(() => {
-    if (STATE.combo > 1 || STATE.continuousTaps > 0) {
+    if (STATE.continuousTaps > 0) {
       const prevCombo = STATE.combo;
 
-      // Reduce combo level ONE BY ONE every 2 seconds
-      if (STATE.combo >= 4) {
-        STATE.continuousTaps = 39; // Step down to x3 combo threshold
-        STATE.combo = 3;
-      } else if (STATE.combo === 3) {
-        STATE.continuousTaps = 9; // Step down to x2 combo threshold
-        STATE.combo = 2;
-      } else if (STATE.combo === 2) {
-        STATE.continuousTaps = 0; // Step down to x1 combo threshold
-        STATE.combo = 1;
-      } else {
-        STATE.continuousTaps = 0;
-        STATE.combo = 1;
-      }
+      // REDUCE TAPS BY -1 EVERY 2 SECONDS AFTER TAPPING FINISHES
+      STATE.continuousTaps = Math.max(0, STATE.continuousTaps - 1);
+      recalculateComboLevel();
 
+      // Toast notification if combo multiplier tier drops
       if (STATE.combo < prevCombo) {
         haptic('warning');
-        showToast(`⚡ 2s Inactivity! Combo reduced level-by-level to x${STATE.combo}!`);
+        showToast(`⚡ 2s Inactivity! Combo tier reduced to x${STATE.combo}!`);
       }
 
       updateUI();
 
-      if (STATE.combo <= 1 && STATE.continuousTaps <= 0) {
+      if (STATE.continuousTaps <= 0) {
         clearInterval(_comboDecayInterval);
         _comboDecayInterval = null;
       }
@@ -1301,7 +1303,7 @@ function startGradualComboDrain() {
       clearInterval(_comboDecayInterval);
       _comboDecayInterval = null;
     }
-  }, 2000); // 2 SECONDS TIMER PER LEVEL DECAY STEP
+  }, 2000); // 2 SECONDS TIMER PER -1 TAP REDUCTION
 }
 
 /* ── 🛡️ SECURITY & ANTI-AUTO-CLICKER ENGINE ── */
@@ -1356,11 +1358,7 @@ function handleTap(e) {
   // Increment continuous tap counter & calculate combo streak
   STATE.continuousTaps += 1;
   const prevCombo = STATE.combo;
-
-  if (STATE.continuousTaps >= 100) STATE.combo = 4;
-  else if (STATE.continuousTaps >= 40) STATE.combo = 3;
-  else if (STATE.continuousTaps >= 10) STATE.combo = 2;
-  else STATE.combo = 1;
+  recalculateComboLevel();
 
   if (STATE.combo > prevCombo) {
     SFX.combo();
