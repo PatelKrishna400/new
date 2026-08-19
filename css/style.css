@@ -1950,18 +1950,77 @@ button {
   padding: 20px;
 }
 
-.spin-sync-spinner {
-  width: 36px;
-  height: 36px;
-  border: 4px solid rgba(245, 183, 0, 0.2);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spinLoader 0.8s linear infinite;
-  box-shadow: 0 0 14px var(--gold-glow);
+/* ── 🎨 3-COLOR GOAL EMOJI ROTATING SPINNER STYLES ── */
+.three-color-goal-spinner {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
 }
 
-@keyframes spinLoader {
-  to { transform: rotate(360deg); }
+.tri-color-conic-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 4px;
+  background: conic-gradient(#F5B700 0deg 120deg, #00F0FF 120deg 240deg, #EC4899 240deg 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #fff calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #fff calc(100% - 4px));
+  animation: triSpin 1.2s linear infinite;
+  box-shadow: 0 0 16px rgba(245, 183, 0, 0.4);
+}
+
+@keyframes triSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tri-color-inner-hub {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0F172A;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 2;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.tri-emoji-orbit {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  animation: triSpin 3s linear infinite reverse;
+  pointer-events: none;
+}
+
+.orbit-emoji {
+  position: absolute;
+  font-size: 14px;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.8));
+}
+
+.orbit-emoji.coin-e {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orbit-emoji.key-e {
+  bottom: 2px;
+  right: 0px;
+}
+
+.orbit-emoji.spin-e {
+  bottom: 2px;
+  left: 0px;
 }
 
 .spin-loading-title {
