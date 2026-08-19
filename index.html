@@ -746,12 +746,37 @@
     <!-- ── 🎫 WIN SCRATCH CARD POPUP MODAL (GOAL LEVEL COMPLETED) ── -->
     <div id="scratch-card-modal" class="modal-overlay">
       <div class="scratch-modal-card">
+        <!-- 🔄 SCRATCH CARD DATA SYNC LOADING OVERLAY -->
+        <div class="spin-loading-overlay hidden" id="scratch-loading-overlay">
+          <div class="spin-loading-card">
+            <div class="spin-sync-spinner"></div>
+            <span class="spin-loading-title">🔄 SYNCING FIREBASE SCRATCH DATA</span>
+            <p class="spin-loading-sub">Loading live scratch cards & jackpot loot...</p>
+          </div>
+        </div>
+
         <button class="boost-modal-close-icon" onclick="closeScratchCardModal()">✕</button>
         
         <div class="scratch-header">
           <span class="scratch-level-badge" id="scratch-modal-lvl-badge">GOAL LEVEL 1 COMPLETE! 🎉</span>
           <h2>🎫 WIN BONUS SCRATCH CARD</h2>
-          <p>Watch a quick Monetag Ad to scratch your card & claim jackpot rewards!</p>
+          <p id="scratch-sub-desc">Watch a quick Monetag Ad to scratch your card & claim jackpot rewards!</p>
+        </div>
+
+        <!-- ── 🎫 4 SCRATCH CARD TYPE SELECTOR TABS ── -->
+        <div class="spinner-types-bar">
+          <button class="spinner-type-btn active" id="sctype-wooden" onclick="selectScratchCardType('wooden')">
+            🪵 WOODEN
+          </button>
+          <button class="spinner-type-btn" id="sctype-silver" onclick="selectScratchCardType('silver')">
+            🥈 SILVER
+          </button>
+          <button class="spinner-type-btn" id="sctype-golden" onclick="selectScratchCardType('golden')">
+            🥇 GOLDEN
+          </button>
+          <button class="spinner-type-btn" id="sctype-jackpot" onclick="selectScratchCardType('jackpot')">
+            💎 JACKPOT
+          </button>
         </div>
 
         <div class="scratch-card-interactive-wrapper" id="scratch-card-box">

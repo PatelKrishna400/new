@@ -444,9 +444,57 @@ function claimGoalCard(type) {
   updateUI();
 }
 
+/* ── 🎫 4 SCRATCH CARD TYPES DEFINITIONS ── */
+let _activeScratchType = 'wooden';
+
+const SCRATCH_DEFINITIONS = {
+  wooden: {
+    name: '🪵 WOODEN SCRATCH CARD',
+    desc: 'Watch a quick ad to scratch for 5-10⚡ energy & 15K coins!',
+    coins: 15000, keys: 1, tickets: 2, energy: 10,
+    text: '💰 +15,000 Coins, 🔑 +1 Key & ⚡ +10 Energy!'
+  },
+  silver: {
+    name: '🥈 SILVER SCRATCH CARD',
+    desc: 'Watch a quick ad to scratch for 50K coins & 3 tickets!',
+    coins: 50000, keys: 2, tickets: 3, energy: 25,
+    text: '💰 +50,000 Coins, 🔑 +2 Keys & 🎟️ +3 Tickets!'
+  },
+  golden: {
+    name: '🥇 GOLDEN SCRATCH CARD',
+    desc: 'Watch a quick ad to scratch for 250K coins & 5 keys!',
+    coins: 250000, keys: 5, tickets: 5, energy: 75,
+    text: '💰 +250,000 Coins, 🔑 +5 Keys & 🎟️ +5 Tickets!'
+  },
+  jackpot: {
+    name: '💎 JACKPOT SCRATCH CARD',
+    desc: 'Watch a quick ad to scratch for up to 1 MILLION COINS!',
+    coins: 1000000, keys: 10, tickets: 10, energy: 100,
+    text: '💎 1,000,000 COINS, 🔑 +10 Keys & 🎟️ +10 Tickets!'
+  }
+};
+
+function selectScratchCardType(type) {
+  if (!SCRATCH_DEFINITIONS[type]) return;
+  _activeScratchType = type;
+
+  document.querySelectorAll('.spinner-type-btn').forEach(btn => {
+    if (btn.id.startsWith('sctype-')) {
+      btn.classList.toggle('active', btn.id === `sctype-${type}`);
+    }
+  });
+
+  const config = SCRATCH_DEFINITIONS[type];
+  const subDesc = document.getElementById('scratch-sub-desc');
+  if (subDesc) subDesc.textContent = config.desc;
+
+  haptic('selection');
+}
+
 /* ── 🎫 SCRATCH CARD POPUP MODAL ENGINE ── */
-function openScratchCardModal() {
+async function openScratchCardModal() {
   const modal = document.getElementById('scratch-card-modal');
+  const loadingOverlay = document.getElementById('scratch-loading-overlay');
   const lvlBadge = document.getElementById('scratch-modal-lvl-badge');
   const surface = document.getElementById('scratch-card-surface');
   const revealedLoot = document.getElementById('scratch-revealed-loot');
@@ -454,6 +502,17 @@ function openScratchCardModal() {
 
   if (!modal) return;
   modal.classList.add('active');
+  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
+  haptic('selection');
+
+  // Sync latest state from Firebase Realtime Database
+  if (typeof loadUserDataFromFirebase === 'function') {
+    const saved = await loadUserDataFromFirebase();
+    if (saved && saved.goals) {
+      STATE.goals = { ...STATE.goals, ...saved.goals };
+    }
+  }
 
   const prevLvl = Math.max(1, (STATE.goals.level || 2) - 1);
   if (lvlBadge) lvlBadge.textContent = `GOAL LEVEL ${prevLvl} COMPLETE! 🎉`;
@@ -466,7 +525,11 @@ function openScratchCardModal() {
     btnAction.onclick = () => openMonetagAdModal('scratch_card');
   }
 
-  haptic('success');
+  selectScratchCardType(_activeScratchType || 'wooden');
+
+  setTimeout(() => {
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+  }, 400);
 }
 
 function closeScratchCardModal() {
@@ -964,9 +1027,12 @@ function confirmClaimReward() {
   const type = _activeClaimType;
 
   if (type === 'scratch_card') {
-    STATE.coins += 10000;
-    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 3;
-    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
+    const scDef = SCRATCH_DEFINITIONS[_activeScratchType] || SCRATCH_DEFINITIONS.wooden;
+
+    if (scDef.coins) STATE.coins += scDef.coins;
+    if (scDef.keys) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + scDef.keys;
+    if (scDef.tickets) STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + scDef.tickets;
+    if (scDef.energy) STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + scDef.energy);
 
     const surface = document.getElementById('scratch-card-surface');
     const revealedLoot = document.getElementById('scratch-revealed-loot');
@@ -975,15 +1041,19 @@ function confirmClaimReward() {
 
     if (surface) surface.classList.add('hidden');
     if (revealedLoot) revealedLoot.classList.remove('hidden');
-    if (prizeText) prizeText.textContent = `💰 +10,000 Coins, 🔑 +3 Keys & 🎟️ +5 Tickets!`;
+    if (prizeText) prizeText.textContent = scDef.text;
 
     if (btnAction) {
       btnAction.textContent = '✅ REWARDS CLAIMED! (BACK TO GAME)';
       btnAction.onclick = () => closeScratchCardModal();
     }
 
-    showToast(`🎉 SCRATCHED CARD! Won 💰 +10K Coins, 🔑 +3 Keys & 🎟️ +5 Tickets!`);
+    showToast(`🎉 SCRATCHED CARD! Won ${scDef.text}!`);
     createConfettiBurst();
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
   } else if (type === 'spin_tickets') {
     STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 3;
     showToast(`🎉 Monetag Ad Complete! Earned +3 Spin Tickets!`);
