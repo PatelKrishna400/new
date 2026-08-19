@@ -60,7 +60,8 @@ const STATE = {
     spinsProgress: 0,
     spinsReward: 1,
     keysBalance: 0,
-    ticketsBalance: 0
+    ticketsBalance: 0,
+    claimed: { coins: false, keys: false, spins: false }
   },
   activeTaskTab: 'daily',
   activeHomeMode: 'wheel',
@@ -271,6 +272,8 @@ function updateUI() {
 
   const allThreeCompleted = completedCount === 3;
 
+  if (!STATE.goals.claimed) STATE.goals.claimed = { coins: false, keys: false, spins: false };
+
   // 1. Coins Goal Card
   const gCoinsVal = document.getElementById('goal-coins-val');
   const gCoinsRew = document.getElementById('goal-coins-rew');
@@ -289,7 +292,11 @@ function updateUI() {
   }
 
   if (btnClaimCoins) {
-    if (allThreeCompleted) {
+    if (STATE.goals.claimed.coins) {
+      btnClaimCoins.disabled = true;
+      btnClaimCoins.className = 'btn-goal-card-claim disabled-lock';
+      btnClaimCoins.textContent = '✅ CLAIMED';
+    } else if (allThreeCompleted) {
       btnClaimCoins.disabled = false;
       btnClaimCoins.className = 'btn-goal-card-claim ready-green';
       btnClaimCoins.textContent = '🎁 CLAIM';
@@ -318,7 +325,11 @@ function updateUI() {
   }
 
   if (btnClaimKeys) {
-    if (allThreeCompleted) {
+    if (STATE.goals.claimed.keys) {
+      btnClaimKeys.disabled = true;
+      btnClaimKeys.className = 'btn-goal-card-claim disabled-lock';
+      btnClaimKeys.textContent = '✅ CLAIMED';
+    } else if (allThreeCompleted) {
       btnClaimKeys.disabled = false;
       btnClaimKeys.className = 'btn-goal-card-claim ready-green';
       btnClaimKeys.textContent = '🎁 CLAIM';
@@ -347,7 +358,11 @@ function updateUI() {
   }
 
   if (btnClaimSpins) {
-    if (allThreeCompleted) {
+    if (STATE.goals.claimed.spins) {
+      btnClaimSpins.disabled = true;
+      btnClaimSpins.className = 'btn-goal-card-claim disabled-lock';
+      btnClaimSpins.textContent = '✅ CLAIMED';
+    } else if (allThreeCompleted) {
       btnClaimSpins.disabled = false;
       btnClaimSpins.className = 'btn-goal-card-claim ready-green';
       btnClaimSpins.textContent = '🎁 CLAIM';
@@ -357,6 +372,106 @@ function updateUI() {
       btnClaimSpins.textContent = `🔒 (${completedCount}/3)`;
     }
   }
+}
+
+/* ── 🎯 GOAL CARD CLAIM & LEVEL ADVANCEMENT ENGINE ── */
+function claimGoalCard(type) {
+  if (!STATE.goals.claimed) STATE.goals.claimed = { coins: false, keys: false, spins: false };
+
+  const coinsDone = STATE.goals.coinsProgress >= STATE.goals.coinsTarget;
+  const keysDone = STATE.goals.keysProgress >= STATE.goals.keysTarget;
+  const spinsDone = STATE.goals.spinsProgress >= STATE.goals.spinsTarget;
+  const allThreeCompleted = coinsDone && keysDone && spinsDone;
+
+  if (!allThreeCompleted) {
+    showToast(`🔒 Complete all 3 goals (3/3) to unlock claiming!`);
+    return;
+  }
+
+  if (STATE.goals.claimed[type]) {
+    showToast(`✅ Already claimed!`);
+    return;
+  }
+
+  // Mark as claimed & award reward
+  STATE.goals.claimed[type] = true;
+
+  if (type === 'coins') {
+    STATE.coins += STATE.goals.coinsReward;
+    showToast(`💰 Claimed +${fmt(STATE.goals.coinsReward)} Coins!`);
+  } else if (type === 'keys') {
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + STATE.goals.keysReward;
+    showToast(`🔑 Claimed +${STATE.goals.keysReward} Master Key!`);
+  } else if (type === 'spins') {
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + STATE.goals.spinsReward;
+    showToast(`🎟️ Claimed +${STATE.goals.spinsReward} Spin Ticket!`);
+  }
+
+  SFX.collect();
+  haptic('success');
+
+  // Check if ALL 3 CLAIMS ARE NOW COMPLETED
+  if (STATE.goals.claimed.coins && STATE.goals.claimed.keys && STATE.goals.claimed.spins) {
+    // 🚀 ALL 3 CLAIMS COMPLETED! ADVANCE GOAL LEVEL & POP UP WIN SCRATCH CARD USING ADS!
+    STATE.goals.level += 1;
+
+    // Reset progress & scale up targets for next level
+    STATE.goals.coinsProgress = 0;
+    STATE.goals.keysProgress = 0;
+    STATE.goals.spinsProgress = 0;
+
+    STATE.goals.coinsTarget = Math.floor(STATE.goals.coinsTarget * 1.35) + 10;
+    STATE.goals.coinsReward = Math.floor(STATE.goals.coinsReward * 1.25) + 2;
+
+    STATE.goals.keysTarget = Math.floor(STATE.goals.keysTarget * 1.4) + 15;
+    STATE.goals.spinsTarget = Math.floor(STATE.goals.spinsTarget * 1.3) + 10;
+
+    STATE.goals.claimed = { coins: false, keys: false, spins: false };
+
+    showToast(`🎉 GOAL LEVEL ${STATE.goals.level - 1} COMPLETED! ADVANCING TO LEVEL ${STATE.goals.level}!`);
+    createConfettiBurst();
+
+    // Trigger Win Scratch Card Popup Modal using Ads
+    setTimeout(() => {
+      openScratchCardModal();
+    }, 600);
+  }
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  updateUI();
+}
+
+/* ── 🎫 SCRATCH CARD POPUP MODAL ENGINE ── */
+function openScratchCardModal() {
+  const modal = document.getElementById('scratch-card-modal');
+  const lvlBadge = document.getElementById('scratch-modal-lvl-badge');
+  const surface = document.getElementById('scratch-card-surface');
+  const revealedLoot = document.getElementById('scratch-revealed-loot');
+  const btnAction = document.getElementById('btn-scratch-ad-action');
+
+  if (!modal) return;
+  modal.classList.add('active');
+
+  const prevLvl = Math.max(1, (STATE.goals.level || 2) - 1);
+  if (lvlBadge) lvlBadge.textContent = `GOAL LEVEL ${prevLvl} COMPLETE! 🎉`;
+  if (surface) surface.classList.remove('hidden');
+  if (revealedLoot) revealedLoot.classList.add('hidden');
+
+  if (btnAction) {
+    btnAction.disabled = false;
+    btnAction.textContent = '🎥 WATCH AD TO SCRATCH & CLAIM!';
+    btnAction.onclick = () => openMonetagAdModal('scratch_card');
+  }
+
+  haptic('success');
+}
+
+function closeScratchCardModal() {
+  const modal = document.getElementById('scratch-card-modal');
+  if (modal) modal.classList.remove('active');
 }
 
 /* ── 📺 MONETAG REWARDED AD POPUP LOGIC ── */
@@ -375,7 +490,9 @@ function openMonetagAdModal(type) {
   modal.classList.add('active');
 
   let rewDesc = '';
-  if (type === 'spin_tickets') {
+  if (type === 'scratch_card') {
+    rewDesc = `🎫 SCRATCH CARD JACKPOT (💰 +10,000 Coins, 🔑 +3 Keys, 🎟️ +5 Tickets)`;
+  } else if (type === 'spin_tickets') {
     rewDesc = `🎟️ +3 BONUS SPIN TICKETS`;
   } else if (type === 'chest_keys') {
     rewDesc = `🔑 +3 BONUS MASTER KEYS`;
@@ -426,7 +543,28 @@ function confirmClaimReward() {
 
   const type = _activeClaimType;
 
-  if (type === 'spin_tickets') {
+  if (type === 'scratch_card') {
+    STATE.coins += 10000;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 3;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
+
+    const surface = document.getElementById('scratch-card-surface');
+    const revealedLoot = document.getElementById('scratch-revealed-loot');
+    const prizeText = document.getElementById('scratch-prize-text');
+    const btnAction = document.getElementById('btn-scratch-ad-action');
+
+    if (surface) surface.classList.add('hidden');
+    if (revealedLoot) revealedLoot.classList.remove('hidden');
+    if (prizeText) prizeText.textContent = `💰 +10,000 Coins, 🔑 +3 Keys & 🎟️ +5 Tickets!`;
+
+    if (btnAction) {
+      btnAction.textContent = '✅ REWARDS CLAIMED! (BACK TO GAME)';
+      btnAction.onclick = () => closeScratchCardModal();
+    }
+
+    showToast(`🎉 SCRATCHED CARD! Won 💰 +10K Coins, 🔑 +3 Keys & 🎟️ +5 Tickets!`);
+    createConfettiBurst();
+  } else if (type === 'spin_tickets') {
     STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 3;
     showToast(`🎉 Monetag Ad Complete! Earned +3 Spin Tickets!`);
   } else if (type === 'chest_keys') {
