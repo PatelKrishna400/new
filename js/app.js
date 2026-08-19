@@ -1476,7 +1476,7 @@ async function confirmRestartGameData() {
 }
 
 /* ── 🏆 LEADERBOARD ENGINE ── */
-function renderLeaderboard() {
+async function renderLeaderboard() {
   const container = document.getElementById('leaderboard-list-container');
   const myRankNum = document.getElementById('my-rank-num');
   const myRankScore = document.getElementById('my-rank-score');
@@ -1486,23 +1486,37 @@ function renderLeaderboard() {
 
   if (myRankScore) myRankScore.textContent = `${currentXP} XP (LV. ${currentLvl})`;
 
-  // Calculate dynamic rank for the player based on their XP
-  const myPos = Math.max(4, Math.min(100, 101 - Math.floor(currentXP / 10)));
+  const myPos = Math.max(1, Math.min(100, 101 - Math.floor(currentXP / 10)));
   if (myRankNum) myRankNum.textContent = `#${myPos}`;
 
   if (!container) return;
 
-  const TOP_PLAYERS = [
-    { rank: 4, name: 'SatoshiTapper', avatar: '🚀', xp: 64200 },
-    { rank: 5, name: 'VitalicWhale', avatar: '💎', xp: 58900 },
-    { rank: 6, name: 'AlphaSniper', avatar: '🎯', xp: 51300 },
-    { rank: 7, name: 'TurboClicker', avatar: '⚡', xp: 46700 },
-    { rank: 8, name: 'GoldenMaster', avatar: '👑', xp: 42100 },
-    { rank: 9, name: 'NinjaTapper', avatar: '🥷', xp: 38500 },
-    { rank: 10, name: 'CoinKing', avatar: '💰', xp: 34000 }
-  ];
+  // Fetch live global leaderboard from Firebase Realtime Database
+  let players = null;
+  if (typeof fetchFirebaseLeaderboard === 'function') {
+    players = await fetchFirebaseLeaderboard();
+  }
 
-  const html = TOP_PLAYERS.map(p => `
+  if (!players || players.length === 0) {
+    players = [
+      { rank: 1, name: 'SatoshiTapper', avatar: '👑', xp: 64200 },
+      { rank: 2, name: 'VitalicWhale', avatar: '💎', xp: 58900 },
+      { rank: 3, name: 'AlphaSniper', avatar: '🚀', xp: 51300 },
+      { rank: 4, name: 'TurboClicker', avatar: '⚡', xp: 46700 },
+      { rank: 5, name: 'GoldenMaster', avatar: '🎯', xp: 42100 },
+      { rank: 6, name: 'NinjaTapper', avatar: '🥷', xp: 38500 },
+      { rank: 7, name: 'CoinKing', avatar: '💰', xp: 34000 }
+    ];
+  } else {
+    players = players.map((p, idx) => ({
+      rank: idx + 1,
+      name: p.name,
+      avatar: idx === 0 ? '👑' : idx === 1 ? '💎' : idx === 2 ? '🚀' : '⭐',
+      xp: p.xp
+    }));
+  }
+
+  const html = players.map(p => `
     <div class="rank-player-row">
       <div class="rank-player-left">
         <span class="rank-num">#${p.rank}</span>
@@ -2049,7 +2063,7 @@ function initLoadingScreen() {
 window.addEventListener('DOMContentLoaded', async () => {
   initLoadingScreen();
 
-  // Load saved state from Firebase / LocalStorage
+  // Load saved state from Firebase / LocalStorage for ALL pages
   if (typeof loadUserDataFromFirebase === 'function') {
     const saved = await loadUserDataFromFirebase();
     if (saved) {
@@ -2059,6 +2073,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (saved.level !== undefined) STATE.level = saved.level;
       if (saved.xp !== undefined) STATE.xp = saved.xp;
       if (saved.goals) STATE.goals = { ...STATE.goals, ...saved.goals };
+      if (saved.boostLevels) STATE.boostLevels = { ...STATE.boostLevels, ...saved.boostLevels };
+      if (saved.boostExpiries) STATE.boostExpiries = { ...STATE.boostExpiries, ...saved.boostExpiries };
+      if (saved.tasksProgress) STATE.tasksProgress = { ...STATE.tasksProgress, ...saved.tasksProgress };
+      if (saved.claimedTasks) STATE.claimedTasks = { ...STATE.claimedTasks, ...saved.claimedTasks };
+      if (saved.claimedXPLevels) STATE.claimedXPLevels = { ...STATE.claimedXPLevels, ...saved.claimedXPLevels };
+      if (saved.unclaimedXPLevels) STATE.unclaimedXPLevels = [...saved.unclaimedXPLevels];
+      if (saved.referrals) STATE.referrals = { ...STATE.referrals, ...saved.referrals };
     }
   }
 

@@ -55,10 +55,14 @@ async function saveUserDataToFirebase(stateData) {
       level: stateData.level || 1,
       xp: Number((stateData.xp || 0).toFixed(1)),
       goals: stateData.goals || {},
+      boostLevels: stateData.boostLevels || {},
+      boostExpiries: stateData.boostExpiries || {},
       tasksProgress: stateData.tasksProgress || {},
       claimedTasks: stateData.claimedTasks || {},
       claimedXPLevels: stateData.claimedXPLevels || {},
       unclaimedXPLevels: stateData.unclaimedXPLevels || [],
+      referrals: stateData.referrals || { invitedCount: 0, claimed: {} },
+      userId: _userId,
       lastSaved: Date.now()
     };
 
@@ -98,6 +102,30 @@ async function loadUserDataFromFirebase() {
     const local = localStorage.getItem('tg_game_state');
     return local ? JSON.parse(local) : null;
   }
+}
+
+async function fetchFirebaseLeaderboard() {
+  try {
+    if (_rtdb) {
+      const snapshot = await _rtdb.ref('players').orderByChild('xp').limitToLast(10).once('value');
+      if (snapshot.exists()) {
+        const players = [];
+        snapshot.forEach(child => {
+          const val = child.val();
+          players.push({
+            id: child.key,
+            name: val.userId ? `Player_${val.userId.slice(-4)}` : 'CryptoTapper',
+            xp: val.xp || 0,
+            level: val.level || 1
+          });
+        });
+        return players.sort((a, b) => b.xp - a.xp);
+      }
+    }
+  } catch (e) {
+    console.warn('[Firebase Leaderboard Error]:', e);
+  }
+  return null;
 }
 
 /* ── ATOMIC INCREMENTER ENGINE ── */
