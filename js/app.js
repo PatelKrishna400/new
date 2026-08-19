@@ -674,7 +674,7 @@ function selectChestType(type) {
   haptic('selection');
 }
 
-/* ── 🧰 MYSTERY CHEST INTERACTIVE ACTION ── */
+/* ── 🧰 MYSTERY CHEST INTERACTIVE ACTION (WITH 2X BOOST MULTIPLIER) ── */
 let _isChestOpening = false;
 function openChestAction() {
   if (_isChestOpening) return;
@@ -709,17 +709,26 @@ function openChestAction() {
     _isChestOpening = false;
     if (chestBtn) chestBtn.disabled = false;
 
+    const mult = getRewardMultiplier();
     const loot = cDef.lootTable[Math.floor(Math.random() * cDef.lootTable.length)];
 
-    if (loot.energy) STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + loot.energy);
-    if (loot.coins) STATE.coins += loot.coins;
-    if (loot.keys) STATE.goals.keysBalance += loot.keys;
-    if (loot.tickets) STATE.goals.ticketsBalance += loot.tickets;
+    const energyGain = (loot.energy || 0) * mult;
+    const coinsGain = (loot.coins || 0) * mult;
+    const keysGain = (loot.keys || 0) * mult;
+    const ticketsGain = (loot.tickets || 0) * mult;
+
+    if (energyGain) STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + energyGain);
+    if (coinsGain) STATE.coins += coinsGain;
+    if (keysGain) STATE.goals.keysBalance += keysGain;
+    if (ticketsGain) STATE.goals.ticketsBalance += ticketsGain;
 
     SFX.collect();
     haptic('success');
     createConfettiBurst();
-    showToast(`🎉 UNLOCKED CHEST! Won ${loot.name}!`);
+
+    const boostTag = mult > 1 ? ' (⚡ 2X BOOST ACTIVE!)' : '';
+    const multMsg = mult > 1 ? ` (2X: ${fmt(coinsGain || 0)} Coins, ${keysGain} Keys, ${ticketsGain} Tickets)` : ` ${loot.name}`;
+    showToast(`🎉 UNLOCKED CHEST! Won${multMsg}!${boostTag}`);
 
     setTimeout(() => {
       if (chestEmoji) chestEmoji.textContent = '🧰';
@@ -878,7 +887,18 @@ function selectSpinnerType(type) {
   haptic('selection');
 }
 
-/* ── 🎡 SPIN WHEEL INTERACTIVE ACTION (WITH SLICE CENTER STOPPING FIX) ── */
+function getRewardMultiplier() {
+  // Checks if spinBoost or superCharger boost is currently active
+  const spinBoostDetails = getBoostTimerDetails('spinBoost');
+  const superChargerDetails = getBoostTimerDetails('superCharger');
+
+  if (spinBoostDetails.isActive || superChargerDetails.isActive) {
+    return 2;
+  }
+  return 1;
+}
+
+/* ── 🎡 SPIN WHEEL INTERACTIVE ACTION (WITH SLICE CENTER STOPPING FIX & 2X BOOST) ── */
 let _isSpinning = false;
 function spinWheelAction() {
   if (_isSpinning) return;
@@ -904,9 +924,6 @@ function spinWheelAction() {
   const prize = sDef.prizes[prizeIdx];
 
   // 🎯 POINTER CENTER STOPPING POSITION FIX:
-  // Each slice spans 60 degrees.
-  // Stopping at (prizeIdx * 60) + 30 deg positions the pointer DIRECTLY in the CENTER body of the slice!
-  // Add variance (+/- 8 deg) to stay within center range while never touching corner borders!
   const sliceCenterOffset = 30;
   const variance = Math.floor(Math.random() * 16) - 8;
   const exactStopAngle = (prizeIdx * 60) + sliceCenterOffset + variance;
@@ -926,29 +943,44 @@ function spinWheelAction() {
     _isSpinning = false;
     if (spinBtn) spinBtn.disabled = false;
 
+    const mult = getRewardMultiplier();
     let rewardMsg = prize.name;
 
     if (prize.type === 'energy') {
-      const energyWon = prize.min ? (Math.floor(Math.random() * (prize.max - prize.min + 1)) + prize.min) : 10;
+      const baseEnergy = prize.min ? (Math.floor(Math.random() * (prize.max - prize.min + 1)) + prize.min) : 10;
+      const energyWon = baseEnergy * mult;
       STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + energyWon);
       rewardMsg = `⚡ +${energyWon} Energy`;
     } else if (prize.type === 'coins') {
-      STATE.coins += prize.val;
+      const coinsWon = prize.val * mult;
+      STATE.coins += coinsWon;
+      rewardMsg = `💰 +${fmt(coinsWon)} Coins`;
     } else if (prize.type === 'keys') {
-      STATE.goals.keysBalance += prize.val;
+      const keysWon = prize.val * mult;
+      STATE.goals.keysBalance += keysWon;
+      rewardMsg = `🔑 +${keysWon} Keys`;
     } else if (prize.type === 'tickets') {
-      STATE.goals.ticketsBalance += prize.val;
+      const ticketsWon = prize.val * mult;
+      STATE.goals.ticketsBalance += ticketsWon;
+      rewardMsg = `🎟️ +${ticketsWon} Spin Tickets`;
     } else if (prize.type === 'jackpot') {
-      STATE.coins += prize.val;
-      if (prize.keys) STATE.goals.keysBalance += prize.keys;
+      const coinsWon = prize.val * mult;
+      const keysWon = (prize.keys || 0) * mult;
+      STATE.coins += coinsWon;
+      if (keysWon) STATE.goals.keysBalance += keysWon;
+      rewardMsg = `💎 JACKPOT (+${fmt(coinsWon)} Coins & +${keysWon} Keys)`;
     } else if (prize.type === 'xp') {
-      addXP(prize.val);
+      const xpWon = prize.val * mult;
+      addXP(xpWon);
+      rewardMsg = `🔥 +${xpWon} XP`;
     }
 
     SFX.collect();
     haptic('success');
     createConfettiBurst();
-    showToast(`🎉 WON ${rewardMsg}!`);
+    
+    const boostTag = mult > 1 ? ' (⚡ 2X BOOST ACTIVE!)' : '';
+    showToast(`🎉 WON ${rewardMsg}!${boostTag}`);
 
     if (typeof saveUserDataToFirebase === 'function') {
       saveUserDataToFirebase(STATE);
