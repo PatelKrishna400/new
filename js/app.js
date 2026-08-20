@@ -2827,10 +2827,70 @@ function cancelTelegramAuthCode() {
     haptic('warning');
     closeTelegramSignInModal();
     closeEmailVerifyModal();
+    closeResetEmailModal();
   } else {
     showToast('⚠️ [auth.cancelCode] Failed to cancel code request. (boolFalse #bc799737)');
     haptic('error');
   }
+}
+
+/* ── 🔄 TELEGRAM RESET LOGIN EMAIL ENGINE (auth.resetLoginEmail -> auth.SentCode) ── */
+function openResetEmailModal() {
+  const modal = document.getElementById('reset-email-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function closeResetEmailModal() {
+  const modal = document.getElementById('reset-email-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function executeTelegramResetLoginEmail() {
+  const phoneEl = document.getElementById('reset-phone-number');
+  const hashEl = document.getElementById('reset-phone-code-hash');
+
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  const hash = hashEl ? hashEl.value.trim() : '';
+
+  if (!phone) {
+    showToast('⚠️ Please enter phone number!');
+    haptic('warning');
+    return;
+  }
+
+  const generatedHash = hash || ('hash_' + Math.random().toString(36).substring(2, 10));
+
+  // Construct MTProto auth.sentCode #5e002502 response
+  const sentCodeObj = {
+    type: 'auth.sentCode',
+    constructorId: '#5e002502',
+    phoneCodeHash: generatedHash,
+    timeout: 60
+  };
+
+  const responseBox = document.getElementById('sentcode-response-box');
+  const typeBadge = document.getElementById('sentcode-type-badge');
+  const detailsTxt = document.getElementById('sentcode-details-txt');
+
+  if (responseBox) responseBox.classList.remove('hidden');
+  if (typeBadge) typeBadge.textContent = `auth.sentCode #5e002502`;
+  if (detailsTxt) detailsTxt.textContent = `Hash: ${generatedHash} | Timeout: ${sentCodeObj.timeout}s | Code Type: SMS`;
+
+  // Award Reset Reward: +75,000 Coins & +5 Keys!
+  STATE.coins += 75000;
+  STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast(`🔄 [auth.resetLoginEmail -> auth.sentCode] Reset code sent! Hash: ${generatedHash}. Won 💰 +75K Coins & 🔑 +5 Keys!`);
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  updateUI();
 }
 
 function handleCardEnterWithAd(type) {

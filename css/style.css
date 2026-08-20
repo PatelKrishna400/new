@@ -4455,6 +4455,130 @@ button {
   transform: scale(0.96);
 }
 
+/* 🔄 RESET LOGIN EMAIL & SENTCODE POPUP MODAL STYLES */
+.reset-email-modal-card {
+  width: 90%;
+  max-width: 360px;
+  background: #0F172A;
+  border: 1.5px solid #00F0FF;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(0, 240, 255, 0.4);
+  text-align: center;
+}
+
+.reset-email-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #00F0FF;
+  letter-spacing: 1px;
+}
+
+.reset-email-modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 6px 0 2px 0;
+}
+
+.reset-email-modal-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-bottom: 14px;
+}
+
+.reset-email-inputs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.reset-email-input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reset-email-label {
+  font-size: 10px;
+  color: #94A3B8;
+  font-weight: 700;
+}
+
+.reset-email-input-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(0, 240, 255, 0.5);
+  color: #FFF;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.sentcode-response-box {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.sentcode-type-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #00F0FF;
+  margin-bottom: 4px;
+}
+
+.sentcode-details-txt {
+  font-size: 10px;
+  color: #CBD5E1;
+}
+
+.reset-email-modal-reward {
+  font-size: 11px;
+  color: #CBD5E1;
+  background: rgba(0, 240, 255, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.reset-email-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-execute-reset-email {
+  width: 100%;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00F0FF 0%, #0284C7 100%);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.5);
+}
+
+.btn-close-reset-modal {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+}
+
+
 
 
 

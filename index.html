@@ -526,8 +526,8 @@
 
             <!-- RESET LOGIN EMAIL ACTION -->
             <div class="email-reset-row">
-              <button class="btn-reset-email" onclick="resetTelegramLoginEmail()">
-                🔄 RESET TELEGRAM LOGIN EMAIL
+              <button class="btn-reset-email" onclick="openResetEmailModal()">
+                🔄 RESET TELEGRAM LOGIN EMAIL (auth.resetLoginEmail)
               </button>
             </div>
           </div>
@@ -758,6 +758,50 @@
             🚫 CANCEL CODE (auth.cancelCode)
           </button>
           <button class="btn-close-email-modal" onclick="closeEmailVerifyModal()">
+            CLOSE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔄 TELEGRAM RESET LOGIN EMAIL MODAL (auth.resetLoginEmail -> auth.SentCode) -->
+    <div id="reset-email-modal" class="modal-overlay">
+      <div class="reset-email-modal-card">
+        <div class="reset-email-modal-header">
+          <span class="reset-email-modal-badge">🔄 AUTH.RESETLOGINEMAIL</span>
+          <h2 class="reset-email-modal-title">Reset Login Email</h2>
+          <p class="reset-email-modal-sub">Enter Phone & Hash to trigger auth.SentCode</p>
+        </div>
+
+        <div class="reset-email-inputs-group">
+          <div class="reset-email-input-item">
+            <label class="reset-email-label">Phone Number:</label>
+            <input type="tel" class="reset-email-input-field" id="reset-phone-number" placeholder="+1234567890" />
+          </div>
+          <div class="reset-email-input-item">
+            <label class="reset-email-label">Phone Code Hash:</label>
+            <input type="text" class="reset-email-input-field" id="reset-phone-code-hash" placeholder="hash_7e960193..." />
+          </div>
+        </div>
+
+        <!-- SENTCODE RESPONSE PREVIEW BOX -->
+        <div class="sentcode-response-box hidden" id="sentcode-response-box">
+          <div class="sentcode-type-badge" id="sentcode-type-badge">auth.sentCode #5e002502</div>
+          <div class="sentcode-details-txt" id="sentcode-details-txt">Timeout: 60s | Code Type: SMS</div>
+        </div>
+
+        <div class="reset-email-modal-reward">
+          🎁 Reset Reward: <strong>💰 +75,000 Coins & 🔑 +5 Keys!</strong>
+        </div>
+
+        <div class="reset-email-modal-actions">
+          <button class="btn-execute-reset-email" onclick="executeTelegramResetLoginEmail()">
+            🔄 EXECUTE auth.resetLoginEmail
+          </button>
+          <button class="btn-cancel-auth-code" onclick="cancelTelegramAuthCode()">
+            🚫 CANCEL CODE (auth.cancelCode)
+          </button>
+          <button class="btn-close-reset-modal" onclick="closeResetEmailModal()">
             CLOSE
           </button>
         </div>
