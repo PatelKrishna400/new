@@ -6235,98 +6235,70 @@ button {
   cursor: not-allowed;
 }
 
-/* ── ⭐ XP LEVEL PROGRESS WIDGET CARD STYLES ── */
-.xp-level-widget-card {
-  width: 100%;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+/* ── ⭐ XP LEVEL RANKS MODAL & CIRCULAR EMOJI BACK BUTTON ON THE LEFT ── */
+.xp-modal-card {
+  background: linear-gradient(160deg, #0b132b 0%, #1c2541 100%);
   border: 1px solid rgba(245, 183, 0, 0.4);
-  border-radius: 20px !important;
-  padding: 14px 16px;
+  border-radius: 24px !important;
+  width: 95%;
+  max-width: 450px;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 14px;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(245, 183, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 18px;
+  gap: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
 }
 
-.xp-level-widget-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 24px rgba(245, 183, 0, 0.35);
-}
-
-.xp-widget-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.xp-widget-title-group {
+.xp-modal-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.xp-widget-icon {
-  font-size: 20px;
-  filter: drop-shadow(0 0 6px rgba(245, 183, 0, 0.8));
-}
-
-.xp-widget-title-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.xp-widget-level-name {
-  font-size: 14px;
-  font-weight: 900;
+.btn-xp-back-circle {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50% !important;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(245, 183, 0, 0.5);
   color: #FFF;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-xp-back-circle:hover {
+  transform: scale(1.1);
+  background: rgba(245, 183, 0, 0.2);
+  border-color: #F5B700;
+}
+
+.xp-modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.xp-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #F5B700;
   letter-spacing: 0.5px;
 }
 
-.xp-widget-open-badge {
-  font-size: 10px;
+.xp-modal-title {
+  font-size: 16px;
   font-weight: 900;
-  color: #000;
-  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
-  padding: 5px 12px;
-  border-radius: 14px !important;
-  box-shadow: 0 3px 10px rgba(245, 183, 0, 0.4);
-}
-
-.xp-widget-bar-track {
-  width: 100%;
-  height: 12px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(245, 183, 0, 0.3);
-  border-radius: 10px !important;
-  overflow: hidden;
-  position: relative;
-}
-
-.xp-widget-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #FFE169 0%, #F5B700 50%, #D97706 100%);
-  border-radius: 10px !important;
-  box-shadow: 0 0 10px rgba(245, 183, 0, 0.8);
-  transition: width 0.3s ease;
-}
-
-.xp-widget-sub-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.xp-widget-val-text {
-  color: #F5B700;
-}
-
-.xp-widget-target-text {
-  color: #94A3B8;
+  color: #FFF;
 }
 
 
