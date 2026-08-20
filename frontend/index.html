@@ -89,7 +89,7 @@
           </div>
 
           <!-- ── ⭐ XP LEVEL PROGRESS CARD ── -->
-          <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
+          <div class="home-widget-card xp-level-widget-card">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
                 <span class="xp-widget-icon">⭐</span>
@@ -97,7 +97,6 @@
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
             </div>
 
             <div class="xp-widget-bar-track">
@@ -1021,33 +1020,6 @@
           <button class="btn-close-bot-modal" onclick="closeBotAuthModal()">
             CANCEL
           </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⭐ XP RANKS & 3-TIER PASS GIFTS POPUP MODAL -->
-    <div id="xp-level-modal" class="modal-overlay">
-      <div class="xp-modal-card">
-        <div class="xp-modal-header">
-          <!-- CIRCULAR EMOJI BACK BUTTON ON THE LEFT -->
-          <button class="btn-xp-back-circle" onclick="closeXPLevelModal()" title="Back">
-            ⬅️
-          </button>
-          
-          <div class="xp-modal-title-group">
-            <span class="xp-modal-badge">⭐ XP EMPIRE RANKS</span>
-            <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
-          </div>
-
-          <!-- PASS STORE BUTTON ON THE RIGHT -->
-          <button class="btn-xp-modal-shop" onclick="openPassStoreModal()" title="Pass Shop">
-            🛒 PASS SHOP
-          </button>
-        </div>
-
-        <!-- 100 XP LEVELS GIFTS SCROLL CONTAINER -->
-        <div class="xp-levels-scroll-list" id="xp-levels-list-container">
-          <!-- Dynamically populated via js/app.js -->
         </div>
       </div>
     </div>
