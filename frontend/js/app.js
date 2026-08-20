@@ -2121,32 +2121,35 @@ function claimXPLevelGift(level, tier) {
     return;
   }
 
-  STATE.claimedXpGifts[key] = true;
+  // Mandatory Ad watch for claiming ANY reward
+  openMonetagAdModal(`xp_${tier}_${level}`, () => {
+    STATE.claimedXpGifts[key] = true;
 
-  if (tier === 'free') {
-    STATE.coins += level * 5000;
-    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 1;
-    showToast(`🎉 Level ${level} Free Gift Claimed! +${(level * 5000).toLocaleString()} Coins & 🎟️ +1 Ticket!`);
-  } else if (tier === 'silver') {
-    STATE.coins += level * 15000;
-    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
-    showToast(`🥈 Level ${level} Silver Gift Claimed! +${(level * 15000).toLocaleString()} Coins & 🔑 +2 Keys!`);
-  } else if (tier === 'golden') {
-    STATE.coins += level * 50000;
-    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
-    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
-    showToast(`🥇 Level ${level} Golden Gift Claimed! +${(level * 50000).toLocaleString()} Coins, 🔑 +5 Keys & 🎁 Star Gift!`);
-  }
+    if (tier === 'free') {
+      STATE.coins += level * 5000;
+      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 1;
+      showToast(`🎉 Level ${level} Free Gift Claimed! +${(level * 5000).toLocaleString()} Coins & 🎟️ +1 Ticket!`);
+    } else if (tier === 'silver') {
+      STATE.coins += level * 15000;
+      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
+      showToast(`🥈 Level ${level} Silver Gift Claimed! +${(level * 15000).toLocaleString()} Coins & 🔑 +2 Keys!`);
+    } else if (tier === 'golden') {
+      STATE.coins += level * 50000;
+      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
+      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
+      showToast(`🥇 Level ${level} Golden Gift Claimed! +${(level * 50000).toLocaleString()} Coins, 🔑 +5 Keys & 🎁 Star Gift!`);
+    }
 
-  SFX.collect();
-  haptic('success');
+    SFX.collect();
+    haptic('success');
 
-  if (typeof saveUserDataToFirebase === 'function') {
-    saveUserDataToFirebase(STATE);
-  }
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
 
-  updateUI();
-  renderXPLevelRanks();
+    updateUI();
+    renderXPLevelRanks();
+  });
 }
 
 /* ── PASSIVE ENERGY REGENERATION (RAPID +1⚡/s DURING SILVER PASS) ── */
