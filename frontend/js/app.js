@@ -272,6 +272,29 @@ function showToast(msg) {
   _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
+/* ── ⭐ 100-LEVEL XP & LEVELING UP ENGINE (+0.1 XP PER TAP) ── */
+function getXPNeededForLevel(lvl) {
+  return (lvl || 1) * 100;
+}
+
+function addXP(amount) {
+  STATE.xp = Number(((STATE.xp || 0) + amount).toFixed(1));
+  let currentLvl = STATE.level || 1;
+  let xpNeeded = getXPNeededForLevel(currentLvl);
+  STATE.maxXp = xpNeeded;
+
+  if (STATE.xp >= xpNeeded) {
+    STATE.xp = Number((STATE.xp - xpNeeded).toFixed(1));
+    STATE.level = Math.min(100, currentLvl + 1);
+    STATE.maxXp = getXPNeededForLevel(STATE.level);
+
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 LEVEL UP! REACHED LEVEL ${STATE.level}!`);
+  }
+}
+
 /* ── UI SYNCHRONIZER ── */
 function updateUI() {
   const coinsEl = document.getElementById('top-coins');
