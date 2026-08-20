@@ -272,23 +272,47 @@
             <p class="boost-main-subtitle">Select a boost card to upgrade your empire</p>
           </div>
 
-          <!-- 🥈 SILVER PASS VIP SUPERCHARGER CARD -->
-          <div class="silver-pass-vip-card" id="silver-pass-vip-card">
-            <div class="silver-pass-header">
-              <span class="silver-pass-badge">🥈 VIP SILVER PASS</span>
-              <span class="silver-pass-timer" id="silver-pass-timer-txt">OFFLINE</span>
+          <!-- ── ⭐ MONTHLY TELEGRAM STARS VIP PASSES (SILVER & GOLDEN) ── -->
+          <div class="vip-passes-container">
+            
+            <!-- 🥈 SILVER PASS CARD -->
+            <div class="silver-pass-vip-card" id="silver-pass-vip-card">
+              <div class="silver-pass-header">
+                <span class="silver-pass-badge">🥈 MONTHLY SILVER VIP PASS</span>
+                <span class="silver-pass-timer" id="silver-pass-timer-txt">OFFLINE</span>
+              </div>
+              <h2 class="silver-pass-title">SILVER VIP MONTHLY PASS</h2>
+              <div class="silver-pass-perks-list">
+                <div class="silver-perk-item">⚡ <strong>+50% Tap Power & Rapid Energy</strong></div>
+                <div class="silver-perk-item">🎯 <strong>2X XP & Level Claim Rewards</strong></div>
+                <div class="silver-perk-item">🎟️ <strong>+15 Free Daily Spin Tickets</strong></div>
+                <div class="silver-perk-item">🎫 <strong>Free Scratch Cards (No Ads)</strong></div>
+              </div>
+              <div class="silver-pass-actions">
+                <button class="btn-buy-silver-pass stars" onclick="buyMonthlyPassWithStars('silver', 50)">⭐ BUY WITH STARS (50 ⭐/MO)</button>
+                <button class="btn-buy-silver-pass keys" onclick="buySilverPass('keys')">🔑 UNLOCK (5 KEYS)</button>
+                <button class="btn-buy-silver-pass ad" onclick="buySilverPass('ad')">🎥 UNLOCK VIA AD</button>
+              </div>
             </div>
-            <h2 class="silver-pass-title">10-MINUTE SILVER VIP SUPERCHARGER</h2>
-            <div class="silver-pass-perks-list">
-              <div class="silver-perk-item">⚡ <strong>10-Min Energy Generator</strong> (+1.0 ⚡/sec rapid regen + refill)</div>
-              <div class="silver-perk-item">🎯 <strong>Even Level 2X Taps</strong> (2X Coins & XP on Level 2, 4, 6, 8...)</div>
-              <div class="silver-perk-item">🎟️ <strong>+10 Free Spin Tickets</strong> (Instant bonus)</div>
-              <div class="silver-perk-item">🎫 <strong>Free Scratch Cards</strong> (No ads required!)</div>
+
+            <!-- 🥇 GOLDEN PASS CARD -->
+            <div class="silver-pass-vip-card golden-pass-card" id="golden-pass-vip-card">
+              <div class="silver-pass-header">
+                <span class="silver-pass-badge golden-badge">🥇 MONTHLY GOLDEN VIP PASS</span>
+                <span class="silver-pass-timer" id="golden-pass-timer-txt">OFFLINE</span>
+              </div>
+              <h2 class="silver-pass-title golden-title">GOLDEN VIP MONTHLY PASS</h2>
+              <div class="silver-pass-perks-list">
+                <div class="silver-perk-item">⚡ <strong>+150% Supercharged Tap Power</strong></div>
+                <div class="silver-perk-item">🎯 <strong>3X XP & Level Claim Rewards</strong></div>
+                <div class="silver-perk-item">🔑 <strong>+5 Daily Master Keys & +30 Tickets</strong></div>
+                <div class="silver-perk-item">👑 <strong>Golden Crown Badge & Profile Glow</strong></div>
+              </div>
+              <div class="silver-pass-actions">
+                <button class="btn-buy-silver-pass golden-stars-btn" onclick="buyMonthlyPassWithStars('golden', 150)">⭐ BUY GOLDEN PASS (150 ⭐/MO)</button>
+              </div>
             </div>
-            <div class="silver-pass-actions">
-              <button class="btn-buy-silver-pass keys" onclick="buySilverPass('keys')">🔑 UNLOCK (5 KEYS)</button>
-              <button class="btn-buy-silver-pass ad" onclick="buySilverPass('ad')">🎥 UNLOCK VIA AD</button>
-            </div>
+
           </div>
 
           <!-- BOOST EMOJI CARTRIDGES GRID -->
@@ -950,6 +974,40 @@
           <button class="btn-close-bot-modal" onclick="closeBotAuthModal()">
             CANCEL
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⭐ XP RANKS & 3-TIER PASS GIFTS POPUP MODAL (FREE AD, SILVER & GOLDEN PASS) -->
+    <div id="xp-level-modal" class="modal-overlay">
+      <div class="xp-modal-card">
+        <div class="xp-modal-header">
+          <div class="xp-modal-title-group">
+            <span class="xp-modal-badge">⭐ XP EMPIRE RANKS & PASS GIFTS</span>
+            <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
+          </div>
+          <button class="btn-close-xp-modal" onclick="closeXPLevelModal()">✕</button>
+        </div>
+
+        <!-- PASS STATUS BANNER & QUICK BUY -->
+        <div class="xp-pass-banner-row">
+          <div class="xp-pass-status-pill silver" id="xp-pill-silver">
+            <span>🥈 SILVER PASS:</span> <strong id="xp-status-silver-txt">OFFLINE</strong>
+            <button class="btn-quick-buy-pass silver" onclick="buyMonthlyPassWithStars('silver', 50)">⭐ 50 STARS</button>
+          </div>
+          <div class="xp-pass-status-pill golden" id="xp-pill-golden">
+            <span>🥇 GOLDEN PASS:</span> <strong id="xp-status-golden-txt">OFFLINE</strong>
+            <button class="btn-quick-buy-pass golden" onclick="buyMonthlyPassWithStars('golden', 150)">⭐ 150 STARS</button>
+          </div>
+        </div>
+
+        <!-- 100 XP LEVELS GIFTS SCROLL CONTAINER -->
+        <div class="xp-levels-scroll-list" id="xp-levels-list-container">
+          <!-- Dynamically populated via js/app.js -->
+        </div>
+
+        <div class="xp-modal-footer">
+          <button class="btn-close-xp-footer" onclick="closeXPLevelModal()">CLOSE RANKS</button>
         </div>
       </div>
     </div>

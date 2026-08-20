@@ -1866,6 +1866,208 @@ function isSilverPassActive() {
   return true;
 }
 
+function isGoldenPassActive() {
+  if (!STATE.goldenPass || !STATE.goldenPass.active) return false;
+  if (Date.now() >= STATE.goldenPass.expiry) {
+    STATE.goldenPass.active = false;
+    return false;
+  }
+  return true;
+}
+
+/* ── ⭐ MONTHLY TELEGRAM STARS PASSES ENGINE (SILVER & GOLDEN) ── */
+async function buyMonthlyPassWithStars(passType = 'silver', priceStars = 50) {
+  const title = passType === 'golden' ? 'Monthly Golden VIP Pass' : 'Monthly Silver VIP Pass';
+  const desc = passType === 'golden'
+    ? 'Monthly Golden Membership with +150% Tap Power, 3X XP Rewards & Daily Keys'
+    : 'Monthly Silver Membership with +50% Tap Power, 2X XP Rewards & Daily Tickets';
+
+  if (typeof subscribeWithTelegramStars === 'function') {
+    const res = await subscribeWithTelegramStars({
+      title,
+      description: desc,
+      priceStars,
+      periodSeconds: 2592000 // 30 Days
+    });
+
+    if (res && res.ok) {
+      if (passType === 'golden') {
+        STATE.goldenPass = STATE.goldenPass || {};
+        STATE.goldenPass.active = true;
+        STATE.goldenPass.expiry = Date.now() + (30 * 86400 * 1000);
+        STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 15;
+        STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 30;
+        showToast('👑 GOLDEN VIP PASS ACTIVATED! +150% Tap Power, 3X XP Rewards & +15 Keys!');
+      } else {
+        STATE.silverPass = STATE.silverPass || {};
+        STATE.silverPass.active = true;
+        STATE.silverPass.expiry = Date.now() + (30 * 86400 * 1000);
+        STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 15;
+        showToast('🥈 SILVER VIP PASS ACTIVATED! +50% Tap Power, 2X XP Rewards & +15 Tickets!');
+      }
+
+      SFX.levelUp();
+      haptic('success');
+      createConfettiBurst();
+
+      if (typeof saveUserDataToFirebase === 'function') {
+        saveUserDataToFirebase(STATE);
+      }
+
+      updateUI();
+      renderProfileScreen();
+    }
+  } else {
+    showToast(`⭐ Requesting ${title} (${priceStars} Stars)...`);
+  }
+}
+
+/* ── ⭐ XP RANKS & 3-TIER PASS GIFTS ENGINE (FREE AD, SILVER & GOLDEN PASS) ── */
+function openXPLevelModal() {
+  const modal = document.getElementById('xp-level-modal');
+  if (!modal) return;
+
+  const rankTitle = document.getElementById('xp-modal-user-rank');
+  if (rankTitle) {
+    rankTitle.textContent = `LEVEL ${STATE.level || 1} (${Math.floor(STATE.xp || 0)} / ${STATE.maxXp || 100} XP)`;
+  }
+
+  // Update Status Pills
+  const silverTxt = document.getElementById('xp-status-silver-txt');
+  if (silverTxt) {
+    silverTxt.textContent = isSilverPassActive() ? 'ACTIVE ✅' : 'OFFLINE 🔒';
+    silverTxt.style.color = isSilverPassActive() ? '#4ADE80' : '#EF4444';
+  }
+
+  const goldenTxt = document.getElementById('xp-status-golden-txt');
+  if (goldenTxt) {
+    goldenTxt.textContent = isGoldenPassActive() ? 'ACTIVE ✅' : 'OFFLINE 🔒';
+    goldenTxt.style.color = isGoldenPassActive() ? '#F5B700' : '#EF4444';
+  }
+
+  renderXPLevelRanks();
+  modal.classList.add('active');
+}
+
+function closeXPLevelModal() {
+  const modal = document.getElementById('xp-level-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function renderXPLevelRanks() {
+  const container = document.getElementById('xp-levels-list-container');
+  if (!container) return;
+
+  STATE.claimedXpGifts = STATE.claimedXpGifts || {};
+  const currentLvl = STATE.level || 1;
+  const isSilver = isSilverPassActive();
+  const isGolden = isGoldenPassActive();
+
+  let html = '';
+  for (let lvl = 1; lvl <= 20; lvl++) {
+    const isLevelUnlocked = currentLvl >= lvl;
+    const freeClaimed = !!STATE.claimedXpGifts[`${lvl}_free`];
+    const silverClaimed = !!STATE.claimedXpGifts[`${lvl}_silver`];
+    const goldenClaimed = !!STATE.claimedXpGifts[`${lvl}_golden`];
+
+    html += `
+      <div class="xp-level-rank-card ${isLevelUnlocked ? 'unlocked' : 'locked'}">
+        <div class="xp-rank-card-header">
+          <span class="xp-rank-level-badge">LEVEL ${lvl}</span>
+          <span class="xp-rank-target-txt">${lvl * 100} XP</span>
+        </div>
+
+        <div class="xp-rank-gifts-grid">
+          <!-- 🆓 FREE AD GIFT TIER -->
+          <div class="xp-gift-tier-item free">
+            <div class="xp-gift-info">
+              <span class="xp-gift-tag free">🆓 FREE GIFT</span>
+              <span class="xp-gift-reward-txt">💰 +${(lvl * 5000).toLocaleString()} Coins + 🎟️ 1 Ticket</span>
+            </div>
+            ${freeClaimed
+              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
+              : isLevelUnlocked
+                ? `<button class="btn-xp-claim free" onclick="openMonetagAdModal('xp_free_${lvl}', () => claimXPLevelGift(${lvl}, 'free'))">🎥 CLAIM (AD)</button>`
+                : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
+            }
+          </div>
+
+          <!-- 🥈 SILVER PASS GIFT TIER -->
+          <div class="xp-gift-tier-item silver">
+            <div class="xp-gift-info">
+              <span class="xp-gift-tag silver">🥈 SILVER PASS GIFT</span>
+              <span class="xp-gift-reward-txt">💰 +${(lvl * 15000).toLocaleString()} Coins + 🔑 2 Keys</span>
+            </div>
+            ${silverClaimed
+              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
+              : isLevelUnlocked && isSilver
+                ? `<button class="btn-xp-claim silver" onclick="claimXPLevelGift(${lvl}, 'silver')">🥈 CLAIM SILVER GIFT</button>`
+                : isLevelUnlocked
+                  ? `<button class="btn-xp-claim silver-buy" onclick="buyMonthlyPassWithStars('silver', 50)">🔒 UNLOCK (50 ⭐)</button>`
+                  : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
+            }
+          </div>
+
+          <!-- 🥇 GOLDEN PASS GIFT TIER -->
+          <div class="xp-gift-tier-item golden">
+            <div class="xp-gift-info">
+              <span class="xp-gift-tag golden">🥇 GOLDEN PASS GIFT</span>
+              <span class="xp-gift-reward-txt">💰 +${(lvl * 50000).toLocaleString()} Coins + 🔑 5 Keys + 🎁 Star Gift</span>
+            </div>
+            ${goldenClaimed
+              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
+              : isLevelUnlocked && isGolden
+                ? `<button class="btn-xp-claim golden" onclick="claimXPLevelGift(${lvl}, 'golden')">🥇 CLAIM GOLDEN GIFT</button>`
+                : isLevelUnlocked
+                  ? `<button class="btn-xp-claim golden-buy" onclick="buyMonthlyPassWithStars('golden', 150)">🔒 UNLOCK (150 ⭐)</button>`
+                  : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function claimXPLevelGift(level, tier) {
+  STATE.claimedXpGifts = STATE.claimedXpGifts || {};
+  const key = `${level}_${tier}`;
+
+  if (STATE.claimedXpGifts[key]) {
+    showToast('⚠️ Gift already claimed!');
+    return;
+  }
+
+  STATE.claimedXpGifts[key] = true;
+
+  if (tier === 'free') {
+    STATE.coins += level * 5000;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 1;
+    showToast(`🎉 Level ${level} Free Gift Claimed! +${(level * 5000).toLocaleString()} Coins & 🎟️ +1 Ticket!`);
+  } else if (tier === 'silver') {
+    STATE.coins += level * 15000;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
+    showToast(`🥈 Level ${level} Silver Gift Claimed! +${(level * 15000).toLocaleString()} Coins & 🔑 +2 Keys!`);
+  } else if (tier === 'golden') {
+    STATE.coins += level * 50000;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
+    showToast(`🥇 Level ${level} Golden Gift Claimed! +${(level * 50000).toLocaleString()} Coins, 🔑 +5 Keys & 🎁 Star Gift!`);
+  }
+
+  SFX.collect();
+  haptic('success');
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  updateUI();
+  renderXPLevelRanks();
+}
+
 /* ── PASSIVE ENERGY REGENERATION (RAPID +1⚡/s DURING SILVER PASS) ── */
 setInterval(() => {
   const isSilver = isSilverPassActive();

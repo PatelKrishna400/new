@@ -4883,9 +4883,328 @@ button {
   font-weight: 700;
   background: none;
   border: none;
+/* ── ⭐ MONTHLY TELEGRAM STARS VIP PASSES (SILVER & GOLDEN) STYLES ── */
+.vip-passes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.silver-pass-vip-card {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.silver-pass-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.silver-pass-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #CBD5E1;
+  background: rgba(148, 163, 184, 0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(203, 213, 225, 0.4);
+  letter-spacing: 0.5px;
+}
+
+.silver-pass-timer {
+  font-size: 11px;
+  font-weight: 800;
   color: #94A3B8;
+}
+
+.silver-pass-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.silver-pass-perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.silver-perk-item {
+  font-size: 12px;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.silver-pass-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-buy-silver-pass {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-buy-silver-pass.stars {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFF;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+}
+
+.btn-buy-silver-pass.keys {
+  background: linear-gradient(135deg, #EAB308 0%, #CA8A04 100%);
+  color: #000;
+  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.5);
+}
+
+.btn-buy-silver-pass.ad {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFF;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* 🥇 GOLDEN VIP PASS CARD */
+.golden-pass-card {
+  background: linear-gradient(145deg, #2a1f06 0%, #170f03 100%);
+  border: 1px solid rgba(245, 183, 0, 0.5);
+  box-shadow: 0 8px 28px rgba(245, 183, 0, 0.25);
+}
+
+.golden-badge {
+  color: #F5B700;
+  background: rgba(245, 183, 0, 0.2);
+  border: 1px solid rgba(245, 183, 0, 0.6);
+}
+
+.golden-title {
+  color: #F5B700;
+  text-shadow: 0 0 10px rgba(245, 183, 0, 0.5);
+}
+
+.golden-stars-btn {
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%) !important;
+  color: #000 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 20px rgba(245, 183, 0, 0.6) !important;
+}
+
+/* ── ⭐ XP RANKS & 3-TIER PASS GIFTS MODAL STYLES ── */
+.xp-modal-card {
+  background: linear-gradient(160deg, #0d0f19 0%, #171a29 100%);
+  border: 1px solid rgba(245, 183, 0, 0.4);
+  border-radius: 20px;
+  width: 95%;
+  max-width: 480px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 183, 0, 0.2);
+  gap: 12px;
+}
+
+.xp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #F5B700;
+  letter-spacing: 0.5px;
+}
+
+.xp-modal-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 0;
+}
+
+.btn-close-xp-modal {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 20px;
   cursor: pointer;
 }
+
+.xp-pass-banner-row {
+  display: flex;
+  gap: 8px;
+}
+
+.xp-pass-status-pill {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #CBD5E1;
+}
+
+.btn-quick-buy-pass {
+  width: 100%;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-quick-buy-pass.silver {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFF;
+}
+
+.btn-quick-buy-pass.golden {
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+}
+
+.xp-levels-scroll-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 4px;
+  max-height: 55vh;
+}
+
+.xp-level-rank-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xp-level-rank-card.unlocked {
+  border-color: rgba(245, 183, 0, 0.5);
+  background: rgba(245, 183, 0, 0.05);
+}
+
+.xp-rank-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-rank-level-badge {
+  font-size: 12px;
+  font-weight: 900;
+  color: #F5B700;
+}
+
+.xp-rank-target-txt {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94A3B8;
+}
+
+.xp-rank-gifts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xp-gift-tier-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.xp-gift-tier-item.free { border-left: 3px solid #10B981; }
+.xp-gift-tier-item.silver { border-left: 3px solid #3B82F6; }
+.xp-gift-tier-item.golden { border-left: 3px solid #F5B700; }
+
+.xp-gift-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.xp-gift-tag {
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.xp-gift-tag.free { color: #34D399; }
+.xp-gift-tag.silver { color: #60A5FA; }
+.xp-gift-tag.golden { color: #FBBF24; }
+
+.xp-gift-reward-txt {
+  font-size: 11px;
+  font-weight: 800;
+  color: #FFF;
+}
+
+.btn-xp-claim {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-xp-claim.free { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; }
+.btn-xp-claim.silver { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); color: #FFF; }
+.btn-xp-claim.silver-buy { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid #3B82F6; }
+.btn-xp-claim.golden { background: linear-gradient(135deg, #F5B700 0%, #D97706 100%); color: #000; }
+.btn-xp-claim.golden-buy { background: rgba(245, 183, 0, 0.2); color: #FBBF24; border: 1px solid #F5B700; }
+.btn-xp-claim.claimed { background: rgba(74, 222, 128, 0.2); color: #4ADE80; border: 1px solid #22C55E; }
+.btn-xp-claim.locked { background: rgba(148, 163, 184, 0.2); color: #64748B; cursor: not-allowed; }
+
+.btn-close-xp-footer {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(148, 163, 184, 0.2);
+  color: #CBD5E1;
+  border: none;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 
 
 
