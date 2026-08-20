@@ -2817,6 +2817,22 @@ function showTelegramTermsOfService() {
   showToast(`📜 [auth.authorizationSignUpRequired -> help.TermsOfService] Terms of Service: Fair-play rules active.`);
 }
 
+/* ── 🚫 TELEGRAM CANCEL CODE ENGINE (auth.cancelCode -> Bool) ── */
+function cancelTelegramAuthCode() {
+  // Returns MTProto Bool (boolTrue #997275b5 or boolFalse #bc799737)
+  const isCancelled = true;
+
+  if (isCancelled) {
+    showToast('🚫 [auth.cancelCode] Verification code request cancelled successfully! (boolTrue #997275b5)');
+    haptic('warning');
+    closeTelegramSignInModal();
+    closeEmailVerifyModal();
+  } else {
+    showToast('⚠️ [auth.cancelCode] Failed to cancel code request. (boolFalse #bc799737)');
+    haptic('error');
+  }
+}
+
 function handleCardEnterWithAd(type) {
   haptic('selection');
   
