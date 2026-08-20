@@ -341,8 +341,12 @@ function updateUI() {
   const xpHomeRedDot = document.getElementById('xp-home-red-dot');
   const xpHomeBtnBadge = document.getElementById('xp-home-btn-badge');
 
-  if (xpTopRedDot) xpTopRedDot.classList.toggle('hidden', !hasUnclaimedXP);
-  if (xpHomeRedDot) xpHomeRedDot.classList.toggle('hidden', !hasUnclaimedXP);
+  if (xpTopRedDot && xpTopRedDot.classList && typeof xpTopRedDot.classList.toggle === 'function') {
+    xpTopRedDot.classList.toggle('hidden', !hasUnclaimedXP);
+  }
+  if (xpHomeRedDot && xpHomeRedDot.classList && typeof xpHomeRedDot.classList.toggle === 'function') {
+    xpHomeRedDot.classList.toggle('hidden', !hasUnclaimedXP);
+  }
   if (xpHomeBtnBadge) {
     if (hasUnclaimedXP) {
       xpHomeBtnBadge.textContent = `🎁 CLAIM REWARD (${STATE.unclaimedXPLevels.length}) 🔴`;
@@ -3808,8 +3812,8 @@ function initLoadingScreen() {
   const screenEl = document.getElementById('loading-screen');
 
   let currentPct = 0;
-  const totalDuration = 3800; // 3.8 seconds extended loading duration
-  const intervalTime = 40; // update every 40ms
+  const totalDuration = 1200; // 1.2 seconds fast loading duration
+  const intervalTime = 30; // update every 30ms
   const increment = 100 / (totalDuration / intervalTime);
 
   const timer = setInterval(() => {
