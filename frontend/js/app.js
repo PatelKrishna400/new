@@ -509,6 +509,20 @@ function updateUI() {
       btnClaimSpins.textContent = `🔒 (${completedCount}/3)`;
     }
   }
+
+  // 4. Main Goal Level Completion Button (Requires all 3 tasks verified completed + Watch 1 Ad to claim & push next level)
+  const btnLevelClaimAd = document.getElementById('btn-goal-level-claim-ad');
+  if (btnLevelClaimAd) {
+    if (allThreeCompleted) {
+      btnLevelClaimAd.disabled = false;
+      btnLevelClaimAd.className = 'btn-claim-all-ad-banner compact ready-green';
+      btnLevelClaimAd.textContent = `🎥 WATCH AD TO CLAIM PRIZE & ADVANCE TO LEVEL ${STATE.goals.level + 1} 🚀`;
+    } else {
+      btnLevelClaimAd.disabled = true;
+      btnLevelClaimAd.className = 'btn-claim-all-ad-banner compact disabled-lock';
+      btnLevelClaimAd.textContent = `🔒 COMPLETE ALL 3 TASKS (${completedCount}/3)`;
+    }
+  }
 }
 
 /* ── 🎯 GOAL CARD CLAIM & LEVEL ADVANCEMENT ENGINE ── */
@@ -1552,28 +1566,48 @@ function claimAllReferralsWithAd() {
   });
 }
 
-function claimAllGoalsWithAd() {
+/* 🎥 WATCH AD TO CLAIM ALL 3 GOALS & ADVANCE TO NEXT GOAL LEVEL */
+function claimGoalLevelWithAd() {
+  const coinsDone = STATE.goals.coinsProgress >= STATE.goals.coinsTarget;
+  const keysDone = STATE.goals.keysProgress >= STATE.goals.keysTarget;
+  const spinsDone = STATE.goals.spinsProgress >= STATE.goals.spinsTarget;
+  const allThreeCompleted = coinsDone && keysDone && spinsDone;
+
+  if (!allThreeCompleted) {
+    showToast('🔒 Complete all 3 tasks (3/3) to unlock claiming and next level!');
+    haptic('warning');
+    return;
+  }
+
   openMonetagAdModal('all_goals', () => {
-    const coinsRew = STATE.goals.coinsReward * 2;
-    const keysRew = STATE.goals.keysReward * 2;
-    const spinsRew = STATE.goals.spinsReward * 2;
+    const coinsRew = STATE.goals.coinsReward;
+    const keysRew = STATE.goals.keysReward;
+    const spinsRew = STATE.goals.spinsReward;
 
     STATE.coins += coinsRew;
-    STATE.goals.keysBalance += keysRew;
-    STATE.goals.ticketsBalance += spinsRew;
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + keysRew;
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + spinsRew;
 
+    const oldLevel = STATE.goals.level;
+    STATE.goals.level += 1;
+
+    // Reset progress & scale targets for next level
     STATE.goals.coinsProgress = 0;
     STATE.goals.keysProgress = 0;
     STATE.goals.spinsProgress = 0;
+
     STATE.goals.coinsTarget = Math.floor(STATE.goals.coinsTarget * 1.35) + 10;
+    STATE.goals.coinsReward = Math.floor(STATE.goals.coinsReward * 1.25) + 2;
+
     STATE.goals.keysTarget = Math.floor(STATE.goals.keysTarget * 1.4) + 15;
     STATE.goals.spinsTarget = Math.floor(STATE.goals.spinsTarget * 1.3) + 10;
-    STATE.goals.level += 1;
+
+    STATE.goals.claimed = { coins: false, keys: false, spins: false };
 
     SFX.levelUp();
     haptic('success');
     createConfettiBurst();
-    showToast(`🎉 CLAIMED ALL GOALS VIA MONETAG AD! Won 💰 +${coinsRew} Coins (2X), 🔑 +${keysRew} Keys & 🎟️ +${spinsRew} Tickets!`);
+    showToast(`🎉 GOAL LEVEL ${oldLevel} COMPLETED! Claimed 💰 +${fmt(coinsRew)} Coins, 🔑 +${keysRew} Key & 🎟️ +${spinsRew} Ticket! Pushed to Level ${STATE.goals.level}!`);
 
     if (typeof saveUserDataToFirebase === 'function') {
       saveUserDataToFirebase(STATE);
@@ -1581,6 +1615,10 @@ function claimAllGoalsWithAd() {
 
     updateUI();
   });
+}
+
+function claimAllGoalsWithAd() {
+  claimGoalLevelWithAd();
 }
 
 function closeAdModal() {
