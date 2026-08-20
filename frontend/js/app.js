@@ -1939,15 +1939,12 @@ function renderXPLevelRanks() {
     const keysReward = lvl % 5 === 0 ? Math.floor(lvl / 5) : 0;
     const ticketsReward = lvl % 3 === 0 ? 2 : 1;
 
-    const freeClaimed = !!STATE.claimedXPLevels[`${lvl}_free`];
-    const silverClaimed = !!STATE.claimedXPLevels[`${lvl}_silver`];
-    const goldenClaimed = !!STATE.claimedXPLevels[`${lvl}_golden`];
+    const isClaimed = !!STATE.claimedXPLevels[`${lvl}_free`];
 
     html += `
       <div class="xp-modal-level-item ${isCurrent ? 'current-level' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
-        <div class="xp-level-badge-row">
+        <div class="xp-level-header-simple">
           <span class="xp-level-badge-title">⭐ LEVEL ${lvl}</span>
-          <span class="xp-level-status-tag">${isCurrent ? '⭐ CURRENT LEVEL' : isUnlocked ? '✅ UNLOCKED' : '🔒 LOCKED'}</span>
         </div>
 
         <div class="xp-level-rewards-preview">
@@ -1957,14 +1954,8 @@ function renderXPLevelRanks() {
         </div>
 
         <div class="xp-level-actions-row">
-          <button class="btn-claim-xp-tier free" onclick="claimXPLevelGift(${lvl}, 'free')" ${!isUnlocked || freeClaimed ? 'disabled' : ''}>
-            ${freeClaimed ? '✅ CLAIMED' : '🎥 FREE AD CLAIM'}
-          </button>
-          <button class="btn-claim-xp-tier silver" onclick="claimXPLevelGift(${lvl}, 'silver')" ${!isUnlocked || silverClaimed ? 'disabled' : ''}>
-            ${silverClaimed ? '✅ CLAIMED' : '🥈 SILVER GIFT'}
-          </button>
-          <button class="btn-claim-xp-tier golden" onclick="claimXPLevelGift(${lvl}, 'golden')" ${!isUnlocked || goldenClaimed ? 'disabled' : ''}>
-            ${goldenClaimed ? '✅ CLAIMED' : '🥇 GOLDEN GIFT'}
+          <button class="btn-claim-xp-tier free" onclick="claimXPLevelGift(${lvl}, 'free')" ${!isUnlocked || isClaimed ? 'disabled' : ''}>
+            ${isClaimed ? '✅ CLAIMED' : '🎥 WATCH AD TO CLAIM REWARD'}
           </button>
         </div>
       </div>
