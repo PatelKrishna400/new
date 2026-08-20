@@ -1931,11 +1931,24 @@ async function buyMonthlyPassWithStars(passType = 'silver', priceStars = 50) {
 }
 
 /* ── ⭐ XP RANKS & 3-TIER PASS GIFTS ENGINE (FREE AD, SILVER & GOLDEN PASS) ── */
+/* ── ⭐ XP REWARD & 3-TIER EMPIRE PASS ENGINE (FREE, WATCH AD, SILVER, GOLDEN) ── */
 function renderXPLevelRanks() {
   const container = document.getElementById('xp-levels-list-container');
   if (!container) return;
 
   const currentLevel = Math.min(100, Math.max(1, STATE.level || 1));
+  const currentXP = Math.floor(STATE.xp || 0);
+  const xpNeeded = STATE.maxXp || 100;
+  const xpPct = Math.min(100, Math.floor((currentXP / xpNeeded) * 100));
+
+  // Update Hero Bar
+  const heroLvlEl = document.getElementById('xp-hero-current-lvl');
+  const heroPctEl = document.getElementById('xp-hero-pct-txt');
+  const heroFillEl = document.getElementById('xp-hero-fill');
+  if (heroLvlEl) heroLvlEl.textContent = `LEVEL ${currentLevel}`;
+  if (heroPctEl) heroPctEl.textContent = `${xpPct}% TO LEVEL ${currentLevel + 1}`;
+  if (heroFillEl) heroFillEl.style.width = `${xpPct}%`;
+
   STATE.claimedXPLevels = STATE.claimedXPLevels || {};
 
   let html = '';
@@ -1943,28 +1956,64 @@ function renderXPLevelRanks() {
     const isUnlocked = currentLevel >= lvl;
     const isCurrent = currentLevel === lvl;
 
-    const coinsReward = lvl * 2500;
-    const keysReward = lvl % 5 === 0 ? Math.floor(lvl / 5) : 0;
-    const ticketsReward = lvl % 3 === 0 ? 2 : 1;
+    const coinsReward = lvl * 3000;
+    const freeEnergyReward = lvl % 2 === 0 ? 100 : 50;
 
-    const isClaimed = !!STATE.claimedXPLevels[`${lvl}_free`];
+    // Random Key Item generator for Silver & Golden Pass previews
+    const keyItems = ['Golden Chest Key 🔑', 'Scratch Card 📜', 'Spin Ticket 🎟️'];
+    const silverItem = keyItems[lvl % 3];
+    const goldenItem = keyItems[(lvl + 1) % 3];
+
+    const freeClaimed = !!STATE.claimedXPLevels[`${lvl}_free`];
+    const adClaimed = !!STATE.claimedXPLevels[`${lvl}_ad`];
+    const silverClaimed = !!STATE.claimedXPLevels[`${lvl}_silver`];
+    const goldenClaimed = !!STATE.claimedXPLevels[`${lvl}_golden`];
 
     html += `
       <div class="xp-modal-level-item ${isCurrent ? 'current-level' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
         <div class="xp-level-header-simple">
-          <span class="xp-level-badge-title">⭐ LEVEL ${lvl}</span>
+          <div class="xp-level-badge-group">
+            <span class="xp-level-badge-title">⭐ LEVEL ${lvl} REWARDS</span>
+            <span class="xp-level-status-pill">${isCurrent ? '⭐ ACTIVE LEVEL' : isUnlocked ? '✅ UNLOCKED' : '🔒 LOCKED'}</span>
+          </div>
         </div>
 
-        <div class="xp-level-rewards-preview">
-          <span>💰 +${coinsReward.toLocaleString()} Coins</span>
-          ${keysReward ? `<span>🔑 +${keysReward} Keys</span>` : ''}
-          ${ticketsReward ? `<span>🎟️ +${ticketsReward} Tickets</span>` : ''}
-        </div>
+        <div class="xp-pass-tiers-grid">
+          <!-- TIER 1: FREE PASS (50-100 ENERGY) -->
+          <div class="xp-pass-tier-card free">
+            <div class="pass-tier-badge free">FREE PASS</div>
+            <div class="pass-tier-reward-text">⚡ +${freeEnergyReward} Energy</div>
+            <button class="btn-pass-claim free" onclick="claimXPLevelGift(${lvl}, 'free')" ${!isUnlocked || freeClaimed ? 'disabled' : ''}>
+              ${freeClaimed ? '✅ CLAIMED' : `⚡ CLAIM FREE REWARD`}
+            </button>
+          </div>
 
-        <div class="xp-level-actions-row">
-          <button class="btn-claim-xp-tier free" onclick="claimXPLevelGift(${lvl}, 'free')" ${!isUnlocked || isClaimed ? 'disabled' : ''}>
-            ${isClaimed ? '✅ CLAIMED' : '🎥 WATCH AD TO CLAIM REWARD'}
-          </button>
+          <!-- TIER 2: WATCH AD (NORMAL REWARD AD) -->
+          <div class="xp-pass-tier-card ad">
+            <div class="pass-tier-badge ad">WATCH AD • BONUS</div>
+            <div class="pass-tier-reward-text">💰 +${coinsReward.toLocaleString()} Coins & ⚡ +50 ⚡</div>
+            <button class="btn-pass-claim ad" onclick="claimXPLevelGift(${lvl}, 'ad')" ${!isUnlocked || adClaimed ? 'disabled' : ''}>
+              ${adClaimed ? '✅ CLAIMED' : '🎥 WATCH AD (BONUS REWARD)'}
+            </button>
+          </div>
+
+          <!-- TIER 3: SILVER PASS (COINS + 1 KEY/ITEM) -->
+          <div class="xp-pass-tier-card silver">
+            <div class="pass-tier-badge silver">SILVER PASS</div>
+            <div class="pass-tier-reward-text">💰 +${(coinsReward * 2).toLocaleString()} & 🔑 ${silverItem}</div>
+            <button class="btn-pass-claim silver" onclick="claimXPLevelGift(${lvl}, 'silver')" ${!isUnlocked || silverClaimed ? 'disabled' : ''}>
+              ${silverClaimed ? '✅ CLAIMED' : '🥈 SILVER CLAIM'}
+            </button>
+          </div>
+
+          <!-- TIER 4: GOLDEN PASS (HIGHEST PREMIUM TIER) -->
+          <div class="xp-pass-tier-card golden">
+            <div class="pass-tier-badge golden">GOLDEN PASS • PREMIUM</div>
+            <div class="pass-tier-reward-text">💰 +${(coinsReward * 4).toLocaleString()} & 👑 ${goldenItem}</div>
+            <button class="btn-pass-claim golden" onclick="claimXPLevelGift(${lvl}, 'golden')" ${!isUnlocked || goldenClaimed ? 'disabled' : ''}>
+              ${goldenClaimed ? '✅ CLAIMED' : '🥇 GOLDEN CLAIM'}
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1988,21 +2037,51 @@ function claimXPLevelGift(lvl, tier) {
   }
 
   const doClaim = () => {
-    let mult = 1;
-    if (tier === 'silver') mult = 2;
-    if (tier === 'golden') mult = 3;
+    let coinsWon = 0;
+    let energyWon = 0;
+    let keysWon = 0;
+    let ticketsWon = 0;
+    let rewardName = '';
 
-    const coinsWon = lvl * 2500 * mult;
-    const keysWon = (lvl % 5 === 0 ? Math.floor(lvl / 5) : 0) * mult;
-    const ticketsWon = (lvl % 3 === 0 ? 2 : 1) * mult;
+    const baseCoins = lvl * 3000;
 
-    STATE.coins += coinsWon;
-    if (keysWon > 0) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + keysWon;
-    if (ticketsWon > 0) STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + ticketsWon;
+    if (tier === 'free') {
+      energyWon = lvl % 2 === 0 ? 100 : 50;
+      rewardName = `⚡ +${energyWon} Energy`;
+    } else if (tier === 'ad') {
+      coinsWon = baseCoins;
+      energyWon = 50;
+      rewardName = `💰 +${fmt(coinsWon)} Coins & ⚡ +50 Energy`;
+    } else if (tier === 'silver') {
+      coinsWon = baseCoins * 2;
+      keysWon = 1;
+      rewardName = `💰 +${fmt(coinsWon)} Coins & 🔑 1 Key`;
+    } else if (tier === 'golden') {
+      coinsWon = baseCoins * 4;
+      keysWon = 2;
+      ticketsWon = 3;
+      rewardName = `💰 +${fmt(coinsWon)} Coins, 🔑 +2 Keys & 🎟️ +3 Tickets`;
+    }
+
+    if (coinsWon > 0) {
+      STATE.coins += coinsWon;
+      triggerCoinsFlyingAnimation();
+    }
+    if (energyWon > 0) {
+      STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + energyWon);
+      triggerEnergyRefillPulse();
+    }
+    if (keysWon > 0) {
+      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + keysWon;
+      triggerKeyRevealAnimation('Golden Chest Key 🔑');
+    }
+    if (ticketsWon > 0) {
+      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + ticketsWon;
+    }
 
     STATE.claimedXPLevels[claimKey] = true;
 
-    showToast(`🎉 Level ${lvl} ${tier.toUpperCase()} Reward Claimed! Won 💰 +${fmt(coinsWon)} Coins${keysWon ? `, 🔑 +${keysWon} Keys` : ''}${ticketsWon ? `, 🎟️ +${ticketsWon} Tickets` : ''}!`);
+    showToast(`🎉 LEVEL ${lvl} ${tier.toUpperCase()} CLAIMED! Received ${rewardName}!`);
     SFX.levelUp();
     haptic('success');
     createConfettiBurst();
@@ -2014,9 +2093,37 @@ function claimXPLevelGift(lvl, tier) {
     renderXPLevelRanks();
   };
 
-  // Mandatory Ad Watch on ALL reward claims!
-  openProductAdLink();
-  openMonetagAdModal(`xp_gift_${lvl}_${tier}`, doClaim);
+  if (tier === 'ad' || tier === 'silver' || tier === 'golden') {
+    openProductAdLink();
+    openMonetagAdModal(`xp_gift_${lvl}_${tier}`, doClaim);
+  } else {
+    doClaim();
+  }
+}
+
+/* ── 🎬 REWARD CLAIM ANIMATION HELPERS ── */
+function triggerCoinsFlyingAnimation() {
+  for (let i = 0; i < 12; i++) {
+    const coin = document.createElement('div');
+    coin.className = 'flying-coin-particle';
+    coin.textContent = '💰';
+    coin.style.left = `${Math.random() * 80 + 10}%`;
+    coin.style.top = `${Math.random() * 50 + 40}%`;
+    document.body.appendChild(coin);
+    setTimeout(() => coin.remove(), 1200);
+  }
+}
+
+function triggerEnergyRefillPulse() {
+  const energyEl = document.getElementById('energy-text');
+  if (energyEl) {
+    energyEl.classList.add('energy-pulse-glow');
+    setTimeout(() => energyEl.classList.remove('energy-pulse-glow'), 1500);
+  }
+}
+
+function triggerKeyRevealAnimation(itemName) {
+  showToast(`🔑 REVEALED: ${itemName}! Key Unlocked!`);
 }
 
 function openXPLevelModal() {

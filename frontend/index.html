@@ -1025,7 +1025,7 @@
       </div>
     </div>
 
-    <!-- ⭐ XP RANKS POPUP MODAL (MOBILE VIEW: LEFT CIRCULAR ARROW RETURN HOME & RIGHT CIRCULAR SHOP) -->
+    <!-- ⭐ XP REWARD & EMPIRE PASS POPUP MODAL -->
     <div id="xp-level-modal" class="modal-overlay">
       <div class="xp-modal-card mobile-view">
         <div class="xp-modal-header">
@@ -1035,14 +1035,25 @@
           </button>
           
           <div class="xp-modal-title-group">
-            <span class="xp-modal-badge">⭐ XP EMPIRE RANKS</span>
+            <span class="xp-modal-badge">⭐ XP REWARD & EMPIRE PASS</span>
             <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
           </div>
 
-          <!-- RIGHT SIDE: CIRCULAR SHOP EMOJI BUTTON (OPEN SHOP PAGE) -->
+          <!-- RIGHT SIDE: CIRCULAR SHOP EMOJI BUTTON (OPEN PASS SHOP) -->
           <button class="btn-circle-header right-shop-emoji" onclick="openPassStoreModal()" title="Open Pass Shop">
             🛒
           </button>
+        </div>
+
+        <!-- HERO XP LEVEL PROGRESS BAR CARD -->
+        <div class="xp-modal-hero-bar-card">
+          <div class="xp-hero-text-row">
+            <span class="xp-hero-current-lvl" id="xp-hero-current-lvl">LEVEL 1</span>
+            <span class="xp-hero-pct-txt" id="xp-hero-pct-txt">0% TO NEXT LEVEL</span>
+          </div>
+          <div class="xp-hero-track">
+            <div class="xp-hero-fill" id="xp-hero-fill" style="width: 0%;"></div>
+          </div>
         </div>
 
         <!-- 100 XP LEVELS GIFTS SCROLL CONTAINER -->
