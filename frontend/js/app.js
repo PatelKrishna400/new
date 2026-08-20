@@ -1956,16 +1956,6 @@ function closeXPLevelModal() {
 }
 
 /* ── 🛒 XP PASS STORE & ACCUMULATIVE ADS ENGINE (SILVER 50 ADS / GOLDEN 100 ADS) ── */
-function openPassStoreWithLoading() {
-  // 1. Open Direct Sponsored Product Ad Link (https://omg10.com/4/11616083)
-  openProductAdLink();
-
-  // 2. Open Monetag Rewarded Interstitial SDK / Ad Loading Transition
-  openMonetagAdModal('enter_pass_store', () => {
-    openPassStoreModal();
-  });
-}
-
 function openPassStoreModal() {
   const modal = document.getElementById('xp-pass-store-modal');
   if (!modal) return;
