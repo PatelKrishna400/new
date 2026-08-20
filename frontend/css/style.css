@@ -2371,15 +2371,23 @@ button {
   color: var(--gold);
 }
 
-.xp-widget-open-badge {
-  font-size: 9px;
-  font-weight: 900;
+.xp-corner-shop-btn {
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
   color: #000;
-  background: var(--gold);
-  padding: 3px 8px;
-  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 183, 0, 0.5);
+  cursor: pointer;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 10px var(--gold-glow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.xp-corner-shop-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(245, 183, 0, 0.7);
 }
 
 .xp-widget-actions-right {

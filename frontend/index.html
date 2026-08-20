@@ -88,7 +88,7 @@
             <div class="combo-badge" id="combo-badge">🔥 x5 COMBO</div>
           </div>
 
-          <!-- ── ⭐ XP LEVEL PROGRESS CARD (XP EMPIRE) ── -->
+          <!-- ── ⭐ XP LEVEL PROGRESS CARD WITH CORNER SHOPPING BUTTON ── -->
           <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
@@ -98,7 +98,9 @@
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <span class="xp-widget-open-badge" id="xp-home-btn-badge">XP RANKS ➔</span>
+              <button class="xp-corner-shop-btn" onclick="event.stopPropagation(); openPassStoreWithLoading();" title="Open XP Pass Store">
+                🛒 SHOP
+              </button>
             </div>
 
             <div class="xp-widget-bar-track">
