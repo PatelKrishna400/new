@@ -5878,6 +5878,155 @@ button {
   cursor: pointer;
 }
 
+/* ── 🎁 24-HOUR DAILY REWARD POPUP MODAL STYLES ── */
+.daily-modal-card {
+  background: linear-gradient(160deg, #180e29 0%, #2a1b4e 100%);
+  border: 1px solid rgba(245, 183, 0, 0.5);
+  border-radius: 24px;
+  width: 95%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  gap: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 183, 0, 0.3);
+}
+
+.daily-modal-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #F5B700;
+  letter-spacing: 0.5px;
+}
+
+.daily-modal-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 4px 0 0 0;
+}
+
+.daily-modal-sub {
+  font-size: 11px;
+  color: #CBD5E1;
+  margin: 2px 0 0 0;
+}
+
+.daily-streak-grid-7days {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.daily-day-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.daily-day-card.active-today {
+  background: linear-gradient(145deg, #261b05 0%, #140d02 100%);
+  border-color: #F5B700;
+  box-shadow: 0 4px 14px rgba(245, 183, 0, 0.4);
+  transform: scale(1.03);
+}
+
+.daily-day-card.claimed-past {
+  opacity: 0.5;
+  filter: grayscale(80%);
+}
+
+.jackpot-card {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%);
+  border: 1px solid #A855F7;
+  padding: 12px;
+}
+
+.d-day-title {
+  font-size: 10px;
+  font-weight: 900;
+  color: #94A3B8;
+}
+
+.d-day-title.golden {
+  color: #F5B700;
+}
+
+.d-day-icon {
+  font-size: 22px;
+}
+
+.d-day-reward {
+  font-size: 9px;
+  font-weight: 800;
+  color: #FFF;
+}
+
+.d-day-reward.golden {
+  color: #F5B700;
+  font-weight: 900;
+}
+
+.daily-reward-summary-box {
+  background: rgba(245, 183, 0, 0.15);
+  border: 1px solid #F5B700;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #FFF;
+  text-align: center;
+}
+
+.daily-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-claim-daily-24h.ad-2x {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(245, 183, 0, 0.5);
+}
+
+.btn-claim-daily-24h.standard {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10B981;
+  border: 1px solid #10B981;
+  cursor: pointer;
+}
+
+.btn-close-daily-modal {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(148, 163, 184, 0.15);
+  color: #94A3B8;
+  border: none;
+  cursor: pointer;
+}
+
 
 
 

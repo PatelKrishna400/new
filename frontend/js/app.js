@@ -1955,6 +1955,99 @@ function closeXPLevelModal() {
   if (modal) modal.classList.remove('active');
 }
 
+/* ── 🎁 24-HOUR DAILY LOGIN REWARD POPUP ENGINE ── */
+const DAILY_STREAK_REWARDS = [
+  { day: 1, coins: 10000, keys: 0, tickets: 1, energy: 0, text: '💰 +10,000 Coins & 🎟️ +1 Ticket' },
+  { day: 2, coins: 25000, keys: 2, tickets: 0, energy: 0, text: '💰 +25,000 Coins & 🔑 +2 Keys' },
+  { day: 3, coins: 50000, keys: 0, tickets: 0, energy: 50, text: '💰 +50,000 Coins & ⚡ +50 Energy' },
+  { day: 4, coins: 100000, keys: 0, tickets: 3, energy: 0, text: '💰 +100,000 Coins & 🎟️ +3 Tickets' },
+  { day: 5, coins: 250000, keys: 5, tickets: 0, energy: 0, text: '💰 +250,000 Coins & 🔑 +5 Keys' },
+  { day: 6, coins: 500000, keys: 0, tickets: 5, energy: 100, text: '💰 +500,000 Coins & 🎟️ +5 Tickets' },
+  { day: 7, coins: 1000000, keys: 10, tickets: 10, energy: 500, text: '💎 1,000,000 COINS, 🔑 +10 KEYS & 🎟️ +10 TICKETS!' }
+];
+
+function check24hDailyRewardModal() {
+  const modal = document.getElementById('daily-24h-reward-modal');
+  if (!modal) return;
+
+  const now = Date.now();
+  const lastClaim = STATE.last24hLoginTimestamp || 0;
+  const elapsedMs = now - lastClaim;
+
+  if (elapsedMs >= 86400000 || !STATE.last24hLoginTimestamp) {
+    openDaily24hRewardModal();
+  }
+}
+
+function openDaily24hRewardModal() {
+  const modal = document.getElementById('daily-24h-reward-modal');
+  if (!modal) return;
+
+  STATE.dailyStreakDay = STATE.dailyStreakDay || 1;
+  const dayNum = document.getElementById('daily-streak-day-num');
+  const summaryTxt = document.getElementById('daily-reward-summary-txt');
+
+  if (dayNum) dayNum.textContent = STATE.dailyStreakDay;
+  const currReward = DAILY_STREAK_REWARDS[(STATE.dailyStreakDay - 1) % 7];
+  if (summaryTxt && currReward) summaryTxt.textContent = currReward.text;
+
+  for (let d = 1; d <= 7; d++) {
+    const card = document.getElementById(`daily-day-card-${d}`);
+    if (card) {
+      card.classList.toggle('active-today', d === STATE.dailyStreakDay);
+      card.classList.toggle('claimed-past', d < STATE.dailyStreakDay);
+    }
+  }
+
+  modal.classList.add('active');
+}
+
+function closeDaily24hRewardModal() {
+  const modal = document.getElementById('daily-24h-reward-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function claimDaily24hReward(is2xWithAd = false) {
+  const streakDay = STATE.dailyStreakDay || 1;
+  const currReward = DAILY_STREAK_REWARDS[(streakDay - 1) % 7] || DAILY_STREAK_REWARDS[0];
+
+  const processClaim = (multiplier = 1) => {
+    const coinsWon = currReward.coins * multiplier;
+    const keysWon = currReward.keys * multiplier;
+    const ticketsWon = currReward.tickets * multiplier;
+    const energyWon = currReward.energy * multiplier;
+
+    STATE.coins += coinsWon;
+    if (keysWon > 0) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + keysWon;
+    if (ticketsWon > 0) STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + ticketsWon;
+    if (energyWon > 0) STATE.energy = Math.min(STATE.maxEnergy, (STATE.energy || 0) + energyWon);
+
+    STATE.last24hLoginTimestamp = Date.now();
+    STATE.dailyStreakDay = (streakDay >= 7) ? 1 : streakDay + 1;
+
+    showToast(`🎉 24H DAILY REWARD CLAIMED (${multiplier}X)! Won 💰 +${fmt(coinsWon)} Coins${keysWon ? `, 🔑 +${keysWon} Keys` : ''}${ticketsWon ? `, 🎟️ +${ticketsWon} Tickets` : ''}!`);
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+
+    closeDaily24hRewardModal();
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+    updateUI();
+  };
+
+  if (is2xWithAd) {
+    openProductAdLink();
+    openMonetagAdModal('daily_24h_2x', () => {
+      processClaim(2);
+    });
+  } else {
+    processClaim(1);
+  }
+}
+
 /* ── ⚡ LOGIN TO WIN 100 ENERGY ENGINE (10 ADS / CANCEL / 0 STARTING ENERGY) ── */
 function checkLoginEnergyModal() {
   const modal = document.getElementById('energy-welcome-modal');
@@ -3846,6 +3939,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
   initParticleCanvas();
   updateUI();
+  check24hDailyRewardModal();
   checkLoginEnergyModal();
 
   if (window.soundEngine) {
