@@ -2574,6 +2574,80 @@ function shareReferralTelegram() {
   showToast('✈️ Opening Telegram share...');
 }
 
+/* ── 🏆 LEADERBOARD DYNAMIC ENGINE (DAILY, WEEKLY, ALL-TIME) ── */
+let _activeLeaderboardTab = 'daily';
+
+const LEADERBOARD_DATA = {
+  daily: [
+    { rank: 4, name: 'SatoshiTapper', avatar: '⚡', xp: 62400, level: 68, badge: '🥈 SILVER VIP' },
+    { rank: 5, name: 'MoonWalker', avatar: '🚀', xp: 54100, level: 59, badge: '🥇 GOLD VIP' },
+    { rank: 6, name: 'CoinHunter', avatar: '💰', xp: 48900, level: 54, badge: '⭐ TOP TAPPER' },
+    { rank: 7, name: 'KeyMaster_X', avatar: '🔑', xp: 42300, level: 48, badge: '🔑 KEY KING' },
+    { rank: 8, name: 'StarGazer', avatar: '⭐', xp: 38100, level: 43, badge: '🎁 STAR GIFT' },
+    { rank: 9, name: 'EmpireBuilder', avatar: '🏰', xp: 33900, level: 39, badge: '⚡ RAPID REGEN' },
+    { rank: 10, name: 'SpinWinner', avatar: '🎡', xp: 29500, level: 34, badge: '🎟️ SPIN MASTER' }
+  ],
+  weekly: [
+    { rank: 4, name: 'CryptoHero', avatar: '💎', xp: 142000, level: 88, badge: '🥇 GOLD VIP' },
+    { rank: 5, name: 'BlockTapper', avatar: '🧱', xp: 128500, level: 81, badge: '🥈 SILVER VIP' },
+    { rank: 6, name: 'NovaWhale', avatar: '🐋', xp: 115000, level: 76, badge: '👑 VIP CROWN' },
+    { rank: 7, name: 'HyperClicker', avatar: '⚡', xp: 99400, level: 71, badge: '⭐ TOP TAPPER' },
+    { rank: 8, name: 'GoldenFalcon', avatar: '🦅', xp: 88200, level: 65, badge: '🎁 STAR GIFT' }
+  ],
+  alltime: [
+    { rank: 4, name: 'GenesisLord', avatar: '👑', xp: 580000, level: 100, badge: '🥇 GOLD VIP' },
+    { rank: 5, name: 'AlphaTitan', avatar: '🛡️', xp: 490000, level: 98, badge: '👑 VIP CROWN' },
+    { rank: 6, name: 'CyberSamurai', avatar: '⚔️', xp: 420000, level: 94, badge: '🥈 SILVER VIP' },
+    { rank: 7, name: 'QuantumTapper', avatar: '⚛️', xp: 375000, level: 90, badge: '🎁 STAR GIFT' }
+  ]
+};
+
+function switchLeaderboardTab(tab = 'daily') {
+  _activeLeaderboardTab = tab;
+
+  document.querySelectorAll('.leaderboard-tabs-nav .rank-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === `rank-tab-${tab}`);
+  });
+
+  renderLeaderboard();
+  haptic('selection');
+}
+
+function renderLeaderboard() {
+  const container = document.getElementById('leaderboard-list-container');
+  const myRankNum = document.getElementById('my-rank-num');
+  const myRankName = document.getElementById('my-rank-name');
+  const myRankScore = document.getElementById('my-rank-score');
+
+  // Update user's current rank card
+  if (myRankName) myRankName.textContent = STATE.telegramUser?.first_name || 'YOU';
+  if (myRankScore) myRankScore.textContent = `LVL ${STATE.level || 1} | ${Math.floor(STATE.xp || 0)} XP`;
+  if (myRankNum) myRankNum.textContent = STATE.level > 10 ? `#${Math.max(11, 50 - STATE.level)}` : '#42';
+
+  if (!container) return;
+
+  const ranks = LEADERBOARD_DATA[_activeLeaderboardTab] || LEADERBOARD_DATA.daily;
+
+  let html = '';
+  ranks.forEach(r => {
+    html += `
+      <div class="rank-player-row">
+        <div class="rank-player-left">
+          <span class="player-rank-num">#${r.rank}</span>
+          <div class="player-avatar-circle">${r.avatar}</div>
+          <div class="player-name-group">
+            <span class="player-username">${r.name}</span>
+            <span class="player-level-txt">LVL ${r.level} • ${r.badge}</span>
+          </div>
+        </div>
+        <span class="player-score-txt">${r.xp.toLocaleString()} XP</span>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
 function claimReferralReward(milestone) {
   STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
   if ((STATE.referrals.invitedCount || 0) < milestone) {
