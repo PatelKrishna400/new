@@ -1,0 +1,18 @@
+{
+  "name": "tap-empire",
+  "version": "2.0.0",
+  "description": "Tap Empire - Ultimate Telegram Mini App (Frontend & Backend)",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
+  },
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "tap-game",
+    "telegram-stars"
+  ],
+  "author": "PatelKrishna400",
+  "license": "ISC"
+}
