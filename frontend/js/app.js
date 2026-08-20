@@ -312,7 +312,7 @@ function updateUI() {
   if (xpHomeValText) xpHomeValText.textContent = `${currentXP} / ${xpNeeded} XP`;
   if (xpHomeTargetText) {
     const isSilver = isSilverPassActive();
-    xpHomeTargetText.textContent = isSilver ? '+2.0 XP PER TAP (2X VIP)' : '+1.0 XP PER TAP';
+    xpHomeTargetText.textContent = isSilver ? '+0.2 XP PER TAP (2X VIP)' : '+0.1 XP PER TAP';
   }
 
   // XP Modal Page Header Updates
@@ -1717,7 +1717,7 @@ function handleTap(e) {
 
   // Deduct 1 energy & add XP (Silver Pass on Even Level grants 2X XP: +1.0 XP per tap!)
   const isSilver = isSilverPassActive();
-  const xpAmount = isSilver ? 2.0 : 1.0;
+  const xpAmount = isSilver ? 0.2 : 0.1;
 
   STATE.energy -= 1;
   addXP(xpAmount);
