@@ -88,7 +88,7 @@
             <div class="combo-badge" id="combo-badge">🔥 x5 COMBO</div>
           </div>
 
-          <!-- ── ⭐ XP LEVEL PROGRESS CARD WITH CORNER SHOPPING BUTTON ── -->
+          <!-- ── ⭐ XP LEVEL PROGRESS CARD (XP EMPIRE) ── -->
           <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
@@ -98,9 +98,7 @@
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <button class="xp-corner-shop-btn" onclick="event.stopPropagation(); openPassStoreWithLoading();" title="Open XP Pass Store">
-                🛒 SHOP
-              </button>
+              <span class="xp-widget-open-badge" id="xp-home-btn-badge">XP RANKS ➔</span>
             </div>
 
             <div class="xp-widget-bar-track">
@@ -986,11 +984,12 @@
       <div class="xp-modal-card">
         <div class="xp-modal-header">
           <div class="xp-modal-title-group">
-            <span class="xp-modal-badge">⭐ XP EMPIRE RANKS & PASS GIFTS</span>
             <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
           </div>
           <div class="xp-modal-header-actions">
-            <button class="btn-open-xp-store" onclick="openPassStoreModal()">🛒 STORE</button>
+            <button class="xp-corner-shop-btn" onclick="openPassStoreWithLoading()" title="Open XP Pass Store">
+              🛒 SHOP
+            </button>
             <button class="btn-close-xp-modal" onclick="closeXPLevelModal()">✕</button>
           </div>
         </div>
