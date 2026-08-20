@@ -28,6 +28,56 @@
   --t-fast: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* ── ⭕ GLOBAL CURVED CORNER STYLING FOR ALL RECTANGLE CARDS, MODALS, BUTTONS & CONTAINERS ── */
+.screen,
+.home-widget-card,
+.goal-card-item,
+.cartridge-card,
+.boost-cartridge-card,
+.task-card-item,
+.podium-card,
+.user-my-rank-card,
+.rank-player-row,
+.profile-header-center,
+.profile-stat-card,
+.profile-referral-card,
+.modal-overlay > div,
+.energy-modal-card,
+.daily-modal-card,
+.xp-modal-card,
+.xp-store-modal-card,
+.star-modal-card,
+.signin-modal-card,
+.email-modal-card,
+.ref-modal-card,
+.pass-card,
+.silver-pass-vip-card,
+.golden-pass-card,
+.gift-tier-card,
+.ref-tabs-bar,
+.leaderboard-tabs-nav,
+.energy-preview-box,
+.daily-day-card,
+.daily-reward-summary-box,
+.tg-login-modal-card,
+button,
+input,
+select {
+  border-radius: 20px !important;
+}
+
+.rank-tab-btn,
+.profile-corner-shop-btn,
+.badge,
+.xp-widget-open-badge,
+.my-rank-badge,
+.player-rank-num,
+.energy-progress-track,
+.energy-progress-fill,
+.btn-claim-ref-reward {
+  border-radius: 14px !important;
+}
+
 /* ── Reset & Typography ── */
 *, *::before, *::after {
   box-sizing: border-box;
