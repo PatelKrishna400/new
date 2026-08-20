@@ -493,6 +493,45 @@
             </div>
           </div>
 
+          <!-- ✉️ TELEGRAM EMAIL & AUTHENTICATION CARD -->
+          <div class="profile-email-auth-card">
+            <div class="p-email-header">
+              <div class="p-email-title-group">
+                <span class="p-email-icon">✉️</span>
+                <div>
+                  <span class="p-email-title">TELEGRAM EMAIL & AUTH VERIFICATION</span>
+                  <span class="p-email-sub">Bind email code, Google Sign-In or Apple Sign-In</span>
+                </div>
+              </div>
+              <span class="email-status-badge unverified" id="email-status-badge">🔒 UNVERIFIED</span>
+            </div>
+
+            <!-- EMAIL ADDRESS INPUT & SEND CODE ROW -->
+            <div class="email-input-row">
+              <input type="email" class="email-input-field" id="email-input-address" placeholder="Enter your email (e.g. user@gmail.com)" />
+              <button class="btn-send-email-code" onclick="sendTelegramVerifyEmailCode()">
+                ✉️ SEND CODE
+              </button>
+            </div>
+
+            <!-- OAUTH / GOOGLE & APPLE SIGN-IN BUTTONS GRID -->
+            <div class="email-oauth-grid">
+              <button class="btn-oauth-signin google" onclick="verifyEmailWithGoogle()">
+                <span class="oauth-icon">🌐</span> SIGN IN WITH GOOGLE
+              </button>
+              <button class="btn-oauth-signin apple" onclick="verifyEmailWithApple()">
+                <span class="oauth-icon">🍎</span> SIGN IN WITH APPLE
+              </button>
+            </div>
+
+            <!-- RESET LOGIN EMAIL ACTION -->
+            <div class="email-reset-row">
+              <button class="btn-reset-email" onclick="resetTelegramLoginEmail()">
+                🔄 RESET TELEGRAM LOGIN EMAIL
+              </button>
+            </div>
+          </div>
+
           <!-- 👥 REFERRAL SYSTEM / INVITE FRIENDS CARD -->
           <div class="profile-referral-card">
             <div class="ref-card-header">
@@ -617,6 +656,34 @@
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" role="alert"></div>
+
+    <!-- ✉️ TELEGRAM EMAIL VERIFICATION CODE MODAL -->
+    <div id="email-verify-modal" class="modal-overlay">
+      <div class="email-modal-card">
+        <div class="email-modal-header">
+          <span class="email-modal-badge">✉️ TELEGRAM AUTH VERIFICATION</span>
+          <h2 class="email-modal-title">Enter Verification Code</h2>
+          <p class="email-modal-sub" id="email-modal-sent-txt">Code sent to: user@example.com</p>
+        </div>
+
+        <div class="email-code-box">
+          <input type="text" class="email-code-input" id="email-code-digits" placeholder="123456" maxlength="6" />
+        </div>
+
+        <div class="email-modal-reward-note">
+          🎁 Verification Reward: <strong>💰 +50,000 Coins, 🔑 +5 Keys & 🎟️ +5 Tickets!</strong>
+        </div>
+
+        <div class="email-modal-actions">
+          <button class="btn-confirm-email-verify" onclick="confirmVerifyEmailCode()">
+            ✅ VERIFY EMAIL & CLAIM REWARD
+          </button>
+          <button class="btn-close-email-modal" onclick="closeEmailVerifyModal()">
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- ── 📺 MONETAG REWARDED AD POPUP MODAL ── -->
     <div id="ad-modal" class="modal-overlay">

@@ -74,6 +74,10 @@ const STATE = {
     active: false,
     expiry: 0
   },
+  emailAuth: {
+    email: '',
+    verified: false
+  },
   settings: {
     sound: true,
     haptic: true
@@ -2178,6 +2182,22 @@ async function renderProfileScreen() {
     if (pTickets) pTickets.textContent = `${STATE.goals?.ticketsBalance || 0} Tickets`;
     if (pGoalLvl) pGoalLvl.textContent = `Goal Lvl ${STATE.goals?.level || 1}`;
     if (pUserId) pUserId.textContent = `ID: ${_userId || 'Local'}`;
+
+    // Update Email Auth Status Badge
+    const emailBadge = document.getElementById('email-status-badge');
+    const emailInput = document.getElementById('email-input-address');
+    if (emailBadge) {
+      if (STATE.emailAuth?.verified) {
+        emailBadge.textContent = `✅ VERIFIED: ${STATE.emailAuth.email || 'Done'}`;
+        emailBadge.className = 'email-status-badge verified';
+      } else {
+        emailBadge.textContent = '🔒 UNVERIFIED';
+        emailBadge.className = 'email-status-badge unverified';
+      }
+    }
+    if (emailInput && STATE.emailAuth?.email) {
+      emailInput.value = STATE.emailAuth.email;
+    }
 
     // Update Referral System UI safely
     const refLinkInput = document.getElementById('ref-link-input');

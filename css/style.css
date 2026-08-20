@@ -3983,6 +3983,234 @@ button {
   box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
 }
 
+/* ✉️ TELEGRAM EMAIL AUTHENTICATION & VERIFICATION STYLES */
+.profile-email-auth-card {
+  margin: 14px 0 20px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.2);
+}
+
+.p-email-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.p-email-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.p-email-icon {
+  font-size: 24px;
+}
+
+.p-email-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  color: #FFF;
+  letter-spacing: 0.5px;
+}
+
+.p-email-sub {
+  display: block;
+  font-size: 10px;
+  color: #94A3B8;
+}
+
+.email-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+
+.email-status-badge.unverified {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.email-status-badge.verified {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22C55E;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.email-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.email-input-field {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFF;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.email-input-field:focus {
+  border-color: #38BDF8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.btn-send-email-code {
+  background: linear-gradient(135deg, #00F0FF 0%, #0284C7 100%);
+  color: #000;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.email-oauth-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.btn-oauth-signin {
+  flex: 1;
+  padding: 9px 10px;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-oauth-signin.google {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFF;
+}
+
+.btn-oauth-signin.apple {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+}
+
+.email-reset-row {
+  text-align: center;
+}
+
+.btn-reset-email {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ✉️ EMAIL VERIFY POPUP MODAL STYLES */
+.email-modal-card {
+  width: 90%;
+  max-width: 360px;
+  background: #0F172A;
+  border: 1.5px solid #38BDF8;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(56, 189, 248, 0.4);
+  text-align: center;
+}
+
+.email-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #38BDF8;
+  letter-spacing: 1px;
+}
+
+.email-modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 6px 0 2px 0;
+}
+
+.email-modal-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-bottom: 14px;
+}
+
+.email-code-box {
+  margin-bottom: 14px;
+}
+
+.email-code-input {
+  width: 100%;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid #38BDF8;
+  color: #00F0FF;
+  outline: none;
+}
+
+.email-modal-reward-note {
+  font-size: 11px;
+  color: #CBD5E1;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.email-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-confirm-email-verify {
+  width: 100%;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00F0FF 0%, #0284C7 100%);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.5);
+}
+
+.btn-close-email-modal {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+}
+
+
 
 
 
