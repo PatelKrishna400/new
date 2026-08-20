@@ -1923,6 +1923,103 @@ async function buyMonthlyPassWithStars(passType = 'silver', priceStars = 50) {
 }
 
 /* ── ⭐ XP RANKS & 3-TIER PASS GIFTS ENGINE (FREE AD, SILVER & GOLDEN PASS) ── */
+function renderXPLevelRanks() {
+  const container = document.getElementById('xp-levels-list-container');
+  if (!container) return;
+
+  const currentLevel = STATE.level || 1;
+  STATE.claimedXPLevels = STATE.claimedXPLevels || {};
+
+  let html = '';
+  for (let lvl = 1; lvl <= 100; lvl++) {
+    const isUnlocked = currentLevel >= lvl;
+    const isCurrent = currentLevel === lvl;
+
+    const coinsReward = lvl * 2500;
+    const keysReward = lvl % 5 === 0 ? Math.floor(lvl / 5) : 0;
+    const ticketsReward = lvl % 3 === 0 ? 2 : 1;
+
+    const freeClaimed = !!STATE.claimedXPLevels[`${lvl}_free`];
+    const silverClaimed = !!STATE.claimedXPLevels[`${lvl}_silver`];
+    const goldenClaimed = !!STATE.claimedXPLevels[`${lvl}_golden`];
+
+    html += `
+      <div class="xp-modal-level-item ${isCurrent ? 'current-level' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
+        <div class="xp-level-badge-row">
+          <span class="xp-level-badge-title">⭐ LEVEL ${lvl}</span>
+          <span class="xp-level-status-tag">${isCurrent ? '⭐ CURRENT LEVEL' : isUnlocked ? '✅ UNLOCKED' : '🔒 LOCKED'}</span>
+        </div>
+
+        <div class="xp-level-rewards-preview">
+          <span>💰 +${coinsReward.toLocaleString()} Coins</span>
+          ${keysReward ? `<span>🔑 +${keysReward} Keys</span>` : ''}
+          ${ticketsReward ? `<span>🎟️ +${ticketsReward} Tickets</span>` : ''}
+        </div>
+
+        <div class="xp-level-actions-row">
+          <button class="btn-claim-xp-tier free" onclick="claimXPLevelGift(${lvl}, 'free')" ${!isUnlocked || freeClaimed ? 'disabled' : ''}>
+            ${freeClaimed ? '✅ CLAIMED' : '🎥 FREE AD CLAIM'}
+          </button>
+          <button class="btn-claim-xp-tier silver" onclick="claimXPLevelGift(${lvl}, 'silver')" ${!isUnlocked || silverClaimed ? 'disabled' : ''}>
+            ${silverClaimed ? '✅ CLAIMED' : '🥈 SILVER GIFT'}
+          </button>
+          <button class="btn-claim-xp-tier golden" onclick="claimXPLevelGift(${lvl}, 'golden')" ${!isUnlocked || goldenClaimed ? 'disabled' : ''}>
+            ${goldenClaimed ? '✅ CLAIMED' : '🥇 GOLDEN GIFT'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function claimXPLevelGift(lvl, tier) {
+  if ((STATE.level || 1) < lvl) {
+    showToast(`🔒 Level ${lvl} is locked! Reach Level ${lvl} to unlock.`);
+    return;
+  }
+
+  STATE.claimedXPLevels = STATE.claimedXPLevels || {};
+  const claimKey = `${lvl}_${tier}`;
+
+  if (STATE.claimedXPLevels[claimKey]) {
+    showToast('✅ Reward already claimed!');
+    return;
+  }
+
+  const doClaim = () => {
+    let mult = 1;
+    if (tier === 'silver') mult = 2;
+    if (tier === 'golden') mult = 3;
+
+    const coinsWon = lvl * 2500 * mult;
+    const keysWon = (lvl % 5 === 0 ? Math.floor(lvl / 5) : 0) * mult;
+    const ticketsWon = (lvl % 3 === 0 ? 2 : 1) * mult;
+
+    STATE.coins += coinsWon;
+    if (keysWon > 0) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + keysWon;
+    if (ticketsWon > 0) STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + ticketsWon;
+
+    STATE.claimedXPLevels[claimKey] = true;
+
+    showToast(`🎉 Level ${lvl} ${tier.toUpperCase()} Reward Claimed! Won 💰 +${fmt(coinsWon)} Coins${keysWon ? `, 🔑 +${keysWon} Keys` : ''}${ticketsWon ? `, 🎟️ +${ticketsWon} Tickets` : ''}!`);
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+    updateUI();
+    renderXPLevelRanks();
+  };
+
+  // Mandatory Ad Watch on ALL reward claims!
+  openProductAdLink();
+  openMonetagAdModal(`xp_gift_${lvl}_${tier}`, doClaim);
+}
+
 function openXPLevelModal() {
   const modal = document.getElementById('xp-level-modal');
   if (!modal) return;
@@ -1932,21 +2029,7 @@ function openXPLevelModal() {
     rankTitle.textContent = `LEVEL ${STATE.level || 1} (${Math.floor(STATE.xp || 0)} / ${STATE.maxXp || 100} XP)`;
   }
 
-  // Update Status Pills
-  const silverTxt = document.getElementById('xp-status-silver-txt');
-  if (silverTxt) {
-    silverTxt.textContent = isSilverPassActive() ? 'ACTIVE ✅' : 'OFFLINE 🔒';
-    silverTxt.style.color = isSilverPassActive() ? '#4ADE80' : '#EF4444';
-  }
-
-  const goldenTxt = document.getElementById('xp-status-golden-txt');
-  if (goldenTxt) {
-    goldenTxt.textContent = isGoldenPassActive() ? 'ACTIVE ✅' : 'OFFLINE 🔒';
-    goldenTxt.style.color = isGoldenPassActive() ? '#F5B700' : '#EF4444';
-  }
-
   renderXPLevelRanks();
-  updatePassStoreUI();
   modal.classList.add('active');
 }
 
