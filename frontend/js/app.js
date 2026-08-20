@@ -2153,18 +2153,27 @@ function openXPLevelModal() {
   const modal = document.getElementById('xp-level-modal');
   if (!modal) return;
 
+  const currentLvl = Math.min(100, Math.max(1, STATE.level || 1));
+  const currentXP = Number((STATE.xp || 0).toFixed(1));
+  const xpNeeded = typeof getXPNeededForLevel === 'function' ? getXPNeededForLevel(currentLvl) : (STATE.maxXp || 100);
+
   const rankTitle = document.getElementById('xp-modal-user-rank');
   if (rankTitle) {
-    rankTitle.textContent = `LEVEL ${STATE.level || 1} (${Math.floor(STATE.xp || 0)} / ${STATE.maxXp || 100} XP)`;
+    rankTitle.textContent = `LEVEL ${currentLvl} (${currentXP} / ${xpNeeded} XP)`;
   }
 
   renderXPLevelRanks();
   modal.classList.add('active');
+  if (typeof haptic === 'function') haptic('selection');
+  if (typeof SFX !== 'undefined' && SFX.click) SFX.click();
+  updateUI();
 }
 
 function closeXPLevelModal() {
   const modal = document.getElementById('xp-level-modal');
   if (modal) modal.classList.remove('active');
+  const modal2 = document.getElementById('xp-levels-modal');
+  if (modal2) modal2.classList.remove('active');
 }
 
 /* ── 📱 TELEGRAM ONE-CLICK LOGIN POPUP ENGINE ── */
@@ -2294,122 +2303,6 @@ function watchAdForPass(passType = 'silver') {
   });
 }
 
-function renderXPLevelRanks() {
-  const container = document.getElementById('xp-levels-list-container');
-  if (!container) return;
-
-  STATE.claimedXpGifts = STATE.claimedXpGifts || {};
-  const currentLvl = STATE.level || 1;
-  const isSilver = isSilverPassActive();
-  const isGolden = isGoldenPassActive();
-
-  let html = '';
-  for (let lvl = 1; lvl <= 20; lvl++) {
-    const isLevelUnlocked = currentLvl >= lvl;
-    const freeClaimed = !!STATE.claimedXpGifts[`${lvl}_free`];
-    const silverClaimed = !!STATE.claimedXpGifts[`${lvl}_silver`];
-    const goldenClaimed = !!STATE.claimedXpGifts[`${lvl}_golden`];
-
-    html += `
-      <div class="xp-level-rank-card ${isLevelUnlocked ? 'unlocked' : 'locked'}">
-        <div class="xp-rank-card-header">
-          <span class="xp-rank-level-badge">LEVEL ${lvl}</span>
-          <span class="xp-rank-target-txt">${lvl * 100} XP</span>
-        </div>
-
-        <div class="xp-rank-gifts-grid">
-          <!-- 🆓 FREE AD GIFT TIER -->
-          <div class="xp-gift-tier-item free">
-            <div class="xp-gift-info">
-              <span class="xp-gift-tag free">🆓 FREE GIFT</span>
-              <span class="xp-gift-reward-txt">💰 +${(lvl * 5000).toLocaleString()} Coins + 🎟️ 1 Ticket</span>
-            </div>
-            ${freeClaimed
-              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
-              : isLevelUnlocked
-                ? `<button class="btn-xp-claim free" onclick="openMonetagAdModal('xp_free_${lvl}', () => claimXPLevelGift(${lvl}, 'free'))">🎥 CLAIM (AD)</button>`
-                : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
-            }
-          </div>
-
-          <!-- 🥈 SILVER PASS GIFT TIER -->
-          <div class="xp-gift-tier-item silver">
-            <div class="xp-gift-info">
-              <span class="xp-gift-tag silver">🥈 SILVER PASS GIFT</span>
-              <span class="xp-gift-reward-txt">💰 +${(lvl * 15000).toLocaleString()} Coins + 🔑 2 Keys</span>
-            </div>
-            ${silverClaimed
-              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
-              : isLevelUnlocked && isSilver
-                ? `<button class="btn-xp-claim silver" onclick="claimXPLevelGift(${lvl}, 'silver')">🥈 CLAIM SILVER GIFT</button>`
-                : isLevelUnlocked
-                  ? `<button class="btn-xp-claim silver-buy" onclick="buyMonthlyPassWithStars('silver', 500)">🔒 UNLOCK (500 ⭐)</button>`
-                  : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
-            }
-          </div>
-
-          <!-- 🥇 GOLDEN PASS GIFT TIER -->
-          <div class="xp-gift-tier-item golden">
-            <div class="xp-gift-info">
-              <span class="xp-gift-tag golden">🥇 GOLDEN PASS GIFT</span>
-              <span class="xp-gift-reward-txt">💰 +${(lvl * 50000).toLocaleString()} Coins + 🔑 5 Keys + 🎁 Star Gift</span>
-            </div>
-            ${goldenClaimed
-              ? `<button class="btn-xp-claim claimed" disabled>✅ CLAIMED</button>`
-              : isLevelUnlocked && isGolden
-                ? `<button class="btn-xp-claim golden" onclick="claimXPLevelGift(${lvl}, 'golden')">🥇 CLAIM GOLDEN GIFT</button>`
-                : isLevelUnlocked
-                  ? `<button class="btn-xp-claim golden-buy" onclick="buyMonthlyPassWithStars('golden', 1000)">🔒 UNLOCK (1000 ⭐)</button>`
-                  : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
-            }
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  container.innerHTML = html;
-}
-
-function claimXPLevelGift(level, tier) {
-  STATE.claimedXpGifts = STATE.claimedXpGifts || {};
-  const key = `${level}_${tier}`;
-
-  if (STATE.claimedXpGifts[key]) {
-    showToast('⚠️ Gift already claimed!');
-    return;
-  }
-
-  // Mandatory Ad watch for claiming ANY reward
-  openMonetagAdModal(`xp_${tier}_${level}`, () => {
-    STATE.claimedXpGifts[key] = true;
-
-    if (tier === 'free') {
-      STATE.coins += level * 5000;
-      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 1;
-      showToast(`🎉 Level ${level} Free Gift Claimed! +${(level * 5000).toLocaleString()} Coins & 🎟️ +1 Ticket!`);
-    } else if (tier === 'silver') {
-      STATE.coins += level * 15000;
-      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 2;
-      showToast(`🥈 Level ${level} Silver Gift Claimed! +${(level * 15000).toLocaleString()} Coins & 🔑 +2 Keys!`);
-    } else if (tier === 'golden') {
-      STATE.coins += level * 50000;
-      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 5;
-      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 5;
-      showToast(`🥇 Level ${level} Golden Gift Claimed! +${(level * 50000).toLocaleString()} Coins, 🔑 +5 Keys & 🎁 Star Gift!`);
-    }
-
-    SFX.collect();
-    haptic('success');
-
-    if (typeof saveUserDataToFirebase === 'function') {
-      saveUserDataToFirebase(STATE);
-    }
-
-    updateUI();
-    renderXPLevelRanks();
-  });
-}
 
 /* ── PASSIVE ENERGY REGENERATION (RAPID +1⚡/s DURING SILVER PASS) ── */
 setInterval(() => {
@@ -3367,89 +3260,9 @@ function _processXPLevelClaim(lvl, watchAd) {
 }
 
 function renderXPLevelsList() {
-  const container = document.getElementById('xp-levels-list-container');
-  if (!container) return;
-
-  STATE.claimedXPLevels = STATE.claimedXPLevels || {};
-  STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
-
-  const currentLvl = STATE.level || 1;
-  const items = [];
-
-  for (let i = 1; i <= 100; i++) {
-    const xpReq = getXPNeededForLevel(i);
-    let statusClass = 'locked';
-    let statusBadge = `<span class="xp-item-badge locked">🔒 LEVEL ${i}</span>`;
-
-    const isEnergyLevel = (i % 5 === 0);
-    const energyAmount = 50 + Math.floor(i * 1.5);
-
-    if (i < currentLvl) {
-      statusClass = 'completed';
-      if (STATE.claimedXPLevels[i]) {
-        statusBadge = `<span class="xp-item-badge completed">✅ CLAIMED</span>`;
-      } else {
-        if (isEnergyLevel) {
-          statusBadge = `
-            <div class="xp-claim-btn-group">
-              <button class="btn-claim-xp-reward energy" onclick="claimXPLevelReward(${i}, false)">⚡ CLAIM (+${energyAmount}⚡)</button>
-              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD (⚡ +${energyAmount * 2})</button>
-            </div>`;
-        } else {
-          statusBadge = `
-            <div class="xp-claim-btn-group">
-              <button class="btn-claim-xp-reward" onclick="claimXPLevelReward(${i}, false)">🎁 CLAIM</button>
-              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD</button>
-            </div>`;
-        }
-      }
-    } else if (i === currentLvl) {
-      statusClass = 'current';
-      statusBadge = `<span class="xp-item-badge current">🔥 IN PROGRESS</span>`;
-    }
-
-    let rewardTxt = '';
-    let iconEmoji = '⭐';
-
-    if (isEnergyLevel) {
-      iconEmoji = '⚡';
-      rewardTxt = `⚡ +${energyAmount} Energy (ENERGY MILESTONE!)`;
-    } else {
-      const baseCoins = i * 1000;
-      rewardTxt = `💰 +${fmt(baseCoins)} Coins`;
-    }
-
-    items.push(`
-      <div class="xp-level-item-card ${statusClass} ${isEnergyLevel ? 'energy-level-card' : ''}">
-        <div class="xp-item-lvl-icon">${iconEmoji} ${i}</div>
-        <div class="xp-item-info">
-          <div class="xp-item-title-row">
-            <span class="xp-item-lvl-name">${isEnergyLevel ? '⚡ ENERGY MILESTONE LEVEL ' + i : 'LEVEL ' + i}</span>
-            ${statusBadge}
-          </div>
-          <div class="xp-item-req-text">Target: ${xpReq} XP Points</div>
-          <div class="xp-item-reward-text">${isEnergyLevel ? '⚡ Reward: +' + energyAmount + ' Energy (Energy Only)' : 'Reward: ' + rewardTxt}</div>
-        </div>
-      </div>
-    `);
+  if (typeof renderXPLevelRanks === 'function') {
+    renderXPLevelRanks();
   }
-
-  container.innerHTML = items.join('');
-}
-
-function openXPLevelModal() {
-  const modal = document.getElementById('xp-levels-modal');
-  if (modal) {
-    modal.classList.add('active');
-    renderXPLevelsList();
-    haptic('selection');
-    updateUI();
-  }
-}
-
-function closeXPLevelModal() {
-  const modal = document.getElementById('xp-levels-modal');
-  if (modal) modal.classList.remove('active');
 }
 
 function closeEmailVerifyModal() {
