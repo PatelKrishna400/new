@@ -2008,8 +2008,54 @@ function watchAdForLoginEnergy() {
     if (typeof saveUserDataToFirebase === 'function') {
       saveUserDataToFirebase(STATE);
     }
-    updateUI();
   });
+}
+
+/* ── 📱 TELEGRAM ONE-CLICK LOGIN POPUP ENGINE ── */
+function openTelegramLoginPopupModal() {
+  const modal = document.getElementById('telegram-login-popup-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeTelegramLoginPopupModal() {
+  const modal = document.getElementById('telegram-login-popup-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function triggerTelegramQuickLogin() {
+  showToast('⚡ Verifying Telegram WebApp initData...');
+  if (typeof authenticateTelegramUser === 'function') {
+    const res = await authenticateTelegramUser();
+    if (res && res.ok) {
+      STATE.coins += 100000;
+      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
+      showToast('🎉 TELEGRAM LOGIN SUCCESSFUL! Granted 💰 +100,000 Coins & 🔑 +10 Keys!');
+      SFX.levelUp();
+      haptic('success');
+      createConfettiBurst();
+      closeTelegramLoginPopupModal();
+      if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+      updateUI();
+      renderProfileScreen();
+    } else {
+      showToast('ℹ️ Standalone / Web mode active (No Telegram WebApp initData found).');
+    }
+  }
+}
+
+function openPhoneSignInFromLoginModal() {
+  closeTelegramLoginPopupModal();
+  if (typeof openTelegramSignInModal === 'function') openTelegramSignInModal();
+}
+
+function open2FASignInFromLoginModal() {
+  closeTelegramLoginPopupModal();
+  if (typeof open2FAPasswordModal === 'function') open2FAPasswordModal();
+}
+
+function openBotSignInFromLoginModal() {
+  closeTelegramLoginPopupModal();
+  if (typeof openBotAuthModal === 'function') openBotAuthModal();
 }
 
 /* ── 🛒 XP PASS STORE & ACCUMULATIVE ADS ENGINE (SILVER 50 ADS / GOLDEN 100 ADS) ── */

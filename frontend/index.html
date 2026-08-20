@@ -781,6 +781,49 @@
       </button>
     </nav>
 
+    <!-- 📱 TELEGRAM ONE-CLICK LOGIN POPUP MODAL -->
+    <div id="telegram-login-popup-modal" class="modal-overlay">
+      <div class="tg-login-modal-card">
+        <div class="tg-login-header">
+          <span class="tg-login-badge">✈️ TELEGRAM ACCOUNT LOGIN</span>
+          <h2 class="tg-login-title">LOGIN TO TAP EMPIRE</h2>
+          <p class="tg-login-sub">Authenticate your Telegram WebApp account to save progress & claim rewards!</p>
+        </div>
+
+        <div class="tg-login-options-grid">
+          <!-- Quick WebApp Auth -->
+          <button class="btn-tg-quick-login" onclick="triggerTelegramQuickLogin()">
+            ⚡ ONE-CLICK TELEGRAM QUICK LOGIN
+          </button>
+
+          <!-- Phone SMS Sign-in -->
+          <button class="btn-tg-option-login" onclick="openPhoneSignInFromLoginModal()">
+            📱 PHONE NUMBER & SMS CODE SIGN-IN
+          </button>
+
+          <!-- 2FA Cloud Password -->
+          <button class="btn-tg-option-login" onclick="open2FASignInFromLoginModal()">
+            🔒 2FA CLOUD PASSWORD SIGN-IN
+          </button>
+
+          <!-- Bot Auth Token -->
+          <button class="btn-tg-option-login" onclick="openBotSignInFromLoginModal()">
+            🤖 BOT TOKEN AUTHORIZATION LOGIN
+          </button>
+        </div>
+
+        <div class="tg-login-reward-box">
+          🎁 Login Welcome Reward: <strong>💰 +100,000 Coins & 🔑 +10 Master Keys!</strong>
+        </div>
+
+        <div class="tg-login-modal-actions">
+          <button class="btn-close-tg-login" onclick="closeTelegramLoginPopupModal()">
+            CLOSE LOGIN
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toast" role="alert"></div>
 
