@@ -1184,6 +1184,29 @@ function openMonetagAdModal(type, callback = null) {
   _adStartTimestamp = Date.now();
   _adSessionToken = Math.random().toString(36).substring(2, 10);
 
+  // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11577158())
+  if (typeof show_11577158 === 'function') {
+    showToast('📺 Opening Monetag Rewarded Ad...');
+    try {
+      show_11577158().then(() => {
+        haptic('success');
+        _adStartTimestamp = Date.now() - 5000;
+        _adSessionToken = 'monetag_direct_sdk_ok';
+        confirmClaimReward();
+      }).catch(err => {
+        console.warn('Monetag ad closed or error:', err);
+        _openMonetagAdModalFallback(type);
+      });
+      return;
+    } catch (err) {
+      console.warn('Monetag execution exception:', err);
+    }
+  }
+
+  _openMonetagAdModalFallback(type);
+}
+
+function _openMonetagAdModalFallback(type) {
   const modal = document.getElementById('ad-modal');
   const statusTxt = document.getElementById('ad-status-txt');
   const timerTxt = document.getElementById('ad-timer-txt');
