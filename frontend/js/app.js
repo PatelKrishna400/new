@@ -305,10 +305,15 @@ function updateUI() {
   const xpHomeLevelTitle = document.getElementById('xp-home-level-title');
   const xpHomeBarFill = document.getElementById('xp-home-bar-fill');
   const xpHomeValText = document.getElementById('xp-home-val-text');
+  const xpHomeTargetText = document.getElementById('xp-home-target-text');
 
   if (xpHomeLevelTitle) xpHomeLevelTitle.textContent = `LEVEL ${currentLvl}`;
   if (xpHomeBarFill) xpHomeBarFill.style.width = xpPct + '%';
   if (xpHomeValText) xpHomeValText.textContent = `${currentXP} / ${xpNeeded} XP`;
+  if (xpHomeTargetText) {
+    const isSilver = isSilverPassActive();
+    xpHomeTargetText.textContent = isSilver ? '+2.0 XP PER TAP (2X VIP)' : '+1.0 XP PER TAP';
+  }
 
   // XP Modal Page Header Updates
   const xpModalHeroLvl = document.getElementById('xp-modal-hero-lvl');
@@ -1712,8 +1717,7 @@ function handleTap(e) {
 
   // Deduct 1 energy & add XP (Silver Pass on Even Level grants 2X XP: +1.0 XP per tap!)
   const isSilver = isSilverPassActive();
-  const isEvenLevel = ((STATE.level || 1) % 2 === 0);
-  const xpAmount = (isSilver && isEvenLevel) ? 1.0 : 0.5;
+  const xpAmount = isSilver ? 2.0 : 1.0;
 
   STATE.energy -= 1;
   addXP(xpAmount);
