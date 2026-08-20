@@ -1161,11 +1161,12 @@ function openMonetagAdModal(type, callback = null) {
   // Trigger sponsored product ad link on product buy / ad claim action
   openProductAdLink();
 
-  // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11577158())
-  if (typeof show_11577158 === 'function') {
-    showToast('📺 Opening Monetag Rewarded Ad...');
+  // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11363275() / show_11577158())
+  const showAdFunc = typeof show_11363275 === 'function' ? show_11363275 : (typeof show_11577158 === 'function' ? show_11577158 : null);
+  if (showAdFunc) {
+    showToast('📺 Opening Rewarded Ad...');
     try {
-      show_11577158().then(() => {
+      showAdFunc().then(() => {
         haptic('success');
         _adStartTimestamp = Date.now() - 5000;
         _adSessionToken = 'monetag_direct_sdk_ok';
