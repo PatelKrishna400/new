@@ -5685,17 +5685,20 @@ button {
 
 /* ── ⚡ LOGIN TO WIN 100 ENERGY POPUP MODAL STYLES ── */
 .energy-modal-card {
-  background: linear-gradient(160deg, #0b132b 0%, #1c2541 100%);
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  background: linear-gradient(160deg, #091328 0%, #152240 100%);
+  border: 2px solid rgba(0, 240, 255, 0.5);
   border-radius: 24px;
-  width: 95%;
-  max-width: 440px;
+  width: 90%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  padding: 22px;
+  padding: 24px 20px;
   gap: 16px;
   text-align: center;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 240, 255, 0.35);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
 }
 
 .energy-modal-badge {
@@ -5744,6 +5747,32 @@ button {
   font-weight: 900;
   color: var(--electric-blue);
   text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.energy-progress-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.energy-progress-track {
+  width: 100%;
+  height: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.energy-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00F0FF 0%, #0077FF 100%);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+  transition: width 0.3s ease;
 }
 
 .energy-ad-counter-txt {

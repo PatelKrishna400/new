@@ -2069,9 +2069,11 @@ function updateEnergyAdCounterUI() {
   const count = STATE.loginEnergyAdProgress || 0;
   const counterTxt = document.getElementById('energy-ad-counter-txt');
   const countBtn = document.getElementById('energy-ad-count-btn');
+  const progressFill = document.getElementById('energy-progress-fill');
 
   if (counterTxt) counterTxt.textContent = `Progress: ${count} / 10 Ads Watched`;
   if (countBtn) countBtn.textContent = count;
+  if (progressFill) progressFill.style.width = `${(count / 10) * 100}%`;
 }
 
 function watchAdForLoginEnergy() {
