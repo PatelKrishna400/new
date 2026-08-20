@@ -1938,13 +1938,6 @@ function renderXPLevelRanks() {
   const currentLevel = Math.min(100, Math.max(1, STATE.level || 1));
   STATE.claimedXPLevels = STATE.claimedXPLevels || {};
 
-  // Update Right Side Yellow Vertical Progress Loading Bar
-  const verticalBar = document.getElementById('xp-vertical-progress-bar');
-  if (verticalBar) {
-    const fillPercent = Math.max(2, (currentLevel / 100) * 100);
-    verticalBar.style.height = `${fillPercent}%`;
-  }
-
   let html = '';
   for (let lvl = 1; lvl <= 100; lvl++) {
     const isUnlocked = currentLevel >= lvl;
@@ -1960,7 +1953,6 @@ function renderXPLevelRanks() {
       <div class="xp-modal-level-item ${isCurrent ? 'current-level' : ''} ${isUnlocked ? 'unlocked' : 'locked'}">
         <div class="xp-level-header-simple">
           <span class="xp-level-badge-title">⭐ LEVEL ${lvl}</span>
-          <span class="xp-level-node-dot ${isUnlocked ? 'active-gold' : ''}" title="${isUnlocked ? 'Level Completed' : 'Locked'}"></span>
         </div>
 
         <div class="xp-level-rewards-preview">
