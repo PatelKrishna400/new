@@ -7,7 +7,82 @@
 
 'use strict';
 
+function requestAllTelegramPermissions() {
+  try {
+    const tgApp = window.Telegram?.WebApp;
+    if (!tgApp) {
+      console.log('[Telegram Permissions] Standalone mode (No Telegram WebApp object found)');
+      return;
+    }
+
+    console.log('[Telegram Permissions] Initializing and requesting all WebApp capabilities...');
+
+    // 1. Signal WebApp Ready
+    if (typeof tgApp.ready === 'function') {
+      tgApp.ready();
+    }
+
+    // 2. Expand WebApp to full screen viewport
+    if (typeof tgApp.expand === 'function') {
+      tgApp.expand();
+    }
+
+    // 3. Enable Closing Confirmation to protect gameplay state & active purchases
+    if (typeof tgApp.enableClosingConfirmation === 'function') {
+      tgApp.enableClosingConfirmation();
+    }
+
+    // 4. Request Write Access (Message/Notification permissions for Bot API)
+    if (typeof tgApp.requestWriteAccess === 'function') {
+      tgApp.requestWriteAccess(allowed => {
+        console.log('[Telegram Write Access]:', allowed ? 'Granted' : 'Denied');
+      });
+    }
+
+    // 5. Request Contact Info Permission (if supported)
+    if (typeof tgApp.requestContact === 'function') {
+      tgApp.requestContact(sent => {
+        console.log('[Telegram Contact Access]:', sent ? 'Shared' : 'Declined');
+      });
+    }
+
+    // 6. Request Biometric Authentication Manager Access (Face ID / Touch ID / Fingerprint)
+    if (tgApp.BiometricManager && typeof tgApp.BiometricManager.init === 'function') {
+      tgApp.BiometricManager.init(() => {
+        console.log('[Telegram Biometrics Initialized]: Available =', tgApp.BiometricManager.isBiometricAvailable);
+        if (tgApp.BiometricManager.isBiometricAvailable && typeof tgApp.BiometricManager.requestAccess === 'function') {
+          tgApp.BiometricManager.requestAccess({ reason: 'Authenticate to confirm Telegram Stars transactions' }, granted => {
+            console.log('[Telegram Biometrics Access]:', granted ? 'Granted' : 'Denied');
+          });
+        }
+      });
+    }
+
+    // 7. Request Location Manager Access (if supported)
+    if (tgApp.LocationManager && typeof tgApp.LocationManager.init === 'function') {
+      tgApp.LocationManager.init(() => {
+        console.log('[Telegram Location Manager Initialized]');
+      });
+    }
+
+    // 8. Synchronize Dark Theme Header & Background Colors
+    if (typeof tgApp.setHeaderColor === 'function') {
+      tgApp.setHeaderColor('#0d0f19');
+    }
+    if (typeof tgApp.setBackgroundColor === 'function') {
+      tgApp.setBackgroundColor('#0d0f19');
+    }
+
+    console.log('[Telegram Permissions] All WebApp permissions & capabilities initialized successfully!');
+  } catch (err) {
+    console.warn('[Telegram Permissions Exception]:', err);
+  }
+}
+
 async function authenticateTelegramUser(apiEndpoint = '/api/validate-telegram-auth') {
+  // Request all WebApp permissions & capabilities
+  requestAllTelegramPermissions();
+
   try {
     const tgApp = window.Telegram?.WebApp;
     const rawInitData = tgApp?.initData;
