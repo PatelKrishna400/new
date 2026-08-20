@@ -25,7 +25,7 @@ let _activeBoostFilter = 'all';
 
 const STATE = {
   coins: 0,
-  energy: 500,
+  energy: 0,
   maxEnergy: 500,
   level: 1,
   xp: 0,
@@ -1955,6 +1955,63 @@ function closeXPLevelModal() {
   if (modal) modal.classList.remove('active');
 }
 
+/* ── ⚡ LOGIN TO WIN 100 ENERGY ENGINE (10 ADS / CANCEL / 0 STARTING ENERGY) ── */
+function checkLoginEnergyModal() {
+  const modal = document.getElementById('energy-welcome-modal');
+  if (!modal) return;
+
+  if (!STATE.loginEnergyClaimedToday) {
+    updateEnergyAdCounterUI();
+    modal.classList.add('active');
+  }
+}
+
+function closeEnergyWelcomeModal() {
+  const modal = document.getElementById('energy-welcome-modal');
+  if (modal) modal.classList.remove('active');
+  showToast('ℹ️ Energy starting at 0 ⚡. Recharge passively or watch 10 Ads to claim +100 Energy!');
+}
+
+function updateEnergyAdCounterUI() {
+  const count = STATE.loginEnergyAdProgress || 0;
+  const counterTxt = document.getElementById('energy-ad-counter-txt');
+  const countBtn = document.getElementById('energy-ad-count-btn');
+
+  if (counterTxt) counterTxt.textContent = `Progress: ${count} / 10 Ads Watched`;
+  if (countBtn) countBtn.textContent = count;
+}
+
+function watchAdForLoginEnergy() {
+  // 1. Direct Sponsored Product Ad Link (https://omg10.com/4/11616083)
+  openProductAdLink();
+
+  // 2. Monetag Rewarded Interstitial SDK (show_11363275)
+  openMonetagAdModal('login_energy_ad', () => {
+    STATE.loginEnergyAdProgress = (STATE.loginEnergyAdProgress || 0) + 1;
+    updateEnergyAdCounterUI();
+
+    if (STATE.loginEnergyAdProgress >= 10) {
+      STATE.energy = Math.min(STATE.maxEnergy, (STATE.energy || 0) + 100);
+      STATE.loginEnergyClaimedToday = true;
+      STATE.loginEnergyAdProgress = 0;
+
+      showToast('🎉 CONGRATS! 10 Ads Watched! +100 ⚡ ENERGY CLAIMED SUCCESSFULLY!');
+      SFX.levelUp();
+      haptic('success');
+      createConfettiBurst();
+
+      closeEnergyWelcomeModal();
+    } else {
+      showToast(`🎥 Ad Watched! Energy Ad Progress: ${STATE.loginEnergyAdProgress}/10 Ads!`);
+    }
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+    updateUI();
+  });
+}
+
 /* ── 🛒 XP PASS STORE & ACCUMULATIVE ADS ENGINE (SILVER 50 ADS / GOLDEN 100 ADS) ── */
 function openPassStoreModal() {
   const modal = document.getElementById('xp-pass-store-modal');
@@ -3743,6 +3800,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
   initParticleCanvas();
   updateUI();
+  checkLoginEnergyModal();
 
   if (window.soundEngine) {
     window.soundEngine.init();
