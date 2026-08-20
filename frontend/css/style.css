@@ -2382,6 +2382,33 @@ button {
   box-shadow: 0 0 10px var(--gold-glow);
 }
 
+.xp-widget-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circle-shop-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 183, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.circle-shop-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(245, 183, 0, 0.7);
+}
+
 .xp-widget-bar-track {
   width: 100%;
   height: 8px;

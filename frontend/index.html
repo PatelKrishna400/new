@@ -88,17 +88,21 @@
             <div class="combo-badge" id="combo-badge">🔥 x5 COMBO</div>
           </div>
 
-          <!-- ── ⭐ XP LEVEL PROGRESS CIRCULAR RECTANGLE CARD (CLICKABLE TAB FOR 100 XP LEVELS) ── -->
+          <!-- ── ⭐ XP LEVEL PROGRESS CARD WITH CIRCULAR SHOP BUTTON ── -->
           <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
                 <span class="xp-widget-icon">⭐</span>
                 <div class="xp-widget-title-text">
-                  <span class="xp-widget-label">XP EMPIRE RANK <span class="xp-notify-red-dot hidden" id="xp-home-red-dot"></span></span>
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <span class="xp-widget-open-badge" id="xp-home-btn-badge">XP RANKS ➔</span>
+              <div class="xp-widget-actions-right">
+                <button class="circle-shop-btn" onclick="event.stopPropagation(); openPassStoreModal();" title="Buy VIP Pass">
+                  🛒
+                </button>
+                <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
+              </div>
             </div>
 
             <div class="xp-widget-bar-track">
