@@ -89,7 +89,7 @@
           </div>
 
           <!-- ── ⭐ XP LEVEL PROGRESS CARD ── -->
-          <div class="home-widget-card xp-level-widget-card">
+          <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
                 <span class="xp-widget-icon">⭐</span>
@@ -97,6 +97,7 @@
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
+              <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
             </div>
 
             <div class="xp-widget-bar-track">
@@ -1020,6 +1021,33 @@
           <button class="btn-close-bot-modal" onclick="closeBotAuthModal()">
             CANCEL
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⭐ XP RANKS POPUP MODAL (MOBILE VIEW: LEFT CIRCULAR ARROW RETURN HOME & RIGHT CIRCULAR SHOP) -->
+    <div id="xp-level-modal" class="modal-overlay">
+      <div class="xp-modal-card mobile-view">
+        <div class="xp-modal-header">
+          <!-- LEFT SIDE: CIRCULAR ARROW BUTTON (RETURN TO HOME) -->
+          <button class="btn-circle-header left-home-arrow" onclick="closeXPLevelModal()" title="Return to Home">
+            ⬅️
+          </button>
+          
+          <div class="xp-modal-title-group">
+            <span class="xp-modal-badge">⭐ XP EMPIRE RANKS</span>
+            <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
+          </div>
+
+          <!-- RIGHT SIDE: CIRCULAR SHOP EMOJI BUTTON (OPEN SHOP PAGE) -->
+          <button class="btn-circle-header right-shop-emoji" onclick="openPassStoreModal()" title="Open Pass Shop">
+            🛒
+          </button>
+        </div>
+
+        <!-- 100 XP LEVELS GIFTS SCROLL CONTAINER -->
+        <div class="xp-levels-scroll-list" id="xp-levels-list-container">
+          <!-- Dynamically populated via js/app.js -->
         </div>
       </div>
     </div>
