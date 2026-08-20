@@ -1946,12 +1946,93 @@ function openXPLevelModal() {
   }
 
   renderXPLevelRanks();
+  updatePassStoreUI();
   modal.classList.add('active');
 }
 
 function closeXPLevelModal() {
   const modal = document.getElementById('xp-level-modal');
   if (modal) modal.classList.remove('active');
+}
+
+/* ── 🛒 XP PASS STORE & ACCUMULATIVE ADS ENGINE (SILVER 50 ADS / GOLDEN 100 ADS) ── */
+function openPassStoreModal() {
+  const modal = document.getElementById('xp-pass-store-modal');
+  if (!modal) return;
+  updatePassStoreUI();
+  modal.classList.add('active');
+}
+
+function closePassStoreModal() {
+  const modal = document.getElementById('xp-pass-store-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function updatePassStoreUI() {
+  const sAdCount = STATE.silverAdProgress || 0;
+  const gAdCount = STATE.goldenAdProgress || 0;
+
+  const sBanner = document.getElementById('silver-ad-banner-txt');
+  if (sBanner) sBanner.textContent = sAdCount;
+
+  const gBanner = document.getElementById('golden-ad-banner-txt');
+  if (gBanner) gBanner.textContent = gAdCount;
+
+  const sBoost = document.getElementById('silver-ad-progress-txt-boost');
+  if (sBoost) sBoost.textContent = sAdCount;
+
+  const gBoost = document.getElementById('golden-ad-progress-txt-boost');
+  if (gBoost) gBoost.textContent = gAdCount;
+
+  const sStore = document.getElementById('silver-ad-store-txt');
+  if (sStore) sStore.textContent = sAdCount;
+
+  const gStore = document.getElementById('golden-ad-store-txt');
+  if (gStore) gStore.textContent = gAdCount;
+}
+
+function watchAdForPass(passType = 'silver') {
+  // 1. Trigger Direct Sponsored Product Ad Link (https://omg10.com/4/11616083)
+  openProductAdLink();
+
+  // 2. Open Monetag Rewarded Interstitial SDK (show_11363275)
+  openMonetagAdModal('pass_ad_' + passType, () => {
+    if (passType === 'silver') {
+      STATE.silverAdProgress = (STATE.silverAdProgress || 0) + 1;
+      if (STATE.silverAdProgress >= 50) {
+        STATE.silverPass = STATE.silverPass || {};
+        STATE.silverPass.active = true;
+        STATE.silverPass.expiry = Date.now() + (30 * 86400 * 1000);
+        showToast('🎉 CONGRATS! 50 Ads Watched! SILVER VIP PASS UNLOCKED FOR 30 DAYS!');
+        SFX.levelUp();
+        haptic('success');
+        createConfettiBurst();
+      } else {
+        showToast(`🎥 Ad Watched! Silver Pass Progress: ${STATE.silverAdProgress}/50 Ads!`);
+      }
+    } else if (passType === 'golden') {
+      STATE.goldenAdProgress = (STATE.goldenAdProgress || 0) + 1;
+      if (STATE.goldenAdProgress >= 100) {
+        STATE.goldenPass = STATE.goldenPass || {};
+        STATE.goldenPass.active = true;
+        STATE.goldenPass.expiry = Date.now() + (30 * 86400 * 1000);
+        showToast('👑 CONGRATS! 100 Ads Watched! GOLDEN VIP PASS UNLOCKED FOR 30 DAYS!');
+        SFX.levelUp();
+        haptic('success');
+        createConfettiBurst();
+      } else {
+        showToast(`🎥 Ad Watched! Golden Pass Progress: ${STATE.goldenAdProgress}/100 Ads!`);
+      }
+    }
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    updateUI();
+    renderXPLevelRanks();
+    updatePassStoreUI();
+  });
 }
 
 function renderXPLevelRanks() {
@@ -2003,7 +2084,7 @@ function renderXPLevelRanks() {
               : isLevelUnlocked && isSilver
                 ? `<button class="btn-xp-claim silver" onclick="claimXPLevelGift(${lvl}, 'silver')">🥈 CLAIM SILVER GIFT</button>`
                 : isLevelUnlocked
-                  ? `<button class="btn-xp-claim silver-buy" onclick="buyMonthlyPassWithStars('silver', 50)">🔒 UNLOCK (50 ⭐)</button>`
+                  ? `<button class="btn-xp-claim silver-buy" onclick="buyMonthlyPassWithStars('silver', 500)">🔒 UNLOCK (500 ⭐)</button>`
                   : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
             }
           </div>
@@ -2019,7 +2100,7 @@ function renderXPLevelRanks() {
               : isLevelUnlocked && isGolden
                 ? `<button class="btn-xp-claim golden" onclick="claimXPLevelGift(${lvl}, 'golden')">🥇 CLAIM GOLDEN GIFT</button>`
                 : isLevelUnlocked
-                  ? `<button class="btn-xp-claim golden-buy" onclick="buyMonthlyPassWithStars('golden', 150)">🔒 UNLOCK (150 ⭐)</button>`
+                  ? `<button class="btn-xp-claim golden-buy" onclick="buyMonthlyPassWithStars('golden', 1000)">🔒 UNLOCK (1000 ⭐)</button>`
                   : `<button class="btn-xp-claim locked" disabled>🔒 LEVEL ${lvl}</button>`
             }
           </div>

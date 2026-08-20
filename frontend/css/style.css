@@ -5193,14 +5193,187 @@ button {
 .btn-xp-claim.claimed { background: rgba(74, 222, 128, 0.2); color: #4ADE80; border: 1px solid #22C55E; }
 .btn-xp-claim.locked { background: rgba(148, 163, 184, 0.2); color: #64748B; cursor: not-allowed; }
 
-.btn-close-xp-footer {
+.btn-open-xp-store {
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 183, 0, 0.4);
+}
+
+.btn-open-store-footer {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  border: none;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(245, 183, 0, 0.4);
+}
+
+.btn-quick-buy-pass.ad-quick {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFF;
+}
+
+.btn-quick-buy-pass.ad-quick-gold {
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  color: #FFF;
+}
+
+/* ── 🛒 XP PASS STORE POPUP MODAL STYLES ── */
+.xp-store-modal-card {
+  background: linear-gradient(160deg, #0f172a 0%, #020617 100%);
+  border: 1px solid rgba(245, 183, 0, 0.5);
+  border-radius: 24px;
+  width: 95%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 183, 0, 0.3);
+}
+
+.xp-store-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-store-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #F5B700;
+  letter-spacing: 0.5px;
+}
+
+.xp-store-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 0;
+}
+
+.btn-close-store-modal {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.xp-store-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.xp-store-item-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xp-store-item-card.golden {
+  background: linear-gradient(145deg, #261b05 0%, #120c02 100%);
+  border-color: rgba(245, 183, 0, 0.5);
+}
+
+.xp-store-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-store-item-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #CBD5E1;
+}
+
+.xp-store-item-title.golden {
+  color: #F5B700;
+}
+
+.xp-store-item-badge {
+  font-size: 9px;
+  font-weight: 900;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60A5FA;
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.xp-store-item-badge.golden {
+  background: rgba(245, 183, 0, 0.2);
+  color: #FBBF24;
+  border-color: rgba(245, 183, 0, 0.4);
+}
+
+.xp-store-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: #E2E8F0;
+}
+
+.xp-store-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-store-buy {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-store-buy.stars {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFF;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-store-buy.golden-stars {
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(245, 183, 0, 0.4);
+}
+
+.btn-store-buy.ad {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFF;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-close-store-footer {
   width: 100%;
   padding: 10px;
   border-radius: 12px;
   background: rgba(148, 163, 184, 0.2);
-  color: #CBD5E1;
+  color: #94A3B8;
   border: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
 }

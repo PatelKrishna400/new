@@ -272,7 +272,7 @@
             <p class="boost-main-subtitle">Select a boost card to upgrade your empire</p>
           </div>
 
-          <!-- ── ⭐ MONTHLY TELEGRAM STARS VIP PASSES (SILVER & GOLDEN) ── -->
+          <!-- ── ⭐ MONTHLY TELEGRAM STARS VIP PASSES (SILVER 500⭐/50 ADS & GOLDEN 1000⭐/100 ADS) ── -->
           <div class="vip-passes-container">
             
             <!-- 🥈 SILVER PASS CARD -->
@@ -289,9 +289,9 @@
                 <div class="silver-perk-item">🎫 <strong>Free Scratch Cards (No Ads)</strong></div>
               </div>
               <div class="silver-pass-actions">
-                <button class="btn-buy-silver-pass stars" onclick="buyMonthlyPassWithStars('silver', 50)">⭐ BUY WITH STARS (50 ⭐/MO)</button>
+                <button class="btn-buy-silver-pass stars" onclick="buyMonthlyPassWithStars('silver', 500)">⭐ BUY WITH STARS (500 ⭐/MO)</button>
+                <button class="btn-buy-silver-pass ad" onclick="watchAdForPass('silver')">🎥 WATCH AD (<span id="silver-ad-progress-txt-boost">0</span>/50 ADS)</button>
                 <button class="btn-buy-silver-pass keys" onclick="buySilverPass('keys')">🔑 UNLOCK (5 KEYS)</button>
-                <button class="btn-buy-silver-pass ad" onclick="buySilverPass('ad')">🎥 UNLOCK VIA AD</button>
               </div>
             </div>
 
@@ -309,7 +309,8 @@
                 <div class="silver-perk-item">👑 <strong>Golden Crown Badge & Profile Glow</strong></div>
               </div>
               <div class="silver-pass-actions">
-                <button class="btn-buy-silver-pass golden-stars-btn" onclick="buyMonthlyPassWithStars('golden', 150)">⭐ BUY GOLDEN PASS (150 ⭐/MO)</button>
+                <button class="btn-buy-silver-pass golden-stars-btn" onclick="buyMonthlyPassWithStars('golden', 1000)">⭐ BUY GOLDEN PASS (1000 ⭐/MO)</button>
+                <button class="btn-buy-silver-pass ad" onclick="watchAdForPass('golden')">🎥 WATCH AD (<span id="golden-ad-progress-txt-boost">0</span>/100 ADS)</button>
               </div>
             </div>
 
@@ -986,18 +987,23 @@
             <span class="xp-modal-badge">⭐ XP EMPIRE RANKS & PASS GIFTS</span>
             <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
           </div>
-          <button class="btn-close-xp-modal" onclick="closeXPLevelModal()">✕</button>
+          <div class="xp-modal-header-actions">
+            <button class="btn-open-xp-store" onclick="openPassStoreModal()">🛒 STORE</button>
+            <button class="btn-close-xp-modal" onclick="closeXPLevelModal()">✕</button>
+          </div>
         </div>
 
-        <!-- PASS STATUS BANNER & QUICK BUY -->
+        <!-- PASS STATUS BANNER & QUICK STORE ACTIONS -->
         <div class="xp-pass-banner-row">
           <div class="xp-pass-status-pill silver" id="xp-pill-silver">
             <span>🥈 SILVER PASS:</span> <strong id="xp-status-silver-txt">OFFLINE</strong>
-            <button class="btn-quick-buy-pass silver" onclick="buyMonthlyPassWithStars('silver', 50)">⭐ 50 STARS</button>
+            <button class="btn-quick-buy-pass silver" onclick="buyMonthlyPassWithStars('silver', 500)">⭐ 500 STARS</button>
+            <button class="btn-quick-buy-pass ad-quick" onclick="watchAdForPass('silver')">🎥 WATCH AD (<span id="silver-ad-banner-txt">0</span>/50)</button>
           </div>
           <div class="xp-pass-status-pill golden" id="xp-pill-golden">
             <span>🥇 GOLDEN PASS:</span> <strong id="xp-status-golden-txt">OFFLINE</strong>
-            <button class="btn-quick-buy-pass golden" onclick="buyMonthlyPassWithStars('golden', 150)">⭐ 150 STARS</button>
+            <button class="btn-quick-buy-pass golden" onclick="buyMonthlyPassWithStars('golden', 1000)">⭐ 1000 STARS</button>
+            <button class="btn-quick-buy-pass ad-quick-gold" onclick="watchAdForPass('golden')">🎥 WATCH AD (<span id="golden-ad-banner-txt">0</span>/100)</button>
           </div>
         </div>
 
@@ -1007,7 +1013,69 @@
         </div>
 
         <div class="xp-modal-footer">
+          <button class="btn-open-store-footer" onclick="openPassStoreModal()">🛒 OPEN XP PASS STORE</button>
           <button class="btn-close-xp-footer" onclick="closeXPLevelModal()">CLOSE RANKS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🛒 XP PASS STORE POPUP MODAL (BUY SILVER 500⭐/50 ADS & GOLDEN 1000⭐/100 ADS) -->
+    <div id="xp-pass-store-modal" class="modal-overlay">
+      <div class="xp-store-modal-card">
+        <div class="xp-store-header">
+          <div class="xp-store-title-group">
+            <span class="xp-store-badge">🛒 XP PASS STORE</span>
+            <h2 class="xp-store-title">BUY VIP PASSES (STARS OR ADS)</h2>
+          </div>
+          <button class="btn-close-store-modal" onclick="closePassStoreModal()">✕</button>
+        </div>
+
+        <div class="xp-store-items-container">
+          <!-- 🥈 SILVER PASS STORE ITEM -->
+          <div class="xp-store-item-card silver">
+            <div class="xp-store-item-header">
+              <span class="xp-store-item-title">🥈 MONTHLY SILVER VIP PASS</span>
+              <span class="xp-store-item-badge">500 STARS / 50 ADS</span>
+            </div>
+            <div class="xp-store-perks">
+              <span>⚡ +50% Tap Power & Rapid Energy</span>
+              <span>🎯 2X XP & Level Claim Rewards</span>
+              <span>🎟️ +15 Free Daily Spin Tickets</span>
+            </div>
+            <div class="xp-store-item-actions">
+              <button class="btn-store-buy stars" onclick="buyMonthlyPassWithStars('silver', 500)">
+                ⭐ BUY FOR 500 STARS
+              </button>
+              <button class="btn-store-buy ad" onclick="watchAdForPass('silver')">
+                🎥 WATCH AD (<span id="silver-ad-store-txt">0</span>/50 ADS WATCHED)
+              </button>
+            </div>
+          </div>
+
+          <!-- 🥇 GOLDEN PASS STORE ITEM -->
+          <div class="xp-store-item-card golden">
+            <div class="xp-store-item-header">
+              <span class="xp-store-item-title golden">🥇 MONTHLY GOLDEN VIP PASS</span>
+              <span class="xp-store-item-badge golden">1000 STARS / 100 ADS</span>
+            </div>
+            <div class="xp-store-perks">
+              <span>⚡ +150% Supercharged Tap Power</span>
+              <span>🎯 3X XP & Level Claim Rewards</span>
+              <span>🔑 +5 Master Keys & +30 Tickets</span>
+            </div>
+            <div class="xp-store-item-actions">
+              <button class="btn-store-buy golden-stars" onclick="buyMonthlyPassWithStars('golden', 1000)">
+                ⭐ BUY FOR 1000 STARS
+              </button>
+              <button class="btn-store-buy ad" onclick="watchAdForPass('golden')">
+                🎥 WATCH AD (<span id="golden-ad-store-txt">0</span>/100 ADS WATCHED)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="xp-store-footer">
+          <button class="btn-close-store-footer" onclick="closePassStoreModal()">RETURN TO XP RANKS</button>
         </div>
       </div>
     </div>
