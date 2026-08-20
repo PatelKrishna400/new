@@ -4578,6 +4578,247 @@ button {
   cursor: pointer;
 }
 
+.btn-verify-2fa-modal {
+  flex: 1.5;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+/* 🔒 2FA CLOUD PASSWORD MODAL STYLES */
+.twofa-modal-card {
+  width: 90%;
+  max-width: 360px;
+  background: #0F172A;
+  border: 1.5px solid #F59E0B;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(245, 158, 11, 0.4);
+  text-align: center;
+}
+
+.twofa-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #F59E0B;
+  letter-spacing: 1px;
+}
+
+.twofa-modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 6px 0 2px 0;
+}
+
+.twofa-modal-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-bottom: 14px;
+}
+
+.twofa-inputs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.twofa-input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.twofa-label {
+  font-size: 10px;
+  color: #94A3B8;
+  font-weight: 700;
+}
+
+.twofa-input-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  color: #FFF;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.twofa-modal-reward {
+  font-size: 11px;
+  color: #CBD5E1;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.twofa-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-execute-check-password {
+  width: 100%;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFF;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
+}
+
+.btn-close-twofa-modal {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+}
+
+.bot-auth-btn-row {
+  margin-top: 10px;
+}
+
+.btn-import-bot-auth {
+  width: 100%;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFF;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.btn-import-bot-auth:active {
+  transform: scale(0.96);
+}
+
+/* 🤖 TELEGRAM BOT AUTHENTICATION MODAL STYLES */
+.bot-modal-card {
+  width: 90%;
+  max-width: 360px;
+  background: #0F172A;
+  border: 1.5px solid #10B981;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(16, 185, 129, 0.4);
+  text-align: center;
+}
+
+.bot-modal-badge {
+  font-size: 10px;
+  font-weight: 900;
+  color: #10B981;
+  letter-spacing: 1px;
+}
+
+.bot-modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFF;
+  margin: 6px 0 2px 0;
+}
+
+.bot-modal-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-bottom: 14px;
+}
+
+.bot-inputs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.bot-input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bot-label {
+  font-size: 10px;
+  color: #94A3B8;
+  font-weight: 700;
+}
+
+.bot-input-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(16, 185, 129, 0.5);
+  color: #FFF;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.bot-modal-reward {
+  font-size: 11px;
+  color: #CBD5E1;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.bot-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-execute-bot-import {
+  width: 100%;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFF;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+}
+
+.btn-close-bot-modal {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+}
+
+
+
 
 
 

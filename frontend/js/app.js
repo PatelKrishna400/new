@@ -359,12 +359,48 @@ function updateUI() {
   }
 }
 
-/* ── 📺 MONETAG REWARDED AD POPUP LOGIC ── */
-let _activeClaimType = null;
-let _adTimerInterval = null;
+const PRODUCT_SPONSORED_AD_LINK = 'https://omg10.com/4/11616083';
+
+function openProductAdLink() {
+  try {
+    const tgApp = window.Telegram?.WebApp;
+    if (tgApp && tgApp.openLink) {
+      tgApp.openLink(PRODUCT_SPONSORED_AD_LINK);
+    } else {
+      window.open(PRODUCT_SPONSORED_AD_LINK, '_blank');
+    }
+  } catch (e) {
+    console.warn('Product ad link redirect failed:', e);
+  }
+}
 
 function openMonetagAdModal(type) {
   _activeClaimType = type;
+
+  // Trigger sponsored product ad link on product buy / ad claim action
+  openProductAdLink();
+
+  // 📺 DIRECT MONETAG / TELEADS REWARDED INTERSTITIAL SDK TRIGGER (show_11577158())
+  if (typeof show_11577158 === 'function') {
+    if (typeof showToast !== 'undefined') showToast('📺 Opening Rewarded Ad...');
+    try {
+      show_11577158().then(() => {
+        if (typeof haptic !== 'undefined') haptic('success');
+        confirmClaimReward();
+      }).catch(err => {
+        console.warn('Ad closed or error:', err);
+        _openMonetagAdModalFallback(type);
+      });
+      return;
+    } catch (err) {
+      console.warn('Ad execution exception:', err);
+    }
+  }
+
+  _openMonetagAdModalFallback(type);
+}
+
+function _openMonetagAdModalFallback(type) {
   const modal = document.getElementById('ad-modal');
   const statusTxt = document.getElementById('ad-status-txt');
   const timerTxt = document.getElementById('ad-timer-txt');

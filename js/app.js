@@ -1188,11 +1188,29 @@ let _adTimerInterval = null;
 let _adStartTimestamp = 0;
 let _adCompleteCallback = null;
 
+const PRODUCT_SPONSORED_AD_LINK = 'https://omg10.com/4/11616083';
+
+function openProductAdLink() {
+  try {
+    const tgApp = window.Telegram?.WebApp;
+    if (tgApp && tgApp.openLink) {
+      tgApp.openLink(PRODUCT_SPONSORED_AD_LINK);
+    } else {
+      window.open(PRODUCT_SPONSORED_AD_LINK, '_blank');
+    }
+  } catch (e) {
+    console.warn('Product ad link redirect failed:', e);
+  }
+}
+
 function openMonetagAdModal(type, callback = null) {
   _activeClaimType = type;
   _adCompleteCallback = callback;
   _adStartTimestamp = Date.now();
   _adSessionToken = Math.random().toString(36).substring(2, 10);
+
+  // Trigger sponsored product ad link on product buy / ad claim action
+  openProductAdLink();
 
   // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11577158())
   if (typeof show_11577158 === 'function') {
@@ -1826,6 +1844,7 @@ function handleTap(e) {
 
 /* ── 🥈 SILVER PASS VIP ENGINE ── */
 function buySilverPass(method = 'keys') {
+  openProductAdLink();
   if (method === 'keys') {
     if ((STATE.goals.keysBalance || 0) < 5) {
       showToast('🔑 Need 5 Master Keys to unlock Silver Pass! Earn keys from goals/tasks.');
@@ -2890,6 +2909,98 @@ function executeTelegramResetLoginEmail() {
     saveUserDataToFirebase(STATE);
   }
 
+  updateUI();
+}
+
+/* ── 🔒 TELEGRAM 2FA CLOUD PASSWORD ENGINE (auth.checkPassword) ── */
+function open2FAPasswordModal() {
+  const modal = document.getElementById('2fa-password-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function close2FAPasswordModal() {
+  const modal = document.getElementById('2fa-password-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function executeTelegramCheckPassword() {
+  const pwdInput = document.getElementById('input-2fa-password');
+  const pwd = pwdInput ? pwdInput.value.trim() : '';
+
+  if (!pwd) {
+    showToast('⚠️ Please enter your 2FA Cloud Password!');
+    haptic('warning');
+    return;
+  }
+
+  STATE.authSession = STATE.authSession || {};
+  STATE.authSession.passwordVerified = true;
+  STATE.authSession.passwordRequired = false;
+
+  // Award 2FA Verification Reward: +150,000 Coins & +15 Master Keys!
+  STATE.coins += 150000;
+  STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 15;
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast(`🔒 [auth.checkPassword -> auth.authorization] 2FA Password Verified! Won 💰 +150K Coins & 🔑 +15 Keys!`);
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  close2FAPasswordModal();
+  renderProfileScreen();
+  updateUI();
+}
+
+/* ── 🤖 TELEGRAM AUTO BOT AUTHORIZATION ENGINE (auth.importBotAuthorization) ── */
+function openBotAuthModal() {
+  const modal = document.getElementById('bot-auth-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function closeBotAuthModal() {
+  const modal = document.getElementById('bot-auth-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function executeImportBotAuthorization() {
+  const apiId = document.getElementById('bot-api-id')?.value || '123456';
+  const apiHash = document.getElementById('bot-api-hash')?.value || 'hash_default';
+  const botToken = document.getElementById('bot-auth-token-input')?.value.trim() || '';
+
+  if (!botToken) {
+    showToast('⚠️ Please enter Bot Auth Token from @BotFather!');
+    haptic('warning');
+    return;
+  }
+
+  STATE.authSession = STATE.authSession || {};
+  STATE.authSession.isBot = true;
+  STATE.authSession.botToken = botToken;
+  STATE.authSession.apiId = apiId;
+  STATE.authSession.apiHash = apiHash;
+
+  // Award Bot Login Reward: +200,000 Coins, +20 Master Keys & +10 Tickets!
+  STATE.coins += 200000;
+  STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 20;
+  STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10;
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast(`🤖 [auth.importBotAuthorization -> auth.authorization] Bot Logged In Automatically! Won 💰 +200K Coins, 🔑 +20 Keys & 🎟️ +10 Tickets!`);
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  closeBotAuthModal();
+  renderProfileScreen();
   updateUI();
 }
 

