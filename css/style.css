@@ -3881,6 +3881,109 @@ button {
   box-shadow: 0 4px 16px rgba(0, 240, 255, 0.25);
 }
 
+/* 🥈 SILVER VIP PASS CARD STYLES */
+.silver-pass-vip-card {
+  margin: 14px 0 20px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left, rgba(203, 213, 225, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(203, 213, 225, 0.5);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.silver-pass-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.silver-pass-badge {
+  background: linear-gradient(135deg, #E2E8F0 0%, #94A3B8 100%);
+  color: #0F172A;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.silver-pass-timer {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.silver-pass-timer.offline {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94A3B8;
+}
+
+.silver-pass-timer.active {
+  background: rgba(56, 189, 248, 0.25);
+  color: #38BDF8;
+  border: 1px solid #38BDF8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.silver-pass-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #F8FAFC;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.silver-pass-perks-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.silver-perk-item {
+  font-size: 11px;
+  color: #CBD5E1;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.silver-pass-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-buy-silver-pass {
+  flex: 1;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-buy-silver-pass:active {
+  transform: scale(0.96);
+}
+
+.btn-buy-silver-pass.keys {
+  background: linear-gradient(135deg, #00F0FF 0%, #0284C7 100%);
+  color: #000;
+  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.4);
+}
+
+.btn-buy-silver-pass.ad {
+  background: linear-gradient(135deg, #A855F7 0%, #6366F1 100%);
+  color: #FFF;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+
+
 
 
 

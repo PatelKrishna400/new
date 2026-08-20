@@ -70,6 +70,10 @@ const STATE = {
   claimedTasks: {},
   claimedXPLevels: {},
   unclaimedXPLevels: [],
+  silverPass: {
+    active: false,
+    expiry: 0
+  },
   settings: {
     sound: true,
     haptic: true
@@ -304,6 +308,21 @@ function updateUI() {
   if (xpModalHeroLvl) xpModalHeroLvl.textContent = `LEVEL ${currentLvl}`;
   if (xpModalBarFill) xpModalBarFill.style.width = xpPct + '%';
   if (xpModalValTxt) xpModalValTxt.textContent = `${currentXP} / ${xpNeeded} XP`;
+
+  // 🥈 Silver Pass Timer & Status Display
+  const passTimerEl = document.getElementById('silver-pass-timer-txt');
+  if (passTimerEl) {
+    if (isSilverPassActive()) {
+      const remainingSec = Math.max(0, Math.floor((STATE.silverPass.expiry - Date.now()) / 1000));
+      const m = Math.floor(remainingSec / 60);
+      const s = remainingSec % 60;
+      passTimerEl.textContent = `⚡ ACTIVE: ${m}:${s < 10 ? '0' : ''}${s}`;
+      passTimerEl.className = 'silver-pass-timer active';
+    } else {
+      passTimerEl.textContent = 'OFFLINE';
+      passTimerEl.className = 'silver-pass-timer offline';
+    }
+  }
 
   // 🔴 Red Notification Dot Toggle Logic
   STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
@@ -628,9 +647,34 @@ async function openScratchCardModal() {
   if (revealedLoot) revealedLoot.classList.add('hidden');
 
   if (btnAction) {
-    btnAction.disabled = false;
-    btnAction.textContent = '🎥 WATCH AD TO SCRATCH & CLAIM!';
-    btnAction.onclick = () => openMonetagAdModal('scratch_card');
+    if (isSilverPassActive()) {
+      btnAction.disabled = false;
+      btnAction.textContent = '🥈 INSTANT FREE SCRATCH (SILVER PASS)';
+      btnAction.onclick = () => {
+        const scDef = SCRATCH_DEFINITIONS[_activeScratchType] || SCRATCH_DEFINITIONS.wooden;
+        if (scDef.coins) STATE.coins += scDef.coins;
+        if (scDef.keys) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + scDef.keys;
+        if (scDef.tickets) STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + scDef.tickets;
+        if (scDef.energy) STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + scDef.energy);
+
+        if (surface) surface.classList.add('hidden');
+        if (revealedLoot) revealedLoot.classList.remove('hidden');
+        if (prizeText) prizeText.textContent = scDef.text;
+
+        btnAction.textContent = '✅ REWARDS CLAIMED! (BACK TO GAME)';
+        btnAction.onclick = () => closeScratchCardModal();
+
+        SFX.levelUp();
+        haptic('success');
+        createConfettiBurst();
+        showToast(`🎉 INSTANT SCRATCH CARD VIA SILVER PASS! Won ${scDef.text}!`);
+        updateUI();
+      };
+    } else {
+      btnAction.disabled = false;
+      btnAction.textContent = '🎥 WATCH AD TO SCRATCH & CLAIM!';
+      btnAction.onclick = () => openMonetagAdModal('scratch_card');
+    }
   }
 
   selectScratchCardType(_activeScratchType || 'wooden');
@@ -1150,7 +1194,9 @@ function openMonetagAdModal(type, callback = null) {
   modal.classList.add('active');
 
   let rewDesc = '';
-  if (type.startsWith('level_reward_')) {
+  if (type === 'silver_pass') {
+    rewDesc = `🥈 UNLOCK 10-MINUTE VIP SILVER PASS (10m Energy, Free Scratch & 2X Taps)`;
+  } else if (type.startsWith('level_reward_')) {
     const lvlNum = parseInt(type.replace('level_reward_', '')) || 5;
     const isEnergy = (lvlNum % 5 === 0);
     rewDesc = isEnergy ? `⚡ 2X DOUBLE ENERGY REWARD FOR LEVEL ${lvlNum}` : `💰 2X DOUBLE COINS REWARD FOR LEVEL ${lvlNum}`;
@@ -1633,9 +1679,13 @@ function handleTap(e) {
     return;
   }
 
-  // Deduct 1 energy & add +0.5 XP towards 100 levels
+  // Deduct 1 energy & add XP (Silver Pass on Even Level grants 2X XP: +1.0 XP per tap!)
+  const isSilver = isSilverPassActive();
+  const isEvenLevel = ((STATE.level || 1) % 2 === 0);
+  const xpAmount = (isSilver && isEvenLevel) ? 1.0 : 0.5;
+
   STATE.energy -= 1;
-  addXP(0.5);
+  addXP(xpAmount);
 
   // Track Tap Task Progress
   incrementTaskProgress('tap', 1);
@@ -1741,10 +1791,60 @@ function handleTap(e) {
   updateUI();
 }
 
-/* ── PASSIVE ENERGY REGENERATION ── */
+/* ── 🥈 SILVER PASS VIP ENGINE ── */
+function buySilverPass(method = 'keys') {
+  if (method === 'keys') {
+    if ((STATE.goals.keysBalance || 0) < 5) {
+      showToast('🔑 Need 5 Master Keys to unlock Silver Pass! Earn keys from goals/tasks.');
+      haptic('warning');
+      return;
+    }
+    STATE.goals.keysBalance -= 5;
+    _activateSilverPass();
+  } else if (method === 'ad') {
+    openMonetagAdModal('silver_pass', () => {
+      _activateSilverPass();
+    });
+  }
+}
+
+function _activateSilverPass() {
+  STATE.silverPass = STATE.silverPass || {};
+  STATE.silverPass.active = true;
+  STATE.silverPass.expiry = Date.now() + (10 * 60 * 1000); // 10 Minutes!
+
+  // Perks award:
+  STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10; // +10 Spin Tickets!
+  STATE.energy = STATE.maxEnergy; // Instant full energy refill!
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast('🥈 SILVER PASS ACTIVATED! +10 Tickets, 10m Rapid Energy (+1⚡/s), Free Scratch Cards & Even Level 2X Taps!');
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  updateUI();
+}
+
+function isSilverPassActive() {
+  if (!STATE.silverPass || !STATE.silverPass.active) return false;
+  if (Date.now() >= STATE.silverPass.expiry) {
+    STATE.silverPass.active = false;
+    return false;
+  }
+  return true;
+}
+
+/* ── PASSIVE ENERGY REGENERATION (RAPID +1⚡/s DURING SILVER PASS) ── */
 setInterval(() => {
+  const isSilver = isSilverPassActive();
+  const currentGenRate = isSilver ? 1.0 : STATE.genRate;
+
   if (STATE.energy < STATE.maxEnergy) {
-    STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + STATE.genRate);
+    STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + currentGenRate);
     updateUI();
   }
 }, 1000);
