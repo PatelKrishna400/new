@@ -88,7 +88,7 @@
             <div class="combo-badge" id="combo-badge">🔥 x5 COMBO</div>
           </div>
 
-          <!-- ── ⭐ XP LEVEL PROGRESS CARD WITH CIRCULAR SHOP BUTTON ── -->
+          <!-- ── ⭐ XP LEVEL PROGRESS CARD ── -->
           <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
             <div class="xp-widget-header">
               <div class="xp-widget-title-group">
@@ -97,12 +97,7 @@
                   <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <div class="xp-widget-actions-right">
-                <button class="circle-shop-btn" onclick="event.stopPropagation(); openPassStoreModal();" title="Buy VIP Pass">
-                  🛒
-                </button>
-                <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
-              </div>
+              <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
             </div>
 
             <div class="xp-widget-bar-track">
@@ -422,8 +417,11 @@
       <div id="screen-profile" class="screen">
         <div class="profile-scroll-area">
           
-          <!-- HEADER -->
+          <!-- HEADER WITH UPPER RIGHT CORNER PASS SHOP BUTTON -->
           <div class="profile-header-center">
+            <button class="profile-corner-shop-btn" onclick="openPassStoreModal()" title="Buy VIP Pass">
+              🛒 PASS SHOP
+            </button>
             <div class="profile-avatar-circle">👤</div>
             <h1 class="profile-main-title" id="profile-name">⭐ LEVEL 1 TAPPER</h1>
             <span class="profile-user-id-badge" id="profile-user-id">ID: user_local</span>
