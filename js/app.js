@@ -1257,6 +1257,8 @@ function _openMonetagAdModalFallback(type) {
     rewDesc = `⭐ CLAIM ALL UNCLAIMED XP REWARDS (2X BONUS!)`;
   } else if (type === 'all_referrals') {
     rewDesc = `👥 CLAIM ALL REFERRAL MILESTONES (2X BONUS!)`;
+  } else if (type === 'per_friend_coins') {
+    rewDesc = `🎁 CLAIM 💰 100 COINS PER CONNECTED FRIEND (WATCH AD)`;
   } else if (type === 'all_goals') {
     rewDesc = `🎯 CLAIM ALL GOALS AT ONCE (2X BONUS!)`;
   } else if (type === 'scratch_card') {
@@ -2237,8 +2239,15 @@ async function renderProfileScreen() {
     // Update Referral System UI safely
     const refLinkInput = document.getElementById('ref-link-input');
     const refCountBadge = document.getElementById('ref-invited-count');
-    if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=ref_${_userId || 'local'}`;
-    if (refCountBadge) refCountBadge.textContent = `${STATE.referrals?.invitedCount || 0} Invited`;
+    const myCode = (typeof getUserReferralCode === 'function') ? getUserReferralCode() : ('REF-' + String(_userId).slice(-5).toUpperCase());
+    if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=${myCode}`;
+    if (refCountBadge) refCountBadge.textContent = `${STATE.referrals?.invitedCount || 0} Connected`;
+
+    const perFriendCoinsCount = document.getElementById('per-friend-coins-count');
+    const unclaimedFriendCoins = STATE.referrals?.unclaimedFriendCoins || ((STATE.referrals?.invitedCount || 0) * 100);
+    if (perFriendCoinsCount) {
+      perFriendCoinsCount.textContent = unclaimedFriendCoins > 0 ? unclaimedFriendCoins : (STATE.referrals?.invitedCount ? STATE.referrals.invitedCount * 100 : 100);
+    }
 
     [1, 5, 10, 25].forEach(m => {
       const btn = document.getElementById(`btn-claim-ref-${m}`);
@@ -2347,6 +2356,81 @@ function claimReferralReward(milestone) {
 
   updateUI();
   renderProfileScreen();
+}
+
+/* 🔗 CONNECT PLAYER REFERRAL CODE UI HANDLER (FIREBASE SYNC) */
+async function connectPlayerReferralCodeUI() {
+  const input = document.getElementById('connect-ref-code-input');
+  const statusMsg = document.getElementById('ref-code-status-msg');
+
+  if (!input || !input.value.trim()) {
+    if (statusMsg) statusMsg.textContent = '❌ Please enter a valid friend referral code!';
+    showToast('❌ Please enter a valid friend referral code!');
+    return;
+  }
+
+  const codeInput = input.value.trim().toUpperCase();
+  if (statusMsg) statusMsg.textContent = '⏳ Connecting code via Firebase...';
+
+  if (typeof connectPlayerReferralCodeInFirebase === 'function') {
+    const result = await connectPlayerReferralCodeInFirebase(codeInput);
+    if (result.success) {
+      STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+      STATE.referrals.invitedCount = (STATE.referrals.invitedCount || 0) + 1;
+      STATE.referrals.unclaimedFriendCoins = (STATE.referrals.unclaimedFriendCoins || 0) + 100;
+
+      if (statusMsg) statusMsg.textContent = `✅ Connected! 💰 +100 Coins added to claim via Ad!`;
+      showToast(result.message);
+      haptic('success');
+      createConfettiBurst();
+
+      if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+      updateUI();
+      renderProfileScreen();
+    } else {
+      if (statusMsg) statusMsg.textContent = `❌ ${result.error}`;
+      showToast(`❌ ${result.error}`);
+      haptic('warning');
+    }
+  } else {
+    // Local fallback
+    STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+    STATE.referrals.invitedCount = (STATE.referrals.invitedCount || 0) + 1;
+    STATE.referrals.unclaimedFriendCoins = (STATE.referrals.unclaimedFriendCoins || 0) + 100;
+
+    if (statusMsg) statusMsg.textContent = `✅ Connected to ${codeInput}! 💰 +100 Coins ready!`;
+    showToast(`🎉 Connected to ${codeInput}! 💰 +100 Coins ready to claim via Ad!`);
+    haptic('success');
+    updateUI();
+    renderProfileScreen();
+  }
+}
+
+/* 🎥 WATCH AD TO CLAIM 100 COINS PER FRIEND HANDLER */
+function claimPerFriendCoinsWithAd() {
+  STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+  const friendCount = STATE.referrals.invitedCount || 1;
+  const friendCoins = STATE.referrals.unclaimedFriendCoins || (friendCount * 100);
+
+  if (friendCoins <= 0 && (STATE.referrals.invitedCount || 0) === 0) {
+    showToast('ℹ️ Connect a friend code first to earn 💰 100 Coins per friend!');
+    return;
+  }
+
+  openMonetagAdModal('per_friend_coins', () => {
+    const coinsToClaim = friendCoins > 0 ? friendCoins : 100;
+    STATE.coins += coinsToClaim;
+    STATE.referrals.unclaimedFriendCoins = 0;
+
+    showToast(`🎉 Claimed 💰 +${fmt(coinsToClaim)} Coins for connected friends after watching ad!`);
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+
+    if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+    updateUI();
+    renderProfileScreen();
+  });
 }
 
 function openRestartConfirmModal() {

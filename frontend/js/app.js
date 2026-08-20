@@ -411,7 +411,9 @@ function _openMonetagAdModalFallback(type) {
   modal.classList.add('active');
 
   let rewDesc = '';
-  if (type === 'spin_tickets') {
+  if (type === 'per_friend_coins') {
+    rewDesc = `🎁 CLAIM 💰 100 COINS PER CONNECTED FRIEND (WATCH AD)`;
+  } else if (type === 'spin_tickets') {
     rewDesc = `🎟️ +3 BONUS SPIN TICKETS`;
   } else if (type === 'chest_keys') {
     rewDesc = `🔑 +3 BONUS MASTER KEYS`;

@@ -185,3 +185,95 @@ async function restartFirebaseUserData() {
     return false;
   }
 }
+
+/* ── 👥 FIREBASE REFERRAL CODE CONNECT & 100 COINS ENGINE ── */
+function getUserReferralCode() {
+  const cleanId = String(_userId).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  const suffix = cleanId.length > 5 ? cleanId.slice(-5) : (cleanId + '88888').slice(0, 5);
+  return 'REF-' + suffix;
+}
+
+async function registerUserReferralCodeInFirebase() {
+  try {
+    const myCode = getUserReferralCode();
+    if (_rtdb) {
+      await _rtdb.ref('referral_codes/' + myCode).set({
+        userId: _userId,
+        createdAt: Date.now()
+      });
+    }
+    return myCode;
+  } catch (e) {
+    console.warn('[Register Referral Code Error]:', e);
+    return getUserReferralCode();
+  }
+}
+
+/**
+ * Connects current player to another player via Firebase Referral Code
+ * Grants +100 Coins per connected friend to claim after watching an ad
+ */
+async function connectPlayerReferralCodeInFirebase(enteredCodeInput) {
+  try {
+    if (!enteredCodeInput) return { success: false, error: 'Please enter a valid Referral Code!' };
+    const codeClean = String(enteredCodeInput).trim().toUpperCase();
+    const myCode = getUserReferralCode();
+
+    if (codeClean === myCode) {
+      return { success: false, error: 'You cannot connect to your own Referral Code!' };
+    }
+
+    // 1. Verify code in Firebase Realtime Database
+    let referrerId = null;
+    if (_rtdb) {
+      const snap = await _rtdb.ref('referral_codes/' + codeClean).once('value');
+      if (snap.exists()) {
+        referrerId = snap.val().userId;
+      } else {
+        // Search by userId matching suffix
+        const playersSnap = await _rtdb.ref('players').once('value');
+        playersSnap.forEach(child => {
+          const val = child.val();
+          if (val.userId && getUserReferralCodeFor(val.userId) === codeClean) {
+            referrerId = child.key;
+          }
+        });
+      }
+    }
+
+    if (!referrerId && codeClean.startsWith('REF-')) {
+      // Demo/fallback referrer connection
+      referrerId = 'player_' + codeClean.slice(4).toLowerCase();
+    }
+
+    if (!referrerId) {
+      return { success: false, error: 'Referral Code not found! Double check code and try again.' };
+    }
+
+    // 2. Connect accounts & update referrer & player in Firebase
+    if (_rtdb) {
+      // Update referrer: +1 friend connected, +100 unclaimed Coins
+      const refRef = _rtdb.ref('players/' + referrerId + '/referrals');
+      await refRef.child('connectedFriends/' + _userId).set({ connectedAt: Date.now() });
+      await refRef.child('invitedCount').transaction(c => (c || 0) + 1);
+      await refRef.child('unclaimedFriendCoins').transaction(c => (c || 0) + 100);
+    }
+
+    return {
+      success: true,
+      referrerId,
+      code: codeClean,
+      message: `🎉 Successfully connected to Player (${codeClean})! 💰 +100 Coins added per friend reward!`
+    };
+  } catch (err) {
+    console.error('[connectPlayerReferralCode Exception]:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+function getUserReferralCodeFor(userIdStr) {
+  const cleanId = String(userIdStr).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  const suffix = cleanId.length > 5 ? cleanId.slice(-5) : (cleanId + '88888').slice(0, 5);
+  return 'REF-' + suffix;
+}
+

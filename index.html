@@ -662,6 +662,23 @@
               </button>
             </div>
 
+            <!-- 🔗 CONNECT OTHER PLAYER'S REFERRAL CODE (FIREBASE SYNC) -->
+            <div class="connect-ref-code-box">
+              <label class="connect-ref-label">🔗 CONNECT OTHER PLAYER REFERRAL CODE</label>
+              <div class="connect-ref-input-group">
+                <input type="text" class="ref-code-input" id="connect-ref-code-input" placeholder="Enter Friend Code (e.g. REF-X892A)" />
+                <button class="btn-connect-ref-code" onclick="connectPlayerReferralCodeUI()">🔗 CONNECT & WIN</button>
+              </div>
+              <div class="ref-code-status-msg" id="ref-code-status-msg">Connect friends on Firebase to earn 💰 100 Coins per friend!</div>
+            </div>
+
+            <!-- 🎁 100 COINS PER FRIEND REWARD BANNER (WATCH AD TO CLAIM) -->
+            <div class="claim-all-ad-wrapper per-friend-claim-wrapper">
+              <button class="btn-claim-all-ad-banner btn-claim-per-friend-coins" id="btn-claim-per-friend-coins" onclick="claimPerFriendCoinsWithAd()">
+                🎥 WATCH AD TO CLAIM 💰 <span id="per-friend-coins-count">100</span> COINS (PER FRIEND!)
+              </button>
+            </div>
+
             <!-- 🎥 WATCH AD TO CLAIM ALL REFERRAL MILESTONES BANNER -->
             <div class="claim-all-ad-wrapper">
               <button class="btn-claim-all-ad-banner" onclick="claimAllReferralsWithAd()">
