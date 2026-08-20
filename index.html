@@ -43,11 +43,11 @@
       <div class="user-card" id="user-profile-btn" onclick="openXPLevelModal()">
         <div class="avatar-ring">
           <div class="avatar-img" id="user-avatar">👤</div>
-          <div class="level-badge" id="user-level-badge">LV. 1/100</div>
+          <div class="level-badge" id="user-level-badge">LV. 1</div>
           <span class="xp-notify-red-dot hidden" id="xp-top-red-dot"></span>
         </div>
         <div class="user-info">
-          <span class="user-name" id="user-name">⭐ LVL 1 / 100</span>
+          <span class="user-name" id="user-name">⭐ LEVEL 1</span>
           <div class="xp-strip-track">
             <div class="xp-strip-fill" id="xp-fill" style="width: 0%"></div>
           </div>
@@ -63,6 +63,12 @@
         <div class="res-card energy-card">
           <span class="res-icon">⚡</span>
           <span class="res-val" id="top-energy">500/500</span>
+        </div>
+        <div class="res-card audio-card" id="top-audio-btn" onclick="openAudioSettingsModal()" title="Sound & Music Settings">
+          <span class="res-icon" id="top-audio-icon">🎵</span>
+          <span class="audio-wave-bars" id="audio-wave-bars">
+            <span></span><span></span><span></span>
+          </span>
         </div>
       </div>
     </header>
@@ -86,10 +92,10 @@
                 <span class="xp-widget-icon">⭐</span>
                 <div class="xp-widget-title-text">
                   <span class="xp-widget-label">XP EMPIRE RANK <span class="xp-notify-red-dot hidden" id="xp-home-red-dot"></span></span>
-                  <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1 / 100</span>
+                  <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
                 </div>
               </div>
-              <span class="xp-widget-open-badge" id="xp-home-btn-badge">100 LEVELS ➔</span>
+              <span class="xp-widget-open-badge" id="xp-home-btn-badge">XP RANKS ➔</span>
             </div>
 
             <div class="xp-widget-bar-track">
@@ -169,6 +175,13 @@
               </div>
 
             </div>
+
+            <!-- 🎥 WATCH AD TO CLAIM ALL GOALS BANNER -->
+            <div class="claim-all-goals-ad-bar">
+              <button class="btn-claim-all-ad-banner compact" onclick="claimAllGoalsWithAd()">
+                🎥 WATCH AD TO CLAIM ALL GOALS (+2X BONUS!)
+              </button>
+            </div>
           </div>
 
           <!-- MAIN TAP AREA (CENTRAL DOMINANT BUTTON) -->
@@ -179,6 +192,9 @@
             <div class="floating-text-container" id="float-container"></div>
 
             <div class="tap-button-container" id="tap-button-container">
+              <!-- 🕒 TIMER-WISE ROTATING CONIC GLOW RING -->
+              <div class="tap-circle-timer-ring" id="tap-timer-conic-ring"></div>
+
               <!-- Combo Progress Ring -->
               <svg class="combo-ring-svg" viewBox="0 0 220 220">
                 <circle class="ring-bg" cx="110" cy="110" r="102" />
@@ -278,6 +294,13 @@
             <p class="tasks-main-subtitle">Complete daily, weekly & monthly tasks to earn rewards</p>
           </div>
 
+          <!-- 🎥 WATCH AD TO CLAIM ALL TASKS BANNER -->
+          <div class="claim-all-ad-wrapper">
+            <button class="btn-claim-all-ad-banner" onclick="claimAllTasksWithAd()">
+              🎥 WATCH AD TO CLAIM ALL TASKS (+2X REWARD BONUS!)
+            </button>
+          </div>
+
           <!-- 3-TAB CATEGORY NAVIGATION BAR -->
           <div class="task-tabs-nav">
             <button class="task-tab-btn active" id="task-tab-daily" onclick="switchTaskTab('daily')">📅 DAILY</button>
@@ -368,7 +391,7 @@
               <span class="pstat-icon">⭐</span>
               <div class="pstat-info">
                 <span class="pstat-label">LEVEL</span>
-                <span class="pstat-val" id="profile-level">LV. 1 / 100</span>
+                <span class="pstat-val" id="profile-level">LV. 1</span>
               </div>
             </div>
 
@@ -413,6 +436,41 @@
             </div>
           </div>
 
+          <!-- 🎵 SOUND & MUSIC AUDIO SETTINGS CARD -->
+          <div class="profile-audio-card">
+            <div class="p-audio-header">
+              <span class="p-audio-icon">🎵</span>
+              <div class="p-audio-title-group">
+                <span class="p-audio-title">SOUND & MUSIC SYSTEM</span>
+                <span class="p-audio-sub">Control game background soundtrack & audio effects</span>
+              </div>
+            </div>
+
+            <div class="p-audio-controls-grid">
+              <!-- BGM Row -->
+              <div class="p-audio-row">
+                <div class="p-audio-row-info">
+                  <span class="p-audio-label">🎶 Background Music</span>
+                  <input type="range" id="p-music-vol-slider" min="0" max="1" step="0.05" value="0.35" oninput="changeMusicVolume(this.value)" />
+                </div>
+                <button class="audio-toggle-btn active" id="p-btn-toggle-music" onclick="toggleMusicState()">
+                  <span id="p-music-status-text">ON</span>
+                </button>
+              </div>
+
+              <!-- SFX Row -->
+              <div class="p-audio-row">
+                <div class="p-audio-row-info">
+                  <span class="p-audio-label">🔊 Sound Effects (SFX)</span>
+                  <input type="range" id="p-sfx-vol-slider" min="0" max="1" step="0.05" value="0.60" oninput="changeSFXVolume(this.value)" />
+                </div>
+                <button class="audio-toggle-btn active" id="p-btn-toggle-sfx" onclick="toggleSFXState()">
+                  <span id="p-sfx-status-text">ON</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- 👥 REFERRAL SYSTEM / INVITE FRIENDS CARD -->
           <div class="profile-referral-card">
             <div class="ref-card-header">
@@ -436,6 +494,13 @@
             <div class="ref-actions-row">
               <button class="btn-share-telegram" onclick="shareReferralTelegram()">
                 ✈️ SHARE TO TELEGRAM (+5K COINS)
+              </button>
+            </div>
+
+            <!-- 🎥 WATCH AD TO CLAIM ALL REFERRAL MILESTONES BANNER -->
+            <div class="claim-all-ad-wrapper">
+              <button class="btn-claim-all-ad-banner" onclick="claimAllReferralsWithAd()">
+                🎥 WATCH AD TO CLAIM ALL REFERRAL REWARDS (+2X BONUS!)
               </button>
             </div>
 
@@ -761,13 +826,13 @@
       <div class="feature-modal-card xp-modal-card">
         <div class="full-page-top-bar">
           <button class="btn-full-page-back" onclick="closeXPLevelModal()">⬅️ BACK TO HOME</button>
-          <span class="full-page-top-title">⭐ XP EMPIRE RANKS (1 - 100)</span>
+          <span class="full-page-top-title">⭐ XP EMPIRE RANKS</span>
         </div>
 
         <div class="xp-page-header">
-          <div class="xp-hero-level-badge" id="xp-modal-hero-lvl">LEVEL 1 / 100</div>
-          <h2 id="xp-modal-title">⭐ EMPIRE RANKS</h2>
-          <p id="xp-modal-subtitle">Tap the central circle to earn XP and unlock 100 Levels!</p>
+          <div class="xp-hero-level-badge" id="xp-modal-hero-lvl">LEVEL 1</div>
+          <h2 id="xp-modal-title">⭐ XP EMPIRE RANKS</h2>
+          <p id="xp-modal-subtitle">Tap the central circle to earn XP and unlock Empire Levels!</p>
           
           <div class="xp-hero-bar-track">
             <div class="xp-hero-bar-fill" id="xp-modal-bar-fill" style="width: 0%;"></div>
@@ -775,7 +840,14 @@
           <div class="xp-hero-val-txt" id="xp-modal-val-txt">0 / 100 XP</div>
         </div>
 
-        <!-- 100 LEVELS SCROLLABLE LIST CONTAINER -->
+        <!-- 🎥 WATCH AD TO CLAIM ALL XP REWARDS BANNER -->
+        <div class="claim-all-ad-wrapper">
+          <button class="btn-claim-all-ad-banner" onclick="claimAllXPLevelsWithAd()">
+            🎥 WATCH AD TO CLAIM ALL XP REWARDS (+2X BONUS!)
+          </button>
+        </div>
+
+        <!-- ALL LEVELS IN ONE PAGE SCROLLABLE LIST CONTAINER -->
         <div class="xp-levels-scroll-list" id="xp-levels-list-container">
           <!-- Dynamically rendered via js/app.js -->
         </div>
@@ -881,6 +953,61 @@
       </div>
     </div>
 
+    <!-- ── 🎵 AUDIO & MUSIC SETTINGS MODAL ── -->
+    <div id="audio-settings-modal" class="modal-overlay">
+      <div class="audio-modal-card">
+        <button class="boost-modal-close-icon" onclick="closeAudioSettingsModal()">✕</button>
+        
+        <div class="audio-modal-header">
+          <div class="audio-modal-icon">🎵</div>
+          <h2>SOUND & MUSIC SETTINGS</h2>
+          <p>Customize your background music and audio effects</p>
+        </div>
+
+        <div class="audio-settings-list">
+          <!-- Background Music Row -->
+          <div class="audio-setting-item">
+            <div class="audio-setting-info">
+              <span class="audio-setting-title">🎶 Background Music</span>
+              <span class="audio-setting-desc">Procedural arcade synth soundtrack</span>
+            </div>
+            <button class="audio-toggle-btn active" id="btn-toggle-music" onclick="toggleMusicState()">
+              <span id="music-status-text">ON</span>
+            </button>
+          </div>
+
+          <!-- Music Volume Slider -->
+          <div class="audio-volume-row">
+            <span class="volume-label">Music Volume</span>
+            <input type="range" id="music-vol-slider" min="0" max="1" step="0.05" value="0.35" oninput="changeMusicVolume(this.value)" />
+          </div>
+
+          <!-- Sound Effects Row -->
+          <div class="audio-setting-item">
+            <div class="audio-setting-info">
+              <span class="audio-setting-title">🔊 Sound Effects (SFX)</span>
+              <span class="audio-setting-desc">Taps, level-ups, and purchase feedback</span>
+            </div>
+            <button class="audio-toggle-btn active" id="btn-toggle-sfx" onclick="toggleSFXState()">
+              <span id="sfx-status-text">ON</span>
+            </button>
+          </div>
+
+          <!-- SFX Volume Slider -->
+          <div class="audio-volume-row">
+            <span class="volume-label">SFX Volume</span>
+            <input type="range" id="sfx-vol-slider" min="0" max="1" step="0.05" value="0.60" oninput="changeSFXVolume(this.value)" />
+          </div>
+        </div>
+
+        <div class="audio-modal-actions">
+          <button class="btn-close-audio-modal" onclick="closeAudioSettingsModal()">
+            DONE
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Background Ambient Particle Canvas -->
@@ -891,6 +1018,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
   <script src="js/firebase.js"></script>
+  <script src="js/audio.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

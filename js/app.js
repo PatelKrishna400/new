@@ -121,12 +121,118 @@ const SFX = {
     const now = Date.now();
     if (now - _lastTapSoundTs < 70) return;
     _lastTapSoundTs = now;
-    playTone(880, 'sine', 0.07, 0.09);
+    if (window.soundEngine) {
+      window.soundEngine.playTapSound(STATE.combo || 1);
+    } else {
+      playTone(880, 'sine', 0.07, 0.09);
+    }
   },
-  combo() { playTone(660, 'triangle', 0.12, 0.11); },
-  collect() { playTone(528, 'sine', 0.18, 0.13); playTone(792, 'sine', 0.12, 0.09); },
-  levelUp() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.25, 0.17), i * 110)); }
+  combo() { 
+    if (window.soundEngine) window.soundEngine.playTapSound((STATE.combo || 1) + 2);
+    else playTone(660, 'triangle', 0.12, 0.11); 
+  },
+  collect() { 
+    if (window.soundEngine) window.soundEngine.playUpgradeSound();
+    else playTone(528, 'sine', 0.18, 0.13); 
+  },
+  levelUp() { 
+    if (window.soundEngine) window.soundEngine.playLevelUpSound();
+    else [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.25, 0.17), i * 110)); 
+  }
 };
+
+/* ── AUDIO CONTROL HANDLERS ── */
+function updateAudioUI() {
+  if (!window.soundEngine) return;
+  const audioBtn = document.getElementById('top-audio-btn');
+  const audioIcon = document.getElementById('top-audio-icon');
+
+  // Modal elements
+  const btnMusic = document.getElementById('btn-toggle-music');
+  const btnSFX = document.getElementById('btn-toggle-sfx');
+  const txtMusic = document.getElementById('music-status-text');
+  const txtSFX = document.getElementById('sfx-status-text');
+  const musicSlider = document.getElementById('music-vol-slider');
+  const sfxSlider = document.getElementById('sfx-vol-slider');
+
+  // Profile Page elements
+  const pBtnMusic = document.getElementById('p-btn-toggle-music');
+  const pBtnSFX = document.getElementById('p-btn-toggle-sfx');
+  const pTxtMusic = document.getElementById('p-music-status-text');
+  const pTxtSFX = document.getElementById('p-sfx-status-text');
+  const pMusicSlider = document.getElementById('p-music-vol-slider');
+  const pSfxSlider = document.getElementById('p-sfx-vol-slider');
+
+  if (audioBtn) {
+    if (window.soundEngine.musicEnabled) {
+      audioBtn.classList.remove('muted');
+    } else {
+      audioBtn.classList.add('muted');
+    }
+  }
+
+  if (audioIcon) {
+    audioIcon.textContent = window.soundEngine.musicEnabled ? '🎵' : '🔇';
+  }
+
+  const isMusicOn = window.soundEngine.musicEnabled;
+  [btnMusic, pBtnMusic].forEach(btn => {
+    if (btn) btn.classList.toggle('active', isMusicOn);
+  });
+  [txtMusic, pTxtMusic].forEach(txt => {
+    if (txt) txt.textContent = isMusicOn ? 'ON' : 'OFF';
+  });
+
+  const isSFXOn = window.soundEngine.sfxEnabled;
+  [btnSFX, pBtnSFX].forEach(btn => {
+    if (btn) btn.classList.toggle('active', isSFXOn);
+  });
+  [txtSFX, pTxtSFX].forEach(txt => {
+    if (txt) txt.textContent = isSFXOn ? 'ON' : 'OFF';
+  });
+
+  [musicSlider, pMusicSlider].forEach(s => { if (s) s.value = window.soundEngine.musicVolume; });
+  [sfxSlider, pSfxSlider].forEach(s => { if (s) s.value = window.soundEngine.sfxVolume; });
+}
+
+function openAudioSettingsModal() {
+  updateAudioUI();
+  const modal = document.getElementById('audio-settings-modal');
+  if (modal) modal.classList.add('active');
+  if (window.soundEngine) window.soundEngine.playClickSound();
+}
+
+function closeAudioSettingsModal() {
+  const modal = document.getElementById('audio-settings-modal');
+  if (modal) modal.classList.remove('active');
+  if (window.soundEngine) window.soundEngine.playClickSound();
+}
+
+function toggleMusicState() {
+  if (window.soundEngine) {
+    window.soundEngine.toggleMusic();
+    updateAudioUI();
+  }
+}
+
+function toggleSFXState() {
+  if (window.soundEngine) {
+    window.soundEngine.toggleSFX();
+    updateAudioUI();
+  }
+}
+
+function changeMusicVolume(val) {
+  if (window.soundEngine) {
+    window.soundEngine.setMusicVolume(val);
+  }
+}
+
+function changeSFXVolume(val) {
+  if (window.soundEngine) {
+    window.soundEngine.setSFXVolume(val);
+  }
+}
 
 /* ── TELEGRAM HAPTIC FEEDBACK ── */
 function haptic(type = 'light') {
@@ -177,8 +283,8 @@ function updateUI() {
   const userName = document.getElementById('user-name');
   const xpFillEl = document.getElementById('xp-fill');
 
-  if (userLevelBadge) userLevelBadge.textContent = `LV. ${currentLvl}/100`;
-  if (userName) userName.textContent = `⭐ LVL ${currentLvl} / 100`;
+  if (userLevelBadge) userLevelBadge.textContent = `LV. ${currentLvl}`;
+  if (userName) userName.textContent = `⭐ LEVEL ${currentLvl}`;
   if (xpFillEl) xpFillEl.style.width = xpPct + '%';
 
   // Home Screen Circular Rectangle XP Card Updates
@@ -186,7 +292,7 @@ function updateUI() {
   const xpHomeBarFill = document.getElementById('xp-home-bar-fill');
   const xpHomeValText = document.getElementById('xp-home-val-text');
 
-  if (xpHomeLevelTitle) xpHomeLevelTitle.textContent = `LEVEL ${currentLvl} / 100`;
+  if (xpHomeLevelTitle) xpHomeLevelTitle.textContent = `LEVEL ${currentLvl}`;
   if (xpHomeBarFill) xpHomeBarFill.style.width = xpPct + '%';
   if (xpHomeValText) xpHomeValText.textContent = `${currentXP} / ${xpNeeded} XP`;
 
@@ -195,7 +301,7 @@ function updateUI() {
   const xpModalBarFill = document.getElementById('xp-modal-bar-fill');
   const xpModalValTxt = document.getElementById('xp-modal-val-txt');
 
-  if (xpModalHeroLvl) xpModalHeroLvl.textContent = `LEVEL ${currentLvl} / 100`;
+  if (xpModalHeroLvl) xpModalHeroLvl.textContent = `LEVEL ${currentLvl}`;
   if (xpModalBarFill) xpModalBarFill.style.width = xpPct + '%';
   if (xpModalValTxt) xpModalValTxt.textContent = `${currentXP} / ${xpNeeded} XP`;
 
@@ -1026,10 +1132,11 @@ function spinWheelAction() {
 let _activeClaimType = null;
 let _adTimerInterval = null;
 let _adStartTimestamp = 0;
-let _adSessionToken = null;
+let _adCompleteCallback = null;
 
-function openMonetagAdModal(type) {
+function openMonetagAdModal(type, callback = null) {
   _activeClaimType = type;
+  _adCompleteCallback = callback;
   _adStartTimestamp = Date.now();
   _adSessionToken = Math.random().toString(36).substring(2, 10);
 
@@ -1043,7 +1150,19 @@ function openMonetagAdModal(type) {
   modal.classList.add('active');
 
   let rewDesc = '';
-  if (type === 'scratch_card') {
+  if (type.startsWith('level_reward_')) {
+    const lvlNum = parseInt(type.replace('level_reward_', '')) || 5;
+    const isEnergy = (lvlNum % 5 === 0);
+    rewDesc = isEnergy ? `⚡ 2X DOUBLE ENERGY REWARD FOR LEVEL ${lvlNum}` : `💰 2X DOUBLE COINS REWARD FOR LEVEL ${lvlNum}`;
+  } else if (type === 'all_tasks') {
+    rewDesc = `🎯 CLAIM ALL TASKS AT ONCE (2X REWARD BONUS!)`;
+  } else if (type === 'all_xp') {
+    rewDesc = `⭐ CLAIM ALL UNCLAIMED XP REWARDS (2X BONUS!)`;
+  } else if (type === 'all_referrals') {
+    rewDesc = `👥 CLAIM ALL REFERRAL MILESTONES (2X BONUS!)`;
+  } else if (type === 'all_goals') {
+    rewDesc = `🎯 CLAIM ALL GOALS AT ONCE (2X BONUS!)`;
+  } else if (type === 'scratch_card') {
     rewDesc = `🎫 SCRATCH CARD JACKPOT (💰 +10,000 Coins, 🔑 +3 Keys, 🎟️ +5 Tickets)`;
   } else if (type === 'spin_tickets') {
     rewDesc = `🎟️ +3 BONUS SPIN TICKETS`;
@@ -1197,6 +1316,172 @@ function confirmClaimReward() {
   }
 
   updateUI();
+}
+
+/* ── 🎥 WATCH AD TO CLAIM ALL REWARDS HANDLERS ── */
+function claimAllTasksWithAd() {
+  const readyTasks = TASK_DEFINITIONS.filter(t => {
+    const prog = STATE.tasksProgress[t.id] || 0;
+    const isClaimed = STATE.claimedTasks[t.id] || false;
+    return prog >= t.target && !isClaimed;
+  });
+
+  if (readyTasks.length === 0) {
+    showToast('ℹ️ No task rewards ready to claim yet! Complete tasks first.');
+    haptic('warning');
+    return;
+  }
+
+  openMonetagAdModal('all_tasks', () => {
+    let totalCoins = 0;
+    let totalKeys = 0;
+    let totalTickets = 0;
+
+    readyTasks.forEach(t => {
+      STATE.claimedTasks[t.id] = true;
+      if (t.rewardType === 'coins') totalCoins += t.rewardVal * 2;
+      else if (t.rewardType === 'keys') totalKeys += t.rewardVal * 2;
+      else if (t.rewardType === 'tickets') totalTickets += t.rewardVal * 2;
+    });
+
+    if (totalCoins > 0) STATE.coins += totalCoins;
+    if (totalKeys > 0) STATE.goals.keysBalance += totalKeys;
+    if (totalTickets > 0) STATE.goals.ticketsBalance += totalTickets;
+
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 CLAIMED ALL ${readyTasks.length} TASKS VIA AD! Won 💰 +${fmt(totalCoins)} Coins (2X), 🔑 +${totalKeys} Keys & 🎟️ +${totalTickets} Tickets!`);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    renderTasksScreen();
+    updateUI();
+  });
+}
+
+function claimAllXPLevelsWithAd() {
+  STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
+  if (STATE.unclaimedXPLevels.length === 0) {
+    showToast('ℹ️ No unclaimed XP level rewards ready! Level up to earn rewards.');
+    haptic('warning');
+    return;
+  }
+
+  const unclaimedList = [...STATE.unclaimedXPLevels];
+
+  openMonetagAdModal('all_xp', () => {
+    let totalCoins = 0;
+    let totalKeys = 0;
+    let totalTickets = 0;
+
+    unclaimedList.forEach(lvl => {
+      STATE.claimedXPLevels[lvl] = true;
+      const baseCoins = lvl * 1000 * 2;
+      if (lvl % 10 === 0) {
+        totalTickets += Math.max(1, Math.floor(lvl));
+        totalKeys += Math.max(1, Math.floor(lvl / 2.5));
+      } else if (lvl % 5 === 0) {
+        totalKeys += Math.max(1, Math.floor(lvl / 2.5));
+      } else {
+        totalCoins += baseCoins;
+      }
+    });
+
+    STATE.unclaimedXPLevels = [];
+    if (totalCoins > 0) STATE.coins += totalCoins;
+    if (totalKeys > 0) STATE.goals.keysBalance += totalKeys;
+    if (totalTickets > 0) STATE.goals.ticketsBalance += totalTickets;
+
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 CLAIMED ALL ${unclaimedList.length} XP REWARDS VIA AD! Won 💰 +${fmt(totalCoins)} Coins (2X), 🔑 +${totalKeys} Keys & 🎟️ +${totalTickets} Tickets!`);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    renderXPLevelsList();
+    updateUI();
+  });
+}
+
+function claimAllReferralsWithAd() {
+  STATE.referrals = STATE.referrals || { invitedCount: 0, claimed: {} };
+  const count = STATE.referrals.invitedCount || 0;
+  const milestones = [1, 5, 10, 25].filter(m => count >= m && !STATE.referrals.claimed[m]);
+
+  if (milestones.length === 0) {
+    showToast('ℹ️ No referral milestone rewards ready to claim yet! Invite friends to unlock.');
+    haptic('warning');
+    return;
+  }
+
+  openMonetagAdModal('all_referrals', () => {
+    milestones.forEach(m => {
+      STATE.referrals.claimed[m] = true;
+      if (m === 1) {
+        STATE.coins += 10000;
+        STATE.goals.keysBalance += 4;
+      } else if (m === 5) {
+        STATE.coins += 60000;
+        STATE.goals.ticketsBalance += 10;
+      } else if (m === 10) {
+        STATE.coins += 200000;
+        STATE.goals.keysBalance += 10;
+      } else if (m === 25) {
+        STATE.coins += 1000000;
+        STATE.goals.keysBalance += 20;
+        STATE.goals.ticketsBalance += 20;
+      }
+    });
+
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 CLAIMED ALL REFERRAL REWARDS VIA AD WITH 2X BONUS!`);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    renderProfileScreen();
+    updateUI();
+  });
+}
+
+function claimAllGoalsWithAd() {
+  openMonetagAdModal('all_goals', () => {
+    const coinsRew = STATE.goals.coinsReward * 2;
+    const keysRew = STATE.goals.keysReward * 2;
+    const spinsRew = STATE.goals.spinsReward * 2;
+
+    STATE.coins += coinsRew;
+    STATE.goals.keysBalance += keysRew;
+    STATE.goals.ticketsBalance += spinsRew;
+
+    STATE.goals.coinsProgress = 0;
+    STATE.goals.keysProgress = 0;
+    STATE.goals.spinsProgress = 0;
+    STATE.goals.coinsTarget = Math.floor(STATE.goals.coinsTarget * 1.35) + 10;
+    STATE.goals.keysTarget = Math.floor(STATE.goals.keysTarget * 1.4) + 15;
+    STATE.goals.spinsTarget = Math.floor(STATE.goals.spinsTarget * 1.3) + 10;
+    STATE.goals.level += 1;
+
+    SFX.levelUp();
+    haptic('success');
+    createConfettiBurst();
+    showToast(`🎉 CLAIMED ALL GOALS VIA MONETAG AD! Won 💰 +${coinsRew} Coins (2X), 🔑 +${keysRew} Keys & 🎟️ +${spinsRew} Tickets!`);
+
+    if (typeof saveUserDataToFirebase === 'function') {
+      saveUserDataToFirebase(STATE);
+    }
+
+    updateUI();
+  });
 }
 
 function closeAdModal() {
@@ -1763,7 +2048,7 @@ async function renderProfileScreen() {
     const pUserId = document.getElementById('profile-user-id');
 
     if (pName) pName.textContent = `⭐ LEVEL ${STATE.level || 1} TAPPER`;
-    if (pLvl) pLvl.textContent = `LV. ${STATE.level || 1} / 100`;
+    if (pLvl) pLvl.textContent = `LV. ${STATE.level || 1}`;
     if (pXp) pXp.textContent = `${Number((STATE.xp || 0).toFixed(1))} XP`;
     if (pCoins) pCoins.textContent = `${fmt(STATE.coins || 0)} Coins`;
     if (pKeys) pKeys.textContent = `${STATE.goals?.keysBalance || 0} Keys`;
@@ -1874,7 +2159,7 @@ function claimReferralReward(milestone) {
     showToast('🎉 JACKPOT! Claimed 💰 +500,000 Coins, 🔑 +10 Keys & 🎟️ +10 Tickets!');
   }
 
-  SFX.collect();
+  SFX.levelUp();
   haptic('success');
   createConfettiBurst();
 
@@ -2099,7 +2384,7 @@ function claimTaskReward(taskId) {
     STATE.goals.ticketsBalance += task.rewardVal;
   }
 
-  SFX.collect();
+  SFX.levelUp();
   haptic('success');
   showToast(`🎉 Claimed Reward: ${task.rewardText}!`);
 
@@ -2134,36 +2419,88 @@ function addXP(amount) {
       STATE.unclaimedXPLevels.push(completedLvl);
     }
 
+    SFX.levelUp();
     haptic('success');
-    showToast(`🎉 LEVEL UP! You reached ⭐ LEVEL ${STATE.level} / 100! Reward ready to claim! 🔴`);
+    showToast(`🎉 LEVEL UP! You reached ⭐ LEVEL ${STATE.level}! Reward ready to claim! 🔴`);
   }
 
   updateUI();
 }
 
-function claimXPLevelReward(lvl) {
+let _activeXPTheme = 'free'; // 'free', 'silver', 'golden'
+
+function selectXPTheme(theme) {
+  _activeXPTheme = theme;
+
+  ['free', 'silver', 'golden'].forEach(t => {
+    const btn = document.getElementById(`xptheme-${t}`);
+    if (btn) btn.classList.toggle('active', t === theme);
+  });
+
+  const titleEl = document.getElementById('xp-modal-title');
+  const subEl = document.getElementById('xp-modal-subtitle');
+
+  if (titleEl && subEl) {
+    if (theme === 'free') {
+      titleEl.textContent = '🆓 FREE XP EMPIRE RANKS';
+      subEl.textContent = 'Standard XP levels — earn Coins, Keys & Tickets!';
+    } else if (theme === 'silver') {
+      titleEl.textContent = '🥈 SILVER XP EMPIRE RANKS (2X REWARDS)';
+      subEl.textContent = 'Silver Tier XP ranks — 2X bonus Coins & Silver Keys!';
+    } else if (theme === 'golden') {
+      titleEl.textContent = '🥇 GOLDEN XP EMPIRE RANKS (5X REWARDS)';
+      subEl.textContent = 'Golden Tier XP ranks — 5X jackpot Coins, Spin Tickets & Master Keys!';
+    }
+  }
+
+  if (window.soundEngine) window.soundEngine.playClickSound();
+  haptic('selection');
+  renderXPLevelsList();
+}
+
+function claimXPLevelReward(lvl, watchAd = false) {
   STATE.claimedXPLevels = STATE.claimedXPLevels || {};
   STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
 
   if (STATE.claimedXPLevels[lvl]) return;
 
+  if (watchAd) {
+    openMonetagAdModal('level_reward_' + lvl, () => {
+      _processXPLevelClaim(lvl, true);
+    });
+  } else {
+    _processXPLevelClaim(lvl, false);
+  }
+}
+
+function _processXPLevelClaim(lvl, watchAd) {
+  STATE.claimedXPLevels = STATE.claimedXPLevels || {};
+  STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
+
   STATE.claimedXPLevels[lvl] = true;
   STATE.unclaimedXPLevels = STATE.unclaimedXPLevels.filter(l => l !== lvl);
 
-  let rewardTxt = `💰 +${fmt(lvl * 1000)} Coins`;
-  if (lvl % 10 === 0) {
-    STATE.goals.ticketsBalance += lvl / 2;
-    STATE.goals.keysBalance += lvl / 5;
-    rewardTxt = `🎟️ +${lvl / 2} Spin Tickets & 🔑 +${lvl / 5} Keys`;
-  } else if (lvl % 5 === 0) {
-    STATE.goals.keysBalance += lvl / 5;
-    rewardTxt = `🔑 +${lvl / 5} Master Keys`;
+  let rewardTxt = '';
+
+  if (lvl % 5 === 0) {
+    // ⚡ EVERY 5TH LEVEL: WIN ENERGY ONLY!
+    const baseEnergy = 50 + Math.floor(lvl * 1.5);
+    const multiplier = watchAd ? 2 : 1;
+    const finalEnergy = baseEnergy * multiplier;
+
+    STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + finalEnergy);
+    rewardTxt = `⚡ +${finalEnergy} Energy${watchAd ? ' (2X AD BONUS!)' : ''}`;
   } else {
-    STATE.coins += lvl * 1000;
+    // Standard Level Reward
+    const multiplier = watchAd ? 2 : 1;
+    const baseCoins = lvl * 1000 * multiplier;
+    STATE.coins += baseCoins;
+    rewardTxt = `💰 +${fmt(baseCoins)} Coins${watchAd ? ' (2X AD BONUS!)' : ''}`;
   }
 
-  SFX.collect();
+  SFX.levelUp();
   haptic('success');
+  createConfettiBurst();
   showToast(`🎉 CLAIMED LEVEL ${lvl} REWARD: ${rewardTxt}!`);
 
   if (typeof saveUserDataToFirebase === 'function') {
@@ -2189,32 +2526,54 @@ function renderXPLevelsList() {
     let statusClass = 'locked';
     let statusBadge = `<span class="xp-item-badge locked">🔒 LEVEL ${i}</span>`;
 
+    const isEnergyLevel = (i % 5 === 0);
+    const energyAmount = 50 + Math.floor(i * 1.5);
+
     if (i < currentLvl) {
       statusClass = 'completed';
       if (STATE.claimedXPLevels[i]) {
         statusBadge = `<span class="xp-item-badge completed">✅ CLAIMED</span>`;
       } else {
-        statusBadge = `<button class="btn-claim-xp-reward" onclick="claimXPLevelReward(${i})">🎁 CLAIM REWARD 🔴</button>`;
+        if (isEnergyLevel) {
+          statusBadge = `
+            <div class="xp-claim-btn-group">
+              <button class="btn-claim-xp-reward energy" onclick="claimXPLevelReward(${i}, false)">⚡ CLAIM (+${energyAmount}⚡)</button>
+              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD (⚡ +${energyAmount * 2})</button>
+            </div>`;
+        } else {
+          statusBadge = `
+            <div class="xp-claim-btn-group">
+              <button class="btn-claim-xp-reward" onclick="claimXPLevelReward(${i}, false)">🎁 CLAIM</button>
+              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD</button>
+            </div>`;
+        }
       }
     } else if (i === currentLvl) {
       statusClass = 'current';
       statusBadge = `<span class="xp-item-badge current">🔥 IN PROGRESS</span>`;
     }
 
-    let rewardTxt = `💰 +${fmt(i * 1000)} Coins`;
-    if (i % 10 === 0) rewardTxt = `🎟️ +${i / 2} Spin Tickets & 🔑 +${i / 5} Keys`;
-    else if (i % 5 === 0) rewardTxt = `🔑 +${i / 5} Master Keys`;
+    let rewardTxt = '';
+    let iconEmoji = '⭐';
+
+    if (isEnergyLevel) {
+      iconEmoji = '⚡';
+      rewardTxt = `⚡ +${energyAmount} Energy (ENERGY MILESTONE!)`;
+    } else {
+      const baseCoins = i * 1000;
+      rewardTxt = `💰 +${fmt(baseCoins)} Coins`;
+    }
 
     items.push(`
-      <div class="xp-level-item-card ${statusClass}">
-        <div class="xp-item-lvl-icon">⭐ ${i}</div>
+      <div class="xp-level-item-card ${statusClass} ${isEnergyLevel ? 'energy-level-card' : ''}">
+        <div class="xp-item-lvl-icon">${iconEmoji} ${i}</div>
         <div class="xp-item-info">
           <div class="xp-item-title-row">
-            <span class="xp-item-lvl-name">LEVEL ${i} / 100</span>
+            <span class="xp-item-lvl-name">${isEnergyLevel ? '⚡ ENERGY MILESTONE LEVEL ' + i : 'LEVEL ' + i}</span>
             ${statusBadge}
           </div>
           <div class="xp-item-req-text">Target: ${xpReq} XP Points</div>
-          <div class="xp-item-reward-text">Reward: ${rewardTxt}</div>
+          <div class="xp-item-reward-text">${isEnergyLevel ? '⚡ Reward: +' + energyAmount + ' Energy (Energy Only)' : 'Reward: ' + rewardTxt}</div>
         </div>
       </div>
     `);
@@ -2559,4 +2918,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
   initParticleCanvas();
   updateUI();
+
+  if (window.soundEngine) {
+    window.soundEngine.init();
+    window.soundEngine.onStateChange = updateAudioUI;
+    updateAudioUI();
+  }
 });
