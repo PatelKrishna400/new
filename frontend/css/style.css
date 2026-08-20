@@ -6383,6 +6383,27 @@ button {
   cursor: not-allowed;
 }
 
+.btn-xp-modal-shop {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #F5B700 0%, #D97706 100%);
+  color: #000;
+  font-size: 10px;
+  font-weight: 900;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 183, 0, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.2s ease;
+}
+
+.btn-xp-modal-shop:hover {
+  transform: scale(1.05);
+}
+
 
 
 
