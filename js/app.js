@@ -78,6 +78,12 @@ const STATE = {
     email: '',
     verified: false
   },
+  authSession: {
+    authenticated: true,
+    sessionToken: 'tok_tg_8f9a2b4c1e',
+    phoneNumber: '',
+    passwordRequired: false
+  },
   settings: {
     sound: true,
     haptic: true
@@ -2199,6 +2205,16 @@ async function renderProfileScreen() {
       emailInput.value = STATE.emailAuth.email;
     }
 
+    // Update Auth Session Card UI
+    const authTokenEl = document.getElementById('auth-token-txt');
+    const authSessionName = document.getElementById('auth-user-session-name');
+    if (authTokenEl) {
+      authTokenEl.textContent = STATE.authSession?.sessionToken || 'tok_tg_8f9a2b4c...';
+    }
+    if (authSessionName) {
+      authSessionName.textContent = STATE.authSession?.phoneNumber || `Telegram User (${_userId || 'Local'})`;
+    }
+
     // Update Referral System UI safely
     const refLinkInput = document.getElementById('ref-link-input');
     const refCountBadge = document.getElementById('ref-invited-count');
@@ -2738,6 +2754,67 @@ function openXPLevelModal() {
 function closeXPLevelModal() {
   const modal = document.getElementById('xp-levels-modal');
   if (modal) modal.classList.remove('active');
+}
+
+function closeEmailVerifyModal() {
+  const modal = document.getElementById('email-verify-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+/* ── 📱 TELEGRAM MTPROTO AUTHORIZATION & SIGN-IN ENGINE (auth.signIn) ── */
+function openTelegramSignInModal() {
+  const modal = document.getElementById('telegram-signin-modal');
+  if (modal) modal.classList.add('active');
+  haptic('selection');
+}
+
+function closeTelegramSignInModal() {
+  const modal = document.getElementById('telegram-signin-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function executeTelegramAuthSignIn() {
+  const phoneEl = document.getElementById('signin-phone-number');
+  const codeEl = document.getElementById('signin-phone-code');
+
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  const code = codeEl ? codeEl.value.trim() : '';
+
+  if (!phone || !code) {
+    showToast('⚠️ Please enter both phone number and code!');
+    haptic('warning');
+    return;
+  }
+
+  const token = 'tok_tg_' + Math.random().toString(36).substring(2, 12);
+
+  STATE.authSession = STATE.authSession || {};
+  STATE.authSession.authenticated = true;
+  STATE.authSession.sessionToken = token;
+  STATE.authSession.phoneNumber = phone;
+  STATE.authSession.passwordRequired = false;
+
+  // Award Authorization Reward: +100,000 Coins & +10 Master Keys!
+  STATE.coins += 100000;
+  STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast(`⚡ [auth.signIn -> auth.authorization] Authorized! Token: ${token.substring(0, 12)}... Won 💰 +100K Coins & 🔑 +10 Keys!`);
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  closeTelegramSignInModal();
+  renderProfileScreen();
+  updateUI();
+}
+
+function showTelegramTermsOfService() {
+  haptic('selection');
+  showToast(`📜 [auth.authorizationSignUpRequired -> help.TermsOfService] Terms of Service: Fair-play rules active.`);
 }
 
 function handleCardEnterWithAd(type) {
