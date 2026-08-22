@@ -2309,6 +2309,26 @@ function openXPLevelModal() {
   modal.classList.add('active');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
+
+  // Telegram native BackButton integration
+  try {
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.BackButton) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(closeXPLevelModal);
+    }
+  } catch (e) {}
+
+  // Smoothly scroll table to player's current active level row
+  setTimeout(() => {
+    const curRow = document.querySelector('.pass-table tr.current-row');
+    const scrollContainer = document.querySelector('.xp-modal-scroll-area');
+    if (curRow && scrollContainer) {
+      const topOffset = curRow.offsetTop - 120;
+      scrollContainer.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+  }, 100);
+
   if (typeof haptic === 'function') haptic('selection');
 }
 
@@ -2319,6 +2339,15 @@ function closeXPLevelModal() {
     modal.style.display = 'none';
   }
   document.body.style.overflow = '';
+
+  // Hide Telegram native BackButton
+  try {
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.BackButton) {
+      tg.BackButton.hide();
+      tg.BackButton.offClick(closeXPLevelModal);
+    }
+  } catch (e) {}
 }
 
 function updatePassStatusPills() {

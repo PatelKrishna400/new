@@ -7,6 +7,18 @@
   
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    try {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+        if (tg.setHeaderColor) tg.setHeaderColor('#070b14');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#070b14');
+      }
+    } catch (e) {}
+  </script>
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
