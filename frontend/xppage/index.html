@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>XP Quest — Season 1 Pass Dashboard (Levels 1-100)</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- 📺 MONETAG / TELEADS REWARDED INTERSTITIAL SDK (ZONE 11629417) -->
+    <script src="//libtl.com/sdk.js" data-zone="11629417" data-sdk="show_11629417"></script>
+</head>
+<body>
+
+    <div class="app-container" id="app-frame">
+        
+        <!-- Main View Area (Season 1 Banner & 4-Column Table) -->
+        <main class="main-content" id="main-content">
+            
+            <!-- Season 1 Banner: Back Button + Title on Left, 25-Day Timer on Right -->
+            <div class="season-banner">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button class="btn-hud-back" onclick="if(window.parent && window.parent !== window && window.parent.closeXPPage){ window.parent.closeXPPage(); } else { window.location.href='../index.html'; }" title="Back to Game" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(227,184,28,0.5); color: #ffd700; border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        ⬅ BACK
+                    </button>
+                    <div class="season-title"><i class="fa-solid fa-trophy"></i> Season 1 Pass</div>
+                </div>
+                <div class="season-timer" id="season-countdown-timer"><i class="fa-regular fa-clock"></i> 25d 00h 00m 00s</div>
+            </div>
+
+            <!-- Pass Filter / Store Quick Action Cards -->
+            <div class="pass-status-cards">
+                <div class="pass-card-pill silver" id="pill-silver" onclick="openSilverPassModal()">
+                    <span class="pass-icon">🥈</span>
+                    <div class="pass-info">
+                        <span class="pass-name">SILVER PASS</span>
+                        <span class="pass-status" id="status-silver-txt">🔒 LOCKED (500⭐)</span>
+                    </div>
+                </div>
+                <div class="pass-card-pill golden" id="pill-golden" onclick="openGoldenPassModal()">
+                    <span class="pass-icon">👑</span>
+                    <div class="pass-info">
+                        <span class="pass-name">GOLDEN PASS</span>
+                        <span class="pass-status" id="status-golden-txt">🔒 LOCKED (1000⭐)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4-COLUMN TABLE FORM LEVEL PASS CONTAINER (Levels 1 to 100) -->
+            <div class="pass-table-wrapper">
+                <table class="pass-table">
+                    <thead>
+                        <tr>
+                            <th class="col-level">LEVEL & XP</th>
+                            <th class="col-free">🎁 FREE PASS</th>
+                            <th class="col-silver" id="th-silver-header" onclick="openSilverPassModal()">🥈 SILVER PASS</th>
+                            <th class="col-golden" id="th-golden-header" onclick="openGoldenPassModal()">👑 GOLDEN PASS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pass-table-body">
+                        <!-- Dynamic 4-Column Rows (Levels 1 to 100) -->
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <!-- MODAL 1: SILVER PASS DUAL UNLOCK MODAL -->
+        <div class="modal-overlay" id="modal-silver-pass">
+            <div class="modal-card" style="border-color: var(--silver-accent);">
+                <div style="font-size: 2.8rem; margin-bottom: 4px;">🥈</div>
+                <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--silver-accent);">UNLOCK SILVER PASS</h2>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Unlocks Silver Pass rewards for all <strong>EVEN levels (2, 4, 6, 8... 100)</strong>! Choose your method:
+                </p>
+
+                <button class="btn-primary" id="btn-buy-silver-stars" style="width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; font-weight: 900; margin-bottom: 8px; font-size: 0.78rem;">
+                    ⭐ UNLOCK WITH 500 TELEGRAM STARS
+                </button>
+
+                <button class="btn-primary" id="btn-buy-silver-ads" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #b45309); color: #000; font-weight: 900; margin-bottom: 10px; font-size: 0.78rem;">
+                    🎬 WATCH 50 ADS (<span id="silver-ads-count">0</span> / 50)
+                </button>
+
+                <button class="btn-secondary" id="btn-close-silver-modal" style="width: 100%;">Close</button>
+            </div>
+        </div>
+
+        <!-- MODAL 2: GOLDEN PASS DUAL UNLOCK MODAL -->
+        <div class="modal-overlay" id="modal-golden-pass">
+            <div class="modal-card" style="border-color: var(--gold-accent);">
+                <div style="font-size: 2.8rem; margin-bottom: 4px;">👑</div>
+                <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--gold-accent);">UNLOCK GOLDEN PASS</h2>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Unlocks Golden Pass rewards for all <strong>MILESTONE levels (1, 5, 10, 15... 100)</strong>! Choose your method:
+                </p>
+
+                <button class="btn-primary" id="btn-buy-golden-stars" style="width: 100%; background: linear-gradient(135deg, var(--gold-accent), #d97706); color: #000; font-weight: 900; margin-bottom: 8px; font-size: 0.78rem;">
+                    ⭐ UNLOCK WITH 1000 TELEGRAM STARS
+                </button>
+
+                <button class="btn-primary" id="btn-buy-golden-ads" style="width: 100%; background: linear-gradient(135deg, #06b6d4, #0284c7); color: #fff; font-weight: 900; margin-bottom: 10px; font-size: 0.78rem;">
+                    🎬 WATCH 100 ADS (<span id="golden-ads-count">0</span> / 100)
+                </button>
+
+                <button class="btn-secondary" id="btn-close-golden-modal" style="width: 100%;">Close</button>
+            </div>
+        </div>
+
+        <!-- MODAL 3: LEVEL UP CELEBRATION MODAL -->
+        <div class="modal-overlay" id="level-up-modal">
+            <div class="modal-card">
+                <div style="font-size:3rem; margin-bottom:6px;">🎉</div>
+                <h2 style="font-size:1.3rem; font-weight:900; color:var(--gold-accent);">LEVEL UP!</h2>
+                <p id="level-up-desc" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">You reached Level 2!</p>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: var(--radius-md); width: 100%; margin-bottom: 14px; font-size: 0.78rem;">
+                    <div style="color: var(--gold-accent); font-weight: 700;" id="modal-reward-free">+50 Free Energy & 100 Coins Unlocked</div>
+                </div>
+
+                <button class="btn-primary" id="btn-close-modal" style="width: 100%;">
+                    CLAIM & CONTINUE
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>

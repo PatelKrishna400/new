@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mystery Chest Vault - Telegram Mini App</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="tma-body theme-free">
+
+  <!-- Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+  <div id="tapParticleContainer"></div>
+
+  <!-- Mobile View Layout Container -->
+  <div class="app-container">
+
+    <!-- 1. TOP HEADER BAR (CLEAN & CENTERED) -->
+    <header class="spin-header-bar">
+      <button class="btn-spin-back" id="btnTopBack" title="Back">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div class="header-center-title">
+        <span class="header-subtitle">TAP EMPIRE</span>
+        <h1 class="header-main-title"><span id="headerKeyEmoji" class="header-key-emoji bronze-key-icon">🗝️</span> MYSTERY CHEST</h1>
+      </div>
+      <div class="header-right-spacer"></div>
+    </header>
+
+    <!-- 2. TIER NAVIGATION BAR (ALL 🗝️ KEY EMOJIS) -->
+    <div class="tier-nav-bar">
+      <button class="tier-tab-btn active bronze-tier free-tier" data-tier="free">
+        <div class="tier-top">
+          <span class="tier-icon bronze-key-icon">🗝️</span>
+          <span class="tier-name">Bronze Key</span>
+        </div>
+        <div class="tier-ticket-badge bronze-badge">
+          <span>🗝️ <strong id="ticketCountNormal">0</strong></span>
+        </div>
+      </button>
+
+      <button class="tier-tab-btn silver-tier locked-tier" data-tier="silver">
+        <div class="tier-top">
+          <span class="tier-icon silver-key-icon">🗝️</span>
+          <span class="tier-name">Silver Key</span>
+        </div>
+        <div class="tier-ticket-badge silver-badge">
+          <span>🗝️ <strong id="ticketCountSilver">0</strong></span>
+        </div>
+      </button>
+
+      <button class="tier-tab-btn golden-tier locked-tier" data-tier="golden">
+        <div class="tier-top">
+          <span class="tier-icon golden-key-icon">🗝️</span>
+          <span class="tier-name">Gold Key</span>
+        </div>
+        <div class="tier-ticket-badge golden-badge">
+          <span>🗝️ <strong id="ticketCountGolden">0</strong></span>
+        </div>
+      </button>
+    </div>
+
+    <!-- 3. SCROLLABLE TAB PAGES VIEWPORT -->
+    <main class="pages-viewport">
+
+      <!-- ================= TAB 1: BRONZE ================= -->
+      <section class="tab-page active" id="page-free">
+        <!-- Pure Dark Stage with Bouncing Arrow & 3 Circle Chests -->
+        <div class="mystery-box-stage">
+          <div class="tap-arrow-guide">
+            <span class="guide-arrow">👇</span>
+            <span class="guide-text">TAP TO UNLOCK</span>
+            <span class="guide-arrow">👇</span>
+          </div>
+
+          <div class="trio-chests-row">
+            <div class="chest-card chest-circle-item bronze-circle" data-tier="free" data-chest="1">
+              <div class="rune-glow-ring bronze-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item bronze-circle" data-tier="free" data-chest="2">
+              <div class="rune-glow-ring bronze-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item bronze-circle" data-tier="free" data-chest="3">
+              <div class="rune-glow-ring bronze-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: SILVER ================= -->
+      <section class="tab-page" id="page-silver">
+        <!-- Pure Dark Stage with Bouncing Arrow & 3 Circle Chests -->
+        <div class="mystery-box-stage">
+          <div class="tap-arrow-guide">
+            <span class="guide-arrow">👇</span>
+            <span class="guide-text">TAP TO UNLOCK</span>
+            <span class="guide-arrow">👇</span>
+          </div>
+
+          <div class="trio-chests-row">
+            <div class="chest-card chest-circle-item silver-circle" data-tier="silver" data-chest="1">
+              <div class="rune-glow-ring cyan-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item silver-circle" data-tier="silver" data-chest="2">
+              <div class="rune-glow-ring cyan-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item silver-circle" data-tier="silver" data-chest="3">
+              <div class="rune-glow-ring cyan-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: GOLDEN ================= -->
+      <section class="tab-page" id="page-golden">
+        <!-- Pure Dark Stage with Bouncing Arrow & 3 Circle Chests -->
+        <div class="mystery-box-stage">
+          <div class="tap-arrow-guide">
+            <span class="guide-arrow">👇</span>
+            <span class="guide-text">TAP TO UNLOCK</span>
+            <span class="guide-arrow">👇</span>
+          </div>
+
+          <div class="trio-chests-row">
+            <div class="chest-card chest-circle-item golden-circle" data-tier="golden" data-chest="1">
+              <div class="rune-glow-ring gold-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item golden-circle" data-tier="golden" data-chest="2">
+              <div class="rune-glow-ring gold-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+
+            <div class="chest-card chest-circle-item golden-circle" data-tier="golden" data-chest="3">
+              <div class="rune-glow-ring gold-ring"></div>
+              <span class="chest-emoji">🎁</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= UNIFIED KEY SHOP (VISIBLE ON ALL PAGES) ================= -->
+    <section class="shop-card">
+      <div class="shop-header">
+        <div class="shop-title-box">
+          <span class="shop-title-icon">🗝️</span>
+          <h3 class="shop-main-heading">Key Shop</h3>
+        </div>
+      </div>
+
+      <!-- Exchange Items Grid (Order: 1. Gold, 2. Silver, 3. Bronze) -->
+      <div class="shop-grid">
+        <!-- 1. Gold Key Conversion -->
+        <div class="exchange-item-card golden-convert">
+          <div class="ticket-expiry-tag gold-expiry">⏱️ Valid 3 Days</div>
+          <div class="exchange-visual">
+            <div class="ticket-side">
+              <span class="ticket-icon bronze-icon-box">🗝️</span>
+              <span class="ticket-qty">10</span>
+            </div>
+            <div class="arrow-indicator">➔</div>
+            <div class="ticket-side target-side">
+              <span class="ticket-icon gold-icon-box">🗝️</span>
+              <span class="ticket-qty">1</span>
+            </div>
+          </div>
+          <button class="exchange-btn golden-btn" data-convert="bronze-to-golden" data-cost="10" data-cost-type="free" data-reward="1" data-reward-type="golden">
+            <span>Convert 🗝️</span>
+          </button>
+        </div>
+
+        <!-- 2. Silver Key Conversion -->
+        <div class="exchange-item-card silver-convert">
+          <div class="ticket-expiry-tag silver-expiry">⏱️ Valid 2 Days</div>
+          <div class="exchange-visual">
+            <div class="ticket-side">
+              <span class="ticket-icon bronze-icon-box">🗝️</span>
+              <span class="ticket-qty">5</span>
+            </div>
+            <div class="arrow-indicator">➔</div>
+            <div class="ticket-side target-side">
+              <span class="ticket-icon silver-icon-box">🗝️</span>
+              <span class="ticket-qty">1</span>
+            </div>
+          </div>
+          <button class="exchange-btn silver-btn" data-convert="bronze-to-silver" data-cost="5" data-cost-type="free" data-reward="1" data-reward-type="silver">
+            <span>Convert 🗝️</span>
+          </button>
+        </div>
+
+        <!-- 3. Bronze Key Claim (Watch Ad) -->
+        <div class="exchange-item-card claim-convert">
+          <div class="ticket-expiry-tag bronze-expiry">📺 Watch Ads to Win 2 Bronze Keys</div>
+          <div class="exchange-visual">
+            <div class="ticket-side">
+              <span class="ticket-icon ad-icon-box">📺</span>
+              <span class="ticket-qty">1</span>
+            </div>
+            <div class="arrow-indicator">➔</div>
+            <div class="ticket-side target-side">
+              <span class="ticket-icon bronze-icon-box">🗝️</span>
+              <span class="ticket-qty">2</span>
+            </div>
+          </div>
+          <button class="exchange-btn free-claim-btn" id="shopWatchAdBtn">
+            <span>Watch Ad</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CINEMATIC GAME SÉANCE SCENE ================= -->
+    <div class="cinematic-scene-overlay" id="cinematicScene">
+      <div class="scene-sunburst" id="sceneSunburst"></div>
+      <div class="scene-magic-circle" id="sceneMagicCircle"></div>
+      <div class="scene-light-pillar" id="sceneLightPillar"></div>
+
+      <div class="scene-content">
+        <div class="scene-status-title" id="sceneStatusTitle">✨ OPENING MYSTERY CHEST... ✨</div>
+        
+        <div class="scene-chest-hero" id="sceneChestHero">
+          <div class="scene-hero-emoji" id="sceneHeroEmoji">🎁</div>
+        </div>
+
+        <div class="scene-tap-cta" id="sceneTapCta">
+          <span class="pulse-hand">✨</span> UNLOCKING REWARDS...
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODALS & POPUPS ================= -->
+
+    <!-- 1. REWARDED AD VIDEO MODAL -->
+    <div class="modal-overlay ad-modal-overlay" id="adPlayerModal">
+      <div class="ad-card">
+        <div class="ad-badge">SPONSORED ADVERTISEMENT</div>
+        <div class="ad-animation-box">
+          <div class="ad-gift-icon">🎁</div>
+          <h3>⚡ Telegram Mini App Partner</h3>
+          <p>Enjoying your rewards? Loading sponsor message...</p>
+        </div>
+        <div class="ad-progress-track">
+          <div class="ad-progress-bar" id="adProgressBar"></div>
+        </div>
+        <div class="ad-countdown" id="adCountdownText">Reward unlocking in 3s...</div>
+      </div>
+    </div>
+
+    <!-- 2. WINNER CELEBRATION MODAL (EXACT FROM SPINNER) -->
+    <div class="modal-overlay" id="modalReveal">
+      <div class="modal-card">
+        <div class="winner-icon-burst" id="winnerIconBurst">⚡</div>
+        <div class="modal-tag" id="winnerModalTag">CONGRATULATIONS!</div>
+        <h2 class="winner-title" id="winnerText">10 Energy</h2>
+        <p id="winnerDesc" style="color: var(--text-muted); font-size: 13px;">The chest has chosen your prize!</p>
+        
+        <div class="modal-actions">
+          <button class="modal-btn primary watch-ad-claim-btn" id="btnClaimLoot">
+            <span>📺 Watch Ad to Claim Reward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. VIP PASS PURCHASE MODAL (EXACT FROM SPINNER) -->
+    <div class="modal-overlay" id="passModal">
+      <div class="modal-card pass-modal-card">
+        <div class="pass-header-burst" id="passModalEmoji">🗝️</div>
+        <div class="modal-tag" id="passModalTag">VIP PASS REQUIRED</div>
+        <h2 class="winner-title" id="passModalTitle">Unlock Silver VIP Pass</h2>
+        <p id="passModalDesc" style="color: var(--text-muted); font-size: 13px;">Get permanent access to the Silver Vault with exclusive rewards!</p>
+        
+        <div class="pass-perks-box" id="passModalPerks">
+          <div class="perk-item" id="perk1">✨ Unlimited Silver Chest Access</div>
+          <div class="perk-item" id="perk2">⚡ Double Combos & Energy Rewards</div>
+          <div class="perk-item" id="perk3">⏱️ Silver Keys valid for 2 Days</div>
+          <div class="perk-item" id="perk4">🎁 High XP Multipliers</div>
+        </div>
+
+        <div class="pass-actions">
+          <button class="exchange-btn pass-buy-btn star-buy-btn" id="buyPassWithStarsBtn">
+            <span id="passStarsBtnText">⭐ 500 Telegram Stars</span>
+          </button>
+          <button class="exchange-btn pass-ad-btn" id="buyPassWithAdsBtn">
+            <span>📺 Watch Ads to Unlock (<strong id="passAdsCount">0</strong>/<strong id="passAdsTarget">50</strong>)</span>
+          </button>
+          <button class="pass-close-btn" id="closePassModalBtn">Maybe Later</button>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End .app-container -->
+
+  <!-- App Engine Script -->
+  <script src="app.js"></script>
+</body>
+</html>

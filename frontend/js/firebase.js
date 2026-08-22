@@ -54,6 +54,8 @@ async function saveUserDataToFirebase(stateData) {
       maxEnergy: stateData.maxEnergy || 500,
       level: stateData.level || 1,
       xp: Number((stateData.xp || 0).toFixed(1)),
+      keys: stateData.keys || 0,
+      tickets: stateData.tickets || 0,
       goals: stateData.goals || {},
       boostLevels: stateData.boostLevels || {},
       boostExpiries: stateData.boostExpiries || {},
@@ -61,6 +63,8 @@ async function saveUserDataToFirebase(stateData) {
       claimedTasks: stateData.claimedTasks || {},
       claimedXPLevels: stateData.claimedXPLevels || {},
       unclaimedXPLevels: stateData.unclaimedXPLevels || [],
+      xpQuest: stateData.xpQuest || {},
+      silverPass: stateData.silverPass || {},
       referrals: stateData.referrals || { invitedCount: 0, claimed: {} },
       userId: _userId,
       lastSaved: Date.now()
@@ -75,6 +79,128 @@ async function saveUserDataToFirebase(stateData) {
     }
   } catch (err) {
     console.warn('[Firebase Save] Fallback mode active:', err);
+  }
+}
+
+/* ── 🔴 REALTIME LIVE SYNC ENGINE ── */
+let _realtimeListenerActive = false;
+
+function initRealtimeFirebaseSync(onDataReceived) {
+  if (!_rtdb) {
+    console.log('[Firebase Realtime] RTDB not initialized, using local sync.');
+    return;
+  }
+  if (_realtimeListenerActive) return;
+
+  try {
+    const playerRef = _rtdb.ref('players/' + _userId);
+    _realtimeListenerActive = true;
+
+    playerRef.on('value', snapshot => {
+      if (snapshot.exists()) {
+        const liveData = snapshot.val();
+        console.log('[Firebase Realtime Sync] Live update received from cloud:', liveData);
+        
+        // Update connection status in UI if element exists
+        const cloudStatusEl = document.querySelector('.cloud-status');
+        if (cloudStatusEl) {
+          cloudStatusEl.innerHTML = '🟢 Realtime Database Live & Synced';
+        }
+
+        if (typeof onDataReceived === 'function') {
+          onDataReceived(liveData);
+        }
+      }
+    }, err => {
+      console.warn('[Firebase Realtime Error]:', err);
+    });
+
+    console.log('[Firebase Realtime] Live listener subscribed for user:', _userId);
+  } catch (e) {
+    console.warn('[Firebase Realtime Exception]:', e);
+  }
+}
+
+/* ── 💸 REALTIME WITHDRAWALS SYNC & PERSISTENCE ── */
+async function saveWithdrawalToFirebase(withdrawalData) {
+  try {
+    const record = {
+      id: withdrawalData.id || ('wd_' + Date.now()),
+      userId: _userId,
+      coins: Number(withdrawalData.coins) || 0,
+      stars: Number(withdrawalData.stars) || 0,
+      status: withdrawalData.status || 'pending', // pending | approved | completed | rejected
+      targetUser: withdrawalData.targetUser || _userId,
+      createdAt: withdrawalData.createdAt || Date.now(),
+      updatedAt: Date.now()
+    };
+
+    // 1. Save to local storage cache
+    let localWd = [];
+    try {
+      localWd = JSON.parse(localStorage.getItem('te_withdrawals_' + _userId) || '[]');
+    } catch (e) { localWd = []; }
+    localWd.unshift(record);
+    localStorage.setItem('te_withdrawals_' + _userId, JSON.stringify(localWd.slice(0, 30)));
+
+    // 2. Persist to Firebase Realtime Database
+    if (_rtdb) {
+      await _rtdb.ref(`withdrawals/${_userId}/${record.id}`).set(record);
+      await _rtdb.ref(`global_withdrawals/${record.id}`).set(record);
+      console.log('[Firebase Withdrawals] Withdrawal request saved to cloud:', record.id);
+    }
+    return record;
+  } catch (err) {
+    console.warn('[Firebase Save Withdrawal Error]:', err);
+    return null;
+  }
+}
+
+function subscribeToRealtimeWithdrawals(callback) {
+  // Load local cache first
+  try {
+    const localWd = JSON.parse(localStorage.getItem('te_withdrawals_' + _userId) || '[]');
+    if (callback && localWd.length > 0) callback(localWd);
+  } catch (e) {}
+
+  if (!_rtdb) return;
+
+  try {
+    _rtdb.ref('withdrawals/' + _userId).on('value', snapshot => {
+      const records = [];
+      if (snapshot.exists()) {
+        snapshot.forEach(child => {
+          records.unshift(child.val());
+        });
+      }
+      if (callback) callback(records);
+    });
+  } catch (e) {
+    console.warn('[Firebase Withdrawals Listener Error]:', e);
+  }
+}
+
+/* ── ⭐ REALTIME TELEGRAM STARS TRANSACTIONS SYNC ── */
+async function saveStarsPurchaseToFirebase(purchaseData) {
+  try {
+    const record = {
+      id: purchaseData.id || ('star_tx_' + Date.now()),
+      userId: _userId,
+      itemId: purchaseData.itemId || 'custom_item',
+      title: purchaseData.title || 'Telegram Stars Purchase',
+      priceStars: Number(purchaseData.priceStars) || 0,
+      status: purchaseData.status || 'paid',
+      createdAt: Date.now()
+    };
+
+    if (_rtdb) {
+      await _rtdb.ref(`stars_transactions/${_userId}/${record.id}`).set(record);
+      console.log('[Firebase Stars] Transaction saved:', record.id);
+    }
+    return record;
+  } catch (e) {
+    console.warn('[Firebase Stars Transaction Error]:', e);
+    return null;
   }
 }
 
@@ -104,28 +230,61 @@ async function loadUserDataFromFirebase() {
   }
 }
 
-async function fetchFirebaseLeaderboard() {
+async function fetchFirebaseLeaderboard(limit = 50) {
   try {
     if (_rtdb) {
-      const snapshot = await _rtdb.ref('players').orderByChild('xp').limitToLast(10).once('value');
+      const snapshot = await _rtdb.ref('players').orderByChild('xp').limitToLast(limit).once('value');
       if (snapshot.exists()) {
         const players = [];
         snapshot.forEach(child => {
-          const val = child.val();
+          const val = child.val() || {};
+          const displayName = val.userName || val.username || val.first_name || (val.userId ? `Player_${String(val.userId).slice(-4)}` : 'CryptoTapper');
           players.push({
             id: child.key,
-            name: val.userId ? `Player_${val.userId.slice(-4)}` : 'CryptoTapper',
-            xp: val.xp || 0,
-            level: val.level || 1
+            name: displayName,
+            xp: typeof val.xp === 'number' ? val.xp : (Number(val.xp) || 0),
+            level: val.level || 1,
+            coins: val.coins || 0,
+            avatar: val.avatar || '🧙‍♂️'
           });
         });
-        return players.sort((a, b) => b.xp - a.xp);
+        return players.sort((a, b) => (b.xp || 0) - (a.xp || 0));
       }
     }
   } catch (e) {
     console.warn('[Firebase Leaderboard Error]:', e);
   }
   return null;
+}
+
+function subscribeToFirebaseLeaderboard(callback, limit = 50) {
+  try {
+    if (_rtdb) {
+      const ref = _rtdb.ref('players').orderByChild('xp').limitToLast(limit);
+      ref.on('value', snapshot => {
+        if (snapshot.exists()) {
+          const players = [];
+          snapshot.forEach(child => {
+            const val = child.val() || {};
+            const displayName = val.userName || val.username || val.first_name || (val.userId ? `Player_${String(val.userId).slice(-4)}` : 'CryptoTapper');
+            players.push({
+              id: child.key,
+              name: displayName,
+              xp: typeof val.xp === 'number' ? val.xp : (Number(val.xp) || 0),
+              level: val.level || 1,
+              coins: val.coins || 0,
+              avatar: val.avatar || '🧙‍♂️'
+            });
+          });
+          callback(players.sort((a, b) => (b.xp || 0) - (a.xp || 0)));
+        } else {
+          callback(null);
+        }
+      });
+    }
+  } catch (e) {
+    console.warn('[Firebase Leaderboard Subscription Error]:', e);
+  }
 }
 
 /* ── ATOMIC INCREMENTER ENGINE ── */

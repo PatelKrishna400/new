@@ -79,7 +79,15 @@ function requestAllTelegramPermissions() {
   }
 }
 
-async function authenticateTelegramUser(apiEndpoint = '/api/validate-telegram-auth') {
+function getApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
+  if (typeof window !== 'undefined' && window.location.protocol.startsWith('http') && window.location.port !== '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:3000';
+  }
+  return '';
+}
+
+async function authenticateTelegramUser(apiEndpoint = null) {
   // Request all WebApp permissions & capabilities
   requestAllTelegramPermissions();
 
@@ -92,9 +100,10 @@ async function authenticateTelegramUser(apiEndpoint = '/api/validate-telegram-au
       return { ok: false, error: 'Standalone mode' };
     }
 
+    const endpoint = apiEndpoint || (getApiBaseUrl() + '/api/validate-telegram-auth');
     console.log('[Telegram Auth Client] Sending raw initData to backend validator...');
 
-    const response = await fetch(apiEndpoint, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -118,7 +127,7 @@ async function authenticateTelegramUser(apiEndpoint = '/api/validate-telegram-au
       return { ok: true, user: data.user };
     } else {
       const errData = await response.json().catch(() => ({}));
-      console.warn(`[Telegram Auth Client] Verification failed (${response.status}):`, errData.error);
+      console.warn(`[Telegram Auth Client] Verification response (${response.status}):`, errData.error || response.statusText);
       return { ok: false, status: response.status, error: errData.error };
     }
   } catch (err) {

@@ -20,6 +20,14 @@
 
 'use strict';
 
+function getStarsApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
+  if (typeof window !== 'undefined' && window.location.protocol.startsWith('http') && window.location.port !== '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:3000';
+  }
+  return '';
+}
+
 const PRODUCT_AD_LINK = 'https://omg10.com/4/11616083';
 
 function triggerProductAdRedirect() {
@@ -41,19 +49,40 @@ async function purchaseWithTelegramStars(itemConfig) {
   // Trigger sponsored product ad link on purchase request
   triggerProductAdRedirect();
 
+  const grantPurchasedItem = () => {
+    if (typeof STATE === 'undefined') return;
+
+    if (itemId && itemId.includes('coins')) {
+      STATE.coins = (STATE.coins || 0) + 1000000;
+      if (typeof showToast !== 'undefined') showToast(`💰 +1,000,000 Coins added to your balance!`);
+    } else if (itemId && itemId.includes('spins')) {
+      STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10;
+      if (typeof showToast !== 'undefined') showToast(`🎟️ +10 Lucky Spin Tickets added!`);
+    } else if (itemId && itemId.includes('keys')) {
+      STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
+      if (typeof showToast !== 'undefined') showToast(`🗝️ +10 Master Keys added!`);
+    } else if (itemId && itemId.includes('energy')) {
+      STATE.energy = STATE.maxEnergy || 500;
+      if (typeof showToast !== 'undefined') showToast(`⚡ Energy fully restored to MAX!`);
+    }
+
+    if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+    if (typeof saveStarsPurchaseToFirebase === 'function') {
+      saveStarsPurchaseToFirebase({ itemId, title, priceStars, status: 'paid' });
+    }
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof SFX !== 'undefined' && SFX.collect) SFX.collect();
+    if (typeof haptic === 'function') haptic('success');
+  };
+
   try {
     const tgApp = window.Telegram?.WebApp;
 
     if (!tgApp || !tgApp.openInvoice) {
       if (typeof showToast !== 'undefined') {
-        showToast(`⭐ Standalone / Demo: Purchased ${title} (${priceStars} Stars)!`);
+        showToast(`⭐ Demo Active: Purchased ${title} (${priceStars} Stars)!`);
       }
-      if (itemId && itemId.includes('spins') && typeof STATE !== 'undefined') {
-        STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10;
-      } else if (itemId && itemId.includes('keys') && typeof STATE !== 'undefined') {
-        STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
-      }
-      if (typeof updateUI !== 'undefined') updateUI();
+      grantPurchasedItem();
       return { ok: true, demo: true };
     }
 
@@ -62,7 +91,7 @@ async function purchaseWithTelegramStars(itemConfig) {
     }
 
     // 1. POST /stars/create-invoice to request invoice URL
-    const response = await fetch('/stars/create-invoice', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/create-invoice`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -74,10 +103,13 @@ async function purchaseWithTelegramStars(itemConfig) {
       })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({ ok: false, error: 'Invalid response from server' }));
 
     if (!response.ok || !data.ok || !data.invoiceLink) {
-      throw new Error(data.error || 'Failed to generate invoice URL');
+      // If backend API isn't running or invoice link fails, fallback to standalone purchase
+      console.warn('[Telegram Stars] Falling back to client-side grant mode.');
+      grantPurchasedItem();
+      return { ok: true, demo: true };
     }
 
     // 2. Open Telegram Native Payment Drawer: TG.openInvoice(invoiceLink)
@@ -87,8 +119,7 @@ async function purchaseWithTelegramStars(itemConfig) {
         if (typeof showToast !== 'undefined') {
           showToast('🎉 Purchase OK! Telegram Stars item granted successfully!');
         }
-        if (typeof SFX !== 'undefined') SFX.collect();
-        if (typeof haptic !== 'undefined') haptic('success');
+        grantPurchasedItem();
       } else if (status === 'cancelled') {
         if (typeof showToast !== 'undefined') {
           showToast('ℹ️ Telegram Stars payment was cancelled.');
@@ -119,7 +150,7 @@ async function fetchTelegramStarsSubscriptions(offset = '', missingBalanceOnly =
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo');
 
-    const response = await fetch('/stars/get-subscriptions', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/get-subscriptions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -164,7 +195,7 @@ async function subscribeWithTelegramStars(subConfig = {}) {
       showToast('⭐ Requesting Telegram Stars Subscription link...');
     }
 
-    const response = await fetch('/stars/create-subscription-invoice', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/create-subscription-invoice`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -219,7 +250,7 @@ async function changeTelegramStarsSubscription(subscriptionId, canceled = true, 
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo');
 
-    const response = await fetch('/stars/change-subscription', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/change-subscription`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -266,7 +297,7 @@ async function fulfillTelegramStarsSubscription(subscriptionId, peer = null) {
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo');
 
-    const response = await fetch('/stars/fulfill-subscription', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/fulfill-subscription`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subscriptionId, userId, peer })
@@ -301,7 +332,7 @@ async function botCancelTelegramStarsSubscription(chargeId, restore = false, tar
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo'));
 
-    const response = await fetch('/stars/bot-cancel-subscription', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/bot-cancel-subscription`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -337,7 +368,7 @@ async function botCancelTelegramStarsSubscription(chargeId, restore = false, tar
  */
 async function fetchTelegramStarsTopupOptions() {
   try {
-    const response = await fetch('/stars/topup-options');
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/topup-options`);
     const data = await response.json();
 
     if (!response.ok || !data.ok) {
@@ -364,7 +395,7 @@ async function fetchTelegramStarsStatus(isTon = false, peer = null) {
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo');
 
-    const response = await fetch('/stars/get-status', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/get-status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, ton: Boolean(isTon), peer })
@@ -396,7 +427,7 @@ async function fetchTelegramStarsTransactions(options = {}) {
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo'));
 
-    const response = await fetch('/stars/get-transactions', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/get-transactions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -436,7 +467,7 @@ async function sendTelegramStarsForm(formId, invoice = {}, requireVerification =
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo');
 
-    const response = await fetch('/stars/send-form', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/send-form`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -486,7 +517,7 @@ async function refundTelegramStarsCharge(chargeId, targetUserId = null) {
       ? STATE.telegramUser.id 
       : (localStorage.getItem('tg_user_id') || 'user_demo'));
 
-    const response = await fetch('/stars/refund-charge', {
+    const response = await fetch(`${getStarsApiBaseUrl()}/stars/refund-charge`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

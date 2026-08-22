@@ -29,9 +29,30 @@ const http = require('http');
 const https = require('https');
 const crypto = require('crypto');
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN_HERE';
+const BOT_TOKEN = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN || '8805652274:AAHUssIHd69pJOSa7PIBpTrxzqILh0mkGMQ';
 const PORT = process.env.PORT || 3000;
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.webp': 'image/webp'
+};
 
 // In-Memory Database Store for pending withdrawals, transactions, and Telegram Stars subscriptions
 const DB_STORE = {
@@ -818,7 +839,11 @@ async function processWithdrawalRequest(initData, requestedCoins, userIdInput) {
 
 /* ── 5. HTTP SERVER & API ENDPOINTS ── */
 const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
+  const reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const parsedUrl = {
+    pathname: reqUrl.pathname,
+    query: Object.fromEntries(reqUrl.searchParams.entries())
+  };
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -1302,6 +1327,37 @@ const server = http.createServer((req, res) => {
       }
     });
     return;
+  }
+
+  // G. SERVE STATIC FRONTEND ASSETS
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    const frontendDir = path.resolve(__dirname, '../frontend');
+    let safePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
+    if (safePath === '/' || safePath === '\\') safePath = '/index.html';
+
+    let filePath = path.join(frontendDir, safePath);
+
+    // Prevent directory traversal
+    if (filePath.startsWith(frontendDir)) {
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+        filePath = path.join(filePath, 'index.html');
+      }
+
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': 'no-cache'
+        });
+        if (req.method === 'HEAD') {
+          res.end();
+        } else {
+          fs.createReadStream(filePath).pipe(res);
+        }
+        return;
+      }
+    }
   }
 
   res.writeHead(404, { 'Content-Type': 'application/json' });

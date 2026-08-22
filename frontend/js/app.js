@@ -278,6 +278,7 @@ function getXPNeededForLevel(lvl) {
 }
 
 function addXP(amount) {
+  incrementTaskProgress('xp_collect', amount);
   STATE.xp = Number(((STATE.xp || 0) + amount).toFixed(1));
   let currentLvl = STATE.level || 1;
   let xpNeeded = getXPNeededForLevel(currentLvl);
@@ -333,6 +334,9 @@ function updateUI() {
   if (xpHomeLevelTitle) xpHomeLevelTitle.textContent = `LEVEL ${currentLvl}`;
   if (xpHomeBarFill) xpHomeBarFill.style.width = xpPct + '%';
   if (xpHomeValText) xpHomeValText.textContent = `${currentXP} / ${xpNeeded} XP`;
+
+  // Update home XP level tab card (Season, Level, Timer, Indicators & Red Dot)
+  updateHomeXPTab();
   if (xpHomeTargetText) {
     const isSilver = isSilverPassActive();
     xpHomeTargetText.textContent = isSilver ? '+0.2 XP PER TAP (2X VIP)' : '+0.1 XP PER TAP';
@@ -1193,8 +1197,8 @@ function openMonetagAdModal(type, callback = null) {
   // Trigger sponsored product ad link on product buy / ad claim action
   openProductAdLink();
 
-  // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11363275() / show_11577158())
-  const showAdFunc = typeof show_11363275 === 'function' ? show_11363275 : (typeof show_11577158 === 'function' ? show_11577158 : null);
+  // 📺 DIRECT MONETAG REWARDED INTERSTITIAL SDK TRIGGER (show_11629417() / show_11363275())
+  const showAdFunc = typeof show_11629417 === 'function' ? show_11629417 : (typeof show_11363275 === 'function' ? show_11363275 : (typeof show_11577158 === 'function' ? show_11577158 : null));
   if (showAdFunc) {
     showToast('📺 Opening Rewarded Ad...');
     try {
@@ -2149,31 +2153,446 @@ function triggerKeyRevealAnimation(itemName) {
   showToast(`🔑 REVEALED: ${itemName}! Key Unlocked!`);
 }
 
+/* ── ⭐ XP QUEST SEASON 1 PASS 4-COLUMN ENGINE ── */
+function ensureXPQuestState() {
+  if (!STATE.xpQuest) {
+    STATE.xpQuest = {
+      silverUnlocked: false,
+      silverAdsWatched: 0,
+      goldenUnlocked: false,
+      goldenAdsWatched: 0,
+      claimedFreeLevels: [],
+      claimedSilverLevels: [],
+      claimedGoldenLevels: [],
+      seasonEndTime: Date.now() + (25 * 24 * 60 * 60 * 1000)
+    };
+  }
+}
+
+function getXPLevelRewards(level) {
+  if (level === 101) {
+    return {
+      free: { energy: 500, coins: 10000, icon: '🥉', isMajor: true, isTrophy: true, name: 'Bronze Trophy' },
+      silver: { energy: 1000, keys: 50, cards: 30, icon: '🥈', isMajor: true, isTrophy: true, name: 'Silver Trophy' },
+      golden: { energy: 2000, tickets: 50, icon: '🏆', isMajor: true, isTrophy: true, name: 'Golden Trophy' }
+    };
+  }
+
+  const isFreeMajor = (level === 1 || level % 5 === 0);
+  const isSilverMajor = (level === 1 || level % 2 === 0);
+
+  return {
+    free: isFreeMajor ? 
+      { energy: 50 + (level - 1) * 5, coins: 100 + (level - 1) * 50, icon: '🎁', isMajor: true } : 
+      { energy: 10, coins: 0, icon: '⚡', isMajor: false },
+
+    silver: isSilverMajor ? 
+      { energy: 100 + (level - 1) * 7, keys: Math.min(50, Math.ceil(level / 2)), cards: Math.min(30, Math.ceil(level / 3.5)), icon: '🎁', isMajor: true } : 
+      { energy: 50, keys: 0, cards: 0, icon: '⚡', isMajor: false },
+
+    golden: { 
+      energy: 200 + (level - 1) * 10, 
+      tickets: Math.min(50, Math.ceil(level / 2)), 
+      icon: '🎁', 
+      isMajor: true 
+    }
+  };
+}
+
+let _seasonTimerInterval = null;
+function startSeasonCountdown() {
+  ensureXPQuestState();
+  if (_seasonTimerInterval) clearInterval(_seasonTimerInterval);
+
+  function updateTimer() {
+    const now = Date.now();
+    const diff = Math.max(0, (STATE.xpQuest.seasonEndTime || (Date.now() + 25*86400000)) - now);
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    const timerEl = document.getElementById('season-countdown-timer');
+    if (timerEl) {
+      timerEl.innerHTML = `<i class="fa-regular fa-clock"></i> ${days}d ${hours.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+    }
+  }
+  updateTimer();
+  _seasonTimerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateHomeXPTab() {
+  ensureXPQuestState();
+  const level = STATE.level || 1;
+  const xp = Math.floor(STATE.xp || 0);
+  const xpNeeded = STATE.xpNeeded || 100;
+  const pct = Math.min(100, Math.round((xp / xpNeeded) * 100));
+
+  const seasonEl = document.getElementById('home-xp-season-text');
+  const lvlEl = document.getElementById('home-xp-level-text');
+  const barEl = document.getElementById('home-xp-bar-fill');
+  const xpEl  = document.getElementById('home-xp-amount-text');
+  const pctEl = document.getElementById('home-xp-percent-text');
+  const timerEl = document.getElementById('home-xp-short-timer');
+  const dotEl = document.getElementById('home-xp-claim-dot');
+
+  const badgeGold = document.getElementById('badge-pass-gold');
+  const badgeSilver = document.getElementById('badge-pass-silver');
+  const badgeFree = document.getElementById('badge-pass-free');
+
+  if (seasonEl) seasonEl.textContent = `🏆 SEASON 1`;
+  if (lvlEl) lvlEl.textContent = `${level}`;
+  if (barEl) barEl.style.width = pct + '%';
+  if (xpEl)  xpEl.textContent  = `${xp} / ${xpNeeded} XP`;
+  if (pctEl) pctEl.textContent = `(${pct}%)`;
+
+  // 1. Short Countdown Timer (Days and Hours only, e.g. 24d 18h)
+  if (timerEl) {
+    const now = Date.now();
+    const endTime = STATE.xpQuest.seasonEndTime || (now + 25 * 86400000);
+    const diff = Math.max(0, endTime - now);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    timerEl.textContent = `⏳ ${days}d ${hours}h`;
+  }
+
+  // 2. Gold and Silver Pass Buy Indicators
+  const isGold = STATE.xpQuest.goldenUnlocked;
+  const isSilver = STATE.xpQuest.silverUnlocked;
+
+  if (badgeGold) badgeGold.style.display = isGold ? 'inline-flex' : 'none';
+  if (badgeSilver) badgeSilver.style.display = isSilver ? 'inline-flex' : 'none';
+  if (badgeFree) badgeFree.style.display = (!isGold && !isSilver) ? 'inline-flex' : 'none';
+
+  // 3. Small Red Dot for Unclaimed Rewards Notification
+  let hasUnclaimed = false;
+  const claimedFree = STATE.xpQuest.claimedFreeLevels || [];
+  const claimedSilver = STATE.xpQuest.claimedSilverLevels || [];
+  const claimedGold = STATE.xpQuest.claimedGoldenLevels || [];
+
+  for (let l = 1; l <= level && l <= 100; l++) {
+    if (!claimedFree.includes(l)) {
+      hasUnclaimed = true;
+      break;
+    }
+    if (isSilver && (l % 2 === 0) && !claimedSilver.includes(l)) {
+      hasUnclaimed = true;
+      break;
+    }
+    if (isGold && (l === 1 || l % 5 === 0) && !claimedGold.includes(l)) {
+      hasUnclaimed = true;
+      break;
+    }
+  }
+
+  if (dotEl) {
+    dotEl.style.display = hasUnclaimed ? 'block' : 'none';
+  }
+}
+
 function openXPLevelModal() {
+  ensureXPQuestState();
   const modal = document.getElementById('xp-level-modal');
   if (!modal) return;
 
-  const currentLvl = Math.min(100, Math.max(1, STATE.level || 1));
-  const currentXP = Number((STATE.xp || 0).toFixed(1));
-  const xpNeeded = typeof getXPNeededForLevel === 'function' ? getXPNeededForLevel(currentLvl) : (STATE.maxXp || 100);
-
   const rankTitle = document.getElementById('xp-modal-user-rank');
   if (rankTitle) {
-    rankTitle.textContent = `LEVEL ${currentLvl} (${currentXP} / ${xpNeeded} XP)`;
+    rankTitle.textContent = `LEVEL ${STATE.level || 1} (${Math.floor(STATE.xp || 0)} / ${STATE.xpNeeded || 100} XP)`;
   }
 
-  renderXPLevelRanks();
+  updateHomeXPTab();
+  updatePassStatusPills();
+  renderPassTable();
+  startSeasonCountdown();
+
   modal.classList.add('active');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
   if (typeof haptic === 'function') haptic('selection');
-  if (typeof SFX !== 'undefined' && SFX.click) SFX.click();
-  updateUI();
 }
 
 function closeXPLevelModal() {
   const modal = document.getElementById('xp-level-modal');
-  if (modal) modal.classList.remove('active');
-  const modal2 = document.getElementById('xp-levels-modal');
-  if (modal2) modal2.classList.remove('active');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  document.body.style.overflow = '';
+}
+
+function updatePassStatusPills() {
+  ensureXPQuestState();
+  const thSilver = document.getElementById('th-silver-header');
+  const thGolden = document.getElementById('th-golden-header');
+  const statusSilv = document.getElementById('status-silver-txt');
+  const statusGold = document.getElementById('status-golden-txt');
+  const silverAdsEl = document.getElementById('silver-ads-count');
+  const goldenAdsEl = document.getElementById('golden-ads-count');
+
+  if (silverAdsEl) silverAdsEl.innerText = STATE.xpQuest.silverAdsWatched || 0;
+  if (goldenAdsEl) goldenAdsEl.innerText = STATE.xpQuest.goldenAdsWatched || 0;
+
+  if (thSilver) thSilver.innerHTML = STATE.xpQuest.silverUnlocked ? `🎁 SILVER PASS ✅` : `🥈 SILVER PASS`;
+  if (thGolden) thGolden.innerHTML = STATE.xpQuest.goldenUnlocked ? `🎁 GOLDEN PASS ✅` : `👑 GOLDEN PASS`;
+
+  if (statusSilv) statusSilv.innerText = STATE.xpQuest.silverUnlocked ? '✅ UNLOCKED' : `🔒 LOCKED (${STATE.xpQuest.silverAdsWatched || 0}/50 ADS)`;
+  if (statusGold) statusGold.innerText = STATE.xpQuest.goldenUnlocked ? '✅ UNLOCKED' : `🔒 LOCKED (${STATE.xpQuest.goldenAdsWatched || 0}/100 ADS)`;
+}
+
+function renderPassTable() {
+  ensureXPQuestState();
+  const tbody = document.getElementById('pass-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const playerLvl = STATE.level || 1;
+  const playerXp = STATE.xp || 0;
+  const playerMaxXp = STATE.xpNeeded || 100;
+
+  for (let lvl = 1; lvl <= 101; lvl++) {
+    const rewards = getXPLevelRewards(lvl);
+    const isCurrent = lvl === playerLvl;
+    const isCompleted = lvl < playerLvl;
+    const isUnlocked = lvl <= playerLvl;
+    const isFinaleRow = lvl === 101;
+    const isMilestoneRow = (lvl === 1 || lvl % 5 === 0);
+
+    const isFreeClaimed = STATE.xpQuest.claimedFreeLevels.includes(lvl);
+    const isSilverClaimed = STATE.xpQuest.claimedSilverLevels.includes(lvl);
+    const isGoldenClaimed = STATE.xpQuest.claimedGoldenLevels.includes(lvl);
+
+    const isSilverItemUnlocked = STATE.xpQuest.silverUnlocked && isUnlocked;
+    const isGoldenItemUnlocked = STATE.xpQuest.goldenUnlocked && isUnlocked;
+
+    let strokeOffset = 125;
+    let lineFillPct = 0;
+    if (lvl < playerLvl) {
+      strokeOffset = 0;
+      lineFillPct = 100;
+    } else if (lvl === playerLvl) {
+      const pct = Math.min(100, Math.floor((playerXp / playerMaxXp) * 100));
+      strokeOffset = 125 - (pct / 100) * 125;
+      lineFillPct = pct;
+    }
+
+    const tr = document.createElement('tr');
+    if (isCurrent) tr.className = 'current-row level-loading-active';
+    if (isCompleted) tr.className += ' level-completed';
+    if (!isUnlocked) tr.className += ' level-dark-locked';
+    if (isMilestoneRow) tr.className += ' milestone-row';
+    if (isFinaleRow) tr.className += ' finale-all-completed-row';
+
+    tr.innerHTML = `
+      <td class="col-xp-cell">
+        <div class="xp-table-cell">
+          <div class="xp-continuous-bar-bg"></div>
+          <div class="xp-continuous-bar-fill" style="height: ${lineFillPct}%;"></div>
+
+          <div class="xp-circle-container ${isFinaleRow ? 'finale-circle' : ''} ${isCurrent ? 'loading-ring' : ''}">
+            ${isFinaleRow ? `
+              <div class="season-badge-wrapper">
+                <span class="season-badge-emoji">👑</span>
+                <span class="season-badge-text">SEASON 1</span>
+              </div>
+            ` : `
+              <svg class="xp-circle-svg" viewBox="0 0 48 48">
+                <circle class="xp-circle-bg" cx="24" cy="24" r="20"></circle>
+                <circle class="xp-circle-bar" cx="24" cy="24" r="20" style="stroke-dashoffset: ${strokeOffset};"></circle>
+              </svg>
+              <span class="xp-circle-num">${lvl}</span>
+            `}
+          </div>
+        </div>
+      </td>
+
+      <td class="col-free-cell">
+        <div class="table-gift-card free gift-card-clickable ${isFreeClaimed ? 'claimed' : (isUnlocked ? 'claimable' : 'locked dark-locked')} ${rewards.free.isTrophy ? 'trophy-card bronze-trophy' : (!rewards.free.isMajor ? 'minor-energy-card' : '')}" data-type="free" data-lvl="${lvl}">
+          <div class="gift-icon">${rewards.free.icon}</div>
+        </div>
+      </td>
+
+      <td class="col-silver-cell">
+        <div class="table-gift-card silver gift-card-clickable ${isSilverClaimed ? 'claimed' : (isSilverItemUnlocked ? 'claimable' : 'locked dark-locked')} ${rewards.silver.isTrophy ? 'trophy-card silver-trophy' : (!rewards.silver.isMajor ? 'minor-energy-card' : '')}" data-type="silver" data-lvl="${lvl}">
+          <div class="gift-icon ${rewards.silver.isMajor && !rewards.silver.isTrophy ? 'silver-gift-icon' : ''}">${rewards.silver.icon}</div>
+        </div>
+      </td>
+
+      <td class="col-golden-cell">
+        <div class="table-gift-card golden gift-card-clickable ${isGoldenClaimed ? 'claimed' : (isGoldenItemUnlocked ? 'claimable' : 'locked dark-locked')} ${rewards.golden.isTrophy ? 'trophy-card golden-trophy' : ''}" data-type="golden" data-lvl="${lvl}">
+          <div class="gift-icon ${!rewards.golden.isTrophy ? 'golden-gift-icon' : ''}">${rewards.golden.icon}</div>
+        </div>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  }
+
+  document.querySelectorAll('.gift-card-clickable').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const type = card.getAttribute('data-type');
+      const lvl = parseInt(card.getAttribute('data-lvl'));
+      const rewards = getXPLevelRewards(lvl);
+      const rewardItem = rewards[type];
+
+      if (type === 'silver') {
+        if (!STATE.xpQuest.silverUnlocked) {
+          openSilverPassModal();
+          return;
+        }
+        if (lvl > STATE.level) {
+          showToast(`🔒 Reach Level ${lvl} first!`);
+          return;
+        }
+        if (lvl <= STATE.level && !STATE.xpQuest.claimedSilverLevels.includes(lvl)) {
+          claimSilverReward(lvl, e);
+        }
+      } else if (type === 'golden') {
+        if (!STATE.xpQuest.goldenUnlocked) {
+          openGoldenPassModal();
+          return;
+        }
+        if (lvl > STATE.level) {
+          showToast(`🔒 Reach Level ${lvl} first!`);
+          return;
+        }
+        if (lvl <= STATE.level && !STATE.xpQuest.claimedGoldenLevels.includes(lvl)) {
+          claimGoldenReward(lvl, e);
+        }
+      } else if (type === 'free') {
+        if (lvl > STATE.level) {
+          showToast(`🔒 Reach Level ${lvl} first!`);
+          return;
+        }
+        if (lvl <= STATE.level && !STATE.xpQuest.claimedFreeLevels.includes(lvl)) {
+          claimFreeReward(lvl, e);
+        }
+      }
+    });
+  });
+}
+
+function claimFreeReward(lvl, event) {
+  ensureXPQuestState();
+  if (STATE.xpQuest.claimedFreeLevels.includes(lvl)) return;
+  const rewards = getXPLevelRewards(lvl);
+  STATE.xpQuest.claimedFreeLevels.push(lvl);
+
+  STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + rewards.free.energy);
+  if (rewards.free.coins) STATE.coins += rewards.free.coins;
+
+  SFX.claim();
+  haptic('success');
+  showToast(rewards.free.isTrophy ? `🏆 BRONZE TROPHY UNLOCKED!` : `🎁 +${rewards.free.energy}⚡ Energy & +${rewards.free.coins}💰 Coins Claimed!`);
+
+  updateUI();
+  updatePassStatusPills();
+  renderPassTable();
+  saveGameState();
+}
+
+function claimSilverReward(lvl, event) {
+  ensureXPQuestState();
+  if (STATE.xpQuest.claimedSilverLevels.includes(lvl)) return;
+  const rewards = getXPLevelRewards(lvl);
+  STATE.xpQuest.claimedSilverLevels.push(lvl);
+
+  STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + rewards.silver.energy);
+  if (rewards.silver.keys) STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + rewards.silver.keys;
+
+  SFX.claim();
+  haptic('success');
+  showToast(rewards.silver.isTrophy ? `🥈 SILVER TROPHY UNLOCKED!` : `🎁 Silver Pass: +${rewards.silver.energy}⚡ & +${rewards.silver.keys}🔑 Keys!`);
+
+  updateUI();
+  updatePassStatusPills();
+  renderPassTable();
+  saveGameState();
+}
+
+function claimGoldenReward(lvl, event) {
+  ensureXPQuestState();
+  if (STATE.xpQuest.claimedGoldenLevels.includes(lvl)) return;
+  const rewards = getXPLevelRewards(lvl);
+  STATE.xpQuest.claimedGoldenLevels.push(lvl);
+
+  STATE.energy = Math.min(STATE.maxEnergy, STATE.energy + rewards.golden.energy);
+  if (rewards.golden.tickets) STATE.goals.spinTickets = (STATE.goals.spinTickets || 0) + rewards.golden.tickets;
+
+  SFX.levelUp();
+  haptic('success');
+  showToast(rewards.golden.isTrophy ? `👑 GOLDEN TROPHY UNLOCKED!` : `🎁 Golden Pass: +${rewards.golden.energy}⚡ & +${rewards.golden.tickets}🎟️ Spins!`);
+
+  updateUI();
+  updatePassStatusPills();
+  renderPassTable();
+  saveGameState();
+}
+
+function openSilverPassModal() {
+  const m = document.getElementById('modal-silver-pass');
+  if (m) {
+    m.classList.add('active');
+    m.style.display = 'flex';
+  }
+  if (typeof haptic === 'function') haptic('selection');
+}
+
+function closeSilverPassModal() {
+  const m = document.getElementById('modal-silver-pass');
+  if (m) {
+    m.classList.remove('active');
+    m.style.display = 'none';
+  }
+}
+
+function openGoldenPassModal() {
+  const m = document.getElementById('modal-golden-pass');
+  if (m) {
+    m.classList.add('active');
+    m.style.display = 'flex';
+  }
+  if (typeof haptic === 'function') haptic('selection');
+}
+
+function closeGoldenPassModal() {
+  const m = document.getElementById('modal-golden-pass');
+  if (m) {
+    m.classList.remove('active');
+    m.style.display = 'none';
+  }
+}
+
+function closeLevelUpModal() {
+  const m = document.getElementById('level-up-modal');
+  if (m) {
+    m.classList.remove('active');
+    m.style.display = 'none';
+  }
+}
+
+function unlockSilverPass() {
+  ensureXPQuestState();
+  STATE.xpQuest.silverUnlocked = true;
+  SFX.levelUp();
+  haptic('success');
+  showToast('🎉 SILVER PASS UNLOCKED! 2X Rewards Active!');
+  closeSilverPassModal();
+  updatePassStatusPills();
+  renderPassTable();
+  saveGameState();
+}
+
+function unlockGoldenPass() {
+  ensureXPQuestState();
+  STATE.xpQuest.goldenUnlocked = true;
+  SFX.levelUp();
+  haptic('success');
+  showToast('👑 GOLDEN PASS UNLOCKED! VIP Trophy Access Active!');
+  closeGoldenPassModal();
+  updatePassStatusPills();
+  renderPassTable();
+  saveGameState();
 }
 
 /* ── 📱 TELEGRAM ONE-CLICK LOGIN POPUP ENGINE ── */
@@ -2314,6 +2733,84 @@ setInterval(() => {
     updateUI();
   }
 }, 1000);
+
+/* ── ⚡ ENERGY STATION, DAILY LOGIN (+100 ⚡) & REWARDED AD ENERGY REFILL ENGINE ── */
+function checkDailyLoginEnergy() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const lastLoginDate = localStorage.getItem('tap_empire_daily_login_date_v2');
+  if (lastLoginDate !== todayStr) {
+    localStorage.setItem('tap_empire_daily_login_date_v2', todayStr);
+    STATE.energy = Math.min(STATE.maxEnergy || 500, (STATE.energy || 0) + 100);
+    showToast('☀️ DAILY LOGIN BONUS: +100 Energy (⚡) Granted!');
+    if (typeof SFX !== 'undefined' && SFX.levelUp) SFX.levelUp();
+    if (typeof haptic === 'function') haptic('success');
+    if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+    updateUI();
+    return true;
+  }
+  return false;
+}
+
+function claimDailyLoginBonus() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const lastLoginDate = localStorage.getItem('tap_empire_daily_login_date_v2');
+  if (lastLoginDate !== todayStr) {
+    checkDailyLoginEnergy();
+    const curEl = document.getElementById('energy-modal-cur-val');
+    if (curEl) curEl.textContent = `${Math.floor(STATE.energy)} / ${STATE.maxEnergy || 500} ⚡`;
+  } else {
+    showToast('✅ Today\'s Daily Login (+100 ⚡) is already claimed! Come back tomorrow.');
+  }
+}
+
+function openEnergyModal() {
+  const m = document.getElementById('energy-refill-modal');
+  if (m) {
+    const curEl = document.getElementById('energy-modal-cur-val');
+    if (curEl) curEl.textContent = `${Math.floor(STATE.energy || 0)} / ${STATE.maxEnergy || 500} ⚡`;
+    m.classList.add('active');
+    m.style.display = 'flex';
+  }
+  if (typeof haptic === 'function') haptic('selection');
+}
+
+function closeEnergyModal() {
+  const m = document.getElementById('energy-refill-modal');
+  if (m) {
+    m.classList.remove('active');
+    m.style.display = 'none';
+  }
+}
+
+function watchAdForEnergy() {
+  if (typeof triggerProductAdRedirect === 'function') triggerProductAdRedirect();
+
+  const grantEnergyReward = () => {
+    STATE.energy = Math.min(STATE.maxEnergy || 500, (STATE.energy || 0) + 100);
+    showToast('⚡ REWARDED AD COMPLETE: +100 Energy Collected!');
+    if (typeof SFX !== 'undefined' && SFX.collect) SFX.collect();
+    if (typeof haptic === 'function') haptic('success');
+    if (typeof saveUserDataToFirebase === 'function') saveUserDataToFirebase(STATE);
+    updateUI();
+    const curEl = document.getElementById('energy-modal-cur-val');
+    if (curEl) curEl.textContent = `${Math.floor(STATE.energy)} / ${STATE.maxEnergy || 500} ⚡`;
+  };
+
+  // Trigger Monetag/Teleads rewarded ad if available
+  if (typeof window.show_11629417 === 'function') {
+    try {
+      window.show_11629417().then(() => {
+        grantEnergyReward();
+      }).catch(() => {
+        grantEnergyReward();
+      });
+      return;
+    } catch (e) {}
+  }
+
+  // Instant fallback for web/standalone demo
+  grantEnergyReward();
+}
 
 /* ── 💪 BOOST CENTER ENGINE (RED-TO-GREEN SVG RINGS, +5m PER UPGRADE, MAX LVL 10) ── */
 const MAX_BOOST_TIME_SEC = 3000; // 50 MINUTES MAX CAPACITY (10 LEVELS OF 5m EACH)
@@ -2509,8 +3006,19 @@ function upgradeBoostWithAd(id) {
   openMonetagAdModal('boost_' + id);
 }
 
+function openProfileModal() {
+  switchScreen('profile');
+}
+
 /* ── SCREEN NAVIGATION ── */
 function switchScreen(targetId) {
+  if (targetId === 'xp') {
+    if (typeof openXPPage === 'function') {
+      openXPPage();
+    }
+    return;
+  }
+
   const targetScreen = document.getElementById(`screen-${targetId}`);
   if (!targetScreen) return;
 
@@ -2652,7 +3160,7 @@ async function renderProfileScreen() {
     const refLinkInput = document.getElementById('ref-link-input');
     const refCountBadge = document.getElementById('ref-invited-count');
     const myCode = (typeof getUserReferralCode === 'function') ? getUserReferralCode() : ('REF-' + String(_userId).slice(-5).toUpperCase());
-    if (refLinkInput) refLinkInput.value = `https://t.me/tap_king_bot?start=${myCode}`;
+    if (refLinkInput) refLinkInput.value = `https://t.me/Tap_empire_11bot?start=${myCode}`;
     if (refCountBadge) refCountBadge.textContent = `${STATE.referrals?.invitedCount || 0} Connected`;
 
     const perFriendCoinsCount = document.getElementById('per-friend-coins-count');
@@ -2721,38 +3229,15 @@ function copyReferralLink() {
 
 function shareReferralTelegram() {
   const userRef = _userId || 'local';
-  const text = encodeURIComponent(`🎮 Play Tap King with me! Tap to earn coins, spin the wheel, unlock mystery chests and win jackpot rewards!\n\nJoin using my link: https://t.me/tap_king_bot?start=ref_${userRef}`);
-  window.open(`https://t.me/share/url?url=https://t.me/tap_king_bot?start=ref_${userRef}&text=${text}`, '_blank');
+  const text = encodeURIComponent(`🎮 Play Tap Empire with me! Tap to earn coins, spin the wheel, unlock mystery chests and win jackpot rewards!\n\nJoin using my link: https://t.me/Tap_empire_11bot?start=ref_${userRef}`);
+  window.open(`https://t.me/share/url?url=https://t.me/Tap_empire_11bot?start=ref_${userRef}&text=${text}`, '_blank');
   showToast('✈️ Opening Telegram share...');
 }
 
 /* ── 🏆 LEADERBOARD DYNAMIC ENGINE (DAILY, WEEKLY, ALL-TIME) ── */
 let _activeLeaderboardTab = 'daily';
 
-const LEADERBOARD_DATA = {
-  daily: [
-    { rank: 4, name: 'SatoshiTapper', avatar: '⚡', xp: 62400, level: 68, badge: '🥈 SILVER VIP' },
-    { rank: 5, name: 'MoonWalker', avatar: '🚀', xp: 54100, level: 59, badge: '🥇 GOLD VIP' },
-    { rank: 6, name: 'CoinHunter', avatar: '💰', xp: 48900, level: 54, badge: '⭐ TOP TAPPER' },
-    { rank: 7, name: 'KeyMaster_X', avatar: '🔑', xp: 42300, level: 48, badge: '🔑 KEY KING' },
-    { rank: 8, name: 'StarGazer', avatar: '⭐', xp: 38100, level: 43, badge: '🎁 STAR GIFT' },
-    { rank: 9, name: 'EmpireBuilder', avatar: '🏰', xp: 33900, level: 39, badge: '⚡ RAPID REGEN' },
-    { rank: 10, name: 'SpinWinner', avatar: '🎡', xp: 29500, level: 34, badge: '🎟️ SPIN MASTER' }
-  ],
-  weekly: [
-    { rank: 4, name: 'CryptoHero', avatar: '💎', xp: 142000, level: 88, badge: '🥇 GOLD VIP' },
-    { rank: 5, name: 'BlockTapper', avatar: '🧱', xp: 128500, level: 81, badge: '🥈 SILVER VIP' },
-    { rank: 6, name: 'NovaWhale', avatar: '🐋', xp: 115000, level: 76, badge: '👑 VIP CROWN' },
-    { rank: 7, name: 'HyperClicker', avatar: '⚡', xp: 99400, level: 71, badge: '⭐ TOP TAPPER' },
-    { rank: 8, name: 'GoldenFalcon', avatar: '🦅', xp: 88200, level: 65, badge: '🎁 STAR GIFT' }
-  ],
-  alltime: [
-    { rank: 4, name: 'GenesisLord', avatar: '👑', xp: 580000, level: 100, badge: '🥇 GOLD VIP' },
-    { rank: 5, name: 'AlphaTitan', avatar: '🛡️', xp: 490000, level: 98, badge: '👑 VIP CROWN' },
-    { rank: 6, name: 'CyberSamurai', avatar: '⚔️', xp: 420000, level: 94, badge: '🥈 SILVER VIP' },
-    { rank: 7, name: 'QuantumTapper', avatar: '⚛️', xp: 375000, level: 90, badge: '🎁 STAR GIFT' }
-  ]
-};
+let _cachedFirebasePlayers = null;
 
 function switchLeaderboardTab(tab = 'daily') {
   _activeLeaderboardTab = tab;
@@ -2762,34 +3247,104 @@ function switchLeaderboardTab(tab = 'daily') {
   });
 
   renderLeaderboard();
-  haptic('selection');
+  if (typeof haptic === 'function') haptic('selection');
 }
 
-function renderLeaderboard() {
+async function renderLeaderboard() {
   const container = document.getElementById('leaderboard-list-container');
   const myRankNum = document.getElementById('my-rank-num');
   const myRankName = document.getElementById('my-rank-name');
   const myRankScore = document.getElementById('my-rank-score');
 
-  // Update user's current rank card
-  if (myRankName) myRankName.textContent = STATE.telegramUser?.first_name || 'YOU';
-  if (myRankScore) myRankScore.textContent = `LVL ${STATE.level || 1} | ${Math.floor(STATE.xp || 0)} XP`;
-  if (myRankNum) myRankNum.textContent = STATE.level > 10 ? `#${Math.max(11, 50 - STATE.level)}` : '#42';
+  const myXP = Number((STATE.xp || 0).toFixed(1));
+  const myLvl = STATE.level || 1;
+  const myDisplayName = STATE.telegramUser?.first_name || STATE.user?.username || 'YOU';
+
+  if (myRankName) myRankName.textContent = myDisplayName;
+  if (myRankScore) myRankScore.textContent = `LVL ${myLvl} • ${Math.floor(myXP).toLocaleString()} XP`;
+
+  // Fetch live global leaderboard from Firebase Realtime Database
+  let players = _cachedFirebasePlayers;
+  if (!players && typeof fetchFirebaseLeaderboard === 'function') {
+    players = await fetchFirebaseLeaderboard(50);
+    _cachedFirebasePlayers = players;
+  }
+
+  // Seed / fallback players if Firebase is initializing
+  const seedPlayers = [
+    { name: 'CryptoKing', avatar: '🔥', xp: 184200, level: 95, badge: '👑 VIP CROWN' },
+    { name: 'TapMaster', avatar: '⚡', xp: 95400, level: 82, badge: '🥇 GOLD VIP' },
+    { name: 'SpeedTapper', avatar: '💎', xp: 78900, level: 74, badge: '🥈 SILVER VIP' },
+    { name: 'SatoshiTapper', avatar: '⚡', xp: 62400, level: 68, badge: '🥈 SILVER VIP' },
+    { name: 'MoonWalker', avatar: '🚀', xp: 54100, level: 59, badge: '🥇 GOLD VIP' },
+    { name: 'CoinHunter', avatar: '💰', xp: 48900, level: 54, badge: '⭐ TOP TAPPER' },
+    { name: 'KeyMaster_X', avatar: '🔑', xp: 42300, level: 48, badge: '🔑 KEY KING' },
+    { name: 'StarGazer', avatar: '⭐', xp: 38100, level: 43, badge: '🎁 STAR GIFT' },
+    { name: 'EmpireBuilder', avatar: '🏰', xp: 33900, level: 39, badge: '⚡ RAPID REGEN' },
+    { name: 'SpinWinner', avatar: '🎡', xp: 29500, level: 34, badge: '🎟️ SPIN MASTER' }
+  ];
+
+  let allList = (players && players.length > 0) ? [...players] : [...seedPlayers];
+
+  // Adjust multiplier according to active tab
+  const mult = _activeLeaderboardTab === 'weekly' ? 2.5 : (_activeLeaderboardTab === 'alltime' ? 6.0 : 1.0);
+
+  allList = allList.map((p) => ({
+    ...p,
+    xp: Math.floor(p.xp * mult)
+  })).sort((a, b) => b.xp - a.xp);
+
+  // Calculate user position
+  let userRankPos = 1;
+  for (let i = 0; i < allList.length; i++) {
+    if (myXP < allList[i].xp) {
+      userRankPos = i + 2;
+    }
+  }
+  if (myRankNum) myRankNum.textContent = `#${userRankPos}`;
+
+  // Update Top 3 Podium
+  const top1 = allList[0] || seedPlayers[0];
+  const top2 = allList[1] || seedPlayers[1];
+  const top3 = allList[2] || seedPlayers[2];
+
+  const p1Name = document.querySelector('.gold-podium .podium-name');
+  const p1Score = document.querySelector('.gold-podium .podium-score');
+  const p1Avatar = document.querySelector('.gold-podium .podium-avatar');
+  if (p1Name) p1Name.textContent = top1.name;
+  if (p1Score) p1Score.textContent = `${top1.xp.toLocaleString()} XP`;
+  if (p1Avatar) p1Avatar.textContent = top1.avatar || '🔥';
+
+  const p2Name = document.querySelector('.silver-podium .podium-name');
+  const p2Score = document.querySelector('.silver-podium .podium-score');
+  const p2Avatar = document.querySelector('.silver-podium .podium-avatar');
+  if (p2Name) p2Name.textContent = top2.name;
+  if (p2Score) p2Score.textContent = `${top2.xp.toLocaleString()} XP`;
+  if (p2Avatar) p2Avatar.textContent = top2.avatar || '⚡';
+
+  const p3Name = document.querySelector('.bronze-podium .podium-name');
+  const p3Score = document.querySelector('.bronze-podium .podium-score');
+  const p3Avatar = document.querySelector('.bronze-podium .podium-avatar');
+  if (p3Name) p3Name.textContent = top3.name;
+  if (p3Score) p3Score.textContent = `${top3.xp.toLocaleString()} XP`;
+  if (p3Avatar) p3Avatar.textContent = top3.avatar || '💎';
 
   if (!container) return;
 
-  const ranks = LEADERBOARD_DATA[_activeLeaderboardTab] || LEADERBOARD_DATA.daily;
-
+  // Render players 4 onwards
+  const remainingPlayers = allList.slice(3);
   let html = '';
-  ranks.forEach(r => {
+  remainingPlayers.forEach((r, index) => {
+    const rankNum = index + 4;
+    const badge = r.badge || (r.level >= 50 ? '🥇 GOLD VIP' : (r.level >= 25 ? '🥈 SILVER VIP' : '⭐ TAPPER'));
     html += `
       <div class="rank-player-row">
         <div class="rank-player-left">
-          <span class="player-rank-num">#${r.rank}</span>
-          <div class="player-avatar-circle">${r.avatar}</div>
+          <span class="player-rank-num">#${rankNum}</span>
+          <div class="player-avatar-circle">${r.avatar || '🧙‍♂️'}</div>
           <div class="player-name-group">
             <span class="player-username">${r.name}</span>
-            <span class="player-level-txt">LVL ${r.level} • ${r.badge}</span>
+            <span class="player-level-txt">LVL ${r.level || 1} • ${badge}</span>
           </div>
         </div>
         <span class="player-score-txt">${r.xp.toLocaleString()} XP</span>
@@ -2971,88 +3526,34 @@ async function confirmRestartGameData() {
   switchScreen('home');
 }
 
-/* ── 🏆 LEADERBOARD ENGINE ── */
-async function renderLeaderboard() {
-  const container = document.getElementById('leaderboard-list-container');
-  const myRankNum = document.getElementById('my-rank-num');
-  const myRankScore = document.getElementById('my-rank-score');
-
-  const currentXP = Number((STATE.xp || 0).toFixed(1));
-  const currentLvl = STATE.level || 1;
-
-  if (myRankScore) myRankScore.textContent = `${currentXP} XP (LV. ${currentLvl})`;
-
-  const myPos = Math.max(1, Math.min(100, 101 - Math.floor(currentXP / 10)));
-  if (myRankNum) myRankNum.textContent = `#${myPos}`;
-
-  if (!container) return;
-
-  // Fetch live global leaderboard from Firebase Realtime Database
-  let players = null;
-  if (typeof fetchFirebaseLeaderboard === 'function') {
-    players = await fetchFirebaseLeaderboard();
-  }
-
-  if (!players || players.length === 0) {
-    players = [
-      { rank: 1, name: 'SatoshiTapper', avatar: '👑', xp: 64200 },
-      { rank: 2, name: 'VitalicWhale', avatar: '💎', xp: 58900 },
-      { rank: 3, name: 'AlphaSniper', avatar: '🚀', xp: 51300 },
-      { rank: 4, name: 'TurboClicker', avatar: '⚡', xp: 46700 },
-      { rank: 5, name: 'GoldenMaster', avatar: '🎯', xp: 42100 },
-      { rank: 6, name: 'NinjaTapper', avatar: '🥷', xp: 38500 },
-      { rank: 7, name: 'CoinKing', avatar: '💰', xp: 34000 }
-    ];
-  } else {
-    players = players.map((p, idx) => ({
-      rank: idx + 1,
-      name: p.name,
-      avatar: idx === 0 ? '👑' : idx === 1 ? '💎' : idx === 2 ? '🚀' : '⭐',
-      xp: p.xp
-    }));
-  }
-
-  const html = players.map(p => `
-    <div class="rank-player-row">
-      <div class="rank-player-left">
-        <span class="rank-num">#${p.rank}</span>
-        <span class="rank-player-avatar">${p.avatar}</span>
-        <div class="rank-player-details">
-          <span class="rank-player-name">${p.name}</span>
-        </div>
-      </div>
-      <span class="rank-player-score">${fmt(p.xp)} XP</span>
-    </div>
-  `).join('');
-
-  container.innerHTML = html;
-}
-
-/* ── 🎯 TASKS ENGINE (DAILY, WEEKLY, MONTHLY CARDS & REWARDS) ── */
+/* ── 🎯 TASKS ENGINE (FREE DAILY, SILVER PASS, GOLDEN PASS MISSIONS) ── */
 const TASK_DEFINITIONS = [
-  // 📅 DAILY TASKS
-  { id: 'd_tap', category: 'daily', icon: '👆', title: 'Tap Master', desc: 'Tap 100 times on the main tap button', target: 100, type: 'tap', rewardType: 'coins', rewardVal: 500, rewardText: '+500 Coins' },
-  { id: 'd_coins', category: 'daily', icon: '💰', title: 'Coin Collector', desc: 'Collect 20 Coin Emojis from tapping', target: 20, type: 'emoji_coins', rewardType: 'coins', rewardVal: 300, rewardText: '+300 Coins' },
-  { id: 'd_keys', category: 'daily', icon: '🔑', title: 'Key Finder', desc: 'Collect 5 Key Emojis from tapping', target: 5, type: 'emoji_keys', rewardType: 'keys', rewardVal: 1, rewardText: '+1 Key' },
-  { id: 'd_spins', category: 'daily', icon: '🎟️', title: 'Spin Hunter', desc: 'Collect 5 Spin Tickets from tapping', target: 5, type: 'emoji_spins', rewardType: 'tickets', rewardVal: 1, rewardText: '+1 Ticket' },
-  { id: 'd_spin_wheel', category: 'daily', icon: '🎡', title: 'Wheel Spinner', desc: 'Spin the fortune wheel 2 times using tickets', target: 2, type: 'spin_wheel', rewardType: 'coins', rewardVal: 500, rewardText: '+500 Coins' },
-  { id: 'd_open_chest', category: 'daily', icon: '🧰', title: 'Chest Opener', desc: 'Open secret chests 1 time using keys', target: 1, type: 'open_chest', rewardType: 'keys', rewardVal: 1, rewardText: '+1 Key' },
+  // 🎁 10 FREE DAILY TASKS
+  { id: 'd_tap', category: 'daily', icon: '👆', title: 'Tap Champion', desc: 'Tap 1,000 times on the main tap button', target: 1000, type: 'tap', rewardCoins: 1000, rewardText: '+1,000 💰' },
+  { id: 'd_coins', category: 'daily', icon: '💰', title: 'Coin Collector', desc: 'Collect 500 Coin drops from tapping', target: 500, type: 'emoji_coins', rewardCoins: 500, rewardText: '+500 💰' },
+  { id: 'd_keys', category: 'daily', icon: '🔑', title: 'Key Finder', desc: 'Collect 500 Key drops from tapping', target: 500, type: 'emoji_keys', rewardKeys: 50, rewardText: '+50 🔑' },
+  { id: 'd_tickets', category: 'daily', icon: '🎟️', title: 'Ticket Hunter', desc: 'Collect 500 Spin Tickets from tapping', target: 500, type: 'emoji_spins', rewardTickets: 50, rewardText: '+50 🎟️' },
+  { id: 'd_spins', category: 'daily', icon: '🎡', title: 'Wheel Spinner', desc: 'Spin the Lucky Fortune Wheel 100 times', target: 100, type: 'spin_wheel', rewardCoins: 2000, rewardTickets: 10, rewardText: '+2,000 💰 & +10 🎟️' },
+  { id: 'd_chests', category: 'daily', icon: '🧰', title: 'Chest Opener', desc: 'Open 100 Free Mystery Chests using keys', target: 100, type: 'open_chest', rewardCoins: 2000, rewardKeys: 20, rewardText: '+2,000 💰 & +20 🔑' },
+  { id: 'd_scratch', category: 'daily', icon: '🎫', title: 'Scratch Master', desc: 'Scratch 50 Lucky Scratch Cards', target: 50, type: 'scratch_card', rewardCoins: 1500, rewardKeys: 5, rewardText: '+1,500 💰 & +5 🔑' },
+  { id: 'd_referral', category: 'daily', icon: '👥', title: 'Friend Referral', desc: 'Invite or connect 1 friend with referral code', target: 1, type: 'referral', rewardCoins: 10000, rewardKeys: 5, rewardText: '+10,000 💰 & +5 🔑' },
+  { id: 'd_boost', category: 'daily', icon: '⚡', title: 'Boost Powerup', desc: 'Activate or upgrade game Boosts 10 times', target: 10, type: 'boost_upgrade', rewardCoins: 2000, rewardTickets: 15, rewardText: '+2,000 💰 & +15 🎟️' },
+  { id: 'd_xp', category: 'daily', icon: '⭐', title: 'XP Harvester', desc: 'Collect 100 XP points from game activity', target: 100, type: 'xp_collect', rewardXP: 100, rewardCoins: 1000, rewardText: '+100 ⭐ XP & +1,000 💰' },
 
-  // 🗓️ WEEKLY TASKS
-  { id: 'w_tap', category: 'weekly', icon: '👆', title: 'Weekly Tap Champ', desc: 'Tap 1,000 times', target: 1000, type: 'tap', rewardType: 'coins', rewardVal: 3000, rewardText: '+3,000 Coins' },
-  { id: 'w_coins', category: 'weekly', icon: '💰', title: 'Weekly Coin Hoarder', desc: 'Collect 150 Coin Emojis from tapping', target: 150, type: 'emoji_coins', rewardType: 'coins', rewardVal: 2000, rewardText: '+2,000 Coins' },
-  { id: 'w_keys', category: 'weekly', icon: '🔑', title: 'Weekly Key Collector', desc: 'Collect 25 Key Emojis from tapping', target: 25, type: 'emoji_keys', rewardType: 'keys', rewardVal: 5, rewardText: '+5 Keys' },
-  { id: 'w_spins', category: 'weekly', icon: '🎟️', title: 'Weekly Ticket Collector', desc: 'Collect 25 Spin Tickets from tapping', target: 25, type: 'emoji_spins', rewardType: 'tickets', rewardVal: 5, rewardText: '+5 Tickets' },
-  { id: 'w_spin_wheel', category: 'weekly', icon: '🎡', title: 'Weekly Wheel Master', desc: 'Spin the fortune wheel 10 times', target: 10, type: 'spin_wheel', rewardType: 'coins', rewardVal: 2000, rewardText: '+2,000 Coins' },
-  { id: 'w_open_chest', category: 'weekly', icon: '🧰', title: 'Weekly Vault Breaker', desc: 'Open secret chests 5 times', target: 5, type: 'open_chest', rewardType: 'keys', rewardVal: 3, rewardText: '+3 Keys' },
+  // 🥈 SILVER PASS DAILY TASKS
+  { id: 's_tap', category: 'silver', icon: '🥈', title: 'Silver VIP Tapper', desc: 'Tap 1,500 times with VIP multiplier', target: 1500, type: 'tap', rewardCoins: 5000, rewardKeys: 10, rewardText: '+5,000 💰 & +10 🔑' },
+  { id: 's_keys', category: 'silver', icon: '🔑', title: 'Silver Key Vault', desc: 'Collect 750 Key drops from tapping', target: 750, type: 'emoji_keys', rewardKeys: 35, rewardText: '+35 🔑' },
+  { id: 's_spins', category: 'silver', icon: '🎡', title: 'Silver Wheel Spin', desc: 'Spin the Lucky Wheel 150 times', target: 150, type: 'spin_wheel', rewardTickets: 25, rewardText: '+25 🎟️' },
+  { id: 's_chests', category: 'silver', icon: '🧰', title: 'Silver Chest Hunter', desc: 'Open 150 Mystery Chests', target: 150, type: 'open_chest', rewardKeys: 30, rewardText: '+30 🔑' },
+  { id: 's_xp', category: 'silver', icon: '⭐', title: 'Silver XP Rush', desc: 'Collect 250 XP points', target: 250, type: 'xp_collect', rewardXP: 250, rewardCoins: 3000, rewardText: '+250 ⭐ XP & +3,000 💰' },
 
-  // 📆 MONTHLY TASKS
-  { id: 'm_tap', category: 'monthly', icon: '👆', title: 'Monthly Tap Legend', desc: 'Tap 5,000 times', target: 5000, type: 'tap', rewardType: 'coins', rewardVal: 15000, rewardText: '+15,000 Coins' },
-  { id: 'm_coins', category: 'monthly', icon: '💰', title: 'Monthly Coin Tycoon', desc: 'Collect 500 Coin Emojis', target: 500, type: 'emoji_coins', rewardType: 'coins', rewardVal: 10000, rewardText: '+10,000 Coins' },
-  { id: 'm_keys', category: 'monthly', icon: '🔑', title: 'Monthly Key Master', desc: 'Collect 100 Key Emojis', target: 100, type: 'emoji_keys', rewardType: 'keys', rewardVal: 20, rewardText: '+20 Keys' },
-  { id: 'm_spins', category: 'monthly', icon: '🎟️', title: 'Monthly Spin Master', desc: 'Collect 100 Spin Tickets', target: 100, type: 'emoji_spins', rewardType: 'tickets', rewardVal: 20, rewardText: '+20 Tickets' },
-  { id: 'm_spin_wheel', category: 'monthly', icon: '🎡', title: 'Monthly Wheel Champion', desc: 'Spin the fortune wheel 30 times', target: 30, type: 'spin_wheel', rewardType: 'coins', rewardVal: 10000, rewardText: '+10,000 Coins' },
-  { id: 'm_open_chest', category: 'monthly', icon: '🧰', title: 'Monthly Treasure Lord', desc: 'Open secret chests 20 times', target: 20, type: 'open_chest', rewardType: 'keys', rewardVal: 15, rewardText: '+15 Keys' }
+  // 👑 GOLDEN PASS DAILY TASKS
+  { id: 'g_tap', category: 'golden', icon: '👑', title: 'Golden Ultra Tapper', desc: 'Tap 2,500 times with Golden Power', target: 2500, type: 'tap', rewardCoins: 15000, rewardKeys: 25, rewardText: '+15,000 💰 & +25 🔑' },
+  { id: 'g_keys', category: 'golden', icon: '🔑', title: 'Golden Key Hoard', desc: 'Collect 1,000 Key drops from tapping', target: 1000, type: 'emoji_keys', rewardKeys: 60, rewardText: '+60 🔑' },
+  { id: 'g_spins', category: 'golden', icon: '🎡', title: 'Golden Spin Legend', desc: 'Spin the Lucky Fortune Wheel 250 times', target: 250, type: 'spin_wheel', rewardTickets: 50, rewardText: '+50 🎟️' },
+  { id: 'g_chests', category: 'golden', icon: '🧰', title: 'Golden Vault Breaker', desc: 'Open 250 Mystery Chests & Secret Vaults', target: 250, type: 'open_chest', rewardKeys: 50, rewardText: '+50 🔑' },
+  { id: 'g_scratch', category: 'golden', icon: '🎫', title: 'Golden Scratch Lord', desc: 'Scratch 100 Scratch Cards for grand prizes', target: 100, type: 'scratch_card', rewardTickets: 40, rewardKeys: 30, rewardText: '+40 🎟️ & +30 🔑' },
+  { id: 'g_xp', category: 'golden', icon: '⭐', title: 'Golden XP Mythic', desc: 'Collect 500 XP points for maximum leveling', target: 500, type: 'xp_collect', rewardXP: 500, rewardCoins: 10000, rewardText: '+500 ⭐ XP & +10,000 💰' }
 ];
 
 function incrementTaskProgress(type, amount = 1) {
@@ -3122,26 +3623,58 @@ function claimTaskReward(taskId) {
     return;
   }
 
+  // 1. Open Sponsored Product Link (https://omg10.com/4/11616083) on task claim
+  openProductAdLink();
+
   STATE.claimedTasks[taskId] = true;
 
-  if (task.rewardType === 'coins') {
-    STATE.coins += task.rewardVal;
-  } else if (task.rewardType === 'keys') {
-    STATE.goals.keysBalance += task.rewardVal;
-  } else if (task.rewardType === 'tickets') {
-    STATE.goals.ticketsBalance += task.rewardVal;
+  if (task.rewardCoins) {
+    STATE.coins += task.rewardCoins;
+  }
+  if (task.rewardKeys) {
+    STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + task.rewardKeys;
+  }
+  if (task.rewardTickets) {
+    STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + task.rewardTickets;
+  }
+  if (task.rewardXP) {
+    addXP(task.rewardXP);
   }
 
   SFX.levelUp();
   haptic('success');
+  createConfettiBurst();
   showToast(`🎉 Claimed Reward: ${task.rewardText}!`);
 
   if (typeof saveUserDataToFirebase === 'function') {
     saveUserDataToFirebase(STATE);
   }
 
-  updateUI();
   renderTasksScreen();
+  updateUI();
+}
+
+/* ── 🔥 MEGA REWARDS SPONSORED CLAIM HANDLER ── */
+function claimMegaSponsoredReward() {
+  // 1. Open Sponsored Partner Ad Link (https://omg10.com/4/11616083)
+  openProductAdLink();
+
+  // 2. Award Massive Instant Mega Bundle
+  STATE.coins += 50000;
+  STATE.goals.keysBalance = (STATE.goals.keysBalance || 0) + 10;
+  STATE.goals.ticketsBalance = (STATE.goals.ticketsBalance || 0) + 10;
+  addXP(250);
+
+  SFX.levelUp();
+  haptic('success');
+  createConfettiBurst();
+  showToast('🎉 MEGA REWARDS CLAIMED! +50,000 💰 Coins, +10 🔑 Keys, +10 🎟️ Tickets & +250 ⭐ XP!');
+
+  if (typeof saveUserDataToFirebase === 'function') {
+    saveUserDataToFirebase(STATE);
+  }
+
+  updateUI();
 }
 
 /* ── ⭐ 100 XP LEVELS ENGINE ── */
@@ -3260,10 +3793,80 @@ function _processXPLevelClaim(lvl, watchAd) {
 }
 
 function renderXPLevelsList() {
-  if (typeof renderXPLevelRanks === 'function') {
-    renderXPLevelRanks();
+  const container = document.getElementById('xp-levels-list-container');
+  if (!container) return;
+
+  STATE.claimedXPLevels = STATE.claimedXPLevels || {};
+  STATE.unclaimedXPLevels = STATE.unclaimedXPLevels || [];
+
+  const currentLvl = STATE.level || 1;
+  const items = [];
+
+  for (let i = 1; i <= 100; i++) {
+    const xpReq = getXPNeededForLevel(i);
+    let statusClass = 'locked';
+    let statusBadge = `<span class="xp-item-badge locked">🔒 LEVEL ${i}</span>`;
+
+    const isEnergyLevel = (i % 5 === 0);
+    const energyAmount = 50 + Math.floor(i * 1.5);
+
+    if (i < currentLvl) {
+      statusClass = 'completed';
+      if (STATE.claimedXPLevels[i]) {
+        statusBadge = `<span class="xp-item-badge completed">✅ CLAIMED</span>`;
+      } else {
+        if (isEnergyLevel) {
+          statusBadge = `
+            <div class="xp-claim-btn-group">
+              <button class="btn-claim-xp-reward energy" onclick="claimXPLevelReward(${i}, false)">⚡ CLAIM (+${energyAmount}⚡)</button>
+              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD (⚡ +${energyAmount * 2})</button>
+            </div>`;
+        } else {
+          statusBadge = `
+            <div class="xp-claim-btn-group">
+              <button class="btn-claim-xp-reward" onclick="claimXPLevelReward(${i}, false)">🎁 CLAIM</button>
+              <button class="btn-claim-xp-ad" onclick="claimXPLevelReward(${i}, true)">🎥 2X AD</button>
+            </div>`;
+        }
+      }
+    } else if (i === currentLvl) {
+      statusClass = 'current';
+      statusBadge = `<span class="xp-item-badge current">🔥 IN PROGRESS</span>`;
+    }
+
+    let rewardTxt = '';
+    let iconEmoji = '⭐';
+
+    if (isEnergyLevel) {
+      iconEmoji = '⚡';
+      rewardTxt = `⚡ +${energyAmount} Energy (ENERGY MILESTONE!)`;
+    } else {
+      const baseCoins = i * 1000;
+      rewardTxt = `💰 +${fmt(baseCoins)} Coins`;
+    }
+
+    items.push(`
+      <div class="xp-level-item-card ${statusClass} ${isEnergyLevel ? 'energy-level-card' : ''}">
+        <div class="xp-item-lvl-icon">${iconEmoji} ${i}</div>
+        <div class="xp-item-info">
+          <div class="xp-item-title-row">
+            <span class="xp-item-lvl-name">${isEnergyLevel ? '⚡ ENERGY MILESTONE LEVEL ' + i : 'LEVEL ' + i}</span>
+            ${statusBadge}
+          </div>
+          <div class="xp-item-req-text">Target: ${xpReq} XP Points</div>
+          <div class="xp-item-reward-text">${isEnergyLevel ? '⚡ Reward: +' + energyAmount + ' Energy (Energy Only)' : 'Reward: ' + rewardTxt}</div>
+        </div>
+      </div>
+    `);
   }
+
+  container.innerHTML = items.join('');
 }
+
+function renderXPLevelsList() {
+  renderXPLevelRanks();
+}
+
 
 function closeEmailVerifyModal() {
   const modal = document.getElementById('email-verify-modal');
@@ -3814,7 +4417,58 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   initNavigation();
   initParticleCanvas();
+
+  // Daily Login Energy Reward (+100 Energy per Day)
+  if (typeof checkDailyLoginEnergy === 'function') {
+    checkDailyLoginEnergy();
+  }
+  if (!STATE.energy || STATE.energy < 100) {
+    STATE.energy = 100;
+  }
+
   updateUI();
+
+  // 1. Initialize Realtime Live Firebase Database Sync
+  if (typeof initRealtimeFirebaseSync === 'function') {
+    initRealtimeFirebaseSync((liveData) => {
+      if (!liveData) return;
+      if (liveData.coins !== undefined && Math.abs(liveData.coins - STATE.coins) > 0.01) {
+        STATE.coins = liveData.coins;
+      }
+      if (liveData.level !== undefined && liveData.level !== STATE.level) {
+        STATE.level = liveData.level;
+      }
+      if (liveData.xp !== undefined && liveData.xp !== STATE.xp) {
+        STATE.xp = liveData.xp;
+      }
+      if (liveData.energy !== undefined && liveData.energy > STATE.energy) {
+        STATE.energy = liveData.energy;
+      }
+      if (liveData.keys !== undefined) STATE.goals.keysBalance = liveData.keys;
+      if (liveData.tickets !== undefined) STATE.goals.ticketsBalance = liveData.tickets;
+      if (liveData.pendingWithdrawal !== undefined) STATE.pendingWithdrawal = liveData.pendingWithdrawal;
+      updateUI();
+    });
+  }
+
+  // 2. Subscribe to Realtime Withdrawals
+  if (typeof subscribeToRealtimeWithdrawals === 'function') {
+    subscribeToRealtimeWithdrawals((records) => {
+      if (typeof renderWithdrawalHistory === 'function') {
+        renderWithdrawalHistory(records);
+      }
+    });
+  }
+
+  // 3. Subscribe to Realtime Firebase Global Leaderboard
+  if (typeof subscribeToFirebaseLeaderboard === 'function') {
+    subscribeToFirebaseLeaderboard((players) => {
+      _cachedFirebasePlayers = players;
+      if (typeof renderLeaderboard === 'function') {
+        renderLeaderboard();
+      }
+    });
+  }
 
   if (window.soundEngine) {
     window.soundEngine.init();

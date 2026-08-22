@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Lucky Spinner Wheel - Telegram Mini App</title>
+    
+    <!-- Telegram Mini App WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 📺 MONETAG / TELEADS REWARDED INTERSTITIAL SDK (ZONE 11629417) -->
+    <script src="//libtl.com/sdk.js" data-zone="11629417" data-sdk="show_11629417"></script>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Top Header Bar with Back Button -->
+        <header class="spin-header-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 10px; background: rgba(18,25,41,0.92); border: 1px solid rgba(227,184,28,0.3); border-radius: 12px;">
+            <button class="btn-spin-back" onclick="if(window.parent && window.parent !== window && window.parent.closeSpinPage){ window.parent.closeSpinPage(); } else { window.location.href='../index.html'; }" title="Back to Tap Empire" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(227,184,28,0.4); color: #fff; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                ⬅ BACK
+            </button>
+            <div style="text-align: center; line-height: 1.2;">
+                <span style="font-size: 0.6rem; color: #E3B81C; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;">TAP EMPIRE</span>
+                <span style="font-size: 0.9rem; font-weight: 900; color: #fff;">🎰 LUCKY SPINNER</span>
+            </div>
+            <div style="width: 50px;"></div>
+        </header>
+
+        <!-- Wheel Tier Selection Bar with Ticket Balances -->
+        <div class="tier-nav-bar">
+            <button class="tier-tab-btn active bronze-tier free-tier" data-tier="free">
+                <div class="tier-top">
+                    <span class="tier-icon">🥉</span>
+                    <span class="tier-name">Bronze Spin</span>
+                </div>
+                <div class="tier-ticket-badge bronze-badge normal-badge">
+                    <span>🥉 <strong id="ticketCountNormal">5</strong></span>
+                </div>
+            </button>
+            <button class="tier-tab-btn silver-tier" data-tier="silver">
+                <div class="tier-top">
+                    <span class="tier-icon">🥈</span>
+                    <span class="tier-name">Silver Spin</span>
+                    <span class="pass-lock-badge" id="silverLockBadge">🔒 Locked</span>
+                </div>
+                <div class="tier-ticket-badge silver-badge">
+                    <span>🥈 <strong id="ticketCountSilver">2</strong></span>
+                </div>
+            </button>
+            <button class="tier-tab-btn golden-tier" data-tier="golden">
+                <div class="tier-top">
+                    <span class="tier-icon">🥇</span>
+                    <span class="tier-name">Golden Spin</span>
+                    <span class="pass-lock-badge gold-lock" id="goldenLockBadge">🔒 Locked</span>
+                </div>
+                <div class="tier-ticket-badge golden-badge">
+                    <span>🥇 <strong id="ticketCountGolden">1</strong></span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Main Layout -->
+        <main class="main-grid">
+            <!-- Wheel Stage & Controls -->
+            <section class="wheel-console-card">
+                <div class="wheel-stage" id="wheelStage">
+                    <div class="wheel-ambient-glow"></div>
+                    <div class="wheel-outer-casing"></div>
+                    <div class="wheel-bulbs-container" id="wheelBulbs"></div>
+
+                    <!-- Top Pointer -->
+                    <div class="wheel-pointer" id="wheelPointer">
+                        <div class="pointer-arrow"></div>
+                        <div class="pointer-cap"></div>
+                    </div>
+
+                    <!-- Canvas -->
+                    <canvas id="wheelCanvas" width="900" height="900"></canvas>
+
+                    <!-- Center Hub Spin Button -->
+                    <div class="wheel-center-hub">
+                        <button id="centerSpinBtn" class="center-spin-btn">SPIN</button>
+                    </div>
+                </div>
+
+                <!-- Primary Spin Bar -->
+                <div class="spin-action-bar">
+                    <button id="primarySpinBtn" class="primary-spin-btn">
+                        <span>SPIN</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Ticket Shop — directly below spinner wheel -->
+        <section class="shop-card">
+            <div class="shop-header">
+                <div class="shop-title-box">
+                    <div class="shop-icon-wrap">🎟️</div>
+                    <div class="shop-title-text">
+                        <h3>Ticket Shop</h3>
+                        <span class="shop-subtitle">Convert · Upgrade · Claim</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exchange Items Grid -->
+            <div class="shop-grid">
+                <!-- Item 1: Bronze to Silver -->
+                <div class="exchange-item-card silver-convert">
+                    <div class="ticket-expiry-tag silver-expiry">⏱️ Valid 2 Days</div>
+                    <div class="exchange-visual">
+                        <div class="ticket-side">
+                            <span class="ticket-icon">🥉</span>
+                            <span class="ticket-qty">5</span>
+                        </div>
+                        <div class="arrow-indicator">➔</div>
+                        <div class="ticket-side target-side">
+                            <span class="ticket-icon">🥈</span>
+                            <span class="ticket-qty">1</span>
+                        </div>
+                    </div>
+                    <button class="exchange-btn silver-btn" data-convert="bronze-to-silver" data-cost="5" data-cost-type="free" data-reward="1" data-reward-type="silver">
+                        <span>Convert 🥈</span>
+                    </button>
+                </div>
+
+                <!-- Item 2: Bronze to Golden -->
+                <div class="exchange-item-card golden-convert">
+                    <div class="ticket-expiry-tag gold-expiry">⏱️ Valid 3 Days</div>
+                    <div class="exchange-visual">
+                        <div class="ticket-side">
+                            <span class="ticket-icon">🥉</span>
+                            <span class="ticket-qty">10</span>
+                        </div>
+                        <div class="arrow-indicator">➔</div>
+                        <div class="ticket-side target-side">
+                            <span class="ticket-icon">🥇</span>
+                            <span class="ticket-qty">1</span>
+                        </div>
+                    </div>
+                    <button class="exchange-btn golden-btn" data-convert="bronze-to-golden" data-cost="10" data-cost-type="free" data-reward="1" data-reward-type="golden">
+                        <span>Convert 🥇</span>
+                    </button>
+                </div>
+
+                <!-- Item 3: Watch Ad for Bronze Tickets -->
+                <div class="exchange-item-card claim-convert">
+                    <div class="ticket-expiry-tag bronze-expiry">📺 Watch Ads to Win 2 Bronze Tickets</div>
+                    <div class="exchange-visual">
+                        <div class="ticket-side">
+                            <span class="ticket-icon">📺</span>
+                            <span class="ticket-qty">1</span>
+                        </div>
+                        <div class="arrow-indicator">➔</div>
+                        <div class="ticket-side target-side">
+                            <span class="ticket-icon">🥉</span>
+                            <span class="ticket-qty">2</span>
+                        </div>
+                    </div>
+                    <button class="exchange-btn free-claim-btn" id="shopWatchAdBtn">
+                        <span>Watch Ad</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIP Pass Modal -->
+    <div class="modal-overlay" id="passModal">
+        <div class="modal-card pass-modal-card">
+            <div class="pass-header-burst" id="passIconBurst">🥈</div>
+            <div class="modal-tag" id="passTag">VIP PASS REQUIRED</div>
+            <h2 class="winner-title" id="passTitle">Unlock Silver VIP Pass</h2>
+            <p id="passDesc" style="color: var(--text-muted); font-size: 13px;">Get permanent access to the Silver Wheel with double combos and energy prizes!</p>
+            
+            <div class="pass-perks-box" id="passPerks">
+                <div class="perk-item" id="perk1">✨ Unlimited Silver Wheel Access</div>
+                <div class="perk-item" id="perk2">⚡ Double Combos (Energy + Keys, Coins, Cards)</div>
+                <div class="perk-item" id="perk3">⏱️ Silver Tickets valid for 2 Days</div>
+                <div class="perk-item" id="perk4">🎁 High XP Level-Up Multipliers</div>
+            </div>
+
+            <div class="pass-actions">
+                <!-- Option 1: Telegram Stars / Coins -->
+                <button class="exchange-btn pass-buy-btn star-buy-btn" id="buyPassWithStarsBtn">
+                    <span id="passStarsBtnText">⭐ 500 Telegram Stars</span>
+                </button>
+                <!-- Option 2: Watch Ads -->
+                <button class="exchange-btn pass-ad-btn" id="buyPassWithAdsBtn">
+                    <span>📺 Watch Ads to Unlock (<strong id="passAdCount">0/50</strong>)</span>
+                </button>
+                <button class="pass-close-btn" id="closePassModalBtn">Maybe Later</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winner Celebration Modal -->
+    <div class="modal-overlay" id="winnerModal">
+        <div class="modal-card">
+            <div class="winner-icon-burst">🎉</div>
+            <div class="modal-tag">CONGRATULATIONS!</div>
+            <h2 class="winner-title" id="winnerText">500 Gems</h2>
+            <p id="winnerDesc" style="color: var(--text-muted); font-size: 13px;">The wheel has chosen your prize!</p>
+            
+            <!-- Extra Gift / XP Bonus Box (for Bronze Wheel) -->
+            <div class="ad-bonus-card" id="adBonusCard" style="display: none;">
+                <div class="bonus-header">
+                    <span class="bonus-icon">🎁</span>
+                    <span class="bonus-title">Extra Gift Bonus</span>
+                </div>
+                <div class="bonus-reward-text" id="adBonusText">⭐ Claim +3 XP Bonus</div>
+                <button class="watch-ad-btn" id="watchAdBtn">
+                    <span>📺 Watch Ad for +<strong id="adXpAmount">3</strong> XP</span>
+                </button>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="modalCloseBtn">Claim</button>
+                <button class="modal-btn primary" id="modalSpinAgainBtn">Spin Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Simulated Video Ad Modal -->
+    <div class="modal-overlay ad-modal-overlay" id="adPlayerModal">
+        <div class="ad-card">
+            <div class="ad-badge">SPONSORED ADVERTISEMENT</div>
+            <div class="ad-animation-box">
+                <div class="ad-gift-icon">🎁</div>
+                <h3>⚡ Telegram Mini App Partner</h3>
+                <p>Enjoying your rewards? Loading sponsor message...</p>
+            </div>
+            <div class="ad-progress-track">
+                <div class="ad-progress-bar" id="adProgressBar"></div>
+            </div>
+            <div class="ad-countdown" id="adCountdownText">Reward unlocking in 3s...</div>
+        </div>
+    </div>
+
+    <!-- Scripts organized in js/ folder -->
+    <script src="js/audio.js"></script>
+    <script src="js/confetti.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -6,16 +6,20 @@
   <title>Tap Empire — Ultimate Gameplay Dashboard</title>
   <meta name="description" content="Tap Empire - Build your empire, tap for coins, boost your power, and compete globally in Telegram Mini App." />
 
-  <!-- Google Fonts: Outfit -->
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Telegram WebApp SDK & FontAwesome Icons -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- 📺 MONETAG / TELEADS REWARDED INTERSTITIAL SDK (ZONE 11363275) -->
-  <script src="//libtl.com/sdk.js" data-zone="11363275" data-sdk="show_11363275"></script>
+  <!-- 📺 MONETAG / TELEADS REWARDED INTERSTITIAL SDK (ZONE 11629417) -->
+  <script src="//libtl.com/sdk.js" data-zone="11629417" data-sdk="show_11629417"></script>
 </head>
 <body>
   <!-- ── LOADING SCREEN OVERLAY ── -->
@@ -42,25 +46,22 @@
     
     <!-- ── TOP BAR (COMPACT RESOURCE CARDS) ── -->
     <header class="top-bar">
-      <!-- Player Profile Card (XP TAB CLICKABLE TO OPEN 100-LEVEL XP PAGE) -->
-      <div class="user-card" id="user-profile-btn" onclick="openXPLevelModal()">
-        <div class="user-info">
-          <span class="user-name" id="user-name">⭐ LEVEL 1</span>
-          <div class="xp-strip-track">
-            <div class="xp-strip-fill" id="xp-fill" style="width: 0%"></div>
-          </div>
-        </div>
+      <!-- Player Profile Card (Top Corner Icon — avatar only) -->
+      <div class="user-card" id="user-profile-btn" onclick="openProfileModal()" title="View Profile" style="cursor:pointer;">
+        <span class="user-avatar-icon" style="font-size: 1.5rem; line-height:1;">🧙‍♂️</span>
       </div>
 
       <!-- Resource Cards -->
       <div class="resource-cards-group">
-        <div class="res-card coins-card">
+        <div class="res-card coins-card" id="top-coins-card" onclick="openStarWithdrawModal()" title="Click to Withdraw Coins to Telegram Stars (XTR)" style="cursor: pointer;">
           <span class="res-icon">💰</span>
           <span class="res-val" id="top-coins">0</span>
+          <span class="withdraw-badge-hint" style="font-size: 0.6rem; color: #ffd700; font-weight: 900; margin-left: 2px;">⭐</span>
         </div>
-        <div class="res-card energy-card">
+        <div class="res-card energy-card" id="top-energy-card" onclick="openEnergyModal()" title="Click to Collect Energy (+100 ⚡ via Ad or Daily Login)" style="cursor: pointer;">
           <span class="res-icon">⚡</span>
-          <span class="res-val" id="top-energy">500/500</span>
+          <span class="res-val" id="top-energy">100/500</span>
+          <span class="energy-plus-btn" style="font-size: 0.65rem; color: #00e6ff; font-weight: 900; margin-left: 2px;">+</span>
         </div>
         <div class="res-card audio-card" id="top-audio-btn" onclick="openAudioSettingsModal()" title="Sound & Music Settings">
           <span class="res-icon" id="top-audio-icon">🎵</span>
@@ -83,28 +84,65 @@
             <div class="combo-badge" id="combo-badge">🔥 x5 COMBO</div>
           </div>
 
-          <!-- ── ⭐ XP LEVEL PROGRESS CARD ── -->
-          <div class="home-widget-card xp-level-widget-card" onclick="openXPLevelModal()">
-            <div class="xp-widget-header">
-              <div class="xp-widget-title-group">
-                <span class="xp-widget-icon">⭐</span>
-                <div class="xp-widget-title-text">
-                  <span class="xp-widget-level-name" id="xp-home-level-title">LEVEL 1</span>
+
+          <!-- ── ⭐ XP LEVEL TAB (Season on top, Small Circle Level below, Beside Loading Bar) ── -->
+          <div class="xp-level-tab-card" id="home-xp-rectangle-tab" onclick="openXPPage()" title="Click to open Season 1 XP Pass">
+            <!-- Pulsing Red Notification Dot for Unclaimed Rewards -->
+            <span class="xp-claim-red-dot" id="home-xp-claim-dot" title="Rewards Available to Claim!" style="display: none;"></span>
+
+            <!-- Top Row: Season Number (Left) & Side Timer / Pass Badges (Right) -->
+            <div class="xp-tab-season-header">
+              <div class="xp-season-title-wrap">
+                <span class="xp-season-pill-badge" id="home-xp-season-text">🏆 SEASON 1</span>
+              </div>
+
+              <!-- Side Small Season Tab: Timer (d & h) and Gold/Silver Pass Indicators -->
+              <div class="xp-tab-side-mini-tab" id="home-xp-side-mini-tab">
+                <span class="xp-side-timer" id="home-xp-short-timer">⏳ 24d 23h</span>
+                <div class="xp-side-pass-indicators" id="home-xp-pass-indicators">
+                  <span class="xp-pass-pill-badge golden" id="badge-pass-gold" style="display: none;">👑 GOLD</span>
+                  <span class="xp-pass-pill-badge silver" id="badge-pass-silver" style="display: none;">🥈 SILVER</span>
+                  <span class="xp-pass-pill-badge free" id="badge-pass-free">🎁 FREE</span>
                 </div>
               </div>
-              <span class="xp-widget-open-badge" id="xp-home-btn-badge">RANKS ➔</span>
             </div>
 
-            <div class="xp-widget-bar-track">
-              <div class="xp-widget-bar-fill" id="xp-home-bar-fill" style="width: 0%;"></div>
-            </div>
-            <div class="xp-widget-sub-row">
-              <span class="xp-widget-val-text" id="xp-home-val-text">0 / 100 XP</span>
-              <span class="xp-widget-target-text" id="xp-home-target-text">+0.1 XP PER TAP</span>
+            <!-- Main Body: Small Circle Level (Left) + Beside Loading Bar (Right) -->
+            <div class="xp-tab-main-body">
+              <!-- Small Circle showing Level Number -->
+              <div class="xp-level-circle-badge" id="home-xp-circle-badge">
+                <span class="xp-circle-star">⭐</span>
+                <span class="xp-circle-level-num" id="home-xp-level-text">1</span>
+                <span class="xp-circle-lvl-label">LEVEL</span>
+              </div>
+
+              <!-- Beside: Loading Progress Bar & XP Stats -->
+              <div class="xp-tab-bar-side-content">
+                <!-- Bar Top Stats -->
+                <div class="xp-bar-stats-row">
+                  <span class="xp-progress-title">XP Progress</span>
+                  <div class="xp-stats-numbers">
+                    <span class="xp-tab-amount" id="home-xp-amount-text">0 / 100 XP</span>
+                    <span class="xp-tab-percent" id="home-xp-percent-text">(0%)</span>
+                  </div>
+                </div>
+
+                <!-- Loading Progress Bar -->
+                <div class="xp-tab-bar-track">
+                  <div class="xp-tab-bar-fill" id="home-xp-bar-fill" style="width: 0%;"></div>
+                </div>
+
+                <!-- Bar Bottom Hint -->
+                <div class="xp-bar-bottom-row">
+                  <span class="xp-pass-reward-hint">🎁 Season 1 Pass (1-100)</span>
+                  <span class="xp-tab-open-hint">OPEN ➔</span>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- ── 🎯 INFINITE GOAL TRACKER (3 CIRCULAR SECTION CARDS) ── -->
+
           <div class="home-widget-card goal-tracker-card">
             <div class="widget-header">
               <div class="widget-title-group">
@@ -198,26 +236,26 @@
 
           <!-- ── 🎡 SPINNER, 🧰 MYSTERY CHEST & 🎫 SCRATCH CARD SEPARATE SQUARE CARDS ── -->
           <div class="home-square-cards-container">
-            <!-- SQUARE CARD 1: 🎡 SPINNER -->
-            <div class="home-square-card spin-sq-card" onclick="openSpinWheelModal()">
+            <!-- SQUARE CARD 1: 🎡 SPINNER (CONNECTS TO spin/ FOLDER) -->
+            <div class="home-square-card spin-sq-card" onclick="openSpinPage()" title="Open Lucky Spinner Wheel">
               <div class="sq-card-icon-wrap">🎡</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">SPIN WHEEL</span>
                 <span class="sq-card-sub" id="sq-tickets-text">🎟️ 0 Tickets</span>
               </div>
-              <button class="btn-card-enter" onclick="event.stopPropagation(); openSpinWheelModal()">
+              <button class="btn-card-enter" onclick="event.stopPropagation(); openSpinPage()">
                 ENTER ➔
               </button>
             </div>
 
-            <!-- SQUARE CARD 2: 🧰 MYSTERY CHEST -->
-            <div class="home-square-card chest-sq-card" onclick="openMysteryChestModal()">
+            <!-- SQUARE CARD 2: 🧰 MYSTERY CHEST (CONNECTS TO chest/ FOLDER) -->
+            <div class="home-square-card chest-sq-card" onclick="openChestPage()" title="Open Mystery Chest Vault">
               <div class="sq-card-icon-wrap">🧰</div>
               <div class="sq-card-info">
                 <span class="sq-card-title">MYSTERY CHEST</span>
                 <span class="sq-card-sub" id="sq-keys-text">🔑 0 Keys</span>
               </div>
-              <button class="btn-card-enter" onclick="event.stopPropagation(); openMysteryChestModal()">
+              <button class="btn-card-enter" onclick="event.stopPropagation(); openChestPage()">
                 ENTER ➔
               </button>
             </div>
@@ -245,7 +283,9 @@
                 ENTER ➔
               </button>
             </div>
+
           </div>
+
 
         </div>
       </div>
@@ -257,51 +297,7 @@
           <!-- HEADER -->
           <div class="boost-header-center">
             <h1 class="boost-main-title">💪 BOOST CENTER</h1>
-            <p class="boost-main-subtitle">Select a boost card to upgrade your empire</p>
-          </div>
-
-          <!-- ── ⭐ MONTHLY TELEGRAM STARS VIP PASSES (SILVER 500⭐/50 ADS & GOLDEN 1000⭐/100 ADS) ── -->
-          <div class="vip-passes-container">
-            
-            <!-- 🥈 SILVER PASS CARD -->
-            <div class="silver-pass-vip-card" id="silver-pass-vip-card">
-              <div class="silver-pass-header">
-                <span class="silver-pass-badge">🥈 MONTHLY SILVER VIP PASS</span>
-                <span class="silver-pass-timer" id="silver-pass-timer-txt">OFFLINE</span>
-              </div>
-              <h2 class="silver-pass-title">SILVER VIP MONTHLY PASS</h2>
-              <div class="silver-pass-perks-list">
-                <div class="silver-perk-item">⚡ <strong>+50% Tap Power & Rapid Energy</strong></div>
-                <div class="silver-perk-item">🎯 <strong>2X XP & Level Claim Rewards</strong></div>
-                <div class="silver-perk-item">🎟️ <strong>+15 Free Daily Spin Tickets</strong></div>
-                <div class="silver-perk-item">🎫 <strong>Free Scratch Cards (No Ads)</strong></div>
-              </div>
-              <div class="silver-pass-actions">
-                <button class="btn-buy-silver-pass stars" onclick="buyMonthlyPassWithStars('silver', 500)">⭐ BUY WITH STARS (500 ⭐/MO)</button>
-                <button class="btn-buy-silver-pass ad" onclick="watchAdForPass('silver')">🎥 WATCH AD (<span id="silver-ad-progress-txt-boost">0</span>/50 ADS)</button>
-                <button class="btn-buy-silver-pass keys" onclick="buySilverPass('keys')">🔑 UNLOCK (5 KEYS)</button>
-              </div>
-            </div>
-
-            <!-- 🥇 GOLDEN PASS CARD -->
-            <div class="silver-pass-vip-card golden-pass-card" id="golden-pass-vip-card">
-              <div class="silver-pass-header">
-                <span class="silver-pass-badge golden-badge">🥇 MONTHLY GOLDEN VIP PASS</span>
-                <span class="silver-pass-timer" id="golden-pass-timer-txt">OFFLINE</span>
-              </div>
-              <h2 class="silver-pass-title golden-title">GOLDEN VIP MONTHLY PASS</h2>
-              <div class="silver-pass-perks-list">
-                <div class="silver-perk-item">⚡ <strong>+150% Supercharged Tap Power</strong></div>
-                <div class="silver-perk-item">🎯 <strong>3X XP & Level Claim Rewards</strong></div>
-                <div class="silver-perk-item">🔑 <strong>+5 Daily Master Keys & +30 Tickets</strong></div>
-                <div class="silver-perk-item">👑 <strong>Golden Crown Badge & Profile Glow</strong></div>
-              </div>
-              <div class="silver-pass-actions">
-                <button class="btn-buy-silver-pass golden-stars-btn" onclick="buyMonthlyPassWithStars('golden', 1000)">⭐ BUY GOLDEN PASS (1000 ⭐/MO)</button>
-                <button class="btn-buy-silver-pass ad" onclick="watchAdForPass('golden')">🎥 WATCH AD (<span id="golden-ad-progress-txt-boost">0</span>/100 ADS)</button>
-              </div>
-            </div>
-
+            <p class="boost-main-subtitle">Upgrade boosts to multiply tap power</p>
           </div>
 
           <!-- BOOST EMOJI CARTRIDGES GRID -->
@@ -319,27 +315,38 @@
           <!-- HEADER -->
           <div class="tasks-header-center">
             <h1 class="tasks-main-title">🎯 MISSION & TASKS</h1>
-            <p class="tasks-main-subtitle">Complete daily, weekly & monthly tasks to earn rewards</p>
+            <p class="tasks-main-subtitle">Complete missions to earn rewards</p>
           </div>
 
-          <!-- 🎥 WATCH AD TO CLAIM ALL TASKS BANNER -->
-          <div class="claim-all-ad-wrapper">
-            <button class="btn-claim-all-ad-banner" onclick="claimAllTasksWithAd()">
-              🎥 WATCH AD TO CLAIM ALL TASKS (+2X REWARD BONUS!)
-            </button>
-          </div>
-
-          <!-- 3-TAB CATEGORY NAVIGATION BAR -->
+          <!-- 3-TAB CATEGORY NAVIGATION BAR (FREE DAILY, SILVER PASS, GOLD PASS) -->
           <div class="task-tabs-nav">
-            <button class="task-tab-btn active" id="task-tab-daily" onclick="switchTaskTab('daily')">📅 DAILY</button>
-            <button class="task-tab-btn" id="task-tab-weekly" onclick="switchTaskTab('weekly')">🗓️ WEEKLY</button>
-            <button class="task-tab-btn" id="task-tab-monthly" onclick="switchTaskTab('monthly')">📆 MONTHLY</button>
+            <button class="task-tab-btn active" id="task-tab-daily" onclick="switchTaskTab('daily')">🎁 FREE DAILY</button>
+            <button class="task-tab-btn" id="task-tab-silver" onclick="switchTaskTab('silver')">🥈 SILVER PASS</button>
+            <button class="task-tab-btn" id="task-tab-golden" onclick="switchTaskTab('golden')">👑 GOLD PASS</button>
+          </div>
+
+          <!-- 🔥 DAILY MEGA REWARDS SPONSORED OPTION (https://omg10.com/4/11616083) -->
+          <div class="task-mega-reward-card" onclick="claimMegaSponsoredReward()" title="Click to claim Instant Mega Rewards!">
+            <div class="mega-reward-badge">🔥 DAILY MEGA REWARD</div>
+            <div class="mega-reward-content">
+              <div class="mega-reward-icon">💎</div>
+              <div class="mega-reward-details">
+                <div class="mega-reward-title">WIN 50K 💰 + 10 🔑 + 10 🎟️ + 250 ⭐</div>
+                <div class="mega-reward-desc">Visit sponsored partner & claim your instant daily mega bundle!</div>
+              </div>
+            </div>
+            <button class="btn-claim-mega-reward" id="btn-mega-task-claim">
+              🎁 CLAIM MEGA REWARD ➔
+            </button>
           </div>
 
           <!-- DYNAMIC TASK CARDS CONTAINER -->
           <div class="tasks-cards-list" id="tasks-list-container">
             <!-- Dynamically rendered via js/app.js -->
           </div>
+
+        </div>
+      </div>
 
       <!-- ── 🏆 LEADERBOARD SCREEN ── -->
       <div id="screen-rank" class="screen">
@@ -348,7 +355,7 @@
           <!-- HEADER -->
           <div class="rank-header-center">
             <h1 class="rank-main-title">🏆 LEADERBOARD</h1>
-            <p class="rank-main-subtitle">Top Global Tappers & XP Champions</p>
+            <p class="rank-main-subtitle">Global player rankings</p>
           </div>
 
           <!-- 3-TAB TIME CATEGORY NAVIGATION BAR -->
@@ -667,7 +674,7 @@
 
             <!-- REFERRAL LINK DISPLAY BOX -->
             <div class="ref-link-box">
-              <input type="text" class="ref-link-input" id="ref-link-input" readonly value="https://t.me/tap_king_bot?start=ref_user_local" />
+              <input type="text" class="ref-link-input" id="ref-link-input" readonly value="https://t.me/Tap_empire_11bot?start=ref_user_local" />
               <button class="btn-copy-ref-link" onclick="copyReferralLink()">📋 COPY</button>
             </div>
 
@@ -767,27 +774,27 @@
 
     </main>
 
-    <!-- ── BOTTOM NAVIGATION (5 TABS) ── -->
+    <!-- ── BOTTOM NAVIGATION (5 TABS: HOME, BOOST, TASKS, LEADERBOARD, PROFILE) ── -->
     <nav class="bottom-nav" id="bottom-nav">
-      <button class="nav-btn active" data-screen="home">
+      <button class="nav-btn active" data-screen="home" aria-label="Home">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">HOME</span>
+        <span class="nav-tooltip">HOME</span>
       </button>
-      <button class="nav-btn" data-screen="boost">
+      <button class="nav-btn" data-screen="boost" aria-label="Boost">
         <span class="nav-icon">💪</span>
-        <span class="nav-label">BOOST</span>
+        <span class="nav-tooltip">BOOST</span>
       </button>
-      <button class="nav-btn" data-screen="tasks">
+      <button class="nav-btn" data-screen="tasks" aria-label="Tasks">
         <span class="nav-icon">🎯</span>
-        <span class="nav-label">TASKS</span>
+        <span class="nav-tooltip">TASKS</span>
       </button>
-      <button class="nav-btn" data-screen="rank">
+      <button class="nav-btn" data-screen="rank" aria-label="Leaderboard">
         <span class="nav-icon">🏆</span>
-        <span class="nav-label">LEADERBOARD</span>
+        <span class="nav-tooltip">LEADERBOARD</span>
       </button>
-      <button class="nav-btn" data-screen="profile">
+      <button class="nav-btn" data-screen="profile" aria-label="Profile">
         <span class="nav-icon">👤</span>
-        <span class="nav-label">PROFILE</span>
+        <span class="nav-tooltip">PROFILE</span>
       </button>
     </nav>
 
@@ -1020,48 +1027,123 @@
       </div>
     </div>
 
-    <!-- ⭐ XP REWARD & EMPIRE PASS POPUP MODAL -->
-    <div id="xp-level-modal" class="modal-overlay">
-      <div class="xp-modal-card mobile-view">
-        <div class="xp-modal-header">
-          <!-- LEFT SIDE: CIRCULAR ARROW BUTTON (RETURN TO HOME) -->
-          <button class="btn-circle-header left-home-arrow" onclick="closeXPLevelModal()" title="Return to Home">
+    <!-- ⭐ XP REWARD & EMPIRE PASS POPUP MODAL (FULL 1-100 PASS VIEW) -->
+    <div id="xp-level-modal" class="modal-overlay full-page-modal">
+      <div class="xp-modal-card mobile-view" id="app-frame" style="max-width: 500px; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; background: rgba(9, 13, 22, 0.98); padding: 0;">
+        <div class="xp-modal-header" style="padding: 12px 14px; background: rgba(18, 25, 41, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: space-between;">
+          <button class="btn-circle-header left-home-arrow" onclick="closeXPLevelModal()" title="Return to Home" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; font-size: 1rem; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;">
             ⬅️
           </button>
           
-          <div class="xp-modal-title-group">
-            <span class="xp-modal-badge">⭐ XP REWARD & EMPIRE PASS</span>
-            <h2 class="xp-modal-title" id="xp-modal-user-rank">LEVEL 1 (0 / 100 XP)</h2>
+          <div class="xp-modal-title-group" style="text-align: center;">
+            <span class="xp-modal-badge" style="font-size: 0.65rem; color: #E3B81C; font-weight: 900; letter-spacing: 0.5px;">⭐ SEASON 1 PASS</span>
+            <h2 class="xp-modal-title" id="xp-modal-user-rank" style="font-size: 0.95rem; font-weight: 900; color: #fff; margin: 0;">LEVEL 1 (0 / 500 XP)</h2>
           </div>
 
-          <!-- RIGHT SIDE: CIRCULAR SHOP EMOJI BUTTON (OPEN PASS SHOP) -->
-          <button class="btn-circle-header right-shop-emoji" onclick="openPassStoreModal()" title="Open Pass Shop">
-            🛒
-          </button>
+          <div style="width: 36px;"></div>
         </div>
 
-        <!-- HERO XP LEVEL PROGRESS BAR CARD -->
-        <div class="xp-modal-hero-bar-card">
-          <div class="xp-hero-text-row">
-            <span class="xp-hero-current-lvl" id="xp-hero-current-lvl">LEVEL 1</span>
-            <span class="xp-hero-pct-txt" id="xp-hero-pct-txt">0% TO NEXT LEVEL</span>
+        <div class="xp-modal-scroll-area" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch;">
+          <!-- Season 1 Banner: Season 1 Title on Left, 25-Day Timer on Right -->
+          <div class="season-banner">
+            <div class="season-title"><i class="fa-solid fa-trophy"></i> Season 1 Pass</div>
+            <div class="season-timer" id="season-countdown-timer"><i class="fa-regular fa-clock"></i> 25d 00h 00m 00s</div>
           </div>
-          <div class="xp-hero-track">
-            <div class="xp-hero-fill" id="xp-hero-fill" style="width: 0%;"></div>
+
+          <!-- Pass Filter / Store Quick Action Cards -->
+          <div class="pass-status-cards">
+            <div class="pass-card-pill silver" id="pill-silver" onclick="openSilverPassModal()">
+              <span class="pass-icon">🥈</span>
+              <div class="pass-info">
+                <span class="pass-name">SILVER PASS</span>
+                <span class="pass-status" id="status-silver-txt">🔒 LOCKED (500⭐)</span>
+              </div>
+            </div>
+            <div class="pass-card-pill golden" id="pill-golden" onclick="openGoldenPassModal()">
+              <span class="pass-icon">👑</span>
+              <div class="pass-info">
+                <span class="pass-name">GOLDEN PASS</span>
+                <span class="pass-status" id="status-golden-txt">🔒 LOCKED (1000⭐)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4-COLUMN TABLE FORM LEVEL PASS CONTAINER (Levels 1 to 100) -->
+          <div class="pass-table-wrapper">
+            <table class="pass-table">
+              <thead>
+                <tr>
+                  <th class="col-level">LEVEL & XP</th>
+                  <th class="col-free">🎁 FREE PASS</th>
+                  <th class="col-silver" id="th-silver-header" onclick="openSilverPassModal()">🥈 SILVER PASS</th>
+                  <th class="col-golden" id="th-golden-header" onclick="openGoldenPassModal()">👑 GOLDEN PASS</th>
+                </tr>
+              </thead>
+              <tbody id="pass-table-body">
+                <!-- Dynamic 4-Column Rows (Levels 1 to 100) -->
+              </tbody>
+            </table>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- 🎥 WATCH AD TO CLAIM ALL XP REWARDS BANNER -->
-        <div class="claim-all-ad-wrapper" style="margin: 12px 16px 4px 16px;">
-          <button class="btn-claim-all-ad-banner" onclick="claimAllXPLevelsWithAd()">
-            🎥 WATCH AD TO CLAIM ALL XP REWARDS (+2X BONUS!)
-          </button>
+    <!-- MODAL 1: SILVER PASS DUAL UNLOCK MODAL -->
+    <div class="modal-overlay" id="modal-silver-pass">
+      <div class="modal-card" style="border-color: var(--silver-accent);">
+        <div style="font-size: 2.8rem; margin-bottom: 4px;">🥈</div>
+        <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--silver-accent);">UNLOCK SILVER PASS</h2>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px; text-align: center;">
+          Unlocks Silver Pass rewards for all <strong>EVEN levels (2, 4, 6, 8... 100)</strong>! Choose your method:
+        </p>
+
+        <button class="btn-primary" id="btn-buy-silver-stars" style="width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; font-weight: 900; margin-bottom: 8px; font-size: 0.78rem;">
+          ⭐ UNLOCK WITH 500 TELEGRAM STARS
+        </button>
+
+        <button class="btn-primary" id="btn-buy-silver-ads" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #b45309); color: #000; font-weight: 900; margin-bottom: 10px; font-size: 0.78rem;">
+          🎬 WATCH 50 ADS (<span id="silver-ads-count">0</span> / 50)
+        </button>
+
+        <button class="btn-secondary" id="btn-close-silver-modal" onclick="closeSilverPassModal()" style="width: 100%;">Close</button>
+      </div>
+    </div>
+
+    <!-- MODAL 2: GOLDEN PASS DUAL UNLOCK MODAL -->
+    <div class="modal-overlay" id="modal-golden-pass">
+      <div class="modal-card" style="border-color: var(--gold-accent);">
+        <div style="font-size: 2.8rem; margin-bottom: 4px;">👑</div>
+        <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--gold-accent);">UNLOCK GOLDEN PASS</h2>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px; text-align: center;">
+          Unlocks Golden Pass rewards for all <strong>MILESTONE levels (1, 5, 10, 15... 100)</strong>! Choose your method:
+        </p>
+
+        <button class="btn-primary" id="btn-buy-golden-stars" style="width: 100%; background: linear-gradient(135deg, var(--gold-accent), #d97706); color: #000; font-weight: 900; margin-bottom: 8px; font-size: 0.78rem;">
+          ⭐ UNLOCK WITH 1000 TELEGRAM STARS
+        </button>
+
+        <button class="btn-primary" id="btn-buy-golden-ads" style="width: 100%; background: linear-gradient(135deg, #06b6d4, #0284c7); color: #fff; font-weight: 900; margin-bottom: 10px; font-size: 0.78rem;">
+          🎬 WATCH 100 ADS (<span id="golden-ads-count">0</span> / 100)
+        </button>
+
+        <button class="btn-secondary" id="btn-close-golden-modal" onclick="closeGoldenPassModal()" style="width: 100%;">Close</button>
+      </div>
+    </div>
+
+    <!-- MODAL 3: LEVEL UP CELEBRATION MODAL -->
+    <div class="modal-overlay" id="level-up-modal">
+      <div class="modal-card">
+        <div style="font-size:3rem; margin-bottom:6px;">🎉</div>
+        <h2 style="font-size:1.3rem; font-weight:900; color:var(--gold-accent);">LEVEL UP!</h2>
+        <p id="level-up-desc" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px; text-align: center;">You reached Level 2!</p>
+        
+        <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: var(--radius-md); width: 100%; margin-bottom: 14px; font-size: 0.78rem; text-align: center;">
+          <div style="color: var(--gold-accent); font-weight: 700;" id="modal-reward-free">+50 Free Energy & 100 Coins Unlocked</div>
         </div>
 
-        <!-- 100 XP LEVELS GIFTS SCROLL CONTAINER -->
-        <div class="xp-levels-scroll-list" id="xp-levels-list-container">
-          <!-- Dynamically populated via js/app.js -->
-        </div>
+        <button class="btn-primary" id="btn-close-modal" onclick="closeLevelUpModal()" style="width: 100%;">
+          CLAIM & CONTINUE
+        </button>
       </div>
     </div>
 
@@ -1126,33 +1208,138 @@
       </div>
     </div>
 
-    <!-- ⭐ TELEGRAM STAR GIFTS WITHDRAWAL POPUP MODAL -->
+    <!-- ⭐ TELEGRAM STARS & COINS WITHDRAWAL PAYOUT CENTER MODAL -->
     <div id="star-withdraw-modal" class="modal-overlay">
-      <div class="star-modal-card">
+      <div class="star-modal-card withdrawal-main-card">
+        <button class="boost-modal-close-icon" onclick="closeStarWithdrawModal()">✕</button>
+
         <div class="star-modal-header">
-          <span class="star-modal-badge">⭐ TELEGRAM STAR GIFTS WITHDRAWAL</span>
-          <h2 class="star-modal-title" id="star-modal-title">Withdraw 100 Stars</h2>
-          <p class="star-modal-sub" id="star-modal-sub">Cost: 💰 1,000,000 Coins</p>
+          <div class="star-glow-icon-hub">⭐</div>
+          <span class="star-modal-badge">TELEGRAM STARS PAYOUT CENTER</span>
+          <h2 class="star-modal-title">Withdraw Telegram Stars (XTR)</h2>
+          <p class="star-modal-sub">Convert your game Coins to Telegram Stars sent directly to your Telegram Account!</p>
         </div>
 
-        <div class="star-inputs-group">
-          <div class="star-input-item">
-            <label class="star-label">Telegram Username / User ID:</label>
-            <input type="text" class="star-input-field" id="star-withdraw-username" placeholder="@username or User ID" />
+        <!-- Realtime Rates & Balance Banner -->
+        <div class="withdraw-balance-banner">
+          <div class="withdraw-bal-item">
+            <span class="withdraw-bal-label">AVAILABLE BALANCE</span>
+            <span class="withdraw-bal-val" id="withdraw-available-coins">0 Coins</span>
+          </div>
+          <div class="withdraw-rate-pill">
+            <span>⚡ 10,000 Coins = 1 ⭐ Star</span>
           </div>
         </div>
 
-        <div class="star-modal-note">
-          ⚡ Transacted securely via MTProto <code>payments.getPaymentForm</code>. Delivery is instant!
+        <!-- Navigation Tabs: Request Payout vs Live History -->
+        <div class="withdraw-nav-tabs">
+          <button class="withdraw-tab-btn active" id="tab-btn-withdraw-form" onclick="switchWithdrawTab('form')">
+            💸 REQUEST PAYOUT
+          </button>
+          <button class="withdraw-tab-btn" id="tab-btn-withdraw-history" onclick="switchWithdrawTab('history')">
+            📜 LIVE HISTORY (<span id="withdraw-history-count">0</span>)
+          </button>
         </div>
 
-        <div class="star-modal-actions">
-          <button class="btn-execute-star-withdraw" onclick="confirmStarGiftWithdrawal()">
-            ⭐ CONFIRM WITHDRAWAL
+        <!-- TAB 1: WITHDRAWAL FORM -->
+        <div id="withdraw-tab-form-content" class="withdraw-tab-content active">
+          <div class="withdraw-field-group">
+            <label class="withdraw-input-label">Coins to Withdraw:</label>
+            <div class="withdraw-input-wrapper">
+              <input type="number" id="withdraw-coins-input" class="withdraw-number-input" placeholder="Min 100,000" min="100000" step="10000" oninput="onWithdrawCoinsInputChange(this.value)" />
+              <button class="btn-input-max" onclick="setWithdrawMaxCoins()">MAX</button>
+            </div>
+          </div>
+
+          <!-- Quick Preset Buttons -->
+          <div class="withdraw-presets-row">
+            <button class="withdraw-preset-btn" onclick="setWithdrawPresetAmount(100000)">100K (10 ⭐)</button>
+            <button class="withdraw-preset-btn" onclick="setWithdrawPresetAmount(250000)">250K (25 ⭐)</button>
+            <button class="withdraw-preset-btn" onclick="setWithdrawPresetAmount(500000)">500K (50 ⭐)</button>
+            <button class="withdraw-preset-btn" onclick="setWithdrawPresetAmount(1000000)">1M (100 ⭐)</button>
+          </div>
+
+          <!-- Live Estimated Stars Payout Display Card -->
+          <div class="withdraw-calc-card">
+            <div class="withdraw-calc-row">
+              <span class="calc-label">You Will Receive:</span>
+              <span class="calc-stars-payout" id="withdraw-calculated-stars">0 ⭐ Telegram Stars</span>
+            </div>
+            <div class="withdraw-calc-note">
+              <span>🛡️ Minimum withdrawal: 100,000 Coins (10 ⭐ Stars)</span>
+            </div>
+          </div>
+
+          <!-- Telegram Username / Target ID -->
+          <div class="withdraw-field-group">
+            <label class="withdraw-input-label">Telegram Username or User ID for Payout:</label>
+            <input type="text" class="withdraw-text-input" id="star-withdraw-username" placeholder="@username or Telegram ID" />
+          </div>
+
+          <!-- Action Button -->
+          <div class="withdraw-modal-actions">
+            <button class="btn-execute-star-withdraw" id="btn-submit-withdraw-action" onclick="submitWithdrawalForm()">
+              ⭐ CONFIRM & SUBMIT WITHDRAWAL
+            </button>
+          </div>
+
+          <div class="withdraw-security-note">
+            🔒 Protected by MTProto & Firebase Realtime Database Security. Payouts verified by Admin.
+          </div>
+        </div>
+
+        <!-- TAB 2: LIVE REALTIME HISTORY -->
+        <div id="withdraw-tab-history-content" class="withdraw-tab-content" style="display: none;">
+          <div class="withdraw-history-header">
+            <span>🔥 Live Realtime Sync via Firebase</span>
+          </div>
+          <div class="withdraw-history-list" id="withdraw-history-container">
+            <div class="withdraw-empty-state">
+              <span class="empty-icon">📭</span>
+              <p>No withdrawal requests yet. Tap to earn coins and request your first Telegram Stars payout!</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── ⚡ ENERGY STATION & REWARDED AD REFILL MODAL ── -->
+    <div id="energy-refill-modal" class="modal-overlay">
+      <div class="star-modal-card withdrawal-main-card">
+        <button class="boost-modal-close-icon" onclick="closeEnergyModal()">✕</button>
+
+        <div class="star-modal-header">
+          <div class="star-glow-icon-hub" style="border-color: #00e6ff; box-shadow: 0 0 18px rgba(0, 230, 255, 0.4); color: #00e6ff;">⚡</div>
+          <span class="star-modal-badge" style="color: #00e6ff; border-color: rgba(0, 230, 255, 0.4); background: rgba(0, 230, 255, 0.1);">ENERGY STATION</span>
+          <h2 class="star-modal-title">Collect Game Energy</h2>
+          <p class="star-modal-sub">Collect Energy to tap for coins and XP! Earn via Daily Login or watch rewarded ads.</p>
+        </div>
+
+        <!-- Current Energy Status Box -->
+        <div class="withdraw-balance-banner" style="border-color: rgba(0, 230, 255, 0.35);">
+          <div class="withdraw-bal-item">
+            <span class="withdraw-bal-label">CURRENT ENERGY</span>
+            <span class="withdraw-bal-val" id="energy-modal-cur-val" style="color: #00e6ff;">100 / 500 ⚡</span>
+          </div>
+          <div class="withdraw-rate-pill" style="background: rgba(34, 197, 94, 0.15); border-color: #22c55e; color: #22c55e;">
+            <span>☀️ +100 Daily Login</span>
+          </div>
+        </div>
+
+        <!-- Energy Options -->
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; margin: 12px 0;">
+          <!-- Button 1: Watch Rewarded Ad -->
+          <button class="btn-execute-star-withdraw" onclick="watchAdForEnergy()" style="background: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%); color: #000; font-size: 0.92rem;">
+            🎬 WATCH AD (+100 ⚡ ENERGY)
           </button>
-          <button class="btn-close-star-modal" onclick="closeStarWithdrawModal()">
-            CANCEL
+
+          <!-- Button 2: Daily Login Bonus -->
+          <button class="btn-execute-star-withdraw" onclick="claimDailyLoginBonus()" style="background: linear-gradient(135deg, #ffd700 0%, #d97706 100%); color: #000; font-size: 0.85rem;">
+            ☀️ CLAIM TODAY'S LOGIN BONUS (+100 ⚡)
           </button>
+        </div>
+
+        <div class="withdraw-security-note">
+          ⚡ Passive Regeneration: Recharges automatically over time (+1 Energy / 3s).
         </div>
       </div>
     </div>
@@ -1550,6 +1737,418 @@
   <script src="js/telegram-auth.js"></script>
   <script src="js/telegram-stars.js"></script>
   <script src="js/telegram-withdrawal.js"></script>
+  <!-- ── ⭐ XP PAGE FULL-SCREEN OVERLAY (DIRECTLY CONNECTED TO xppage/ FOLDER) ── -->
+  <div id="xp-page-overlay" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #090d16;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  ">
+    <!-- Overlay Top Header Bar -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(14, 20, 34, 0.98);
+      border-bottom: 1px solid rgba(227, 184, 28, 0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+      z-index: 10;
+    ">
+      <button onclick="closeXPPage()" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(227, 184, 28, 0.4);
+        color: #fff;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: transform 0.15s ease, background 0.15s ease;
+      " onmouseover="this.style.background='rgba(227,184,28,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        ⬅ BACK TO GAME
+      </button>
+
+      <div style="text-align: center; line-height: 1.2;">
+        <span style="font-size: 0.65rem; color: #E3B81C; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;">SEASON 1 PASS</span>
+        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 900; color: #fff; letter-spacing: 0.04em;">XP QUEST DASHBOARD</h3>
+      </div>
+
+      <button onclick="refreshXPPageFrame()" title="Reload XP Page" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #E3B81C;
+        border-radius: 10px;
+        padding: 7px 12px;
+        font-size: 0.9rem;
+        cursor: pointer;
+      ">
+        🔄
+      </button>
+    </div>
+
+    <!-- XP Page Iframe Connected to xppage/ folder -->
+    <iframe
+      id="xp-page-frame"
+      src=""
+      style="flex: 1; border: none; width: 100%; height: 100%; background: #090d16;"
+      allow="autoplay; clipboard-write; encrypted-media"
+    ></iframe>
+  </div>
+
+  <!-- ── 🎡 SPIN PAGE FULL-SCREEN OVERLAY (DIRECTLY CONNECTED TO spin/ FOLDER) ── -->
+  <div id="spin-page-overlay" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #090d16;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  ">
+    <!-- Overlay Top Header Bar -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(14, 20, 34, 0.98);
+      border-bottom: 1px solid rgba(227, 184, 28, 0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+      z-index: 10;
+    ">
+      <button onclick="closeSpinPage()" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(227, 184, 28, 0.4);
+        color: #fff;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: transform 0.15s ease, background 0.15s ease;
+      " onmouseover="this.style.background='rgba(227,184,28,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        ⬅ BACK TO GAME
+      </button>
+
+      <div style="text-align: center; line-height: 1.2;">
+        <span style="font-size: 0.65rem; color: #E3B81C; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;">TAP EMPIRE WHEEL</span>
+        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 900; color: #fff; letter-spacing: 0.04em;">LUCKY SPINNER</h3>
+      </div>
+
+      <button onclick="refreshSpinPageFrame()" title="Reload Spin Page" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #E3B81C;
+        border-radius: 10px;
+        padding: 7px 12px;
+        font-size: 0.9rem;
+        cursor: pointer;
+      ">
+        🔄
+      </button>
+    </div>
+
+    <!-- Spin Page Iframe Connected to spin/ folder -->
+    <iframe
+      id="spin-page-frame"
+      src=""
+      style="flex: 1; border: none; width: 100%; height: 100%; background: #090d16;"
+      allow="autoplay; clipboard-write; encrypted-media"
+    ></iframe>
+  </div>
+
+  <!-- ── 🧰 MYSTERY CHEST FULL-SCREEN OVERLAY (DIRECTLY CONNECTED TO chest/ FOLDER) ── -->
+  <div id="chest-page-overlay" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #090d16;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  ">
+    <!-- Overlay Top Header Bar -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(14, 20, 34, 0.98);
+      border-bottom: 1px solid rgba(227, 184, 28, 0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+      z-index: 10;
+    ">
+      <button onclick="closeChestPage()" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(227, 184, 28, 0.4);
+        color: #fff;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: transform 0.15s ease, background 0.15s ease;
+      " onmouseover="this.style.background='rgba(227,184,28,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        ⬅ BACK TO GAME
+      </button>
+
+      <div style="text-align: center; line-height: 1.2;">
+        <span style="font-size: 0.65rem; color: #E3B81C; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;">TAP EMPIRE VAULT</span>
+        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 900; color: #fff; letter-spacing: 0.04em;">MYSTERY CHEST</h3>
+      </div>
+
+      <button onclick="refreshChestPageFrame()" title="Reload Chest Page" style="
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #E3B81C;
+        border-radius: 10px;
+        padding: 7px 12px;
+        font-size: 0.9rem;
+        cursor: pointer;
+      ">
+        🔄
+      </button>
+    </div>
+
+    <!-- Chest Page Iframe Connected to chest/ folder -->
+    <iframe
+      id="chest-page-frame"
+      src=""
+      style="flex: 1; border: none; width: 100%; height: 100%; background: #090d16;"
+      allow="autoplay; clipboard-write; encrypted-media"
+    ></iframe>
+  </div>
+
   <script src="js/app.js"></script>
+  <script>
+    function openXPPage() {
+      // 1. Open and render the native 100-level XP Season 1 Pass modal
+      if (typeof openXPLevelModal === 'function') {
+        openXPLevelModal();
+        return;
+      }
+
+      // 2. Fallback to full-screen overlay if modal not present
+      const overlay = document.getElementById('xp-page-overlay');
+      const frame = document.getElementById('xp-page-frame');
+      if (!overlay || !frame) return;
+
+      try {
+        const syncState = {
+          name: (window.STATE && window.STATE.user && window.STATE.user.username) || 'PLAYER',
+          level: (window.STATE && window.STATE.level) || 1,
+          xp: (window.STATE && window.STATE.xp) || 0,
+          coins: (window.STATE && window.STATE.coins) || 0,
+          energy: (window.STATE && window.STATE.energy) || 100,
+          maxEnergy: (window.STATE && window.STATE.maxEnergy) || 500,
+          keys: (window.STATE && window.STATE.keys) || 0,
+          tickets: (window.STATE && window.STATE.tickets) || 0
+        };
+        localStorage.setItem('tap_empire_sync_state', JSON.stringify(syncState));
+      } catch (e) {}
+
+      if (!frame.src || frame.src === 'about:blank' || !frame.getAttribute('data-loaded')) {
+        frame.src = './xppage/index.html';
+        frame.setAttribute('data-loaded', '1');
+      }
+
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      if (typeof haptic === 'function') haptic('selection');
+    }
+
+    function closeXPPage() {
+      const overlay = document.getElementById('xp-page-overlay');
+      if (overlay) overlay.style.display = 'none';
+      document.body.style.overflow = '';
+
+      // Check if xppage modified sync state (e.g. earned coins, energy, level)
+      try {
+        const raw = localStorage.getItem('tap_empire_sync_state');
+        if (raw && window.STATE) {
+          const sync = JSON.parse(raw);
+          if (sync.coins !== undefined && sync.coins > window.STATE.coins) window.STATE.coins = sync.coins;
+          if (sync.level !== undefined && sync.level > window.STATE.level) window.STATE.level = sync.level;
+          if (sync.xp !== undefined && sync.xp > window.STATE.xp) window.STATE.xp = sync.xp;
+          if (sync.keys !== undefined && sync.keys > window.STATE.keys) window.STATE.keys = sync.keys;
+          if (sync.tickets !== undefined && sync.tickets > window.STATE.tickets) window.STATE.tickets = sync.tickets;
+        }
+      } catch (e) {}
+
+      if (typeof updateUI === 'function') updateUI();
+    }
+
+    function refreshXPPageFrame() {
+      const frame = document.getElementById('xp-page-frame');
+      if (frame) {
+        frame.src = './xppage/index.html?t=' + Date.now();
+      }
+    }
+
+    /* ── 🎡 SPIN PAGE CONNECT (spin/ FOLDER) ── */
+    function openSpinPage() {
+      const overlay = document.getElementById('spin-page-overlay');
+      const frame = document.getElementById('spin-page-frame');
+      if (!overlay || !frame) return;
+
+      // Sync current player state to localStorage for spin page
+      try {
+        const syncState = {
+          name: (window.STATE && window.STATE.user && window.STATE.user.username) || 'PLAYER',
+          level: (window.STATE && window.STATE.level) || 1,
+          xp: (window.STATE && window.STATE.xp) || 0,
+          coins: (window.STATE && window.STATE.coins) || 0,
+          energy: (window.STATE && window.STATE.energy) || 100,
+          maxEnergy: (window.STATE && window.STATE.maxEnergy) || 500,
+          keys: (window.STATE && window.STATE.keys) || 0,
+          tickets: (window.STATE && window.STATE.tickets) || 0
+        };
+        localStorage.setItem('tap_empire_sync_state', JSON.stringify(syncState));
+      } catch (e) {}
+
+      // Load spin folder relative to current page
+      if (!frame.src || frame.src === 'about:blank' || !frame.getAttribute('data-loaded')) {
+        frame.src = './spin/index.html';
+        frame.setAttribute('data-loaded', '1');
+      }
+
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      if (typeof haptic === 'function') haptic('selection');
+    }
+
+    function closeSpinPage() {
+      const overlay = document.getElementById('spin-page-overlay');
+      if (overlay) overlay.style.display = 'none';
+      document.body.style.overflow = '';
+
+      // Check if spin modified tickets or prizes
+      try {
+        const raw = localStorage.getItem('tap_empire_sync_state');
+        if (raw && window.STATE) {
+          const sync = JSON.parse(raw);
+          if (sync.tickets !== undefined) window.STATE.tickets = sync.tickets;
+          if (sync.coins !== undefined && sync.coins > window.STATE.coins) window.STATE.coins = sync.coins;
+          if (sync.energy !== undefined && sync.energy > window.STATE.energy) window.STATE.energy = sync.energy;
+          if (sync.keys !== undefined && sync.keys > window.STATE.keys) window.STATE.keys = sync.keys;
+        }
+      } catch (e) {}
+
+      if (typeof updateUI === 'function') updateUI();
+    }
+
+    function refreshSpinPageFrame() {
+      const frame = document.getElementById('spin-page-frame');
+      if (frame) {
+        frame.src = './spin/index.html?t=' + Date.now();
+      }
+    }
+
+    /* ── 🧰 MYSTERY CHEST PAGE CONNECT (chest/ FOLDER) ── */
+    function openChestPage() {
+      const overlay = document.getElementById('chest-page-overlay');
+      const frame = document.getElementById('chest-page-frame');
+      if (!overlay || !frame) return;
+
+      // Sync current player state to localStorage for chest page
+      try {
+        const currentKeys = (window.STATE && window.STATE.goals && window.STATE.goals.keysBalance) || (window.STATE && window.STATE.keys) || 0;
+        const currentTickets = (window.STATE && window.STATE.goals && window.STATE.goals.ticketsBalance) || (window.STATE && window.STATE.tickets) || 0;
+        const syncState = {
+          name: (window.STATE && window.STATE.user && window.STATE.user.username) || 'PLAYER',
+          level: (window.STATE && window.STATE.level) || 1,
+          xp: (window.STATE && window.STATE.xp) || 0,
+          coins: (window.STATE && window.STATE.coins) || 0,
+          energy: (window.STATE && window.STATE.energy) || 100,
+          maxEnergy: (window.STATE && window.STATE.maxEnergy) || 500,
+          keys: currentKeys,
+          tickets: currentTickets
+        };
+        localStorage.setItem('tap_empire_sync_state', JSON.stringify(syncState));
+
+        // Sync into chest local storage mystery_vault_zero_start_v1
+        const rawVault = localStorage.getItem('mystery_vault_zero_start_v1');
+        let vaultState = rawVault ? JSON.parse(rawVault) : {};
+        vaultState.keys = vaultState.keys || { free: 0, silver: 0, golden: 0 };
+        vaultState.keys.free = Math.max(vaultState.keys.free || 0, currentKeys);
+        vaultState.coins = syncState.coins;
+        vaultState.energy = syncState.energy;
+        localStorage.setItem('mystery_vault_zero_start_v1', JSON.stringify(vaultState));
+      } catch (e) {}
+
+      // Load chest folder relative to current page
+      if (!frame.src || frame.src === 'about:blank' || !frame.getAttribute('data-loaded')) {
+        frame.src = './chest/index.html';
+        frame.setAttribute('data-loaded', '1');
+      }
+
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      if (typeof haptic === 'function') haptic('selection');
+    }
+
+    function closeChestPage() {
+      const overlay = document.getElementById('chest-page-overlay');
+      if (overlay) overlay.style.display = 'none';
+      document.body.style.overflow = '';
+
+      // Check if chest modified keys, coins, energy, or stars
+      try {
+        const rawVault = localStorage.getItem('mystery_vault_zero_start_v1');
+        if (rawVault && window.STATE) {
+          const vault = JSON.parse(rawVault);
+          if (vault.coins !== undefined && vault.coins > window.STATE.coins) window.STATE.coins = vault.coins;
+          if (vault.energy !== undefined && vault.energy > window.STATE.energy) window.STATE.energy = vault.energy;
+          if (vault.keys && vault.keys.free !== undefined) {
+            window.STATE.goals.keysBalance = vault.keys.free;
+            window.STATE.keys = vault.keys.free;
+          }
+          if (typeof saveUserDataToFirebase === 'function') {
+            saveUserDataToFirebase(window.STATE);
+          }
+        }
+      } catch (e) {}
+
+      if (typeof updateUI === 'function') updateUI();
+    }
+
+    function refreshChestPageFrame() {
+      const frame = document.getElementById('chest-page-frame');
+      if (frame) {
+        frame.src = './chest/index.html?t=' + Date.now();
+      }
+    }
+
+    // Alias openMysteryChestModal to openChestPage
+    window.openMysteryChestModal = openChestPage;
+  </script>
 </body>
 </html>
