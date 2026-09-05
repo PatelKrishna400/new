@@ -1,0 +1,18 @@
+/* ==========================================================================
+   PAGE VIEW: KITCHEN (pages/kitchen/kitchen.css)
+   ========================================================================== */
+
+#pageKitchen {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  padding: 0 10px 16px 10px !important;
+  overflow-y: auto;
+}
+
+#pageKitchen.active {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}

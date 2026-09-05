@@ -1,0 +1,107 @@
+<div class="page-view active" id="pageHome">
+        
+        <!-- XP Card -->
+        <section class="stat-card xp-card" id="xpCard">
+          <div class="stat-card-badge-box orange-badge">
+            <div class="badge-ring-outer"></div>
+            <span class="badge-number" id="xpLevelNum">0</span>
+          </div>
+          <div class="stat-card-content">
+            <div class="stat-card-header">
+              <div class="xp-stats-row">
+                <span class="stat-card-title">XP</span>
+                <span class="xp-level-limit-tag" id="xpLevelLimitText">10/1000</span>
+              </div>
+              <svg class="chevron-icon" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="progress-track orange-track">
+              <div class="progress-fill orange-fill" id="xpProgressFill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Goal Card -->
+        <section class="stat-card goal-card" id="goalCard">
+          <div class="stat-card-badge-box cyan-badge">
+            <div class="badge-ring-outer"></div>
+            <span class="badge-number" id="goalLevelNum">0</span>
+          </div>
+          <div class="stat-card-content">
+            <div class="stat-card-header">
+              <div class="goal-stats-row">
+                <span class="stat-card-title">Goal</span>
+                <div class="goal-item">
+                  <span class="item-emoji">🎟️</span>
+                  <span class="item-count" id="goalCards">0/20</span>
+                </div>
+                <span class="goal-bullet">•</span>
+                <div class="goal-item">
+                  <span class="item-emoji">🔑</span>
+                  <span class="item-count" id="goalKeys">0/50</span>
+                </div>
+                <span class="goal-bullet">•</span>
+                <div class="goal-item">
+                  <span class="item-emoji">🎫</span>
+                  <span class="item-count" id="goalTickets">0/35</span>
+                </div>
+              </div>
+              <svg class="chevron-icon" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="progress-track cyan-track">
+              <div class="progress-fill cyan-fill" id="goalProgressFill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Energy Tap Reactor Container -->
+        <section class="reactor-card" id="reactorSection">
+          <div class="reactor-header">
+            <div class="reactor-pill-cyan">
+              <svg class="pill-lightning" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              <span>ENERGY TAP REACTOR</span>
+            </div>
+
+            <div class="reactor-pill-dark" id="comboPill">
+              <svg class="combo-flame" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
+              </svg>
+              <span id="comboMultiplierText">1.0x COMBO</span>
+            </div>
+          </div>
+
+          <div class="orb-stage" id="orbStage">
+            <div class="orb-aura aura-1"></div>
+            <div class="orb-aura aura-2"></div>
+            <div class="orb-particle-layer" id="orbParticleLayer"></div>
+
+            <button class="reactor-orb" id="reactorOrb" aria-label="Tap to generate energy">
+              <div class="orb-inner-gloss"></div>
+              <div class="orb-electric-ring"></div>
+              <div class="orb-core">
+                <svg class="orb-lightning-bolt" viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
+                  <path d="M13 2L3 14h9l-1.5 8 10.5-12h-9l1.5-8z"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <div class="reactor-footer">
+            <div class="energy-counter-pill" id="energyCounterPill" onclick="switchPage('energy')" style="cursor: pointer;" title="Energy Balance - Tap to Mine Energy">
+              <svg class="energy-icon icon-left" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              <span class="energy-value" id="energyTapCount">0</span>
+              <svg class="energy-icon icon-right" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+      </div>

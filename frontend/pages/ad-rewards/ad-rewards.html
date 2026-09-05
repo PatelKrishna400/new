@@ -1,0 +1,48 @@
+<div class="page-view" id="pageAdRewards">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('energy')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <span id="adRewardTimerPill">Sponsored Ad</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>⚡ FUEL WIN</span>
+          </div>
+        </div>
+
+        <!-- Ad Video Simulation Card -->
+        <section class="ad-video-screen-card">
+          <div class="ad-video-player-box">
+            <div class="ad-scanlines"></div>
+            <div class="ad-center-pulse">
+              <div class="ad-spinner-ring" id="adSpinnerRing"></div>
+              <svg viewBox="0 0 24 24" width="42" height="42" fill="#38bdf8">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <div class="ad-timer-countdown" id="adCountdownBadge">5s</div>
+          </div>
+
+          <div class="ad-reward-details-box">
+            <h3 class="ad-reward-title" id="adRewardTitle">Green Fuel Cell (+5m)</h3>
+            <p class="ad-reward-desc" id="adRewardDesc">Watching sponsored ad... Reward will be credited automatically.</p>
+          </div>
+
+          <div class="ad-progress-bar-wrap">
+            <div class="ad-progress-fill" id="adProgressFill" style="width: 0%;"></div>
+          </div>
+
+          <button class="ad-claim-action-btn disabled" id="btnClaimAdReward" onclick="collectSimulatedAdReward()">
+            <span>WATCHING AD (5s)...</span>
+          </button>
+        </section>
+
+      </div>

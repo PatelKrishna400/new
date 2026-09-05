@@ -1,0 +1,180 @@
+<div class="page-view" id="pageProfile">
+        
+        <!-- Main Top Profile Card -->
+        <section class="profile-card">
+          
+          <!-- Big Avatar Container with Camera Badge -->
+          <div class="profile-avatar-container">
+            <div class="profile-avatar-large" id="profileLargeAvatar">
+              <!-- Stylized Realistic Portrait Alex Vance -->
+              <svg viewBox="0 0 120 120" class="profile-avatar-svg">
+                <defs>
+                  <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#3b82f6" />
+                    <stop offset="60%" stop-color="#1d4ed8" />
+                    <stop offset="100%" stop-color="#0284c7" />
+                  </linearGradient>
+                  <linearGradient id="pFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fcddec" />
+                    <stop offset="100%" stop-color="#d1d5db" />
+                  </linearGradient>
+                </defs>
+                <rect width="120" height="120" rx="30" fill="#081432"/>
+                <circle cx="60" cy="50" r="28" fill="url(#pFaceGrad)"/>
+                <!-- Sleek Hair -->
+                <path d="M 32 46 C 32 24, 88 24, 88 46 C 82 34, 72 30, 60 30 C 48 30, 38 34, 32 46 Z" fill="#0f172a"/>
+                <path d="M 33 46 Q 30 60 36 66 Q 38 52 40 46 Z" fill="#0f172a"/>
+                <path d="M 87 46 Q 90 60 84 66 Q 82 52 80 46 Z" fill="#0f172a"/>
+                <!-- Eyes & Brows -->
+                <ellipse cx="49" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+                <ellipse cx="71" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+                <circle cx="50" cy="48" r="1" fill="#ffffff"/>
+                <circle cx="72" cy="48" r="1" fill="#ffffff"/>
+                <path d="M 45 42 Q 50 40 54 43" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+                <path d="M 66 43 Q 70 40 75 42" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+                <!-- Nose & Lips -->
+                <path d="M 60 50 L 59 58 L 63 58" stroke="#cbd5e1" stroke-width="1.6" fill="none"/>
+                <path d="M 54 65 Q 60 69 66 65" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <!-- Jacket / Torso -->
+                <path d="M 22 110 C 25 80, 42 76, 60 76 C 78 76, 95 80, 98 110 Z" fill="#1e293b"/>
+                <path d="M 46 76 L 60 96 L 74 76" fill="#2563eb"/>
+              </svg>
+            </div>
+            
+            <!-- Camera Edit Button -->
+            <button class="avatar-camera-btn" id="btnChangeAvatar" onclick="openEditProfileModal()" title="Change photo">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Name & Pencil Edit Button Row -->
+          <div class="profile-name-row">
+            <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
+            <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Handle -->
+          <div class="profile-handle" id="profileHandle">
+            <span class="handle-at">@</span> alex_blue
+          </div>
+
+          <!-- Profile Stats Info Box -->
+          <div class="profile-stats-box">
+            
+            <div class="profile-stat-row">
+              <div class="stat-left">
+                <span class="stat-icon">🪙</span>
+                <span class="stat-label">Coin Balance:</span>
+              </div>
+              <div class="stat-right">
+                <span class="coin-dot">🟡</span>
+                <span class="stat-val" id="profileCoinBalance">0</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-row">
+              <div class="stat-left">
+                <span class="stat-icon">🔥</span>
+                <span class="stat-label">Streak:</span>
+              </div>
+              <div class="stat-right">
+                <span class="stat-val streak-highlight" id="profileStreakVal">0 Days</span>
+              </div>
+            </div>
+
+            <div class="profile-stat-row">
+              <div class="stat-left">
+                <span class="stat-icon">⚡</span>
+                <span class="stat-label">Energy Pool:</span>
+              </div>
+              <div class="stat-right">
+                <span class="stat-val energy-highlight" id="profileEnergyPool">0</span>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- Referral Promo Code & Invite Squad Card -->
+        <section class="fren-squad-card">
+          <div class="squad-badge-pill">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>PROMO CODE & SQUAD INVITE</span>
+          </div>
+
+          <h3 class="squad-title">Invite & Earn +10 Coins Bonus</h3>
+          <p class="squad-desc">Share your unique promo code with friends. When they use your code, you both earn bonus coins!</p>
+
+           <!-- Promo Code Section -->
+           <div class="promo-code-section">
+             <!-- Generated Promo Code Box -->
+             <div class="promo-code-display-box">
+               <div class="promo-code-info">
+                 <span class="promo-label">YOUR PROMO CODE:</span>
+                 <span class="promo-code-val" id="myPromoCodeText">alexvance_7842</span>
+               </div>
+               <button class="promo-copy-btn" id="btnCopyPromoCode" onclick="copyMyPromoCode()">
+                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3">
+                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                 </svg>
+                 <span>Copy Code</span>
+               </button>
+             </div>
+
+             <!-- Enter Friend's Promo Code Box -->
+             <div class="friend-code-redeem-box">
+               <input type="text" id="inputFriendPromoCode" placeholder="Enter Friend's Code (e.g. friend_1234)" class="friend-code-input">
+               <button class="friend-code-btn" onclick="redeemFriendPromoCode()">
+                 <span>Redeem (+10 🪙)</span>
+               </button>
+             </div>
+             <div class="promo-feedback-msg" id="promoFeedbackMsg"></div>
+           </div>
+
+          <button class="squad-invite-btn" onclick="openInviteModal()">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span>Share via Telegram</span>
+          </button>
+        </section>
+
+        <!-- Suggest Box Tab (Directly Below Invitations Tab) -->
+        <section class="suggest-box-banner-card" id="profileSuggestBoxTab" onclick="switchPage('suggestBox')">
+          <div class="suggest-banner-glow"></div>
+          <div class="suggest-banner-left">
+            <div class="suggest-icon-pill">
+              <span class="suggest-emoji">💡</span>
+            </div>
+            <div class="suggest-banner-info">
+              <div class="suggest-banner-badge">
+                <span>FEEDBACK & IDEAS</span>
+              </div>
+              <h3 class="suggest-banner-title">Suggest Box</h3>
+              <p class="suggest-banner-desc">Share feedback, report a bug, or request a feature!</p>
+            </div>
+          </div>
+          <div class="suggest-banner-arrow">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </section>
+
+      </div>
+

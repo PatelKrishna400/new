@@ -1,0 +1,61 @@
+<div class="page-view" id="pageStreak">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#f97316">
+              <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
+            </svg>
+            <span id="streakStatusText">Day 1 of 7</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>🔥 STREAK</span>
+          </div>
+        </div>
+
+        <!-- Hero Streak Card -->
+        <section class="streak-hero-card">
+          <div class="streak-flame-icon-box">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="url(#flameGrad)">
+              <defs>
+                <linearGradient id="flameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fde047" />
+                  <stop offset="40%" stop-color="#f97316" />
+                  <stop offset="100%" stop-color="#ef4444" />
+                </linearGradient>
+              </defs>
+              <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
+            </svg>
+          </div>
+          <h2 class="streak-hero-title" id="streakHeroTitle">0 Day Streak</h2>
+          <p class="streak-hero-subtitle">Check in every 24 hours to earn fuel cells, keys, tickets & scratch cards!</p>
+        </section>
+
+        <!-- 7-Day Rewards Grid -->
+        <div class="streak-calendar-grid" id="streakCalendarGrid">
+          <!-- Dynamically populated 7 days -->
+        </div>
+
+        <!-- Main Claim Button -->
+        <button class="streak-claim-main-btn" id="streakClaimMainBtn" onclick="claimCurrentStreakDay()">
+          <span>🔥 CLAIM DAY 1 REWARD</span>
+        </button>
+
+        <!-- Test Shortcut Helpers -->
+        <div class="mega-test-tools" style="margin-top: 10px;">
+          <button class="test-tool-btn" onclick="testResetStreakCooldown()">[Test] Reset 24h Cooldown</button>
+          <span class="test-tool-dot">•</span>
+          <button class="test-tool-btn" onclick="testSkipStreak24h()">[Test] Skip 24h</button>
+          <span class="test-tool-dot">•</span>
+          <button class="test-tool-btn" onclick="testResetStreakDays()">[Test] Reset Streak</button>
+        </div>
+
+      </div>

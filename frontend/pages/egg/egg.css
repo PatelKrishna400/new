@@ -1,0 +1,442 @@
+/* ==========================================================================
+   PAGE VIEW 13: CYBER EGG HATCHERY MINI-GAME STYLES (16 EGGS SET - MATCH 3)
+   ========================================================================== */
+.egg-incubator-card {
+  background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.22) 0%, rgba(3, 15, 30, 0.95) 75%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  border-radius: var(--radius-xl);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+.egg-incubator-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.egg-badge-tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.egg-remain-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #a7f3d0;
+  background: rgba(4, 47, 46, 0.6);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* 4 Collection Meters Bar */
+.egg-collection-meters-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.egg-collect-item {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 7px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.egg-collect-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+}
+
+.egg-collect-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.egg-collect-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.4px;
+}
+
+.egg-rare-tag {
+  color: #fbbf24;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 7.5px;
+}
+
+.egg-collect-progress {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.egg-meter-pips {
+  display: flex;
+  gap: 3px;
+  margin: 2px 0;
+}
+
+.egg-meter-pips .pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.egg-meter-pips .pip.filled {
+  background: #34d399;
+  border-color: #10b981;
+  box-shadow: 0 0 6px #34d399;
+}
+
+.egg-win-label {
+  font-size: 7.5px;
+  font-weight: 800;
+  color: #6ee7b7;
+  white-space: nowrap;
+}
+
+.egg-win-label.gold {
+  color: #facc15;
+}
+
+/* 16-Egg Interactive Grid */
+.egg-grid-16 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.egg-cell-card {
+  aspect-ratio: 1 / 1;
+  min-height: 68px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.2) 0%, rgba(6, 20, 36, 0.95) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.egg-cell-card:hover, .egg-cell-card:active {
+  transform: translateY(-2px) scale(1.03);
+  border-color: #34d399;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
+
+.egg-cell-card.revealed {
+  background: radial-gradient(circle at 50% 30%, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border-color: rgba(56, 189, 248, 0.5);
+  cursor: default;
+}
+
+.egg-cell-card.hatching {
+  animation: eggCellHatchWobble 0.35s ease forwards;
+}
+
+@keyframes eggCellHatchWobble {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.1) rotate(-8deg); filter: brightness(180%); }
+  70% { transform: scale(1.12) rotate(8deg); filter: brightness(220%); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.egg-shell-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.egg-shell-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.5));
+  transition: transform 0.2s ease;
+}
+
+.egg-cell-card:hover .egg-shell-icon {
+  transform: scale(1.12);
+}
+
+.egg-cost-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 800;
+  color: #6ee7b7;
+  background: rgba(6, 78, 59, 0.6);
+  padding: 1px 5px;
+  border-radius: 99px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.egg-revealed-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  animation: prizePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes prizePop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.egg-prize-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+}
+
+.egg-prize-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 800;
+  color: #f8fafc;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.egg-status-box {
+  background: rgba(3, 8, 22, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #34d399;
+  margin-bottom: 12px;
+  width: 100%;
+  text-align: center;
+}
+
+.egg-actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.egg-action-main-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: #022c22;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.egg-action-main-btn:active {
+  transform: scale(0.97);
+}
+
+.egg-ad-free-btn {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.egg-ad-free-btn:active {
+  transform: scale(0.97);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+/* Milestone Section */
+.rewards-milestone-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rewards-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.rewards-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.rewards-section-subtitle {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.milestone-rewards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reward-milestone-card {
+  background: rgba(8, 19, 44, 0.7);
+  border: 1px solid rgba(30, 70, 160, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+.reward-milestone-card.is-unlocked {
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+}
+
+.reward-milestone-card.is-claimed {
+  border-color: rgba(16, 185, 129, 0.4);
+  opacity: 0.75;
+}
+
+.reward-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reward-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.is-unlocked .reward-icon-box {
+  border-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reward-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.reward-desc {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.reward-claim-btn {
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-primary);
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.reward-claim-btn.active {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #020712;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}
+
+.reward-claim-btn.active:hover {
+  transform: scale(1.05);
+}
+
+.reward-claim-btn.claimed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #10b981;
+  cursor: default;
+}
+
+.reward-claim-btn.locked {
+  background: rgba(15, 23, 42, 0.8);
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: default;
+}

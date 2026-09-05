@@ -1,0 +1,48 @@
+{
+  "rules": {
+    "players": {
+      ".read": true,
+      "$uid": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+      }
+    },
+    "leaderboard": {
+      ".read": true,
+      "$uid": {
+        ".write": true,
+        ".validate": "newData.hasChildren(['name', 'level', 'coins'])"
+      }
+    },
+    "mega_rewards": {
+      ".read": true,
+      ".write": true
+    },
+    "reward_requests": {
+      ".read": true,
+      ".write": true,
+      "$reqId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "suggestions": {
+      ".read": true,
+      ".write": true,
+      "$sugId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "whitelist": {
+      ".read": true,
+      "$uid": {
+        ".write": true
+      }
+    },
+    ".info": {
+      ".read": true
+    }
+  }
+}

@@ -1,0 +1,86 @@
+<div class="page-view" id="pageTasks">
+  <div class="tasks-tab-header">
+    <button class="task-subtab-btn active" id="subtabDaily" onclick="switchTaskSubtab('daily')">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span class="subtab-text">Daily</span>
+      <span class="subtab-badge-pill" id="dailyBadgeCount">9</span>
+    </button>
+
+    <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+      <span class="subtab-text">Telegram</span>
+      <span class="subtab-badge-pill" id="telegramBadgeCount">3</span>
+    </button>
+  </div>
+
+  <div class="tasks-scroll-container" id="tasksListContainer"></div>
+
+  <!-- Task Notes Pop-Up Modal (Interactive Sheet) -->
+  <div class="task-notes-backdrop" id="taskNotesBackdrop" onclick="closeTaskNotesPopup(event)">
+    <div class="task-notes-modal" id="taskNotesModal" onclick="event.stopPropagation()">
+      <div class="task-notes-handle"></div>
+
+      <!-- Header -->
+      <div class="task-notes-header">
+        <div class="task-notes-icon-wrapper" id="taskNotesIconWrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </div>
+        <div class="task-notes-meta">
+          <span class="task-notes-subtag" id="taskNotesSubtag">DAILY QUEST</span>
+          <h3 class="task-notes-title" id="taskNotesTitle">Task Title</h3>
+        </div>
+        <button class="task-notes-close-btn" onclick="closeTaskNotesPopup()" aria-label="Close notes">&times;</button>
+      </div>
+
+      <!-- Liquid Progress Meter in Modal -->
+      <div class="task-notes-progress-box">
+        <div class="task-notes-prog-label-row">
+          <span class="task-notes-prog-lbl">Quest Completion</span>
+          <span class="task-notes-prog-val" id="taskNotesProgVal">0 / 0 (0%)</span>
+        </div>
+        <div class="task-notes-prog-track">
+          <div class="task-notes-prog-liquid" id="taskNotesProgLiquid" style="width: 0%;">
+            <div class="task-notes-prog-wave"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body / Notes Card -->
+      <div class="task-notes-body">
+        <div class="task-notes-section">
+          <div class="task-notes-section-head">
+            <span class="section-icon">📝</span>
+            <span class="section-title">Task Notes & Instructions</span>
+          </div>
+          <p class="task-notes-desc" id="taskNotesDesc">Complete quest objectives to earn your reward.</p>
+        </div>
+
+        <div class="task-notes-reward-card">
+          <div class="reward-card-left">
+            <div class="reward-gift-box">
+              <span class="reward-gift-icon" id="taskNotesRewardIcon">🎴</span>
+            </div>
+            <div class="reward-text-col">
+              <span class="reward-title-lbl">Guaranteed Reward</span>
+              <span class="reward-val-highlight" id="taskNotesRewardVal">1 Scratch Card</span>
+            </div>
+          </div>
+          <span class="reward-ready-tag" id="taskNotesStatusTag">IN PROGRESS</span>
+        </div>
+      </div>
+
+      <!-- Action Button Area -->
+      <div class="task-notes-actions" id="taskNotesActions">
+        <!-- Injected dynamically: Go to Quest / Claim 🎴 -->
+      </div>
+    </div>
+  </div>
+</div>

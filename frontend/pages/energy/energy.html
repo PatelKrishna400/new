@@ -1,0 +1,231 @@
+<div class="page-view" id="pageEnergy">
+        <section class="energy-gauge-section">
+          <div class="gauge-wrapper" id="energyGaugeWrapper">
+            <svg class="gauge-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="gaugeCyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#06b6d4" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="82" class="gauge-track-circle" />
+              <circle cx="100" cy="100" r="82" class="gauge-progress-circle" id="gaugeProgressCircle" />
+            </svg>
+
+            <div class="gauge-inner-core" id="gaugeCore">
+              <div class="gauge-core-ring"></div>
+              <svg class="gauge-lightning" viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.15)"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="ep-counter-pill" id="epCounterPill">
+            <span class="ep-badge-icon">0.00</span>
+            <span class="ep-label">EP</span>
+          </div>
+        </section>
+
+        <section class="energy-metrics-row">
+          <div class="metric-card timer-metric-card">
+            <div class="metric-icon-box timer-icon-box">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="13" r="8"/>
+                <path d="M12 9v4l2 2"/>
+                <path d="M5 3L2 6"/>
+                <path d="M22 6l-3-3"/>
+                <path d="M12 2v3"/>
+              </svg>
+            </div>
+            <div class="metric-text-box">
+              <span class="metric-value timer-val" id="fuelTimerVal">00h 00m</span>
+            </div>
+          </div>
+
+          <div class="metric-card rate-metric-card">
+            <div class="metric-icon-box rate-icon-box">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f43f5e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div class="metric-text-box">
+              <span class="metric-value rate-val" id="fuelRateVal">0.01 <span class="rate-unit">/ sec</span></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="fuel-section-header">
+          <div class="fuel-header-left">
+            <span class="fuel-sparkle">✨</span>
+            <h2 class="fuel-title">Reward Fuel Cells</h2>
+          </div>
+          <span class="fuel-header-right">Watch Ads to Unlock Fuel</span>
+        </section>
+
+        <section class="fuel-grid">
+          <div class="fuel-card green-fuel-card" id="fuelCardGreen">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box green-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                  <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                  <rect x="6" y="7" width="4" height="4" rx="1"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge green-badge-pill" id="greenCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name">Green Fuel</h3>
+              <p class="fuel-timer-bonus">+5 Min Timer</p>
+              <p class="fuel-meta-desc">Unlimited ad fuel</p>
+            </div>
+            <button class="fuel-action-btn ad-blue-btn" id="btnUseGreenFuel" onclick="handleFuelAction('green')">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                <polyline points="17 2 12 7 7 2"/>
+              </svg>
+              <span id="btnGreenText">Watch Ad (+1 Fuel)</span>
+            </button>
+          </div>
+
+          <div class="fuel-card yellow-fuel-card" id="fuelCardYellow">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box yellow-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                  <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                  <rect x="6" y="7" width="4" height="4" rx="1"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge yellow-badge-pill" id="yellowCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name">Yellow Fuel</h3>
+              <p class="fuel-timer-bonus">+15 Min Timer</p>
+              <p class="fuel-meta-desc">Ad unlock: 1h cooldown</p>
+            </div>
+            <button class="fuel-action-btn ad-blue-btn" id="btnYellowAd" onclick="handleFuelAction('yellow')">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                <polyline points="17 2 12 7 7 2"/>
+              </svg>
+              <span id="btnYellowText">Watch Ad (+1 Fuel)</span>
+            </button>
+          </div>
+
+          <div class="fuel-card orange-fuel-card" id="fuelCardOrange">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box orange-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                  <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                  <rect x="6" y="7" width="4" height="4" rx="1"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge orange-badge-pill" id="orangeCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name">Orange Fuel</h3>
+              <p class="fuel-timer-bonus">+30 Min Timer</p>
+              <p class="fuel-meta-desc">Ad unlock: 10h cooldown</p>
+            </div>
+            <button class="fuel-action-btn ad-blue-btn" id="btnOrangeAd" onclick="handleFuelAction('orange')">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                <polyline points="17 2 12 7 7 2"/>
+              </svg>
+              <span id="btnOrangeText">Watch Ad (+1 Fuel)</span>
+            </button>
+          </div>
+
+          <div class="fuel-card red-fuel-card" id="fuelCardRed">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box red-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                  <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                  <rect x="6" y="7" width="4" height="4" rx="1"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge red-badge-pill" id="redCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name">Red Fuel</h3>
+              <p class="fuel-timer-bonus">+0.01 EP / Sec Rate</p>
+              <p class="fuel-meta-desc">Ad unlock: 24h cooldown</p>
+            </div>
+            <button class="fuel-action-btn ad-blue-btn" id="btnRedAd" onclick="handleFuelAction('red')">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                <polyline points="17 2 12 7 7 2"/>
+              </svg>
+              <span id="btnRedText">Watch Ad (+1 Fuel)</span>
+            </button>
+          </div>
+
+          <!-- Pink Boost Fuel Card (*2 Boost for 10 min, 1h Cooldown, 3 Ads = +1 Fuel) -->
+          <div class="fuel-card pink-fuel-card" id="fuelCardPink">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box pink-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f472b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge pink-badge-pill" id="pinkCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name" style="color: #f472b6;">Pink Fuel</h3>
+              <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Boost (10 Min)</p>
+              <div class="boost-status-container" id="pinkStatusInfo">
+                <span class="boost-ready-badge" id="pinkStatusBadge">Ready • 1h Cooldown</span>
+              </div>
+              <p class="fuel-meta-desc">3 Ads = +1 Fuel Cell</p>
+            </div>
+            <div class="fuel-card-actions-col">
+              <button class="fuel-action-btn pink-btn" id="btnPinkAction" onclick="handlePinkAction()">
+                <span id="btnPinkText">⚡ Use 2x Boost</span>
+              </button>
+              <button class="fuel-action-btn cd-reduce-btn" id="btnPinkReduceCd" onclick="reduceCooldownWithAd('pink')" style="display: none;">
+                <span>🎬 -30m Cooldown</span>
+              </button>
+              <button class="fuel-action-btn ad-sub-btn" id="btnPinkAdFarming" onclick="watchAdForBoostFuel('pink')">
+                <span>🎬 Watch Ad (<span id="pinkAdCountText">0/3</span>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Purple Boost Fuel Card (*5 Boost for 10 min, 5h Cooldown, 5 Ads = +1 Fuel) -->
+          <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box purple-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 3v9l6.36 6.36"/>
+                  <circle cx="12" cy="12" r="2.5" fill="#c084fc"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge purple-badge-pill" id="purpleCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name" style="color: #c084fc;">Purple Fuel</h3>
+              <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Boost (10 Min)</p>
+              <div class="boost-status-container" id="purpleStatusInfo">
+                <span class="boost-ready-badge" id="purpleStatusBadge">Ready • 5h Cooldown</span>
+              </div>
+              <p class="fuel-meta-desc">5 Ads = +1 Fuel Cell</p>
+            </div>
+            <div class="fuel-card-actions-col">
+              <button class="fuel-action-btn purple-btn" id="btnPurpleAction" onclick="handlePurpleAction()">
+                <span id="btnPurpleText">🔥 Use 5x Boost</span>
+              </button>
+              <button class="fuel-action-btn cd-reduce-btn" id="btnPurpleReduceCd" onclick="reduceCooldownWithAd('purple')" style="display: none;">
+                <span>🎬 -30m Cooldown</span>
+              </button>
+              <button class="fuel-action-btn ad-sub-btn" id="btnPurpleAdFarming" onclick="watchAdForBoostFuel('purple')">
+                <span>🎬 Watch Ad (<span id="purpleAdCountText">0/5</span>)</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>

@@ -1,0 +1,112 @@
+<div class="page-view" id="pageEgg">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <span>🥚 16-EGG HATCHERY</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>🥚 <span id="eggPageEggsCount">0</span> Eggs</span>
+          </div>
+        </div>
+
+        <!-- Egg Coins Balance Strip -->
+        <div class="spin-balance-pill-strip">
+          <div class="spin-balance-pill-inner egg-coin-pill">
+            <span class="ticket-icon-glow">🥚</span>
+            <span class="ticket-balance-label">EGG COIN BALANCE:</span>
+            <span class="ticket-balance-val green" id="eggAvailableCoins">0 Eggs</span>
+          </div>
+        </div>
+
+        <!-- Egg Hatch Arena Card -->
+        <section class="egg-incubator-card">
+          <!-- Header Banner -->
+          <div class="egg-incubator-header">
+            <span class="egg-badge-tag">HATCH 16 EGGS • 1 EGG COIN PER HATCH</span>
+            <span class="egg-remain-badge" id="eggRemainingGridText">16 / 16 Remaining</span>
+          </div>
+
+          <!-- 4 Collection Meters (Collect 3 of any item to win) -->
+          <div class="egg-collection-meters-bar">
+            <!-- Keys: 3 -> 1 Key -->
+            <div class="egg-collect-item" id="eggMeterKey">
+              <div class="egg-collect-icon">🔑</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">KEYS</span>
+                <span class="egg-collect-progress"><strong id="eggCountKey">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsKey">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Key</span>
+            </div>
+
+            <!-- Tickets: 3 -> 1 Ticket -->
+            <div class="egg-collect-item" id="eggMeterTicket">
+              <div class="egg-collect-icon">🎟️</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">TICKETS</span>
+                <span class="egg-collect-progress"><strong id="eggCountTicket">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsTicket">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Tix</span>
+            </div>
+
+            <!-- Cards: 3 -> 1 Card -->
+            <div class="egg-collect-item" id="eggMeterCard">
+              <div class="egg-collect-icon">🎴</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">CARDS</span>
+                <span class="egg-collect-progress"><strong id="eggCountCard">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsCard">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Card</span>
+            </div>
+
+            <!-- Coins: 3 -> 10 Coins (2% prob) -->
+            <div class="egg-collect-item" id="eggMeterCoin">
+              <div class="egg-collect-icon">🪙</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">COIN <em class="egg-rare-tag">2%</em></span>
+                <span class="egg-collect-progress"><strong id="eggCountCoin">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsCoin">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label gold">Win 10 Coin</span>
+            </div>
+          </div>
+
+          <!-- 16-Egg Interactive Grid (4x4) -->
+          <div class="egg-grid-16" id="eggGrid16">
+            <!-- 16 Eggs dynamically populated by reward.js -->
+          </div>
+
+          <div class="egg-status-box" id="eggPageStatusBox">
+            <span id="eggStatusText">Tap any egg to hatch (1 Egg Coin). First to collect 3 wins & reshuffles!</span>
+          </div>
+
+          <div class="egg-actions-wrapper">
+            <button class="egg-action-main-btn" id="btnReshuffleEggs" onclick="shuffleEggs16(true)">
+              <span>🔄 RESHUFFLE 16 EGGS</span>
+            </button>
+            <button class="egg-ad-free-btn" id="btnPageFreeEggAd" onclick="claimFreeEggByAd()">
+              <span>🎬 GET 1 EGG (WATCH AD)</span>
+            </button>
+          </div>
+        </section>
+
+      </div>

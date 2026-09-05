@@ -1,0 +1,56 @@
+<div class="page-view" id="pageScratch">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <span>🎟️ SCRATCH & WIN</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>🎴 <span id="scratchCardsVal">0</span> Cards</span>
+          </div>
+        </div>
+
+        <!-- Scratch Cards Balance Strip -->
+        <div class="spin-balance-pill-strip">
+          <div class="spin-balance-pill-inner scratch-card-pill">
+            <span class="ticket-icon-glow">🎴</span>
+            <span class="ticket-balance-label">SCRATCH CARDS:</span>
+            <span class="ticket-balance-val pink" id="scratchAvailableCards">0 Cards</span>
+          </div>
+        </div>
+
+        <!-- Scratch Game Arena Card -->
+        <section class="scratch-arena-card">
+          <div class="scratch-card-header">
+            <span class="scratch-badge-tag">MATCH 3 TO WIN JACKPOT</span>
+            <span class="scratch-remain-badge" id="scratchRevealedText">0 / 9 Scratched</span>
+          </div>
+
+          <!-- 3x3 Interactive Scratch Grid with Gray Tap Foil Cover -->
+          <div class="scratch-grid-9" id="scratchGrid9">
+            <!-- 9 Tiles populated with gray tap covers by reward.js -->
+          </div>
+
+          <div class="scratch-status-box" id="scratchStatusBox">
+            <span id="scratchStatusText">Tap or scratch gray covers to burn flames & reveal rewards!</span>
+          </div>
+
+          <div class="scratch-actions-wrapper">
+            <button class="scratch-action-main-btn" id="btnNewScratchCard" onclick="resetScratchCard(true)">
+              <span>🎴 NEW SCRATCH CARD (1 CARD)</span>
+            </button>
+            <button class="scratch-ad-buy-btn" id="btnScratchAdBuy" onclick="buyScratchCardWithAd()">
+              <span>🎬 GET 1 CARD (WATCH AD)</span>
+            </button>
+          </div>
+        </section>
+
+      </div>

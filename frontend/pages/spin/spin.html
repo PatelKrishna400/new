@@ -1,0 +1,171 @@
+<div class="page-view" id="pageSpin">
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+
+    <div class="xp-timer-pill">
+      <span>🎡 LUCKY SPINNER</span>
+    </div>
+
+    <div class="suggest-status-pill" style="pointer-events: none;">
+      <span class="suggest-live-dot"></span>
+      <span>Ready</span>
+    </div>
+  </div>
+
+  <!-- Spin Wheel Game Card -->
+  <section class="spin-arena-card">
+    <!-- Top Pointer Arrow (Points to 12 o'clock winning slice) -->
+    <div class="spin-pointer-arrow">
+      <svg viewBox="0 0 34 42" width="34" height="42" fill="none">
+        <path d="M17 40 L4 12 Q2 6 7 4 Q17 1 27 4 Q32 6 30 12 Z" fill="url(#pointerGrad)" stroke="#ffffff" stroke-width="2"/>
+        <circle cx="17" cy="12" r="5" fill="#0f172a"/>
+        <circle cx="17" cy="12" r="2.5" fill="#facc15"/>
+        <defs>
+          <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fde047"/>
+            <stop offset="50%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Spin Wheel Frame -->
+    <div class="spin-wheel-frame">
+      <div class="spin-wheel-disc" id="spinWheelCircle">
+        <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
+          <defs>
+            <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f59e0b"/>
+              <stop offset="50%" stop-color="#d97706"/>
+              <stop offset="100%" stop-color="#78350f"/>
+            </linearGradient>
+            <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="50%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </linearGradient>
+            <filter id="glowRim" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+
+          <!-- Outer Glow Rim -->
+          <circle cx="150" cy="150" r="146" fill="#030816" stroke="url(#rimGrad)" stroke-width="6" filter="url(#glowRim)"/>
+
+          <!-- 8 Exact Wedges (45 deg each), centered so slice 0 is at 12 o'clock (-22.5 to +22.5 deg) -->
+          <!-- Slice 0: Try Again (0 deg / 12 o'clock) -->
+          <path d="M 150 150 L 96.1 19.3 A 142 142 0 0 1 203.9 19.3 Z" fill="#1e293b" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 1: 1 Green Fuel (45 deg / 1:30) -->
+          <path d="M 150 150 L 203.9 19.3 A 142 142 0 0 1 280.7 96.1 Z" fill="#065f46" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 2: 1 Yellow Fuel (90 deg / 3 o'clock) -->
+          <path d="M 150 150 L 280.7 96.1 A 142 142 0 0 1 280.7 203.9 Z" fill="#854d0e" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 3: 1 Winning Key (135 deg / 4:30) -->
+          <path d="M 150 150 L 280.7 203.9 A 142 142 0 0 1 203.9 280.7 Z" fill="#581c87" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 4: 10 Energy (180 deg / 6 o'clock) -->
+          <path d="M 150 150 L 203.9 280.7 A 142 142 0 0 1 96.1 280.7 Z" fill="#0c4a6e" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 5: 1 Cyber Egg (225 deg / 7:30) -->
+          <path d="M 150 150 L 96.1 280.7 A 142 142 0 0 1 19.3 203.9 Z" fill="#134e4a" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Slice 6: 10 Coins Jackpot 2% (270 deg / 9 o'clock) -->
+          <path d="M 150 150 L 19.3 203.9 A 142 142 0 0 1 19.3 96.1 Z" fill="url(#sliceJackpotGrad)" stroke="#fbbf24" stroke-width="2"/>
+          <!-- Slice 7: Try Again (315 deg / 10:30) -->
+          <path d="M 150 150 L 19.3 96.1 A 142 142 0 0 1 96.1 19.3 Z" fill="#334155" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+
+          <!-- Slice 0 Label: Try Again (0 deg) -->
+          <g transform="translate(150, 150) rotate(0) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">❌</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+          </g>
+
+          <!-- Slice 1 Label: 1 Green (45 deg) -->
+          <g transform="translate(150, 150) rotate(45) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">🟢</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#34d399" font-family="'Plus Jakarta Sans', sans-serif">1 GREEN</text>
+          </g>
+
+          <!-- Slice 2 Label: 1 Yellow (90 deg) -->
+          <g transform="translate(150, 150) rotate(90) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">🟡</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#fbbf24" font-family="'Plus Jakarta Sans', sans-serif">1 YELLOW</text>
+          </g>
+
+          <!-- Slice 3 Label: 1 Key (135 deg) -->
+          <g transform="translate(150, 150) rotate(135) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">🔑</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#c084fc" font-family="'Plus Jakarta Sans', sans-serif">1 KEY</text>
+          </g>
+
+          <!-- Slice 4 Label: 10 Energy (180 deg) -->
+          <g transform="translate(150, 150) rotate(180) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">⚡</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#38bdf8" font-family="'Plus Jakarta Sans', sans-serif">10 ENERGY</text>
+          </g>
+
+          <!-- Slice 5 Label: 1 Egg (225 deg) -->
+          <g transform="translate(150, 150) rotate(225) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">🥚</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2dd4bf" font-family="'Plus Jakarta Sans', sans-serif">1 EGG</text>
+          </g>
+
+          <!-- Slice 6 Label: 10 Coins (270 deg) -->
+          <g transform="translate(150, 150) rotate(270) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">🪙</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="900" fill="#fde047" font-family="'Plus Jakarta Sans', sans-serif">10 COINS</text>
+            <text y="28" text-anchor="middle" font-size="8" font-weight="800" fill="#fef08a" font-family="'Plus Jakarta Sans', sans-serif">(JACKPOT)</text>
+          </g>
+
+          <!-- Slice 7 Label: Try Again (315 deg) -->
+          <g transform="translate(150, 150) rotate(315) translate(0, -95)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="14">❌</text>
+            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+          </g>
+
+          <!-- Golden Studs around the Rim (16 rivets) -->
+          <g id="rimStuds" fill="#fde047">
+            <circle cx="150" cy="11" r="3.5"/>
+            <circle cx="203" cy="22" r="3.5"/>
+            <circle cx="248" cy="52" r="3.5"/>
+            <circle cx="278" cy="97" r="3.5"/>
+            <circle cx="289" cy="150" r="3.5"/>
+            <circle cx="278" cy="203" r="3.5"/>
+            <circle cx="248" cy="248" r="3.5"/>
+            <circle cx="203" cy="278" r="3.5"/>
+            <circle cx="150" cy="289" r="3.5"/>
+            <circle cx="97" cy="278" r="3.5"/>
+            <circle cx="52" cy="248" r="3.5"/>
+            <circle cx="22" cy="203" r="3.5"/>
+            <circle cx="11" cy="150" r="3.5"/>
+            <circle cx="22" cy="97" r="3.5"/>
+            <circle cx="52" cy="52" r="3.5"/>
+            <circle cx="97" cy="22" r="3.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Center Hub -->
+      <div class="spin-wheel-center-hub" onclick="spinLuckyWheel()">
+        <div class="hub-ring"></div>
+        <span>SPIN</span>
+      </div>
+    </div>
+
+    <!-- Spin Result Display Box -->
+    <div class="spin-result-display" id="spinResultBox">
+      <span id="spinResultText">Tap SPIN to spin the lucky wheel and win fuels, keys, eggs & coins!</span>
+    </div>
+
+    <!-- Spin Actions Wrapper -->
+    <div class="spin-actions-wrapper">
+      <button class="spin-action-main-btn" id="btnSpinWheel" onclick="spinLuckyWheel()">
+        <span>🎡 SPIN THE WHEEL</span>
+      </button>
+    </div>
+  </section>
+</div>

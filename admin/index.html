@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mega Rewards Admin Portal - Energy Tap Reactor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+
+  <!-- Mobile Live Simulator Inline Styles -->
+  <style>
+    /* Live Phone Simulator Container */
+    .simulator-card-wrapper {
+      background: rgba(6, 14, 36, 0.7);
+      border: 1.5px solid rgba(30, 68, 140, 0.45);
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      backdrop-filter: blur(14px);
+    }
+
+    .sim-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sim-phone-frame {
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto;
+      background: #020714;
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 22px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(14, 165, 233, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sim-phone-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(25, 55, 120, 0.4);
+    }
+
+    .sim-phone-notch {
+      width: 50px;
+      height: 4px;
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 99px;
+    }
+
+    .sim-mock-card {
+      background: linear-gradient(135deg, rgba(8, 20, 52, 0.9) 0%, rgba(4, 11, 30, 0.96) 100%);
+      border: 1.5px solid rgba(30, 64, 130, 0.55);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    .sim-media-banner {
+      height: 120px;
+      background: #06112c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sim-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sim-fallback-icon {
+      font-size: 38px;
+      filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.6));
+    }
+
+    .sim-tag-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: var(--neon-cyan);
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: var(--radius-pill);
+    }
+
+    .sim-pill-val {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .sim-card-body {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sim-cat-lbl {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+    }
+
+    .sim-title-lbl {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sim-btn-redeem {
+      margin-top: 6px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: 1px solid #34d399;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="admin-navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="brand-title-group">
+          <h1 class="brand-title">
+            <span>MEGA REWARDS ADMIN</span>
+            <span class="brand-badge">PORTAL v2.0</span>
+          </h1>
+          <span class="brand-subtitle">Energy Tap Reactor • 9 Category Storefront Management</span>
+        </div>
+      </div>
+
+      <!-- Navigation Section Links -->
+      <div class="admin-subnav-links">
+        <a href="index.html" class="subnav-link-btn active" title="Go to Mega Rewards Inventory">
+          <span>👑 Rewards Store</span>
+        </a>
+        <a href="users.html" class="subnav-link-btn" title="Users & Requests Management">
+          <span>👥 Users & Requests</span>
+        </a>
+      </div>
+
+      <div class="nav-status-group">
+        <div class="cloud-sync-chip" id="cloudSyncChip" title="Firebase Realtime Database Status">
+          <span class="cloud-dot"></span>
+          <span id="cloudStatusText">Connecting...</span>
+        </div>
+
+        <a href="../frontend/index.html" class="app-portal-link" target="_blank" title="Launch Player App">
+          <span>Open Mini App</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Admin Dashboard Content -->
+  <main class="admin-main-wrapper">
+
+    <!-- 4 Key Metrics Overview -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);">
+          👑
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Total Rewards</span>
+          <span class="metric-val" id="metricTotalRewards">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4);">
+          🗂️
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Active Categories</span>
+          <span class="metric-val" id="metricActiveCats">0 / 9</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">
+          💎
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Inventory Diamond Value</span>
+          <span class="metric-val" id="metricTotalDiamonds">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
+          📦
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Total Stock Units</span>
+          <span class="metric-val" id="metricInStock">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two-Column Form & Inventory Grid -->
+    <section class="dashboard-columns-grid">
+
+      <!-- LEFT COLUMN: ADD / EDIT REWARD FORM -->
+      <aside class="admin-card">
+        <div class="card-header-row">
+          <div class="card-title-group">
+            <span class="card-title-icon">✨</span>
+            <div>
+              <h2 class="card-heading">Add Mega Reward</h2>
+              <span class="card-subtext">Upload reward item to cloud & player store</span>
+            </div>
+          </div>
+          <button type="button" class="btn-tool" onclick="resetForm()" title="Clear form">Reset</button>
+        </div>
+
+        <form id="rewardForm" class="form-container">
+
+          <!-- 1. Category Selector (All 9 Categories) -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>Select Category (1 of 9)</span>
+              <span class="req">*Required</span>
+            </label>
+            <div class="category-chips-grid" id="categoryChipsContainer">
+              <!-- Populated by admin.js -->
+            </div>
+          </div>
+
+          <!-- 2. Reward Title -->
+          <div class="form-group">
+            <label class="form-label" for="rewardTitle">
+              <span>Reward Title / Product Name</span>
+              <span class="req">*</span>
+            </label>
+            <input type="text" id="rewardTitle" class="form-input" placeholder="e.g. Amazon $100 Digital Gift Card" required>
+          </div>
+
+          <!-- 3. Price in Diamonds & Cash Value -->
+          <div class="input-row-2">
+            <div class="form-group">
+              <label class="form-label" for="rewardDiamonds">
+                <span>Diamond Price 💎</span>
+                <span class="req">*</span>
+              </label>
+              <input type="number" id="rewardDiamonds" class="form-input" placeholder="500" min="1" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rewardCashValue">
+                <span>Cash Equivalent</span>
+              </label>
+              <input type="text" id="rewardCashValue" class="form-input" placeholder="e.g. $50 or €45">
+            </div>
+          </div>
+
+          <!-- 4. Stock & Badge Tag -->
+          <div class="input-row-2">
+            <div class="form-group">
+              <label class="form-label" for="rewardStock">
+                <span>Available Stock</span>
+                <span class="req">*</span>
+              </label>
+              <input type="number" id="rewardStock" class="form-input" placeholder="10" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rewardTag">
+                <span>Badge Tag</span>
+              </label>
+              <select id="rewardTag" class="form-select">
+                <option value="HOT">🔥 HOT</option>
+                <option value="FEATURED" selected>⭐ FEATURED</option>
+                <option value="LIMITED">⏳ LIMITED</option>
+                <option value="BESTSELLER">🏆 BESTSELLER</option>
+                <option value="VIP ONLY">👑 VIP ONLY</option>
+                <option value="NEW">✨ NEW</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 5. Minimum Level Required -->
+          <div class="form-group">
+            <label class="form-label" for="rewardLevelReq">
+              <span>Player Unlock Level Requirement</span>
+            </label>
+            <input type="number" id="rewardLevelReq" class="form-input" placeholder="e.g. Level 5 (0 = No Level Req)" min="0" value="0">
+          </div>
+
+          <!-- 6. Image URL & Local File Upload -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>Reward Image (URL or Local File)</span>
+            </label>
+            <div class="image-preview-box">
+              <img id="previewImg" class="preview-img" alt="Live Preview">
+              <div id="previewPlaceholder" class="preview-placeholder">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Image preview will appear here</span>
+              </div>
+            </div>
+
+            <div class="image-input-options" style="margin-top: 6px;">
+              <input type="url" id="rewardImageUrl" class="form-input" placeholder="Paste image URL (https://...)" style="flex: 1;">
+              <label class="btn-file-upload">
+                <input type="file" id="rewardImageFile" accept="image/*" style="display: none;">
+                <span>📁 Browse File</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 7. Detailed Description -->
+          <div class="form-group">
+            <label class="form-label" for="rewardDesc">
+              <span>Description & Redemption Details</span>
+            </label>
+            <textarea id="rewardDesc" class="form-textarea" placeholder="Explain the product specifications, voucher terms, and delivery instructions..."></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-actions-row">
+            <button type="submit" class="btn-primary-upload">
+              <span>✨</span>
+              <span id="submitBtnText">Upload Mega Reward to Cloud</span>
+            </button>
+            <button type="button" class="btn-secondary-reset" onclick="resetForm()">Clear</button>
+          </div>
+
+        </form>
+
+        <!-- Live In-App Mobile Preview Simulator -->
+        <div class="simulator-card-wrapper" style="margin-top: 8px;">
+          <div class="sim-header-row">
+            <span>📱 Mini App Live Preview</span>
+            <span style="color: var(--text-muted); font-size: 10px;">Exact Player View</span>
+          </div>
+
+          <div class="sim-phone-frame">
+            <div class="sim-phone-top">
+              <span style="font-size: 9.5px; color: var(--text-secondary);">Energy Tap Mini App</span>
+              <div class="sim-phone-notch"></div>
+              <span style="font-size: 9.5px; color: var(--neon-cyan);">100%</span>
+            </div>
+
+            <div class="sim-mock-card">
+              <div class="sim-media-banner" id="simMediaBox">
+                <span class="sim-fallback-icon">🎁</span>
+              </div>
+              <div class="sim-tag-badge" id="simTag">HOT</div>
+              <div class="sim-pill-val">💎 <span id="simDiamonds">500</span></div>
+
+              <div class="sim-card-body">
+                <span class="sim-cat-lbl" id="simCategory">🎁 Gift Card</span>
+                <span class="sim-title-lbl" id="simTitle">Amazon $100 Digital Voucher</span>
+                <button class="sim-btn-redeem">Redeem with Diamonds</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT COLUMN: INVENTORY MANAGEMENT & REWARD LIST -->
+      <section class="inventory-container">
+
+        <!-- Toolbar: Search, Filters, Seed & JSON Export/Import -->
+        <div class="inventory-toolbar">
+          <div class="toolbar-top-row">
+            <div style="flex: 1; max-width: 320px; position: relative;">
+              <input type="text" id="inventorySearch" class="form-input" placeholder="🔍 Search rewards by keyword..." style="padding-left: 12px;">
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn-tool btn-seed" onclick="seedSampleRewards()" title="Load 10 realistic sample rewards across all 9 categories">
+                <span>⚡ Seed Sample Rewards</span>
+              </button>
+              <button class="btn-tool" onclick="exportRewardsJson()" title="Export JSON backup">
+                <span>📥 Export JSON</span>
+              </button>
+              <button class="btn-tool" onclick="triggerImportFile()" title="Import JSON backup">
+                <span>📤 Import JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filter Bar (All + 9 Category Tabs) -->
+          <div class="category-filter-scroll" id="categoryFilterBar">
+            <!-- Populated by admin.js -->
+          </div>
+        </div>
+
+        <!-- Cards Grid Container -->
+        <div class="rewards-cards-grid" id="rewardsGrid">
+          <!-- Populated dynamically by admin.js -->
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <!-- Firebase Cloud SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <!-- Admin Controller -->
+  <script src="admin.js"></script>
+</body>
+</html>

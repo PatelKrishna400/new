@@ -1,0 +1,996 @@
+/* ==========================================================================
+   PAGE VIEW 3: TASKS & QUESTS (pages/tasks/tasks.css)
+   - Fixed Uniform Tab Size (58px Height, styled like Mega Reward page)
+   - Numeric present value text removed from the tab
+   - Left-to-right animated Water / Liquid Color Fill based on progress value
+   - Interactive Task Notes Pop-Up Modal on tab click
+   - Scratch Card Reward & Emoji Burst Animation on Claim
+   ========================================================================== */
+
+#pageTasks {
+  padding: 0 10px 12px 10px !important;
+  gap: 8px !important;
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  max-height: 100%;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
+/* ==========================================================================
+   SEGMENTED SUBTAB SWITCHER (DAILY / TELEGRAM)
+   ========================================================================== */
+.tasks-tab-header {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(4, 9, 25, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(25, 55, 120, 0.5);
+  border-radius: 14px;
+  padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.task-subtab-btn {
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.task-subtab-btn:hover {
+  color: #ffffff;
+}
+
+/* Active Daily Subtab */
+.task-subtab-btn.active#subtabDaily {
+  background: linear-gradient(135deg, #00d2ff 0%, #0070f3 100%);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(0, 210, 255, 0.45);
+}
+
+/* Active Telegram Subtab */
+.task-subtab-btn.active#subtabTelegram {
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
+}
+
+.subtab-icon {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+}
+
+.subtab-badge-pill {
+  background: rgba(3, 8, 22, 0.65);
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* ==========================================================================
+   TASKS SCROLL CONTAINER (Optimized for instant load & smooth scrolling)
+   ========================================================================== */
+.tasks-scroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: visible !important;
+  overflow-x: hidden;
+  padding-bottom: 24px;
+  min-height: min-content;
+  contain: content;
+}
+
+/* ==========================================================================
+   FIXED-SIZE DECORATED TASK TAB CARD (58px Height, styled like Mega Reward)
+   ========================================================================== */
+.task-decorated-tab-card {
+  position: relative;
+  height: 58px;
+  min-height: 58px;
+  max-height: 58px;
+  background: linear-gradient(135deg, rgba(8, 20, 52, 0.9) 0%, rgba(4, 11, 30, 0.96) 100%);
+  border: 1.5px solid rgba(30, 64, 130, 0.45);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px 0 0;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, max-height 0.38s ease, opacity 0.38s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+.task-decorated-tab-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.65);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 14px rgba(14, 165, 233, 0.2);
+}
+
+.task-decorated-tab-card:active {
+  transform: scale(0.985);
+}
+
+/* Category Accent Borders */
+.task-cyan { border-color: rgba(6, 182, 212, 0.35); }
+.task-cyan:hover { border-color: rgba(6, 182, 212, 0.75); }
+
+.task-blue { border-color: rgba(37, 99, 235, 0.4); }
+.task-blue:hover { border-color: rgba(56, 189, 248, 0.75); }
+
+.task-green { border-color: rgba(16, 185, 129, 0.35); }
+.task-green:hover { border-color: rgba(16, 185, 129, 0.75); }
+
+.task-yellow { border-color: rgba(245, 158, 11, 0.35); }
+.task-yellow:hover { border-color: rgba(245, 158, 11, 0.75); }
+
+.task-orange { border-color: rgba(249, 115, 22, 0.35); }
+.task-orange:hover { border-color: rgba(249, 115, 22, 0.75); }
+
+.task-red { border-color: rgba(239, 68, 68, 0.35); }
+.task-red:hover { border-color: rgba(239, 68, 68, 0.75); }
+
+.task-purple { border-color: rgba(168, 85, 247, 0.35); }
+.task-purple:hover { border-color: rgba(168, 85, 247, 0.75); }
+
+.task-pink { border-color: rgba(236, 72, 153, 0.35); }
+.task-pink:hover { border-color: rgba(236, 72, 153, 0.75); }
+
+/* ==========================================================================
+   WATER / LIQUID COLOR FILL IN TAB (LEFT TO RIGHT BASED ON PROGRESS VALUE)
+   ========================================================================== */
+.task-liquid-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 14px;
+  z-index: 1;
+}
+
+.task-liquid-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  transition: width 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(90deg, 
+    rgba(6, 182, 212, 0.18) 0%, 
+    rgba(14, 165, 233, 0.3) 70%, 
+    rgba(56, 189, 248, 0.52) 100%
+  );
+  overflow: visible;
+}
+
+/* Liquid Theme Variations & Tab Single Glow Color (Strictly 1 Color Per Tab) */
+.liquid-cyan, .task-cyan {
+  --glow-color: #00e5ff;
+}
+.liquid-cyan .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.16) 0%, rgba(14, 165, 233, 0.3) 75%, rgba(56, 189, 248, 0.55) 100%);
+}
+
+.liquid-blue, .task-blue {
+  --glow-color: #38bdf8;
+}
+.liquid-blue .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(30, 64, 175, 0.18) 0%, rgba(37, 99, 235, 0.32) 75%, rgba(96, 165, 250, 0.55) 100%);
+}
+
+.liquid-green, .task-green {
+  --glow-color: #10b981;
+}
+.liquid-green .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(6, 95, 70, 0.18) 0%, rgba(16, 185, 129, 0.32) 75%, rgba(52, 211, 153, 0.55) 100%);
+}
+
+.liquid-yellow, .task-yellow {
+  --glow-color: #fbbf24;
+}
+.liquid-yellow .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(146, 64, 14, 0.18) 0%, rgba(245, 158, 11, 0.32) 75%, rgba(251, 191, 36, 0.55) 100%);
+}
+
+.liquid-orange, .task-orange {
+  --glow-color: #f97316;
+}
+.liquid-orange .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(154, 52, 18, 0.18) 0%, rgba(249, 115, 22, 0.32) 75%, rgba(251, 146, 60, 0.55) 100%);
+}
+
+.liquid-red, .task-red {
+  --glow-color: #ef4444;
+}
+.liquid-red .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(153, 27, 27, 0.18) 0%, rgba(239, 68, 68, 0.32) 75%, rgba(248, 113, 113, 0.55) 100%);
+}
+
+.liquid-purple, .task-purple {
+  --glow-color: #a855f7;
+}
+.liquid-purple .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(107, 33, 168, 0.18) 0%, rgba(168, 85, 247, 0.32) 75%, rgba(192, 132, 252, 0.55) 100%);
+}
+
+.liquid-pink, .task-pink {
+  --glow-color: #ec4899;
+}
+.liquid-pink .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(157, 23, 77, 0.18) 0%, rgba(236, 72, 153, 0.32) 75%, rgba(244, 114, 182, 0.55) 100%);
+}
+
+/* Water Wave Crest & Meniscus Line (Strictly uses tab's own single color) */
+.task-liquid-wave {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  border-right: 2.5px solid var(--glow-color);
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 100%);
+  animation: waveSingleColorPulse 2.4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+/* Starting Origin Point (Glowing with ONLY tab's own single color) */
+.task-liquid-start-point {
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--glow-color);
+  pointer-events: none;
+  z-index: 4;
+  animation: pointSingleColorPulse 2.4s infinite ease-in-out;
+}
+
+/* Leading Edge Point Beacon (Glowing with ONLY tab's own single color) */
+.task-liquid-leading-point {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--glow-color);
+  pointer-events: none;
+  z-index: 4;
+  animation: pointSingleColorPulse 2.4s infinite ease-in-out;
+}
+
+/* Tab Single Color Pulse:
+   Glows intensely with THAT TAB'S SINGLE COLOR ONLY -> removes glow -> glows back with THAT SAME SINGLE COLOR */
+@keyframes pointSingleColorPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.35);
+    background: var(--glow-color);
+    box-shadow: 
+      0 0 8px var(--glow-color), 
+      0 0 16px var(--glow-color), 
+      0 0 26px var(--glow-color);
+  }
+  50% {
+    opacity: 0.15;
+    transform: translateY(-50%) scale(0.65);
+    background: var(--glow-color);
+    box-shadow: none;
+  }
+}
+
+/* Meniscus Wave single tab color pulse (strictly 1 color) */
+@keyframes waveSingleColorPulse {
+  0%, 100% {
+    border-right-color: var(--glow-color);
+    box-shadow: 0 0 16px var(--glow-color);
+    opacity: 1;
+  }
+  50% {
+    border-right-color: var(--glow-color);
+    box-shadow: none;
+    opacity: 0.2;
+  }
+}
+
+/* Shimmer Light Stream Across Liquid */
+.task-liquid-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: liquidShimmerStream 3.5s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes liquidShimmerStream {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Ready to Claim State: Glowing Full Liquid */
+.task-decorated-tab-card.is-ready {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.task-decorated-tab-card.is-ready .task-liquid-fill {
+  background: linear-gradient(90deg, rgba(6, 78, 59, 0.3) 0%, rgba(16, 185, 129, 0.42) 75%, rgba(52, 211, 153, 0.65) 100%);
+  animation: readyLiquidPulse 2.4s infinite alternate ease-in-out;
+}
+
+@keyframes readyLiquidPulse {
+  0% { opacity: 0.85; filter: brightness(1); }
+  100% { opacity: 1; filter: brightness(1.25); }
+}
+
+/* ==========================================================================
+   TAB CARD CONTENT ELEMENTS (z-index: 2, ABOVE LIQUID)
+   ========================================================================== */
+
+/* Left Neon Accent Bar */
+.task-tab-accent-bar {
+  width: 4px;
+  height: 38px;
+  border-radius: 0 4px 4px 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  transition: all 0.25s ease;
+}
+
+.task-tab-accent-cyan { background: #06b6d4; box-shadow: 0 0 10px #06b6d4; }
+.task-tab-accent-blue { background: #38bdf8; box-shadow: 0 0 10px #38bdf8; }
+.task-tab-accent-green { background: #10b981; box-shadow: 0 0 10px #10b981; }
+.task-tab-accent-yellow { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+.task-tab-accent-orange { background: #f97316; box-shadow: 0 0 10px #f97316; }
+.task-tab-accent-red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+.task-tab-accent-purple { background: #a855f7; box-shadow: 0 0 10px #a855f7; }
+.task-tab-accent-pink { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
+
+.task-decorated-tab-card:hover .task-tab-accent-bar {
+  height: 44px;
+}
+
+/* 3D Icon Box (Fixed 38x38px) */
+.task-tab-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.task-decorated-tab-card:hover .task-tab-icon-box {
+  transform: scale(1.08);
+}
+
+.task-tab-icon-box svg {
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.task-icon-cyan { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #22d3ee; }
+.task-icon-blue { background: rgba(37, 99, 235, 0.18); border: 1px solid rgba(37, 99, 235, 0.45); color: #38bdf8; }
+.task-icon-green { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; }
+.task-icon-yellow { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; }
+.task-icon-orange { background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); color: #fb923c; }
+.task-icon-red { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; }
+.task-icon-purple { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }
+.task-icon-pink { background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; }
+
+/* Text Information: Title and Tag */
+.task-tab-text-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  position: relative;
+  z-index: 2;
+}
+
+.task-tab-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: nowrap;
+}
+
+.task-tab-title {
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.task-cat-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.tag-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.35); }
+.tag-blue { background: rgba(37, 99, 235, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+.tag-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+.tag-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+.tag-orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.35); }
+.tag-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+.tag-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
+.tag-pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.35); }
+
+/* Right Column: Claim Button OR Notes Indicator Chevron */
+.task-tab-right-col {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.task-tab-notes-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--radius-pill);
+  padding: 4px 8px;
+  color: #94a3b8;
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.task-decorated-tab-card:hover .task-tab-notes-indicator {
+  color: #38bdf8;
+  border-color: #38bdf8;
+  background: rgba(14, 165, 233, 0.2);
+  transform: translateX(2px);
+}
+
+.task-tab-chevron {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+
+/* Ready to Claim Button in Tab */
+.task-tab-claim-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border: 1px solid rgba(52, 211, 153, 0.8) !important;
+  color: #ffffff !important;
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
+  cursor: pointer;
+  animation: taskClaimGlowPulse 1.6s infinite alternate;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@keyframes taskClaimGlowPulse {
+  0% { transform: scale(0.97); box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+  100% { transform: scale(1.03); box-shadow: 0 0 16px rgba(16, 185, 129, 0.85); }
+}
+
+/* ==========================================================================
+   TASK NOTES POP-UP MODAL (BOTTOM SHEET / DIALOG)
+   ========================================================================== */
+.task-notes-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 4, 12, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.task-notes-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.task-notes-modal {
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, #071330 0%, #030a1c 100%);
+  border: 1.5px solid rgba(30, 70, 150, 0.6);
+  border-radius: 28px 28px 0 0;
+  padding: 14px 18px max(24px, env(safe-area-inset-bottom)) 18px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.15, 0.9, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(14, 165, 233, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-notes-backdrop.open .task-notes-modal {
+  transform: translateY(0);
+}
+
+.task-notes-handle {
+  width: 38px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(148, 163, 184, 0.35);
+  margin: 0 auto 4px auto;
+}
+
+/* Notes Modal Header */
+.task-notes-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.task-notes-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+}
+
+.task-notes-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-notes-subtag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.task-notes-title {
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+}
+
+.task-notes-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #94a3b8;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.task-notes-close-btn:hover {
+  color: #ffffff;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Liquid Progress Meter Box inside Modal */
+.task-notes-progress-box {
+  background: rgba(6, 15, 38, 0.7);
+  border: 1px solid rgba(25, 55, 120, 0.45);
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.task-notes-prog-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.task-notes-prog-lbl {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.task-notes-prog-val {
+  font-family: var(--font-mono);
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.task-notes-prog-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(3, 8, 22, 0.85);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.task-notes-prog-liquid {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 70%, #38bdf8 100%);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.task-notes-prog-wave {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: #ffffff;
+  opacity: 0.8;
+  border-radius: 99px;
+  filter: blur(1px);
+}
+
+/* Notes Body Section */
+.task-notes-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-notes-section {
+  background: rgba(8, 20, 50, 0.65);
+  border: 1px solid rgba(25, 55, 120, 0.4);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-notes-section-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.task-notes-desc {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+/* Guaranteed Reward Card in Modal */
+.task-notes-reward-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 78, 59, 0.25) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reward-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reward-gift-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.reward-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.reward-title-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.reward-val-highlight {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.reward-ready-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  letter-spacing: 0.4px;
+}
+
+.reward-ready-tag.ready {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+/* Action Buttons inside Notes Modal */
+.task-notes-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.notes-claim-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1.5px solid #34d399;
+  border-radius: 14px;
+  color: #ffffff;
+  font-family: var(--font-primary);
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
+  transition: all 0.2s ease;
+}
+
+.notes-claim-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.7);
+}
+
+.notes-nav-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1.5px solid #38bdf8;
+  border-radius: 14px;
+  color: #ffffff;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45);
+  transition: all 0.2s ease;
+}
+
+.notes-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(56, 189, 248, 0.6);
+}
+
+.notes-close-action-btn {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 14px;
+  color: #94a3b8;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notes-close-action-btn:hover {
+  color: #ffffff;
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+/* ==========================================================================
+   CLAIM EMOJI BURST & SMOOTH TAB REMOVAL ANIMATION
+   ========================================================================== */
+.task-emoji-burst-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 60;
+}
+
+.burst-emoji-particle {
+  position: absolute;
+  font-size: 18px;
+  animation: taskBurstFly 0.7s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes taskBurstFly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(var(--tx, 0), var(--ty, -35px)) scale(1.3) rotate(var(--tr, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 0), var(--ty, -70px)) scale(0.85) rotate(var(--tr, 0deg));
+  }
+}
+
+/* Smooth Task Card Collapse & Removal */
+.task-decorated-tab-card.task-claimed-exit {
+  animation: taskCardExitCollapse 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  pointer-events: none !important;
+}
+
+@keyframes taskCardExitCollapse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    max-height: 58px;
+    margin-bottom: 6px;
+  }
+  40% {
+    opacity: 0;
+    transform: scale(0.92) translateY(-6px);
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    overflow: hidden;
+  }
+}
+
+/* Empty State Card (When all tasks claimed) */
+.tasks-empty-complete-card {
+  background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.15) 0%, rgba(6, 17, 43, 0.85) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  border-radius: 16px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(16, 185, 129, 0.15);
+  margin-top: 4px;
+}
+
+.empty-trophy-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6));
+  animation: trophyBounce 1.8s infinite alternate;
+}
+
+@keyframes trophyBounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+.empty-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.empty-desc {
+  font-size: 11.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+  max-width: 270px;
+}

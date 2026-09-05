@@ -1,0 +1,21 @@
+<div class="page-view" id="pageFitness">
+  <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('megaReward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <div class="xp-timer-pill">
+      <span>🏋️ 7. FITNESS</span>
+    </div>
+    <div class="mega-diamond-balance-btn" onclick="onMegaDiamondClick()" style="padding: 4px 10px; font-size: 11px;">
+      <span class="mega-diamond-icon">💎</span>
+      <span class="cat-diamond-val" id="diamondValFitness">0</span>
+    </div>
+  </div>
+
+  <!-- Real-time Products Catalog from Firebase -->
+  <div class="category-catalog-scroll" id="fitnessCatalog"></div>
+</div>

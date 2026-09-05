@@ -1,0 +1,12 @@
+{
+  "name": "tap-empire",
+  "version": "1.0.0",
+  "description": "Energy Tap Reactor Telegram Web Mini-App",
+  "scripts": {
+    "assemble": "node frontend/assemble.js",
+    "build": "node frontend/assemble.js"
+  },
+  "keywords": ["telegram-mini-app", "tap-empire"],
+  "author": "",
+  "license": "ISC"
+}

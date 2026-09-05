@@ -1,0 +1,262 @@
+<div class="page-view" id="pageReward">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('home')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <span>🎁 REWARDS VAULT</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>🪙 <span id="rewardCoinsBal">0</span></span>
+          </div>
+        </div>
+
+        <!-- ==================== 1. FIRST: MEGA PRIZE ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabVault" onclick="switchPage('megaReward')">
+          <div class="grand-vault-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle">
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <rect x="20" y="25" width="60" height="52" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="3.5" />
+                <rect x="25" y="30" width="50" height="42" rx="6" fill="#1e293b" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1.5" />
+                <circle cx="50" cy="51" r="14" fill="#090d16" stroke="#fbbf24" stroke-width="3" />
+                <circle cx="50" cy="51" r="7" fill="#f59e0b" />
+                <line x1="50" y1="37" x2="50" y2="65" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
+                <line x1="36" y1="51" x2="64" y2="51" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
+                <line x1="40" y1="41" x2="60" y2="61" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" />
+                <line x1="40" y1="61" x2="60" y2="41" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" />
+                <circle cx="50" cy="51" r="3" fill="#ffffff" />
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag">✨ MEGA REWARDS ✨</div>
+          </div>
+
+          <div class="rewards-rect-badge">
+            <span class="sparkle-icon">👑</span>
+            <span>20 MEGA TIERS</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Mega Rewards Vault</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">TOTAL TIERS</span>
+              <span class="stat-item-val gold">20 Tiers</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">STATUS</span>
+              <span class="stat-item-val cyan">Coming Soon</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item" onclick="switchPage('streak'); event.stopPropagation();" style="cursor: pointer;">
+              <span class="stat-item-label">STREAK</span>
+              <span class="stat-item-val flame" id="rewardRectStreak">0 Days 🔥</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn" onclick="switchPage('megaReward'); event.stopPropagation();">
+            <span>👑 OPEN MEGA REWARDS (20 TIERS)</span>
+          </button>
+        </section>
+
+        <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
+          <div class="grand-vault-aura spin-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle spin-circle">
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <circle cx="50" cy="50" r="38" fill="#0f172a" stroke="#06b6d4" stroke-width="3.5" />
+                <circle cx="50" cy="50" r="30" fill="#030816" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
+                <line x1="50" y1="12" x2="50" y2="88" stroke="#38bdf8" stroke-width="2.5" />
+                <line x1="12" y1="50" x2="88" y2="50" stroke="#38bdf8" stroke-width="2.5" />
+                <line x1="23" y1="23" x2="77" y2="77" stroke="#38bdf8" stroke-width="2" />
+                <line x1="23" y1="77" x2="77" y2="23" stroke="#38bdf8" stroke-width="2" />
+                <circle cx="50" cy="50" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2" />
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag spin-tag">🎡 LUCKY SPINNER 🎡</div>
+          </div>
+
+          <div class="rewards-rect-badge spin-badge">
+            <span class="sparkle-icon">🎟️</span>
+            <span>8-PRIZE WHEEL</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Lucky Spin Wheel</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">TICKETS</span>
+              <span class="stat-item-val cyan" id="rewardSpinTickets">0 Tickets</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val green">1 Ticket</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">STATUS</span>
+              <span class="stat-item-val gold">Ready</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn spin-btn" onclick="switchPage('spin'); event.stopPropagation();">
+            <span>🎡 LAUNCH SPIN WHEEL</span>
+          </button>
+        </section>
+
+        <!-- ==================== 3. THIRD: MYSTERY CHEST ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabChest" onclick="switchPage('chest')">
+          <div class="grand-vault-aura chest-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle chest-circle">
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <path d="M20 40h60v35a5 5 0 0 1-5 5H25a5 5 0 0 1-5-5V40z" fill="#0f172a" stroke="#eab308" stroke-width="3" />
+                <path d="M18 38l6-16a4 4 0 0 1 4-2h44a4 4 0 0 1 4 2l6 16z" fill="#1e293b" stroke="#facc15" stroke-width="3" />
+                <rect x="42" y="36" width="16" height="18" rx="4" fill="#ca8a04" stroke="#ffffff" stroke-width="2" />
+                <circle cx="50" cy="43" r="2.5" fill="#000000" />
+                <line x1="50" y1="45.5" x2="50" y2="50" stroke="#000000" stroke-width="1.8" />
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag chest-tag">🔑 MYSTERY CHEST 🔑</div>
+          </div>
+
+          <div class="rewards-rect-badge chest-badge">
+            <span class="sparkle-icon">🔑</span>
+            <span>UNBOX LOOT</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Mystery Loot Chest</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">KEYS</span>
+              <span class="stat-item-val gold" id="rewardChestKeys">0 Keys</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val purple">1 Key</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">STATUS</span>
+              <span class="stat-item-val gold">Ready</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn chest-btn" onclick="switchPage('chest'); event.stopPropagation();">
+            <span>🧰 UNLOCK MYSTERY CHEST</span>
+          </button>
+        </section>
+
+        <!-- ==================== 4. FOURTH: SCRATCH CARD ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabScratch" onclick="switchPage('scratch')">
+          <div class="grand-vault-aura scratch-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle scratch-circle">
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <rect x="20" y="24" width="60" height="52" rx="8" fill="#0f172a" stroke="#ec4899" stroke-width="3" />
+                <rect x="25" y="29" width="50" height="42" rx="5" fill="#1e293b" stroke="rgba(236, 72, 153, 0.4)" stroke-width="1.5" />
+                <circle cx="36" cy="40" r="5" fill="#f43f5e" />
+                <circle cx="50" cy="40" r="5" fill="#f43f5e" />
+                <circle cx="64" cy="40" r="5" fill="#f43f5e" />
+                <circle cx="36" cy="56" r="5" fill="#f43f5e" />
+                <circle cx="50" cy="56" r="5" fill="#f43f5e" />
+                <circle cx="64" cy="56" r="5" fill="#f43f5e" />
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag scratch-tag">🎟️ SCRATCH & WIN 🎟️</div>
+          </div>
+
+          <div class="rewards-rect-badge scratch-badge">
+            <span class="sparkle-icon">🎴</span>
+            <span>3x3 MATCH 3</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Scratch Card Fortune</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">CARDS</span>
+              <span class="stat-item-val flame" id="rewardScratchCards">0 Cards</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">GRID</span>
+              <span class="stat-item-val pink">3 x 3</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">MATCH</span>
+              <span class="stat-item-val gold">3 Icons</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn scratch-btn" onclick="switchPage('scratch'); event.stopPropagation();">
+            <span>🎟️ PLAY SCRATCH CARD</span>
+          </button>
+        </section>
+
+        <!-- ==================== 5. FIFTH: HATCHING EGG ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabEgg" onclick="switchPage('egg')">
+          <div class="grand-vault-aura egg-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle egg-circle">
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <!-- Glowing Cyber Dragon Egg -->
+                <ellipse cx="50" cy="54" rx="28" ry="36" fill="#042f2e" stroke="#10b981" stroke-width="3.5" />
+                <ellipse cx="50" cy="54" rx="22" ry="30" fill="#064e3b" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
+                <path d="M42 35 Q50 45 44 55 Q56 65 48 78" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" />
+                <circle cx="48" cy="44" r="3.5" fill="#fde047" />
+                <circle cx="56" cy="58" r="3" fill="#38bdf8" />
+                <circle cx="40" cy="62" r="2.5" fill="#f43f5e" />
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag egg-tag">🥚 16-EGG HATCHERY 🥚</div>
+          </div>
+
+          <div class="rewards-rect-badge egg-badge">
+            <span class="sparkle-icon">🐣</span>
+            <span>COLLECT 3 TO WIN</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Cyber Egg Hatching (16 Eggs)</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">EGG COINS</span>
+              <span class="stat-item-val green" id="rewardEggCount">0 Eggs</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">GRID</span>
+              <span class="stat-item-val cyan">16 Eggs</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">MATCH</span>
+              <span class="stat-item-val gold">Collect 3</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn egg-btn" onclick="switchPage('egg')">
+            <span>🥚 PLAY 16-EGG HATCHERY (COLLECT 3)</span>
+          </button>
+        </section>
+
+      </div>

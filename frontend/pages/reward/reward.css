@@ -1,0 +1,489 @@
+/* ==========================================================================
+   PAGE VIEW 6: WALLET (COMING SOON)
+   ========================================================================== */
+
+#pageWallet {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 6px;
+}
+
+#pageWallet.active {
+  display: flex;
+}
+
+#pageReward {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-bottom: 36px;
+}
+
+#pageReward.active {
+  display: flex;
+}
+
+/* Rewards 4-Subtab Switcher */
+.rewards-subtab-header {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: rgba(6, 16, 38, 0.85);
+  border: 1px solid rgba(25, 55, 120, 0.5);
+  border-radius: 20px;
+  padding: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.reward-subtab-btn {
+  background: transparent;
+  border: none;
+  border-radius: 15px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #94a3b8;
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.reward-subtab-btn .tab-btn-icon {
+  font-size: 15px;
+}
+
+.reward-subtab-btn:hover {
+  color: #ffffff;
+}
+
+.reward-subtab-btn.active#rewardSubtabVault {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #050b16;
+  font-weight: 900;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.55);
+}
+
+.reward-subtab-btn.active#rewardSubtabSpin {
+  background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+  color: #03141f;
+  font-weight: 900;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.55);
+}
+
+.reward-subtab-btn.active#rewardSubtabChest {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  color: #070e17;
+  font-weight: 900;
+  box-shadow: 0 0 16px rgba(234, 179, 8, 0.55);
+}
+
+.reward-subtab-btn.active#rewardSubtabScratch {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: #ffffff;
+  font-weight: 900;
+  box-shadow: 0 0 16px rgba(236, 72, 153, 0.55);
+}
+
+/* Main Grand Vertical Rectangular Tab Card */
+.rewards-grand-rectangle-card {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 50% 8%, rgba(245, 158, 11, 0.25) 0%, rgba(6, 17, 43, 0.98) 75%);
+  border: 1.5px solid rgba(245, 158, 11, 0.55);
+  border-radius: 28px;
+  padding: 24px 20px 22px 20px;
+  min-height: 380px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(245, 158, 11, 0.2), inset 0 0 40px rgba(245, 158, 11, 0.1);
+  position: relative;
+  overflow: hidden;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  animation: pageFadeIn 0.25s ease-out;
+}
+
+.rewards-grand-rectangle-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(245, 158, 11, 0.35);
+}
+
+.rewards-grand-rectangle-card:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+#rewardTabSpin.rewards-grand-rectangle-card {
+  background: radial-gradient(circle at 50% 8%, rgba(6, 182, 212, 0.25) 0%, rgba(6, 17, 43, 0.98) 75%);
+  border-color: rgba(6, 182, 212, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(6, 182, 212, 0.2), inset 0 0 40px rgba(6, 182, 212, 0.1);
+}
+
+#rewardTabSpin.rewards-grand-rectangle-card:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(6, 182, 212, 0.4);
+}
+
+#rewardTabChest.rewards-grand-rectangle-card {
+  background: radial-gradient(circle at 50% 8%, rgba(234, 179, 8, 0.25) 0%, rgba(6, 17, 43, 0.98) 75%);
+  border-color: rgba(234, 179, 8, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(234, 179, 8, 0.2), inset 0 0 40px rgba(234, 179, 8, 0.1);
+}
+
+#rewardTabChest.rewards-grand-rectangle-card:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(234, 179, 8, 0.4);
+}
+
+#rewardTabScratch.rewards-grand-rectangle-card {
+  background: radial-gradient(circle at 50% 8%, rgba(236, 72, 153, 0.25) 0%, rgba(6, 17, 43, 0.98) 75%);
+  border-color: rgba(236, 72, 153, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(236, 72, 153, 0.2), inset 0 0 40px rgba(236, 72, 153, 0.1);
+}
+
+#rewardTabScratch.rewards-grand-rectangle-card:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(236, 72, 153, 0.4);
+}
+
+#rewardTabEgg.rewards-grand-rectangle-card {
+  background: radial-gradient(circle at 50% 8%, rgba(16, 185, 129, 0.25) 0%, rgba(6, 17, 43, 0.98) 75%);
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(16, 185, 129, 0.2), inset 0 0 40px rgba(16, 185, 129, 0.1);
+}
+
+#rewardTabEgg.rewards-grand-rectangle-card:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(16, 185, 129, 0.4);
+}
+
+.grand-vault-aura {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(30px);
+}
+
+.grand-vault-aura.spin-aura {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 70%);
+}
+
+.grand-vault-aura.chest-aura {
+  background: radial-gradient(circle, rgba(234, 179, 8, 0.4) 0%, transparent 70%);
+}
+
+.grand-vault-aura.scratch-aura {
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%);
+}
+
+.grand-vault-aura.egg-aura {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+}
+
+.grand-vault-emblem-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.grand-vault-circle {
+  width: 92px;
+  height: 92px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, #090e1a, #162036);
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 32px rgba(245, 158, 11, 0.6), inset 0 0 18px rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  animation: flamePulse 2.5s ease-in-out infinite alternate;
+}
+
+.grand-vault-circle.spin-circle {
+  border-color: #06b6d4;
+  box-shadow: 0 0 32px rgba(6, 182, 212, 0.6), inset 0 0 18px rgba(6, 182, 212, 0.3);
+}
+
+.grand-vault-circle.chest-circle {
+  border-color: #eab308;
+  box-shadow: 0 0 32px rgba(234, 179, 8, 0.6), inset 0 0 18px rgba(234, 179, 8, 0.3);
+}
+
+.grand-vault-circle.scratch-circle {
+  border-color: #ec4899;
+  box-shadow: 0 0 32px rgba(236, 72, 153, 0.6), inset 0 0 18px rgba(236, 72, 153, 0.3);
+}
+
+.grand-vault-circle.egg-circle {
+  border-color: #10b981;
+  box-shadow: 0 0 32px rgba(16, 185, 129, 0.6), inset 0 0 18px rgba(16, 185, 129, 0.3);
+}
+
+.grand-vault-svg {
+  width: 60px;
+  height: 60px;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.7));
+}
+
+.grand-vault-pill-tag {
+  margin-top: -12px;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #020617;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 3.5px 14px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.55);
+  z-index: 3;
+}
+
+.grand-vault-pill-tag.spin-tag {
+  background: linear-gradient(90deg, #06b6d4, #38bdf8);
+  box-shadow: 0 3px 12px rgba(6, 182, 212, 0.55);
+}
+
+.grand-vault-pill-tag.chest-tag {
+  background: linear-gradient(90deg, #eab308, #fde047);
+  box-shadow: 0 3px 12px rgba(234, 179, 8, 0.55);
+}
+
+.grand-vault-pill-tag.scratch-tag {
+  background: linear-gradient(90deg, #ec4899, #f43f5e);
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(236, 72, 153, 0.55);
+}
+
+.grand-vault-pill-tag.egg-tag {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #022c22;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.55);
+}
+
+.rewards-rect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  font-size: 11px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+.rewards-rect-badge.spin-badge {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+}
+
+.rewards-rect-badge.chest-badge {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: rgba(234, 179, 8, 0.35);
+  color: #facc15;
+}
+
+.rewards-rect-badge.scratch-badge {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: rgba(236, 72, 153, 0.35);
+  color: #f472b6;
+}
+
+.rewards-rect-badge.egg-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.rewards-rect-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+}
+
+.rewards-rect-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.5;
+  max-width: 320px;
+  margin-bottom: 2px;
+}
+
+.rewards-stats-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  background: rgba(4, 11, 28, 0.8);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.5);
+}
+
+#rewardTabSpin .rewards-stats-strip {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+#rewardTabChest .rewards-stats-strip {
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+#rewardTabScratch .rewards-stats-strip {
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.rewards-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-item-label {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #64748b;
+}
+
+.stat-item-val {
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--font-primary);
+}
+
+.stat-item-val.gold { color: #fbbf24; }
+.stat-item-val.cyan { color: #38bdf8; }
+.stat-item-val.flame { color: #fb923c; }
+.stat-item-val.green { color: #34d399; }
+.stat-item-val.purple { color: #c084fc; }
+.stat-item-val.pink { color: #f472b6; }
+
+.rewards-stat-divider {
+  width: 1px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rewards-channels-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.reward-channel-box {
+  background: rgba(8, 19, 44, 0.8);
+  border: 1px solid rgba(30, 70, 160, 0.5);
+  border-radius: var(--radius-lg);
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.reward-channel-box:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.reward-channel-box.streak { border-color: rgba(249, 115, 22, 0.5); }
+.reward-channel-box.streak:hover { border-color: #f97316; box-shadow: 0 0 16px rgba(249, 115, 22, 0.4); }
+
+.reward-channel-box.chest { border-color: rgba(6, 182, 212, 0.5); }
+.reward-channel-box.chest:hover { border-color: #06b6d4; box-shadow: 0 0 16px rgba(6, 182, 212, 0.4); }
+
+.channel-emoji { font-size: 24px; flex-shrink: 0; }
+.channel-texts { display: flex; flex-direction: column; gap: 2px; }
+.channel-title { font-size: 13px; font-weight: 800; color: #ffffff; }
+.channel-desc { font-size: 10px; font-weight: 700; color: #94a3b8; }
+
+.rewards-master-action-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #030712;
+  font-family: var(--font-primary);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rewards-master-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px rgba(245, 158, 11, 0.8), 0 6px 18px rgba(0, 0, 0, 0.6);
+  filter: brightness(1.05);
+}
+
+.rewards-master-action-btn.spin-btn {
+  background: linear-gradient(90deg, #06b6d4, #38bdf8);
+  box-shadow: 0 0 22px rgba(6, 182, 212, 0.6);
+}
+
+.rewards-master-action-btn.spin-btn:hover {
+  box-shadow: 0 0 28px rgba(6, 182, 212, 0.8);
+}
+
+.rewards-master-action-btn.chest-btn {
+  background: linear-gradient(90deg, #eab308, #fde047);
+  box-shadow: 0 0 22px rgba(234, 179, 8, 0.6);
+}
+
+.rewards-master-action-btn.chest-btn:hover {
+  box-shadow: 0 0 28px rgba(234, 179, 8, 0.8);
+}
+
+.rewards-master-action-btn.scratch-btn {
+  background: linear-gradient(90deg, #ec4899, #f43f5e);
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(236, 72, 153, 0.6);
+}
+
+.rewards-master-action-btn.scratch-btn:hover {
+  box-shadow: 0 0 28px rgba(236, 72, 153, 0.8);
+}
+
+.rewards-master-action-btn.egg-btn {
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: #022c22;
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.6);
+}
+
+.rewards-master-action-btn.egg-btn:hover {
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.8);
+}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Analytics & Mega Reward Requests - Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="users.css">
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="admin-navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-icon-box" style="background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="brand-title-group">
+          <h1 class="brand-title">
+            <span>USERS & REWARD REQUESTS</span>
+            <span class="brand-badge">ANALYTICS</span>
+          </h1>
+          <span class="brand-subtitle">Energy Tap Reactor • Player Ads, Tasks & Mega Reward Orders</span>
+        </div>
+      </div>
+
+      <!-- Navigation Section Links -->
+      <div class="admin-subnav-links">
+        <a href="index.html" class="subnav-link-btn" title="Go to Mega Rewards Inventory">
+          <span>👑 Rewards Store</span>
+        </a>
+        <a href="users.html" class="subnav-link-btn active" title="Users & Requests Management">
+          <span>👥 Users & Requests</span>
+        </a>
+      </div>
+
+      <div class="nav-status-group">
+        <div class="cloud-sync-chip" id="cloudSyncChip" title="Firebase Realtime Database Status">
+          <span class="cloud-dot"></span>
+          <span id="cloudStatusText">Connecting...</span>
+        </div>
+
+        <a href="../frontend/index.html" class="app-portal-link" target="_blank" title="Launch Player App">
+          <span>Open Mini App</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Content -->
+  <main class="admin-main-wrapper">
+
+    <!-- Top Key Metrics Overview -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);">
+          👥
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Total Players</span>
+          <span class="metric-val" id="metricTotalUsers">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">
+          🎬
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Total Ads Watched</span>
+          <span class="metric-val" id="metricTotalAds">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
+          🌐
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Partner Tasks Done</span>
+          <span class="metric-val" id="metricTotalTasks">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4);">
+          🎁
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Pending Reward Orders</span>
+          <span class="metric-val" id="metricPendingReqs">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- View Switcher Tabs (Users Activity vs Mega Reward Orders) -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div class="view-tabs-bar">
+        <button class="view-tab-btn active" id="tabBtnUsers" onclick="switchAdminView('users')">
+          <span>👥 Players & Activity Details</span>
+          <span class="view-tab-badge" id="badgeUsersCount">0</span>
+        </button>
+
+        <button class="view-tab-btn" id="tabBtnRequests" onclick="switchAdminView('requests')">
+          <span>🎁 Mega Reward Orders & Requests</span>
+          <span class="view-tab-badge" id="badgeReqsCount">0</span>
+        </button>
+      </div>
+
+      <!-- Action Tools -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="btn-tool btn-seed" onclick="seedSampleUsersAndRequests(true)" title="Seed realistic players with ads watched counts and redemption orders">
+          <span>⚡ Seed Sample Users & Orders</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SECTION 1: USERS ACTIVITY TABLE (ADS WATCHED & WEBSITE TASKS)
+         ==================================================================== -->
+    <section class="table-card-container" id="usersSection">
+      <div class="toolbar-top-row">
+        <div>
+          <h2 style="font-size: 17px; font-weight: 800; color: #ffffff;">Player Activity & Engagement</h2>
+          <span style="font-size: 11px; color: var(--text-secondary);">Tracking how many video ads players watched and website/partner quests completed</span>
+        </div>
+
+        <div style="width: 320px;">
+          <input type="text" id="userTableSearch" class="form-input" placeholder="🔍 Search player by name, handle, UID...">
+        </div>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>Player Identity</th>
+              <th>Ads Button Used 🎬</th>
+              <th>Website Tasks Done 🌐</th>
+              <th>Balances (💎 / 🪙)</th>
+              <th>Total Energy Taps ⚡</th>
+              <th>Account Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Populated by users.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 2: MEGA REWARD REDEMPTION REQUESTS SECTION
+         ==================================================================== -->
+    <section class="table-card-container" id="requestsSection" style="display: none;">
+      <div class="toolbar-top-row">
+        <div>
+          <h2 style="font-size: 17px; font-weight: 800; color: #ffffff;">Mega Reward Redemption Orders</h2>
+          <span style="font-size: 11px; color: var(--text-secondary);">Incoming claims from players redeeming Diamonds for Gift Cards, Gadgets, Gaming Gear, etc.</span>
+        </div>
+
+        <!-- Filter Chips -->
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <button class="cat-filter-btn req-filter-btn active" data-filter="all" onclick="setRequestFilter('all')">All Orders</button>
+          <button class="cat-filter-btn req-filter-btn" data-filter="pending" onclick="setRequestFilter('pending')">⏳ Pending</button>
+          <button class="cat-filter-btn req-filter-btn" data-filter="approved" onclick="setRequestFilter('approved')">✅ Approved</button>
+          <button class="cat-filter-btn req-filter-btn" data-filter="delivered" onclick="setRequestFilter('delivered')">🚚 Delivered</button>
+          <button class="cat-filter-btn req-filter-btn" data-filter="rejected" onclick="setRequestFilter('rejected')">❌ Rejected</button>
+        </div>
+      </div>
+
+      <!-- Requests Cards Grid -->
+      <div class="requests-grid" id="requestsGridContainer">
+        <!-- Populated by users.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- User Details Pop-up Modal -->
+  <div class="admin-modal-backdrop" id="userModalBackdrop" onclick="closeUserModal(event)">
+    <div class="admin-modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
+        <span style="font-size: 12px; font-weight: 800; color: var(--neon-cyan); letter-spacing: 0.5px;">PLAYER FULL PROFILE</span>
+        <button class="admin-modal-close-btn" onclick="closeUserModal()" style="background: none; border: none; color: #94a3b8; font-size: 22px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div id="userModalBody" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+        <button class="btn-tool" onclick="closeUserModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Cloud SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <!-- Users & Requests Controller -->
+  <script src="users.js"></script>
+</body>
+</html>
