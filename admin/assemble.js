@@ -15,6 +15,8 @@ const PAGE_KEYS = [
   'mega-add',
   'mega-request',
   'tasks-web',
+  'firebase-manage',
+  'ads-manage',
   'settings'
 ];
 
@@ -107,7 +109,17 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
         <span>Tasks & Web</span>
       </button>
 
-      <div class="nav-section-label" style="margin-top: 12px;">System</div>
+      <div class="nav-section-label" style="margin-top: 12px;">Management & System</div>
+
+      <button class="nav-item" data-page="firebase-manage" onclick="switchAdminPage('firebase-manage', 'Firebase Database Manager')">
+        <span class="nav-icon">🔥</span>
+        <span>Firebase Manage</span>
+      </button>
+
+      <button class="nav-item" data-page="ads-manage" onclick="switchAdminPage('ads-manage', 'Ads Network & Rewards')">
+        <span class="nav-icon">🎬</span>
+        <span>Ads Manage</span>
+      </button>
 
       <button class="nav-item" data-page="settings" onclick="switchAdminPage('settings', 'Cloud & Database Settings')">
         <span class="nav-icon">⚙️</span>
