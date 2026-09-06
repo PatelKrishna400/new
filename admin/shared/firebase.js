@@ -81,8 +81,8 @@ function listenToFirebase() {
       Object.keys(val).forEach(uid => {
         const data = val[uid] || {};
         const pl = data.player || {};
-        const tasksObj = data.tasksState || {};
-        const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : 0;
+        const dailyDone = tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : 0;
+        const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (pl.websiteTasksCompleted || 0);
         const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : 0;
 
         list.push({
@@ -93,7 +93,9 @@ function listenToFirebase() {
           diamonds: pl.diamonds || 0,
           chestKeys: pl.chestKeys || 0,
           scratchCards: pl.scratchCards || 0,
-          tasksCount: webDone + tgDone,
+          dailyTasksDone: dailyDone,
+          webTasksDone: webDone,
+          tasksCount: dailyDone + webDone + tgDone,
           lastActive: pl.lastActive || new Date().toISOString()
         });
       });

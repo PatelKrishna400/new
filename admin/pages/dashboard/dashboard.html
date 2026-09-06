@@ -1,61 +1,31 @@
 <!-- PAGE: DASHBOARD -->
 <section class="page-panel active" id="page-dashboard">
-  <!-- 4 Key Metrics -->
-  <div class="metrics-row">
+  <!-- 3 Key Metric Cards -->
+  <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <!-- 1. Total Players Number -->
     <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
       <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
       <div class="metric-meta">
-        <span class="metric-label">Total Players</span>
-        <span class="metric-value" id="dashTotalUsers">0</span>
+        <span class="metric-label">Total Player Number</span>
+        <span class="metric-value" id="dashTotalPlayers">0</span>
       </div>
     </div>
 
-    <div class="metric-box" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
-      <div class="metric-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🎁</div>
+    <!-- 2. Daily Tasks Completed Data -->
+    <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
+      <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">📅</div>
       <div class="metric-meta">
-        <span class="metric-label">Reward Items</span>
-        <span class="metric-value" id="dashTotalRewards">0</span>
+        <span class="metric-label">Daily Tasks Completed</span>
+        <span class="metric-value" id="dashDailyTasksCompleted">0</span>
       </div>
     </div>
 
-    <div class="metric-box" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
-      <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">📨</div>
+    <!-- 3. Web Tasks Completed Data -->
+    <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
+      <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🌐</div>
       <div class="metric-meta">
-        <span class="metric-label">Pending Orders</span>
-        <span class="metric-value" id="dashPendingOrders">0</span>
-      </div>
-    </div>
-
-    <div class="metric-box">
-      <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">💎</div>
-      <div class="metric-meta">
-        <span class="metric-label">Diamond Economy</span>
-        <span class="metric-value" id="dashTotalDiamonds">0</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Split Grid: Recent Orders & Recent Users -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-    <!-- Recent Redemptions -->
-    <div class="card-panel">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <h3 style="font-size: 15px; font-weight: 800; color: #fff;">Recent Redemption Requests</h3>
-        <button onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">View All ➔</button>
-      </div>
-      <div id="dashRecentOrdersList">
-        <div style="padding: 20px; text-align: center; color: #64748b;">Loading requests from Firebase...</div>
-      </div>
-    </div>
-
-    <!-- Top Players -->
-    <div class="card-panel">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-        <h3 style="font-size: 15px; font-weight: 800; color: #fff;">Recent Active Players</h3>
-        <button onclick="switchAdminPage('users', 'User Analytics & Players')" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">View All ➔</button>
-      </div>
-      <div id="dashRecentUsersList">
-        <div style="padding: 20px; text-align: center; color: #64748b;">Loading players from Firebase...</div>
+        <span class="metric-label">Web Tasks Completed</span>
+        <span class="metric-value" id="dashWebTasksCompleted">0</span>
       </div>
     </div>
   </div>
