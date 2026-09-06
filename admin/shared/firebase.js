@@ -91,6 +91,14 @@ function listenToFirebase() {
 
         const goalLevel = goalObj.level !== undefined ? goalObj.level : (goalStateObj.currentLevel || 0);
 
+        const adsCount = (pl.adsWatchedCount !== undefined) ? Number(pl.adsWatchedCount) : (
+          (Number(pl.watchedAds) || 0) +
+          (Number(pl.adsButtonCount) || 0) +
+          (data.xpState ? (Number(data.xpState.watchedAds) || 0) : 0) +
+          (data.goalState ? ((Number(data.goalState.levelAdsWatched) || 0) + (Number(data.goalState.megaWatchedAds) || 0)) : 0) +
+          (data.dailyStats ? (Number(data.dailyStats.adsWatched) || 0) : 0)
+        );
+
         list.push({
           uid,
           username: pl.username || pl.name || 'User_' + uid.substring(0, 6),
@@ -103,6 +111,8 @@ function listenToFirebase() {
           chestTickets: pl.chestTickets || 0,
           dailyTasksDone: dailyDone,
           webTasksDone: webDone,
+          adsButtonCount: adsCount,
+          adsWatched: adsCount,
           tasksCount: dailyDone + webDone + tgDone,
           lastActive: pl.lastActive || new Date().toISOString()
         });
