@@ -81,18 +81,26 @@ function listenToFirebase() {
       Object.keys(val).forEach(uid => {
         const data = val[uid] || {};
         const pl = data.player || {};
+        const goalObj = data.goal || {};
+        const goalStateObj = data.goalState || {};
+        const tasksObj = data.tasksState || {};
+
         const dailyDone = tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : 0;
         const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (pl.websiteTasksCompleted || 0);
         const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : 0;
 
+        const goalLevel = goalObj.level !== undefined ? goalObj.level : (goalStateObj.currentLevel || 0);
+
         list.push({
           uid,
-          username: pl.username || 'User_' + uid.substring(0, 6),
-          level: pl.level || 1,
+          username: pl.username || pl.name || 'User_' + uid.substring(0, 6),
+          level: pl.level || 0,
+          goalLevel: goalLevel,
           coins: pl.coins || 0,
           diamonds: pl.diamonds || 0,
           chestKeys: pl.chestKeys || 0,
           scratchCards: pl.scratchCards || 0,
+          chestTickets: pl.chestTickets || 0,
           dailyTasksDone: dailyDone,
           webTasksDone: webDone,
           tasksCount: dailyDone + webDone + tgDone,

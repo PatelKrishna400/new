@@ -3,7 +3,7 @@
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
       <div>
-        <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Registered Players & Balances</h2>
+        <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Registered Players & Stats</h2>
         <p style="font-size: 12px; color: #94a3b8;">Real-time synchronized Telegram users from Firebase (<code style="color: #38bdf8;">/players</code>).</p>
       </div>
       <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search username or UID..." class="form-input" style="width: 240px;">
@@ -14,18 +14,19 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Player Username</th>
-            <th>Level</th>
-            <th>Coins</th>
-            <th>Diamonds</th>
+            <th>Player</th>
+            <th>XP Lv</th>
+            <th>Goal Lv</th>
+            <th>Coin</th>
+            <th>Diamond</th>
             <th>Keys</th>
-            <th>Cards</th>
-            <th>Tasks</th>
-            <th>Actions</th>
+            <th>Card</th>
+            <th>Ticket</th>
+            <th style="text-align: center;">Actions</th>
           </tr>
         </thead>
         <tbody id="usersTableBody">
-          <tr><td colspan="9" style="text-align: center; color: #64748b;">Syncing with Firebase...</td></tr>
+          <tr><td colspan="10" style="text-align: center; color: #64748b; padding: 24px;">Syncing with Firebase...</td></tr>
         </tbody>
       </table>
     </div>

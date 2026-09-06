@@ -163,6 +163,14 @@ const footerContent = `
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
+          <label class="form-label">XP Level</label>
+          <input type="number" id="editModalLevel" class="form-input" style="color: #38bdf8; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Goal Level</label>
+          <input type="number" id="editModalGoalLevel" class="form-input" style="color: #60a5fa; font-weight: 800;">
+        </div>
+        <div class="form-group">
           <label class="form-label">Coins 🪙</label>
           <input type="number" id="editModalCoins" class="form-input" style="color: #fbbf24; font-weight: 800;">
         </div>
@@ -179,14 +187,19 @@ const footerContent = `
           <input type="number" id="editModalCards" class="form-input" style="color: #ec4899; font-weight: 800;">
         </div>
         <div class="form-group" style="grid-column: 1 / -1;">
-          <label class="form-label">Reactor Level</label>
-          <input type="number" id="editModalLevel" class="form-input" style="color: #38bdf8; font-weight: 800;">
+          <label class="form-label">Tickets 🎟️</label>
+          <input type="number" id="editModalTickets" class="form-input" style="color: #f59e0b; font-weight: 800;">
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 6px;">
-        <button onclick="savePlayerEditToFirebase()" class="btn-primary" style="flex: 1;">Save Changes</button>
-        <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+        <div style="display: flex; gap: 10px;">
+          <button onclick="savePlayerEditToFirebase()" class="btn-primary" style="flex: 1;">Save Changes</button>
+          <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
+        </div>
+        <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+          🔄 Restart Player (Reset to 0)
+        </button>
       </div>
     </div>
   </div>
