@@ -71,6 +71,7 @@ class FirebaseSyncService {
             this.setupPresence();
             this.listenToMegaRewards();
             this.listenToWebsiteTasks();
+            this.listenToTelegramTasks();
           })
           .catch((error) => {
             console.warn('Firebase Auth failed, falling back to local UID:', error);
@@ -81,6 +82,7 @@ class FirebaseSyncService {
             this.loadFromCloud();
             this.listenToMegaRewards();
             this.listenToWebsiteTasks();
+            this.listenToTelegramTasks();
           });
       } else {
         console.warn('Firebase SDK not loaded, using LocalStorage only.');
@@ -399,6 +401,49 @@ class FirebaseSyncService {
       }
     } catch (e) {}
     window.cloudWebsiteTasks = null;
+  }
+
+  // ==========================================================================
+  // TELEGRAM TASKS REAL-TIME CONFIG LISTENER (/telegram_tasks_config)
+  // ==========================================================================
+  listenToTelegramTasks() {
+    if (!this.database) {
+      this.loadCachedTelegramTasks();
+      return;
+    }
+
+    const tasksRef = this.database.ref('/telegram_tasks_config');
+    tasksRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        window.cloudTelegramTasks = Array.isArray(data) ? data : Object.values(data);
+        try {
+          localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(window.cloudTelegramTasks));
+        } catch (e) {}
+        console.log(`✈️ Received ${window.cloudTelegramTasks.length} telegram tasks from cloud.`);
+      } else {
+        this.loadCachedTelegramTasks();
+      }
+
+      // Re-render tasks list if tasks page is active
+      if (typeof window.renderTasksList === 'function') {
+        window.renderTasksList();
+      }
+    }, (err) => {
+      console.warn('Could not fetch cloud telegram tasks, using local cache:', err);
+      this.loadCachedTelegramTasks();
+    });
+  }
+
+  loadCachedTelegramTasks() {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1');
+      if (cached) {
+        window.cloudTelegramTasks = JSON.parse(cached);
+        return;
+      }
+    } catch (e) {}
+    window.cloudTelegramTasks = null;
   }
 
   // ==========================================================================

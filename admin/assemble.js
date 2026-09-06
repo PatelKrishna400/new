@@ -104,9 +104,9 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
         <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
-        <span class="nav-icon">🌐</span>
-        <span>Tasks & Web</span>
+      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Task Manager (Telegram & Web)')">
+        <span class="nav-icon">🎯</span>
+        <span>Task Manage</span>
       </button>
 
       <div class="nav-section-label" style="margin-top: 12px;">Management & System</div>

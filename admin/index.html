@@ -59,9 +59,9 @@
         <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
-        <span class="nav-icon">🌐</span>
-        <span>Tasks & Web</span>
+      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Task Manager (Telegram & Web)')">
+        <span class="nav-icon">🎯</span>
+        <span>Task Manage</span>
       </button>
 
       <div class="nav-section-label" style="margin-top: 12px;">Management & System</div>
@@ -301,47 +301,221 @@
       
 
       <!-- ================= PAGE: TASKS-WEB ================= -->
-      <!-- PAGE: TASKS & WEB -->
+      <!-- PAGE: TASKS (TELEGRAM & WEBSITE TASK ADDER) -->
       <section class="page-panel" id="page-tasks_web">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Website Quests Configuration</h2>
-            <p style="font-size: 12px; color: #94a3b8;">Manage the 3 sponsor quests saved at <code style="color: #38bdf8;">/website_tasks_config</code> in Firebase.</p>
+        <!-- Sub-tab Navigation Bar -->
+        <div class="task-tabs-bar">
+          <button type="button" class="task-subtab-btn active" id="btnSubtabTelegram" onclick="switchAdminTaskSubtab('telegram')">
+            <span>✈️ Telegram Tasks</span>
+            <span class="task-tab-badge" id="adminTgTasksCountBadge">0</span>
+          </button>
+          <button type="button" class="task-subtab-btn" id="btnSubtabWebsite" onclick="switchAdminTaskSubtab('website')">
+            <span>🌐 Website Quests</span>
+            <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
+          </button>
+          <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
+            <span>📅 Daily Quotas</span>
+          </button>
+        </div>
+      
+        <!-- ============================================================
+             SUBTAB 1: TELEGRAM TASKS ADDER & MANAGER
+             ============================================================ -->
+        <div id="subtabContentTelegram" class="task-subtab-content active">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <h2 style="font-size: 18px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                <span>✈️ Telegram Tasks Manager & Adder</span>
+              </h2>
+              <p style="font-size: 12px; color: #94a3b8;">Add and configure Telegram channels, bots, and groups saved at <code style="color: #38bdf8;">/telegram_tasks_config</code> in Firebase.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" onclick="openNewTelegramTaskModal()" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">➕ Add Telegram Task</button>
+              <button type="button" onclick="resetDefaultTelegramTasks()" class="btn-secondary">Reset Defaults</button>
+              <button type="button" onclick="saveTelegramTasksToFirebase()" class="btn-primary" style="background: #10b981;">💾 Save to Firebase</button>
+            </div>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <button onclick="resetDefaultWebsiteTasks()" class="btn-secondary">Reset Defaults</button>
-            <button onclick="saveWebsiteTasksToFirebase()" class="btn-primary">💾 Save to Firebase</button>
+      
+          <!-- Telegram Tasks Container Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="telegramTasksContainer">
+            <!-- Injected dynamically via JS -->
           </div>
         </div>
       
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="websiteTasksContainer">
-          <!-- Injected dynamically -->
+        <!-- ============================================================
+             SUBTAB 2: WEBSITE TASKS ADDER & MANAGER
+             ============================================================ -->
+        <div id="subtabContentWebsite" class="task-subtab-content" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <h2 style="font-size: 18px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                <span>🌐 Website Tasks Manager & Adder</span>
+              </h2>
+              <p style="font-size: 12px; color: #94a3b8;">Add and configure sponsor secret PIN visit quests saved at <code style="color: #38bdf8;">/website_tasks_config</code> in Firebase.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" onclick="openNewWebsiteTaskModal()" class="btn-primary" style="background: linear-gradient(135deg, #0d9488, #2dd4bf);">➕ Add Website Quest</button>
+              <button type="button" onclick="resetDefaultWebsiteTasks()" class="btn-secondary">Reset Defaults</button>
+              <button type="button" onclick="saveWebsiteTasksToFirebase()" class="btn-primary" style="background: #10b981;">💾 Save to Firebase</button>
+            </div>
+          </div>
+      
+          <!-- Website Tasks Container Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="websiteTasksContainer">
+            <!-- Injected dynamically via JS -->
+          </div>
         </div>
       
-        <!-- Daily Targets Summary Card -->
-        <div class="card-panel">
-          <h3 style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 12px;">Daily Task Targets Reference</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; font-size: 12px;">
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Green Fuel:</span> <strong style="color: #34d399;">2,000 Times</strong>
+        <!-- ============================================================
+             SUBTAB 3: DAILY TASK TARGETS REFERENCE
+             ============================================================ -->
+        <div id="subtabContentDaily" class="task-subtab-content" style="display: none;">
+          <div class="card-panel">
+            <div style="border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #fff;">📅 Daily In-Game Task Quotas Reference</h3>
+              <p style="font-size: 12px; color: #94a3b8;">Daily game requirements that reset every 24 hours (UTC midnight) for all players.</p>
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Dark Green Fuel:</span> <strong style="color: #10b981;">2,000 Times (+1m)</strong>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; font-size: 13px;">
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Green Fuel Cell</span>
+                <strong style="color: #34d399; font-size: 16px; font-family: 'JetBrains Mono', monospace;">2,000 Times</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Dark Green Fuel</span>
+                <strong style="color: #10b981; font-size: 16px; font-family: 'JetBrains Mono', monospace;">2,000 Times (+1m)</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Yellow Fuel Boost</span>
+                <strong style="color: #facc15; font-size: 16px; font-family: 'JetBrains Mono', monospace;">1,000 Times</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Wheel Spins</span>
+                <strong style="color: #c084fc; font-size: 16px; font-family: 'JetBrains Mono', monospace;">250 Times</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Vault Chests Opened</span>
+                <strong style="color: #38bdf8; font-size: 16px; font-family: 'JetBrains Mono', monospace;">250 Times</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Scratch Cards Scratched</span>
+                <strong style="color: #f472b6; font-size: 16px; font-family: 'JetBrains Mono', monospace;">200 Times</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Hatchery Egg Coins</span>
+                <strong style="color: #a3e635; font-size: 16px; font-family: 'JetBrains Mono', monospace;">300 Coins</strong>
+              </div>
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Yellow Fuel:</span> <strong style="color: #facc15;">1,000 Times</strong>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             MODAL: ADD NEW TELEGRAM TASK
+             ============================================================ -->
+        <div class="modal-overlay" id="addTgTaskModal" onclick="closeNewTelegramTaskModal()">
+          <div class="modal-card" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #38bdf8;">➕ Add New Telegram Task</h3>
+              <button type="button" onclick="closeNewTelegramTaskModal()" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer;">✕</button>
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Wheel Spins:</span> <strong style="color: #c084fc;">250 Times</strong>
+      
+            <div class="form-group">
+              <label class="form-label">Task Title</label>
+              <input type="text" id="newTgTitle" placeholder="e.g. Join Channel: Crypto Insider" class="form-input">
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Vault Chests:</span> <strong style="color: #38bdf8;">250 Times</strong>
+      
+            <div class="form-group">
+              <label class="form-label">Telegram URL (t.me/...)</label>
+              <input type="url" id="newTgUrl" placeholder="https://t.me/your_channel_or_bot" class="form-input" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Scratch Cards:</span> <strong style="color: #f472b6;">200 Times</strong>
+      
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Task Type</label>
+                <select id="newTgType" class="form-input">
+                  <option value="plane">Telegram Channel</option>
+                  <option value="bot">Telegram Bot</option>
+                  <option value="group">Telegram Group</option>
+                </select>
+              </div>
+      
+              <div class="form-group">
+                <label class="form-label">Reward (Chest Keys)</label>
+                <input type="number" id="newTgRewardKeys" value="1" min="1" max="10" class="form-input" style="color: #fbbf24; font-weight: 800;">
+              </div>
             </div>
-            <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
-              <span style="color: #94a3b8;">Egg Coins:</span> <strong style="color: #a3e635;">300 Coins</strong>
+      
+            <div class="form-group">
+              <label class="form-label">Task Description</label>
+              <input type="text" id="newTgDesc" placeholder="e.g. Join @Crypto_Insider on Telegram to win 1 Key for Chest" class="form-input">
+            </div>
+      
+            <div class="form-group">
+              <label class="form-label">Action Button Text</label>
+              <input type="text" id="newTgBtnText" value="Join Channel" class="form-input">
+            </div>
+      
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+              <button type="button" onclick="closeNewTelegramTaskModal()" class="btn-secondary">Cancel</button>
+              <button type="button" onclick="confirmAddTelegramTask()" class="btn-primary" style="background: #38bdf8; color: #040a1a;">Add Telegram Task</button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             MODAL: ADD NEW WEBSITE QUEST
+             ============================================================ -->
+        <div class="modal-overlay" id="addWebTaskModal" onclick="closeNewWebsiteTaskModal()">
+          <div class="modal-card" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #2dd4bf;">➕ Add New Website Quest</h3>
+              <button type="button" onclick="closeNewWebsiteTaskModal()" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer;">✕</button>
+            </div>
+      
+            <div class="form-group">
+              <label class="form-label">Quest Title</label>
+              <input type="text" id="newWebTitle" placeholder="e.g. Visit: Crypto Market News Portal" class="form-input">
+            </div>
+      
+            <div class="form-group">
+              <label class="form-label">Destination Website URL</label>
+              <input type="url" id="newWebUrl" placeholder="https://example.com" class="form-input" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">
+            </div>
+      
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between;">
+                  <label class="form-label">4-Digit PIN Code</label>
+                  <button type="button" onclick="genNewWebPin()" style="background: none; border: none; color: #38bdf8; font-size: 10px; font-weight: 800; cursor: pointer;">🎲 Gen</button>
+                </div>
+                <input type="text" maxlength="4" id="newWebCode" value="4829" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; text-align: center; color: #fbbf24; font-weight: 800; letter-spacing: 2px;">
+              </div>
+      
+              <div class="form-group">
+                <label class="form-label">Prize (Diamonds 💎)</label>
+                <input type="number" id="newWebDiamonds" value="100" min="10" step="10" class="form-input" style="color: #22d3ee; font-weight: 800; text-align: center;">
+              </div>
+            </div>
+      
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Entry Cost (Coins 🪙)</label>
+                <input type="number" id="newWebCostCoins" value="1000" min="0" step="100" class="form-input" style="color: #facc15; font-weight: 800; text-align: center;">
+              </div>
+      
+              <div class="form-group">
+                <label class="form-label">Quest Badge Tag</label>
+                <select id="newWebTag" class="form-input">
+                  <option value="SPONSOR QUEST">SPONSOR QUEST</option>
+                  <option value="PARTNER QUEST">PARTNER QUEST</option>
+                  <option value="EXCLUSIVE QUEST">EXCLUSIVE QUEST</option>
+                  <option value="COMMUNITY QUEST">COMMUNITY QUEST</option>
+                </select>
+              </div>
+            </div>
+      
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+              <button type="button" onclick="closeNewWebsiteTaskModal()" class="btn-secondary">Cancel</button>
+              <button type="button" onclick="confirmAddWebsiteTask()" class="btn-primary" style="background: #2dd4bf; color: #040a1a;">Add Website Quest</button>
             </div>
           </div>
         </div>

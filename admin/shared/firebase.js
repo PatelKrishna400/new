@@ -21,6 +21,7 @@ window.adminState = {
   rewards: [],
   requests: [],
   websiteTasks: [],
+  telegramTasks: [],
   isFirebaseConnected: false
 };
 
@@ -154,6 +155,15 @@ function listenToFirebase() {
     if (val && Array.isArray(val) && val.length > 0) {
       window.adminState.websiteTasks = val;
       dispatchAdminEvent('websiteTasksUpdated');
+    }
+  });
+
+  // 5. Telegram Tasks Config
+  db.ref('/telegram_tasks_config').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val && Array.isArray(val) && val.length > 0) {
+      window.adminState.telegramTasks = val;
+      dispatchAdminEvent('telegramTasksUpdated');
     }
   });
 }

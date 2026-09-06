@@ -428,6 +428,33 @@ function getWebsiteTasksList() {
   return WEBSITE_TASKS;
 }
 
+function getTelegramTasksList() {
+  if (window.cloudTelegramTasks && Array.isArray(window.cloudTelegramTasks) && window.cloudTelegramTasks.length > 0) {
+    return window.cloudTelegramTasks.map(ct => {
+      const def = TELEGRAM_TASKS.find(dt => dt.id === ct.id) || {};
+      const isBot = ct.iconType === 'bot' || (ct.tagText && ct.tagText.includes('BOT'));
+      const keys = ct.rewardKeys !== undefined ? Number(ct.rewardKeys) : (def.rewardKeys || 1);
+      return {
+        ...def,
+        ...ct,
+        rewardKeys: keys,
+        rewardText: ct.rewardText || `${keys} ${keys > 1 ? 'Keys' : 'Key'} for Chest`,
+        colorClass: def.colorClass || 'task-blue',
+        iconClass: def.iconClass || 'task-icon-blue',
+        accentClass: def.accentClass || 'task-tab-accent-blue',
+        liquidTheme: def.liquidTheme || 'liquid-blue',
+        tagClass: def.tagClass || 'tag-blue',
+        tagText: ct.tagText || (isBot ? 'TELEGRAM BOT' : 'TELEGRAM CHANNEL'),
+        desc: ct.desc || `Join ${ct.title} on Telegram to win ${keys} Chest Key`,
+        notes: ct.notes || `Join and follow instructions to claim your ${keys} Mystery Chest Key reward!`,
+        tip: ct.tip || 'Tip: Tap the button below to launch Telegram directly.',
+        btnText: ct.btnText || 'Join'
+      };
+    });
+  }
+  return TELEGRAM_TASKS;
+}
+
 // Subtab Switcher
 function switchTaskSubtab(subtabName) {
   gameState.taskSubtab = subtabName;
@@ -567,8 +594,9 @@ function renderTasksList() {
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
 
   const allWebsiteTasks = getWebsiteTasksList();
+  const allTelegramTasks = getTelegramTasksList();
   const activeDailyTasks = DAILY_TASKS.filter(task => !gameState.tasksState.claimedDaily[task.id]);
-  const activeTelegramTasks = TELEGRAM_TASKS.filter(task => !gameState.tasksState.claimedTelegram[task.id]);
+  const activeTelegramTasks = allTelegramTasks.filter(task => !gameState.tasksState.claimedTelegram[task.id]);
   const activeWebsiteTasks = allWebsiteTasks.filter(task => 
     !gameState.tasksState.claimedWebsite[task.id] && !gameState.tasksState.failedWebsite[task.id]
   );
@@ -791,9 +819,9 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
   if (subtabType === 'daily') {
     task = DAILY_TASKS.find(t => t.id === taskId);
   } else if (subtabType === 'telegram') {
-    task = TELEGRAM_TASKS.find(t => t.id === taskId);
+    task = getTelegramTasksList().find(t => t.id === taskId);
   } else {
-    task = WEBSITE_TASKS.find(t => t.id === taskId);
+    task = getWebsiteTasksList().find(t => t.id === taskId);
   }
   if (!task) return;
 
@@ -1215,6 +1243,7 @@ window.DAILY_TASKS = DAILY_TASKS;
 window.TELEGRAM_TASKS = TELEGRAM_TASKS;
 window.WEBSITE_TASKS = WEBSITE_TASKS;
 window.getWebsiteTasksList = getWebsiteTasksList;
+window.getTelegramTasksList = getTelegramTasksList;
 window.switchTaskSubtab = switchTaskSubtab;
 window.renderTasksList = renderTasksList;
 window.claimDailyTaskReward = claimDailyTaskReward;

@@ -2,11 +2,76 @@
    PAGE: TASKS & WEB STYLES (pages/tasks-web/tasks-web.css)
    ========================================================================== */
 
-#websiteTasksContainer .card-panel {
+.task-tabs-bar {
+  display: flex;
+  gap: 8px;
+  background: rgba(4, 10, 26, 0.7);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 55, 120, 0.45);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.task-subtab-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.task-subtab-btn:hover {
+  color: #f8fafc;
+  background: rgba(14, 165, 233, 0.12);
+}
+
+.task-subtab-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+}
+
+.task-tab-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.task-subtab-content {
+  display: block;
+}
+
+.task-item-card {
+  background: rgba(4, 10, 26, 0.75);
+  border: 1px solid rgba(25, 55, 120, 0.45);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-#websiteTasksContainer .card-panel:hover {
+.task-item-card:hover {
   border-color: #38bdf8;
   transform: translateY(-2px);
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(25, 55, 120, 0.4);
+  padding-bottom: 10px;
 }
