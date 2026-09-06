@@ -154,17 +154,32 @@ function renderTelegramTasksUI() {
     `;
   });
 
+  // Append big dashed Adder card
+  html += `
+    <div class="task-item-card" onclick="openNewTelegramTaskModal()" style="border: 2px dashed rgba(56, 189, 248, 0.35); background: rgba(14, 165, 233, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 220px; cursor: pointer; text-align: center; gap: 10px; transition: all 0.2s ease;">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #38bdf8;">➕</div>
+      <strong style="color: #38bdf8; font-size: 14px;">Add New Telegram Task</strong>
+      <span style="color: #94a3b8; font-size: 11px;">Configure Channel, Bot, or Group Quest</span>
+    </div>
+  `;
+
   container.innerHTML = html;
 }
 
 function openNewTelegramTaskModal() {
   const modal = document.getElementById('addTgTaskModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+  }
 }
 
 function closeNewTelegramTaskModal() {
   const modal = document.getElementById('addTgTaskModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
 }
 
 function confirmAddTelegramTask() {
@@ -341,6 +356,16 @@ function renderWebsiteTasksUI() {
       </div>
     `;
   });
+
+  // Append big dashed Adder card
+  html += `
+    <div class="task-item-card" onclick="openNewWebsiteTaskModal()" style="border: 2px dashed rgba(45, 212, 191, 0.35); background: rgba(45, 212, 191, 0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 220px; cursor: pointer; text-align: center; gap: 10px; transition: all 0.2s ease;">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(45, 212, 191, 0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #2dd4bf;">➕</div>
+      <strong style="color: #2dd4bf; font-size: 14px;">Add New Website Quest</strong>
+      <span style="color: #94a3b8; font-size: 11px;">Configure Sponsor Secret PIN Quest</span>
+    </div>
+  `;
+
   container.innerHTML = html;
 }
 
@@ -358,12 +383,18 @@ function genNewWebPin() {
 
 function openNewWebsiteTaskModal() {
   const modal = document.getElementById('addWebTaskModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+  }
 }
 
 function closeNewWebsiteTaskModal() {
   const modal = document.getElementById('addWebTaskModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
 }
 
 function confirmAddWebsiteTask() {

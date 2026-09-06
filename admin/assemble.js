@@ -285,8 +285,11 @@ const footerContent = `
     function switchAdminPage(pageKey, pageTitle) {
       if (window.adminState) window.adminState.activePage = pageKey;
 
+      const normTarget = pageKey.replace(/[-_]/g, '').toLowerCase();
+
       document.querySelectorAll('.nav-item').forEach(item => {
-        if (item.getAttribute('data-page') === pageKey) {
+        const itemPage = item.getAttribute('data-page');
+        if (itemPage === pageKey || (itemPage && itemPage.replace(/[-_]/g, '').toLowerCase() === normTarget)) {
           item.classList.add('active');
         } else {
           item.classList.remove('active');
@@ -294,15 +297,29 @@ const footerContent = `
       });
 
       const titleEl = document.getElementById('activeHeaderTitle');
-      if (titleEl) titleEl.textContent = pageTitle;
+      if (titleEl && pageTitle) titleEl.textContent = pageTitle;
 
       document.querySelectorAll('.page-panel').forEach(panel => {
-        if (panel.id === \`page-\${pageKey}\`) {
+        const normPanel = panel.id.replace(/^page-/, '').replace(/[-_]/g, '').toLowerCase();
+        if (panel.id === \`page-\${pageKey}\` || normTarget === normPanel) {
           panel.classList.add('active');
         } else {
           panel.classList.remove('active');
         }
       });
+
+      // Auto-trigger page renders
+      if (normTarget === 'tasksweb') {
+        if (typeof window.switchAdminTaskSubtab === 'function') {
+          window.switchAdminTaskSubtab('telegram');
+        }
+        if (typeof window.renderTelegramTasksUI === 'function') {
+          window.renderTelegramTasksUI();
+        }
+        if (typeof window.renderWebsiteTasksUI === 'function') {
+          window.renderWebsiteTasksUI();
+        }
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
