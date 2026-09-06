@@ -69,37 +69,37 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd5',
+    id: 'd_fuel_green',
     number: 4,
-    title: '4. Use 30 Green Fuel',
+    title: '4. Use 2,000 Green Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Consume 30 Green Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Navigate to the Energy Generator page and use 30 Green Fuel cells to power your passive energy turbines and increase per-second income.',
-    tip: 'Tip: Fuel can be gathered from Lucky Wheel spins, Mystery Chests, and Daily Streaks.',
+    desc: 'Consume 2,000 Green Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Navigate to the Energy Generator page and use 2,000 Green Fuel cells to power your passive energy turbines and keep them spinning continuously.',
+    tip: 'Tip: Claim Green Fuel from ad stations or wheel spins to keep your generator loaded.',
     type: 'fuel_green',
-    target: 30,
+    target: 2000,
     iconType: 'pump',
-    colorClass: 'task-yellow',
-    iconClass: 'task-icon-yellow',
-    accentClass: 'task-tab-accent-yellow',
-    liquidTheme: 'liquid-yellow',
-    tagClass: 'tag-yellow',
+    colorClass: 'task-green',
+    iconClass: 'task-icon-green',
+    accentClass: 'task-tab-accent-green',
+    liquidTheme: 'liquid-green',
+    tagClass: 'tag-green',
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd6',
+    id: 'd_fuel_yellow_1',
     number: 5,
-    title: '5. Use 10 Yellow Fuel',
+    title: '5. Use 1,000 Yellow Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Consume 10 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 10 high-density Yellow Fuel cells in the Energy Generator to accelerate your passive energy income and fuel reactor cores.',
-    tip: 'Tip: Yellow fuel provides double the power generation of standard green cells.',
+    desc: 'Consume 1,000 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Consume 1,000 high-density Yellow Fuel cells in the Energy Generator to accelerate your passive energy income.',
+    tip: 'Tip: Yellow fuel delivers strong output boosts for high-performance reactors.',
     type: 'fuel_yellow',
-    target: 10,
+    target: 1000,
     iconType: 'pump',
     colorClass: 'task-yellow',
     iconClass: 'task-icon-yellow',
@@ -109,37 +109,37 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd7',
+    id: 'd_fuel_yellow_2',
     number: 6,
-    title: '6. Use 30 Yellow Fuel',
+    title: '6. Use 2,000 Yellow Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Consume 30 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 30 Yellow Fuel cells in the Energy Generator today. Sustained fuel injection ensures uninterrupted reactor charging.',
-    tip: 'Tip: Keep all fuel chambers loaded to maximize overnight offline generation.',
+    desc: 'Consume 2,000 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Consume 2,000 Yellow Fuel cells in the Energy Generator today. Sustained fuel injection ensures uninterrupted reactor power.',
+    tip: 'Tip: Keep all fuel chambers loaded to maximize your daily progression.',
     type: 'fuel_yellow',
-    target: 30,
+    target: 2000,
     iconType: 'pump',
-    colorClass: 'task-orange',
-    iconClass: 'task-icon-orange',
-    accentClass: 'task-tab-accent-orange',
-    liquidTheme: 'liquid-orange',
-    tagClass: 'tag-orange',
+    colorClass: 'task-yellow',
+    iconClass: 'task-icon-yellow',
+    accentClass: 'task-tab-accent-yellow',
+    liquidTheme: 'liquid-yellow',
+    tagClass: 'tag-yellow',
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd8',
+    id: 'd_fuel_orange',
     number: 7,
-    title: '7. Use 5 Orange Fuel',
+    title: '7. Use 1,000 Orange Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Consume 5 Orange Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 5 supercharged Orange Fuel cells in the Energy Generator. High-octane orange plasma generates tremendous energy spikes.',
-    tip: 'Tip: Orange fuel is rare—find them in 7-day streak drops and mystery chest tier 3.',
+    desc: 'Consume 1,000 Orange Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Consume 1,000 supercharged Orange Fuel cells in the Energy Generator to fire up maximum thermal energy.',
+    tip: 'Tip: Orange fuel provides an exceptional power boost for passive EP generation.',
     type: 'fuel_orange',
-    target: 5,
+    target: 1000,
     iconType: 'pump',
     colorClass: 'task-orange',
     iconClass: 'task-icon-orange',
@@ -149,17 +149,17 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd9',
+    id: 'd_fuel_red',
     number: 8,
-    title: '8. Use 1 Red Fuel',
+    title: '8. Use 1,000 Red Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Consume 1 Red Fuel cell in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 1 ultra-rare Red Fuel cell in the Energy Generator to trigger critical core overclock and boost per-second production permanently.',
-    tip: 'Tip: Red Fuel provides an instant +0.01 EP/Sec rate bonus!',
+    desc: 'Consume 1,000 Red Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Consume 1,000 ultra-potent Red Fuel cells in the Energy Generator to push your turbines to maximum overclock.',
+    tip: 'Tip: Red Fuel provides permanent EP/sec rate increases upon usage.',
     type: 'fuel_red',
-    target: 1,
+    target: 1000,
     iconType: 'pump',
     colorClass: 'task-red',
     iconClass: 'task-icon-red',
@@ -169,17 +169,57 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd_spin_50',
+    id: 'd_fuel_pink',
     number: 9,
-    title: '9. Spin 50 per day',
+    title: '9. Use 500 Pink Fuel',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Spin the Lucky Wheel 50 times in a day to win 1 Scratch Card',
-    notes: 'Spin the Lucky Prize Wheel 50 times today. Every spin gives you a chance to win keys, tickets, fuel cells, and huge jackpot coin prizes.',
+    desc: 'Consume 500 Pink Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Use 500 Pink Fuel cells in the Energy Generator to trigger the 2x Energy Booster overdrive.',
+    tip: 'Tip: Pink boost doubles your passive EP earnings while active.',
+    type: 'fuel_pink',
+    target: 500,
+    iconType: 'pump',
+    colorClass: 'task-pink',
+    iconClass: 'task-icon-pink',
+    accentClass: 'task-tab-accent-pink',
+    liquidTheme: 'liquid-pink',
+    tagClass: 'tag-pink',
+    tagText: 'DAILY QUEST'
+  },
+  {
+    id: 'd_fuel_purple',
+    number: 10,
+    title: '10. Use 250 Purple Fuel',
+    rewardText: '1 Scratch Card',
+    rewardType: 'scratch_card',
+    rewardVal: 1,
+    desc: 'Consume 250 Purple Fuel cells in the Energy Generator to win 1 Scratch Card',
+    notes: 'Use 250 Purple Fuel cells in the Energy Generator to trigger the 5x Energy Booster hyperdrive.',
+    tip: 'Tip: Purple boost generates a massive 5x surge in generator production.',
+    type: 'fuel_purple',
+    target: 250,
+    iconType: 'pump',
+    colorClass: 'task-purple',
+    iconClass: 'task-icon-purple',
+    accentClass: 'task-tab-accent-purple',
+    liquidTheme: 'liquid-purple',
+    tagClass: 'tag-purple',
+    tagText: 'DAILY QUEST'
+  },
+  {
+    id: 'd_spin_250',
+    number: 11,
+    title: '11. Spin 250 per day',
+    rewardText: '1 Scratch Card',
+    rewardType: 'scratch_card',
+    rewardVal: 1,
+    desc: 'Spin the Lucky Wheel 250 times in a day to win 1 Scratch Card',
+    notes: 'Spin the Lucky Prize Wheel 250 times today. Every spin gives you a chance to win keys, tickets, fuel cells, and huge jackpot coin prizes.',
     tip: 'Tip: If tickets run low, watch a quick ad to claim free tickets instantly.',
     type: 'spin',
-    target: 50,
+    target: 250,
     iconType: 'spin',
     colorClass: 'task-purple',
     iconClass: 'task-icon-purple',
@@ -189,17 +229,17 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd_chest_50',
-    number: 10,
-    title: '10. Chest play 50 per day',
+    id: 'd_chest_250',
+    number: 12,
+    title: '12. Chest play 250 per day',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Unlock and open 50 Mystery Chests in a day to win 1 Scratch Card',
-    notes: 'Unlock 50 Mystery Chests using Winning Keys today. Pick any of the 3 side-by-side chests to reveal hidden rewards and rare fuel.',
+    desc: 'Unlock and open 250 Mystery Chests in a day to win 1 Scratch Card',
+    notes: 'Unlock 250 Mystery Chests using Winning Keys today. Pick any chest to reveal hidden rewards and rare fuel.',
     tip: 'Tip: Earn keys from Telegram tasks or claim free keys via video ads.',
     type: 'chest',
-    target: 50,
+    target: 250,
     iconType: 'chest',
     colorClass: 'task-yellow',
     iconClass: 'task-icon-yellow',
@@ -209,17 +249,17 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd_scratch_30',
-    number: 11,
-    title: '11. Card scratch 30 per day',
+    id: 'd_scratch_200',
+    number: 13,
+    title: '13. Card scratch 200 per day',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Play and scratch 30 Scratch Cards in a day to win 1 Scratch Card',
-    notes: 'Scratch away the metallic gray tap foil on 30 holographic cards today. Match 3 identical items to trigger a huge Jackpot win!',
-    tip: 'Tip: Tap or swipe across all 9 cells to burn the gray cover with flame embers.',
+    desc: 'Play and scratch 200 Scratch Cards in a day to win 1 Scratch Card',
+    notes: 'Scratch away the metallic gray foil on 200 holographic cards today to reveal instant prizes!',
+    tip: 'Tip: Rub or tap the card foil to reveal hidden reward items.',
     type: 'scratch',
-    target: 30,
+    target: 200,
     iconType: 'scratch',
     colorClass: 'task-pink',
     iconClass: 'task-icon-pink',
@@ -229,17 +269,17 @@ const DAILY_TASKS = [
     tagText: 'DAILY QUEST'
   },
   {
-    id: 'd_egg_50',
-    number: 12,
-    title: '12. Hatch egg 50 per day',
+    id: 'd_egg_300',
+    number: 14,
+    title: '14. Egg coin use in egg game 300 per day',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Crack and hatch 50 Cyber Eggs in a day to win 1 Scratch Card',
-    notes: 'Crack open 50 Cyber Eggs in the 16-Egg Hatchery grid. Collect 3 matching keys, cards, tickets, or coins to win instant sets.',
-    tip: 'Tip: Use the reshuffle button anytime if you want a fresh set of eggs!',
+    desc: 'Use 300 Egg Coins in Cyber Egg Hatchery in a day to win 1 Scratch Card',
+    notes: 'Hatch Cyber Eggs using 300 Egg Coins in the 16-Egg Hatchery today. Collect 3 matching items to win big!',
+    tip: 'Tip: Claim free egg coins by watching video ads or earning them in chests.',
     type: 'egg',
-    target: 50,
+    target: 300,
     iconType: 'egg',
     colorClass: 'task-green',
     iconClass: 'task-icon-green',
@@ -307,20 +347,98 @@ const TELEGRAM_TASKS = [
   }
 ];
 
+const WEBSITE_TASKS = [
+  {
+    id: 'web1',
+    title: 'Visit: Tap Empire Official Web',
+    rewardText: '100 Diamonds 💎',
+    diamondReward: 100,
+    costCoins: 1000,
+    code: '4829',
+    desc: 'Unlock with 1,000 Coins, visit official portal, and enter 4-digit secret code to win 100 Diamonds 💎',
+    notes: 'Spend 1,000 Coins to open Tap Empire official website. Search the page for the hidden 4-digit PIN code. Enter the code to claim 100 Diamonds! Wrong code removes the quest.',
+    tip: 'Tip: Look carefully at the banner or footer on the webpage for your 4-digit PIN code.',
+    iconType: 'globe',
+    btnText: 'Unlock & Visit',
+    url: 'https://tapempire.io',
+    colorClass: 'task-cyan',
+    iconClass: 'task-icon-cyan',
+    accentClass: 'task-tab-accent-cyan',
+    liquidTheme: 'liquid-cyan',
+    tagClass: 'tag-cyan',
+    tagText: 'SPONSOR QUEST'
+  },
+  {
+    id: 'web2',
+    title: 'Visit Partner: CoinMarketCap Hub',
+    rewardText: '150 Diamonds 💎',
+    diamondReward: 150,
+    costCoins: 1000,
+    code: '7105',
+    desc: 'Unlock with 1,000 Coins, explore partner hub, and enter 4-digit code to win 150 Diamonds 💎',
+    notes: 'Spend 1,000 Coins to unlock partner site. Browse through the verified hub to find the 4-digit secret key. Accurate verification awards 150 Diamonds!',
+    tip: 'Tip: Copy or memorize the 4 numbers before returning to the game.',
+    iconType: 'globe',
+    btnText: 'Unlock & Visit',
+    url: 'https://coinmarketcap.com',
+    colorClass: 'task-blue',
+    iconClass: 'task-icon-blue',
+    accentClass: 'task-tab-accent-blue',
+    liquidTheme: 'liquid-blue',
+    tagClass: 'tag-blue',
+    tagText: 'PARTNER QUEST'
+  },
+  {
+    id: 'web3',
+    title: 'Visit: Airdrop & Rewards Directory',
+    rewardText: '200 Diamonds 💎',
+    diamondReward: 200,
+    costCoins: 1000,
+    code: '9364',
+    desc: 'Unlock with 1,000 Coins, explore Web3 directory, and enter 4-digit code to win 200 Diamonds 💎',
+    notes: 'Unlock exclusive rewards portal for 1,000 Coins. Locate the 4-digit authorization code and enter it to win 200 Diamonds!',
+    tip: 'Tip: If code is entered incorrectly, the task is eliminated and you must try again.',
+    iconType: 'globe',
+    btnText: 'Unlock & Visit',
+    url: 'https://dappradar.com',
+    colorClass: 'task-purple',
+    iconClass: 'task-icon-purple',
+    accentClass: 'task-tab-accent-purple',
+    liquidTheme: 'liquid-purple',
+    tagClass: 'tag-purple',
+    tagText: 'EXCLUSIVE QUEST'
+  }
+];
+
+function getWebsiteTasksList() {
+  if (window.cloudWebsiteTasks && Array.isArray(window.cloudWebsiteTasks) && window.cloudWebsiteTasks.length > 0) {
+    return window.cloudWebsiteTasks.map(ct => {
+      const def = WEBSITE_TASKS.find(dt => dt.id === ct.id) || {};
+      return {
+        ...def,
+        ...ct,
+        costCoins: ct.costCoins !== undefined ? ct.costCoins : 1000,
+        diamondReward: ct.diamondReward !== undefined ? ct.diamondReward : (def.diamondReward || 100),
+        code: ct.code || def.code || '1234',
+        rewardText: `${ct.diamondReward !== undefined ? ct.diamondReward : (def.diamondReward || 100)} Diamonds 💎`,
+        tagText: ct.tag || def.tagText || 'SPONSOR QUEST'
+      };
+    });
+  }
+  return WEBSITE_TASKS;
+}
+
 // Subtab Switcher
 function switchTaskSubtab(subtabName) {
   gameState.taskSubtab = subtabName;
   const subDaily = (DOM && DOM.subtabDaily) || document.getElementById('subtabDaily');
   const subTelegram = (DOM && DOM.subtabTelegram) || document.getElementById('subtabTelegram');
-  if (subDaily && subTelegram) {
-    if (subtabName === 'daily') {
-      subDaily.classList.add('active');
-      subTelegram.classList.remove('active');
-    } else {
-      subDaily.classList.remove('active');
-      subTelegram.classList.add('active');
-    }
-  }
+  const subWebsite = (DOM && DOM.subtabWebsite) || document.getElementById('subtabWebsite');
+  
+  if (subDaily) subDaily.classList.toggle('active', subtabName === 'daily');
+  if (subTelegram) subTelegram.classList.toggle('active', subtabName === 'telegram');
+  if (subWebsite) subWebsite.classList.toggle('active', subtabName === 'website');
+
   sfx.playTapSound(1);
   renderTasksList();
 }
@@ -368,6 +486,12 @@ function getTaskIconSvg(iconType) {
     return `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
     </svg>`;
+  } else if (iconType === 'globe') {
+    return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>`;
   } else {
     return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="11" width="18" height="10" rx="2"/>
@@ -381,24 +505,32 @@ function getTaskIconSvg(iconType) {
 
 // Compute current progress for a given task
 function getTaskCurrentProgress(task) {
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (!gameState.dailyStats) {
+    gameState.dailyStats = {};
+  }
   if (task.type === 'tap') {
-    return gameState.reactor.energyTaps || 0;
+    return gameState.dailyStats.taps || gameState.reactor.energyTaps || 0;
   } else if (task.type === 'fuel_green') {
-    return (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.green) || 0;
+    return gameState.dailyStats.fuel_green || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.green) || 0;
   } else if (task.type === 'fuel_yellow') {
-    return (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.yellow) || 0;
+    return gameState.dailyStats.fuel_yellow || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.yellow) || 0;
   } else if (task.type === 'fuel_orange') {
-    return (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.orange) || 0;
+    return gameState.dailyStats.fuel_orange || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.orange) || 0;
   } else if (task.type === 'fuel_red') {
-    return (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.red) || 0;
+    return gameState.dailyStats.fuel_red || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.red) || 0;
+  } else if (task.type === 'fuel_pink') {
+    return gameState.dailyStats.fuel_pink || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.pink) || 0;
+  } else if (task.type === 'fuel_purple') {
+    return gameState.dailyStats.fuel_purple || (gameState.energyGenerator && gameState.energyGenerator.consumed && gameState.energyGenerator.consumed.purple) || 0;
   } else if (task.type === 'spin') {
-    return (gameState.dailyStats && gameState.dailyStats.spins) || 0;
+    return gameState.dailyStats.spins || 0;
   } else if (task.type === 'chest') {
-    return (gameState.dailyStats && gameState.dailyStats.chests) || 0;
+    return gameState.dailyStats.chests || 0;
   } else if (task.type === 'scratch') {
-    return (gameState.dailyStats && gameState.dailyStats.scratches) || 0;
+    return gameState.dailyStats.scratches || 0;
   } else if (task.type === 'egg') {
-    return (gameState.dailyStats && gameState.dailyStats.eggs) || 0;
+    return gameState.dailyStats.eggs || 0;
   }
   return 0;
 }
@@ -421,21 +553,37 @@ function renderTasksList() {
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
 
   if (!gameState.tasksState) {
-    gameState.tasksState = { claimedDaily: {}, claimedTelegram: {} };
+    gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {} };
   }
   if (!gameState.tasksState.claimedDaily) gameState.tasksState.claimedDaily = {};
   if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
+  if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
 
   const dailyBadge = (DOM && DOM.dailyBadgeCount) || document.getElementById('dailyBadgeCount');
   const tgBadge = (DOM && DOM.telegramBadgeCount) || document.getElementById('telegramBadgeCount');
+  const webBadge = (DOM && DOM.websiteBadgeCount) || document.getElementById('websiteBadgeCount');
+
+  if (!gameState.tasksState.failedWebsite) gameState.tasksState.failedWebsite = {};
+  if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
+
+  const allWebsiteTasks = getWebsiteTasksList();
+  const activeDailyTasks = DAILY_TASKS.filter(task => !gameState.tasksState.claimedDaily[task.id]);
+  const activeTelegramTasks = TELEGRAM_TASKS.filter(task => !gameState.tasksState.claimedTelegram[task.id]);
+  const activeWebsiteTasks = allWebsiteTasks.filter(task => 
+    !gameState.tasksState.claimedWebsite[task.id] && !gameState.tasksState.failedWebsite[task.id]
+  );
+
+  if (dailyBadge) {
+    dailyBadge.textContent = activeDailyTasks.length;
+  }
+  if (tgBadge) {
+    tgBadge.textContent = activeTelegramTasks.length;
+  }
+  if (webBadge) {
+    webBadge.textContent = activeWebsiteTasks.length;
+  }
 
   if (gameState.taskSubtab === 'daily') {
-    const activeDailyTasks = DAILY_TASKS.filter(task => !gameState.tasksState.claimedDaily[task.id]);
-
-    if (dailyBadge) {
-      dailyBadge.textContent = activeDailyTasks.length;
-    }
-
     if (activeDailyTasks.length === 0) {
       container.innerHTML = `
         <div class="tasks-empty-complete-card">
@@ -508,14 +656,8 @@ function renderTasksList() {
     });
     container.innerHTML = html;
 
-  } else {
+  } else if (gameState.taskSubtab === 'telegram') {
     // Telegram Tasks Subtab
-    const activeTelegramTasks = TELEGRAM_TASKS.filter(task => !gameState.tasksState.claimedTelegram[task.id]);
-
-    if (tgBadge) {
-      tgBadge.textContent = activeTelegramTasks.length;
-    }
-
     if (activeTelegramTasks.length === 0) {
       container.innerHTML = `
         <div class="tasks-empty-complete-card">
@@ -569,6 +711,66 @@ function renderTasksList() {
       `;
     });
     container.innerHTML = html;
+
+  } else {
+    // Website Tasks Subtab (1,000 Coin unlock, 4-digit code verification, win Diamonds or eliminated)
+    if (activeWebsiteTasks.length === 0) {
+      container.innerHTML = `
+        <div class="tasks-empty-complete-card">
+          <div class="empty-trophy-icon">🌐</div>
+          <h4 class="empty-title">All Website Quests Complete!</h4>
+          <p class="empty-desc">You explored all available sponsor website quests. Any finished or eliminated tasks have been removed. Check back soon for new campaigns!</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    activeWebsiteTasks.forEach(task => {
+      const webSvg = getTaskIconSvg(task.iconType);
+      const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
+      const actionBtnLabel = isAlreadyOpened ? 'Enter PIN 🔑' : 'Open (1K 🪙)';
+
+      html += `
+        <div class="task-decorated-tab-card ${task.colorClass}" 
+             id="webCard-${task.id}" 
+             onclick="openTaskNotesPopup('${task.id}', 'website')" 
+             role="button" 
+             tabindex="0">
+
+          <!-- Left Accent Bar -->
+          <div class="task-tab-accent-bar ${task.accentClass}"></div>
+
+          <!-- 3D Icon Box -->
+          <div class="task-tab-icon-box ${task.iconClass}">
+            ${webSvg}
+          </div>
+
+          <!-- Title & Subtag -->
+          <div class="task-tab-text-info">
+            <div class="task-tab-title-row">
+              <span class="task-tab-title">${task.title}</span>
+              <span class="task-cat-tag ${task.tagClass}">${task.tagText}</span>
+            </div>
+            <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 1px;">
+              Win +${task.diamondReward || 100} 💎 <span style="color: #facc15;">(Cost: 1,000 🪙)</span>
+            </div>
+          </div>
+
+          <!-- Right Action Col -->
+          <div class="task-tab-right-col">
+            <button class="task-tab-notes-indicator" onclick="startWebsiteTask('${task.id}', event)">
+              <span>${actionBtnLabel}</span>
+              <svg class="task-tab-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      `;
+    });
+    container.innerHTML = html;
   }
 }
 
@@ -588,8 +790,10 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
   let task = null;
   if (subtabType === 'daily') {
     task = DAILY_TASKS.find(t => t.id === taskId);
-  } else {
+  } else if (subtabType === 'telegram') {
     task = TELEGRAM_TASKS.find(t => t.id === taskId);
+  } else {
+    task = WEBSITE_TASKS.find(t => t.id === taskId);
   }
   if (!task) return;
 
@@ -603,7 +807,7 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
 
   const subtag = document.getElementById('taskNotesSubtag');
   if (subtag) {
-    subtag.textContent = task.tagText || (subtabType === 'daily' ? 'DAILY QUEST' : 'TELEGRAM TASK');
+    subtag.textContent = task.tagText || (subtabType === 'daily' ? 'DAILY QUEST' : subtabType === 'telegram' ? 'TELEGRAM TASK' : 'WEBSITE TASK');
   }
 
   const title = document.getElementById('taskNotesTitle');
@@ -627,12 +831,20 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
     if (progLiquid) {
       progLiquid.style.width = `${percent}%`;
     }
-  } else {
+  } else if (subtabType === 'telegram') {
     if (progVal) {
       progVal.textContent = '1 Membership Required';
     }
     if (progLiquid) {
       progLiquid.style.width = '50%';
+    }
+  } else {
+    const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
+    if (progVal) {
+      progVal.textContent = isAlreadyOpened ? 'Unlocked (Enter 4-Digit PIN)' : '1,000 Coins Unlock Required';
+    }
+    if (progLiquid) {
+      progLiquid.style.width = isAlreadyOpened ? '80%' : '25%';
     }
   }
 
@@ -648,13 +860,21 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
   const statusTag = document.getElementById('taskNotesStatusTag');
 
   if (rewardValEl) {
-    rewardValEl.textContent = task.rewardText || '1 Scratch Card';
+    if (subtabType === 'website') {
+      rewardValEl.textContent = `+${task.diamondReward || 100} Diamonds`;
+    } else {
+      rewardValEl.textContent = task.rewardText || '1 Scratch Card';
+    }
   }
   if (rewardIconEl) {
-    rewardIconEl.textContent = subtabType === 'daily' ? '🎴' : '🔑';
+    rewardIconEl.textContent = subtabType === 'daily' ? '🎴' : (subtabType === 'website' ? '💎' : '🔑');
   }
   if (statusTag) {
-    if (isReadyToClaim) {
+    if (subtabType === 'website') {
+      const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
+      statusTag.textContent = isAlreadyOpened ? 'UNLOCKED (PIN READY)' : '1,000 COIN COST';
+      statusTag.className = 'reward-ready-tag ' + (isAlreadyOpened ? 'ready' : '');
+    } else if (isReadyToClaim) {
       statusTag.textContent = 'READY TO CLAIM';
       statusTag.classList.add('ready');
     } else {
@@ -685,10 +905,20 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
           <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
         `;
       }
-    } else {
+    } else if (subtabType === 'telegram') {
       actionsWrap.innerHTML = `
         <button class="notes-nav-btn" onclick="joinTelegramFromNotes('${task.id}', '${task.title}', ${task.rewardKeys}, '${task.url}')">
           <span>✈️ Open & Claim Key</span>
+        </button>
+        <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
+      `;
+    } else {
+      const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
+      const btnIcon = isAlreadyOpened ? '🔑' : '🌐';
+      const btnTitle = isAlreadyOpened ? 'Enter Secret 4-Digit Code' : 'Open Website (1,000 🪙)';
+      actionsWrap.innerHTML = `
+        <button class="notes-nav-btn" onclick="visitWebsiteFromNotes('${task.id}')" style="background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);">
+          <span>${btnIcon} ${btnTitle}</span>
         </button>
         <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
       `;
@@ -725,6 +955,283 @@ function joinTelegramFromNotes(taskId, title, rewardKeys, url) {
   closeTaskNotesPopup();
   joinTelegramTask(taskId, title, rewardKeys, url);
 }
+
+function visitWebsiteFromNotes(taskId) {
+  closeTaskNotesPopup();
+  startWebsiteTask(taskId);
+}
+
+// ==========================================================================
+// WEBSITE QUEST CONTROLLER (1,000 COIN COST, 4-DIGIT PIN & DIAMONDS REWARD)
+// ==========================================================================
+let activeVerifyingTaskId = null;
+
+function startWebsiteTask(taskId, event) {
+  if (event && typeof event.stopPropagation === 'function') {
+    event.stopPropagation();
+  }
+
+  const allWebsiteTasks = getWebsiteTasksList();
+  const task = allWebsiteTasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
+  const isAlreadyOpened = gameState.tasksState.openedWebsite[taskId];
+
+  // If already opened, directly open PIN verification modal without charging coins again
+  if (isAlreadyOpened) {
+    openWebCodeModal(taskId);
+    return;
+  }
+
+  // Check if player has 1,000 Coins
+  const cost = task.costCoins !== undefined ? task.costCoins : 1000;
+  if ((gameState.player.coins || 0) < cost) {
+    sfx.playErrorSound();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⚠️ Insufficient Coins! Need ${cost.toLocaleString()} 🪙 to open task.`);
+    } else {
+      alert(`Insufficient Coins! You need ${cost.toLocaleString()} Coins to open this website quest.`);
+    }
+    return;
+  }
+
+  // Deduct 1,000 Coins
+  gameState.player.coins -= cost;
+  gameState.tasksState.openedWebsite[taskId] = true;
+  saveGame();
+  updateUI();
+
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🪙 -${cost.toLocaleString()} Coins paid to open quest!`);
+  }
+  sfx.playBuySound();
+
+  // Open the website link in a new browser tab
+  if (task.url) {
+    window.open(task.url, '_blank');
+  }
+
+  // Render updated button label ("Enter PIN 🔑")
+  renderTasksList();
+
+  // Open the 4-digit code verification modal
+  setTimeout(() => {
+    openWebCodeModal(taskId);
+  }, 400);
+}
+
+function openWebCodeModal(taskId) {
+  const allWebsiteTasks = getWebsiteTasksList();
+  const task = allWebsiteTasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  activeVerifyingTaskId = taskId;
+
+  const backdrop = document.getElementById('webCodeModalBackdrop');
+  const titleEl = document.getElementById('webModalTitle');
+  const rewardEl = document.getElementById('webModalRewardText');
+  const subtagEl = document.getElementById('webModalSubtag');
+
+  if (titleEl) titleEl.textContent = task.title;
+  if (rewardEl) rewardEl.textContent = `+${task.diamondReward || 100} Diamonds 💎`;
+  if (subtagEl) subtagEl.textContent = task.tagText || 'WEBSITE QUEST VERIFICATION';
+
+  // Clear 4 inputs
+  for (let i = 0; i < 4; i++) {
+    const pinInp = document.getElementById(`webPin${i}`);
+    if (pinInp) pinInp.value = '';
+  }
+
+  setupPinInputAutoAdvance();
+
+  if (backdrop) backdrop.classList.add('open');
+  const firstPin = document.getElementById('webPin0');
+  if (firstPin) setTimeout(() => firstPin.focus(), 150);
+}
+
+function closeWebCodeModal(event) {
+  if (event && event.target && event.target.id !== 'webCodeModalBackdrop' && !event.target.classList.contains('web-code-close-btn')) {
+    return;
+  }
+  const backdrop = document.getElementById('webCodeModalBackdrop');
+  if (backdrop) backdrop.classList.remove('open');
+}
+
+function revisitWebsiteTaskUrl() {
+  if (!activeVerifyingTaskId) return;
+  const allWebsiteTasks = getWebsiteTasksList();
+  const task = allWebsiteTasks.find(t => t.id === activeVerifyingTaskId);
+  if (task && task.url) {
+    window.open(task.url, '_blank');
+  }
+}
+
+function setupPinInputAutoAdvance() {
+  for (let i = 0; i < 4; i++) {
+    const pinInp = document.getElementById(`webPin${i}`);
+    if (!pinInp) continue;
+
+    pinInp.oninput = (e) => {
+      const val = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = val ? val[0] : '';
+      if (val && i < 3) {
+        const next = document.getElementById(`webPin${i + 1}`);
+        if (next) next.focus();
+      }
+    };
+
+    pinInp.onkeydown = (e) => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) {
+        const prev = document.getElementById(`webPin${i - 1}`);
+        if (prev) prev.focus();
+      } else if (e.key === 'Enter') {
+        submitWebsiteCodeVerification();
+      }
+    };
+  }
+}
+
+function submitWebsiteCodeVerification() {
+  if (!activeVerifyingTaskId) return;
+
+  const taskId = activeVerifyingTaskId;
+  const allWebsiteTasks = getWebsiteTasksList();
+  const task = allWebsiteTasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  let enteredCode = '';
+  for (let i = 0; i < 4; i++) {
+    const inp = document.getElementById(`webPin${i}`);
+    enteredCode += (inp ? inp.value.trim() : '');
+  }
+
+  if (enteredCode.length < 4) {
+    sfx.playErrorSound();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚠️ Please enter the full 4-digit code!');
+    }
+    return;
+  }
+
+  // Close verification modal
+  const codeBackdrop = document.getElementById('webCodeModalBackdrop');
+  if (codeBackdrop) codeBackdrop.classList.remove('open');
+
+  const correctCode = (task.code || '1234').toString().trim();
+  const card = document.getElementById(`webCard-${taskId}`);
+
+  if (enteredCode === correctCode) {
+    // SUCCESS: Correct Code -> Win Diamonds & Remove Task
+    const winDiamonds = task.diamondReward || 100;
+    
+    if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
+    gameState.tasksState.claimedWebsite[taskId] = true;
+    gameState.player.diamonds = (gameState.player.diamonds || 0) + winDiamonds;
+    gameState.player.websiteTasksCompleted = (gameState.player.websiteTasksCompleted || 0) + 1;
+
+    if (card) {
+      spawnTaskEmojiBurst(card);
+      card.classList.add('task-claimed-exit');
+    }
+
+    sfx.playLevelUpSound();
+    saveGame();
+    updateUI();
+
+    showWebResultModal(true, winDiamonds, `Correct code (${correctCode}) verified! You earned ${winDiamonds} Diamonds. Task completed and removed.`);
+  } else {
+    // FAILURE: Incorrect Code -> Remove Task and show "Try Again" popup
+    if (!gameState.tasksState.failedWebsite) gameState.tasksState.failedWebsite = {};
+    gameState.tasksState.failedWebsite[taskId] = true;
+
+    if (card) {
+      card.classList.add('task-claimed-exit');
+    }
+
+    sfx.playErrorSound();
+    saveGame();
+    updateUI();
+
+    showWebResultModal(false, 0, `Invalid 4-digit code entered (${enteredCode}). Task removed without reward. Please try again with new quests!`);
+  }
+
+  // Re-render tasks list after smooth exit animation
+  setTimeout(() => {
+    renderTasksList();
+  }, 420);
+}
+
+function showWebResultModal(isSuccess, diamondReward, message) {
+  const backdrop = document.getElementById('webResultModalBackdrop');
+  const glow = document.getElementById('webResultGlow');
+  const icon = document.getElementById('webResultIcon');
+  const title = document.getElementById('webResultTitle');
+  const desc = document.getElementById('webResultDesc');
+  const rewardBadge = document.getElementById('webResultRewardBadge');
+  const rewardVal = document.getElementById('webResultRewardVal');
+
+  if (!backdrop) return;
+
+  if (isSuccess) {
+    if (glow) {
+      glow.className = 'web-result-glow glow-success';
+    }
+    if (icon) icon.textContent = '💎';
+    if (title) title.textContent = 'Quest Completed! 💎';
+    if (desc) desc.textContent = message || `Congratulations! You unlocked the secret code and won ${diamondReward} Diamonds!`;
+    if (rewardBadge) {
+      rewardBadge.className = 'web-result-reward-badge';
+      rewardBadge.style.display = 'block';
+    }
+    if (rewardVal) rewardVal.textContent = `+${diamondReward} Diamonds 💎`;
+  } else {
+    if (glow) {
+      glow.className = 'web-result-glow glow-failure';
+    }
+    if (icon) icon.textContent = '❌';
+    if (title) title.textContent = 'Wrong Code - Try Again!';
+    if (desc) desc.textContent = message || 'The 4-digit code you entered did not match. Task has been removed.';
+    if (rewardBadge) {
+      rewardBadge.className = 'web-result-reward-badge badge-failed';
+      rewardBadge.style.display = 'block';
+    }
+    if (rewardVal) rewardVal.textContent = 'Task Removed (0 💎)';
+  }
+
+  backdrop.classList.add('open');
+}
+
+function closeWebResultModal(event) {
+  if (event && event.target && event.target.id !== 'webResultModalBackdrop' && event.target.tagName !== 'BUTTON') {
+    return;
+  }
+  const backdrop = document.getElementById('webResultModalBackdrop');
+  if (backdrop) backdrop.classList.remove('open');
+}
+
+// Global Exports
+window.DAILY_TASKS = DAILY_TASKS;
+window.TELEGRAM_TASKS = TELEGRAM_TASKS;
+window.WEBSITE_TASKS = WEBSITE_TASKS;
+window.getWebsiteTasksList = getWebsiteTasksList;
+window.switchTaskSubtab = switchTaskSubtab;
+window.renderTasksList = renderTasksList;
+window.claimDailyTaskReward = claimDailyTaskReward;
+window.joinTelegramTask = joinTelegramTask;
+window.startWebsiteTask = startWebsiteTask;
+window.openWebCodeModal = openWebCodeModal;
+window.closeWebCodeModal = closeWebCodeModal;
+window.revisitWebsiteTaskUrl = revisitWebsiteTaskUrl;
+window.submitWebsiteCodeVerification = submitWebsiteCodeVerification;
+window.showWebResultModal = showWebResultModal;
+window.closeWebResultModal = closeWebResultModal;
+window.openTaskNotesPopup = openTaskNotesPopup;
+window.closeTaskNotesPopup = closeTaskNotesPopup;
+window.claimDailyFromNotes = claimDailyFromNotes;
+window.goToTaskFromNotes = goToTaskFromNotes;
+window.joinTelegramFromNotes = joinTelegramFromNotes;
+window.visitWebsiteFromNotes = visitWebsiteFromNotes;
 
 // Spawns celebratory emoji explosion effect over the card
 function spawnTaskEmojiBurst(card) {
@@ -833,19 +1340,6 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
   }, 420);
 }
 
-// Global Exports
-window.DAILY_TASKS = DAILY_TASKS;
-window.TELEGRAM_TASKS = TELEGRAM_TASKS;
-window.switchTaskSubtab = switchTaskSubtab;
-window.renderTasksList = renderTasksList;
-window.claimDailyTaskReward = claimDailyTaskReward;
-window.joinTelegramTask = joinTelegramTask;
-window.openTaskNotesPopup = openTaskNotesPopup;
-window.closeTaskNotesPopup = closeTaskNotesPopup;
-window.claimDailyFromNotes = claimDailyFromNotes;
-window.goToTaskFromNotes = goToTaskFromNotes;
-window.joinTelegramFromNotes = joinTelegramFromNotes;
-
 // Pre-render tasks list on DOM ready for instant fast loading
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
@@ -857,4 +1351,13 @@ if (typeof document !== 'undefined') {
       if (typeof renderTasksList === 'function') renderTasksList();
     }, 0);
   }
+}
+
+// Hidden 24-hour background ticker to automatically restart all daily tasks
+if (typeof window !== 'undefined' && !window._dailyTasksHiddenTicker) {
+  window._dailyTasksHiddenTicker = setInterval(() => {
+    if (typeof checkDailyStatsDate === 'function') {
+      checkDailyStatsDate();
+    }
+  }, 10000);
 }

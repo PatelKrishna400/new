@@ -100,7 +100,8 @@ function updateRewardViewUI() {
   if (chestKeysVal) chestKeysVal.textContent = `${keyCount}`;
 
   const chestAvail = document.getElementById('chestAvailableKeys');
-  if (chestAvail) chestAvail.textContent = `${keyCount} Key${keyCount === 1 ? '' : 's'}`;
+  if (chestAvail) chestAvail.textContent = `${keyCount}`;
+  if (typeof updateChestUI === 'function') updateChestUI();
 
   // Tab 4: Scratch Card -> Card Balance
   const cardCount = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : ticketCount;
@@ -125,7 +126,8 @@ function updateRewardViewUI() {
   }
 
   if (gameState.currentTab === 'scratch' || gameState.rewardState.activeSubtab === 'scratch') {
-    renderScratchGrid();
+    if (typeof initScratchPage === 'function') initScratchPage();
+    else if (typeof renderScratchGrid === 'function') renderScratchGrid();
   }
   if (gameState.currentTab === 'egg') {
     renderEggPageContent();

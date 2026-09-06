@@ -78,7 +78,7 @@ const headerContent = `<!DOCTYPE html>
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Monetag Rewarded Interstitial SDK (Zone: 11677609) -->
-  <script src="//libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -90,6 +90,54 @@ const headerContent = `<!DOCTYPE html>
 ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).join('\n')}
 </head>
 <body>
+  <!-- High-Tech Quantum Loading Splash Screen -->
+  <div class="app-splash-screen" id="appSplashScreen">
+    <div class="splash-backdrop-glow"></div>
+    <div class="splash-content">
+      <!-- Animated Reactor Core Logo -->
+      <div class="splash-reactor-core">
+        <div class="splash-core-ring outer"></div>
+        <div class="splash-core-ring middle"></div>
+        <div class="splash-core-ring inner"></div>
+        <div class="splash-core-center">
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.25)"/>
+          </svg>
+        </div>
+        <div class="splash-core-pulsar"></div>
+      </div>
+
+      <!-- App Title & Branding -->
+      <div class="splash-branding">
+        <h1 class="splash-title">ENERGY TAP</h1>
+        <div class="splash-subtitle-badge">
+          <span class="splash-pulse-dot"></span>
+          <span>QUANTUM REACTOR v5.0</span>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="splash-progress-wrapper">
+        <div class="splash-progress-track">
+          <div class="splash-progress-bar" id="splashProgressBar"></div>
+          <div class="splash-progress-glow" id="splashProgressGlow"></div>
+        </div>
+        <div class="splash-progress-meta">
+          <span class="splash-status-text" id="splashStatusText">Initializing Quantum Core...</span>
+          <span class="splash-percent-text" id="splashPercentText">0%</span>
+        </div>
+      </div>
+
+      <!-- Telegram / Network Security Pill -->
+      <div class="splash-security-pill">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>SECURE QUANTUM CLOUD READY</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Ambient background glow elements -->
   <div class="ambient-glow glow-top"></div>
   <div class="ambient-glow glow-bottom"></div>
@@ -143,7 +191,7 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="#24A1DE"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
               </span>
             </div>
-            <div class="firebase-cloud-status-badge connecting" id="firebaseCloudStatus">
+            <div class="firebase-cloud-status-badge connecting" id="firebaseCloudStatus" style="display: none;">
               <span class="cloud-dot connecting">●</span> Connecting...
             </div>
           </div>

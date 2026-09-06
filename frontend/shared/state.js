@@ -24,7 +24,12 @@ function getComboMultiplier(tapCount) {
 // Game State Definition
 const gameState = {
   currentTab: 'home', // 'home' | 'energy' | 'tasks' | 'profile' | 'xp' | 'wallet' | 'goal'
-  taskSubtab: 'daily', // 'daily' | 'telegram'
+  taskSubtab: 'daily', // 'daily' | 'telegram' | 'website'
+  tasksState: {
+    claimedDaily: {},
+    claimedTelegram: {},
+    claimedWebsite: {}
+  },
   player: {
     name: 'Alex Vance',
     handle: 'alex_blue',
@@ -67,8 +72,11 @@ const gameState = {
     ratePerMin: 0.01,
     isActive: false,
     timerInterval: null,
+    lastTickTime: Date.now(),
+    lastSavedTime: Date.now(),
     fuelCells: {
       green: 0,
+      darkgreen: 0,
       yellow: 0,
       orange: 0,
       red: 0,
@@ -77,6 +85,7 @@ const gameState = {
     },
     consumed: {
       green: 0,
+      darkgreen: 0,
       yellow: 0,
       orange: 0,
       red: 0,
@@ -100,7 +109,10 @@ const gameState = {
   },
   tasksState: {
     claimedDaily: {},
-    claimedTelegram: {}
+    claimedTelegram: {},
+    claimedWebsite: {},
+    failedWebsite: {},
+    openedWebsite: {}
   },
   xpState: {
     currentSubtab: 'mega', // 'mega' | 'levels'
@@ -132,7 +144,16 @@ const gameState = {
     chests: 0,
     scratches: 0,
     eggs: 0,
-    date: new Date().toDateString()
+    taps: 0,
+    fuel_green: 0,
+    fuel_yellow: 0,
+    fuel_orange: 0,
+    fuel_red: 0,
+    fuel_pink: 0,
+    fuel_purple: 0,
+    fuel_darkgreen: 0,
+    date: new Date().toDateString(),
+    resetTimestamp: Date.now()
   },
   autoBotInterval: null,
 };
@@ -162,7 +183,22 @@ function loadSavedGame() {
       if (parsed.xpState) Object.assign(gameState.xpState, parsed.xpState);
       if (parsed.goalState) Object.assign(gameState.goalState, parsed.goalState);
       if (parsed.dailyStats) {
-        gameState.dailyStats = Object.assign({ spins: 0, chests: 0, scratches: 0, eggs: 0, date: new Date().toDateString() }, parsed.dailyStats);
+        gameState.dailyStats = Object.assign({
+          spins: 0,
+          chests: 0,
+          scratches: 0,
+          eggs: 0,
+          taps: 0,
+          fuel_green: 0,
+          fuel_yellow: 0,
+          fuel_orange: 0,
+          fuel_red: 0,
+          fuel_pink: 0,
+          fuel_purple: 0,
+          fuel_darkgreen: 0,
+          date: new Date().toDateString(),
+          resetTimestamp: Date.now()
+        }, parsed.dailyStats);
       }
       checkDailyStatsDate();
 
@@ -194,16 +230,18 @@ function loadSavedGame() {
         gameState.reactor.maxEnergy = 1000;
       }
 
-      // Ensure energyGenerator defaults for Pink and Purple fuels & boosts
+      // Ensure energyGenerator defaults for Dark Green, Pink and Purple fuels & boosts
       if (!gameState.energyGenerator.fuelCells) {
-        gameState.energyGenerator.fuelCells = { green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
       } else {
+        if (gameState.energyGenerator.fuelCells.darkgreen === undefined) gameState.energyGenerator.fuelCells.darkgreen = 0;
         if (gameState.energyGenerator.fuelCells.pink === undefined) gameState.energyGenerator.fuelCells.pink = 0;
         if (gameState.energyGenerator.fuelCells.purple === undefined) gameState.energyGenerator.fuelCells.purple = 0;
       }
       if (!gameState.energyGenerator.consumed) {
-        gameState.energyGenerator.consumed = { green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
       } else {
+        if (gameState.energyGenerator.consumed.darkgreen === undefined) gameState.energyGenerator.consumed.darkgreen = 0;
         if (gameState.energyGenerator.consumed.pink === undefined) gameState.energyGenerator.consumed.pink = 0;
         if (gameState.energyGenerator.consumed.purple === undefined) gameState.energyGenerator.consumed.purple = 0;
       }
@@ -220,11 +258,31 @@ function loadSavedGame() {
           gameState.energyGenerator.boosts.purple = { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 };
         }
       }
+      if (!gameState.energyGenerator.lastTickTime) {
+        gameState.energyGenerator.lastTickTime = Date.now();
+      }
+
+      // Ensure tasksState has all subtabs initialized
+      if (!gameState.tasksState) {
+        gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {}, failedWebsite: {}, openedWebsite: {} };
+      } else {
+        if (!gameState.tasksState.claimedDaily) gameState.tasksState.claimedDaily = {};
+        if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
+        if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
+        if (!gameState.tasksState.failedWebsite) gameState.tasksState.failedWebsite = {};
+        if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
+      }
+
+      // Check and process offline EP generator progression from saved state
+      if (typeof processEnergyGeneratorOfflineCatchup === 'function') {
+        processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'localStorage');
+      }
     } catch (e) {
       console.warn('Failed to load saved state, using default', e);
     }
   } else {
     // Initial zero baseline save
+    gameState.energyGenerator.lastTickTime = Date.now();
     saveGame();
   }
 }
@@ -305,23 +363,75 @@ function resetAllDataToZero() {
 
 window.resetAllDataToZero = resetAllDataToZero;
 
-// Check and reset daily stats if day changed
+// Hidden 24-hour daily task auto-restart & stats reset
+const DAILY_RESET_CYCLE_MS = 24 * 60 * 60 * 1000;
+
 function checkDailyStatsDate() {
-  if (!gameState.dailyStats) {
-    gameState.dailyStats = { spins: 0, chests: 0, scratches: 0, eggs: 0, date: new Date().toDateString() };
-  }
+  const now = Date.now();
   const today = new Date().toDateString();
-  if (gameState.dailyStats.date !== today) {
+
+  if (!gameState.dailyStats) {
+    gameState.dailyStats = {
+      spins: 0,
+      chests: 0,
+      scratches: 0,
+      eggs: 0,
+      taps: 0,
+      fuel_green: 0,
+      fuel_yellow: 0,
+      fuel_orange: 0,
+      fuel_red: 0,
+      fuel_pink: 0,
+      fuel_purple: 0,
+      fuel_darkgreen: 0,
+      date: today,
+      resetTimestamp: now
+    };
+  }
+
+  // Ensure individual properties exist
+  if (gameState.dailyStats.resetTimestamp === undefined) gameState.dailyStats.resetTimestamp = now;
+  if (gameState.dailyStats.taps === undefined) gameState.dailyStats.taps = 0;
+  if (gameState.dailyStats.fuel_green === undefined) gameState.dailyStats.fuel_green = 0;
+  if (gameState.dailyStats.fuel_yellow === undefined) gameState.dailyStats.fuel_yellow = 0;
+  if (gameState.dailyStats.fuel_orange === undefined) gameState.dailyStats.fuel_orange = 0;
+  if (gameState.dailyStats.fuel_red === undefined) gameState.dailyStats.fuel_red = 0;
+  if (gameState.dailyStats.fuel_pink === undefined) gameState.dailyStats.fuel_pink = 0;
+  if (gameState.dailyStats.fuel_purple === undefined) gameState.dailyStats.fuel_purple = 0;
+  if (gameState.dailyStats.fuel_darkgreen === undefined) gameState.dailyStats.fuel_darkgreen = 0;
+
+  const elapsed = now - (gameState.dailyStats.resetTimestamp || 0);
+  const dayChanged = (gameState.dailyStats.date !== today);
+
+  // Auto-reset when 24 hours have elapsed or calendar date changes
+  if (elapsed >= DAILY_RESET_CYCLE_MS || dayChanged) {
     gameState.dailyStats.spins = 0;
     gameState.dailyStats.chests = 0;
     gameState.dailyStats.scratches = 0;
     gameState.dailyStats.eggs = 0;
+    gameState.dailyStats.taps = 0;
+    gameState.dailyStats.fuel_green = 0;
+    gameState.dailyStats.fuel_yellow = 0;
+    gameState.dailyStats.fuel_orange = 0;
+    gameState.dailyStats.fuel_red = 0;
+    gameState.dailyStats.fuel_pink = 0;
+    gameState.dailyStats.fuel_purple = 0;
+    gameState.dailyStats.fuel_darkgreen = 0;
     gameState.dailyStats.date = today;
-    if (gameState.tasksState && gameState.tasksState.claimedDaily) {
-      delete gameState.tasksState.claimedDaily['d_spin_50'];
-      delete gameState.tasksState.claimedDaily['d_chest_50'];
-      delete gameState.tasksState.claimedDaily['d_scratch_30'];
-      delete gameState.tasksState.claimedDaily['d_egg_50'];
+    gameState.dailyStats.resetTimestamp = now;
+
+    // Reset all claimed daily tasks so user can restart and redo them
+    if (!gameState.tasksState) {
+      gameState.tasksState = { claimedDaily: {}, claimedTelegram: {} };
+    }
+    gameState.tasksState.claimedDaily = {};
+
+    saveGame();
+    if (typeof renderTasksList === 'function') {
+      renderTasksList();
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔄 Daily quests reset! New 24-hour cycle started.');
     }
   }
 }
@@ -333,17 +443,19 @@ function saveGame() {
     goal: gameState.goal,
     reactor: {
       tapPower: gameState.reactor.tapPower,
-      currentEnergy: gameState.reactor.currentEnergy,
+      currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
       maxEnergy: gameState.reactor.maxEnergy,
       energyTaps: gameState.reactor.energyTaps,
       comboTaps: gameState.reactor.comboTaps,
       comboMultiplier: gameState.reactor.comboMultiplier
     },
     energyGenerator: {
-      epTotal: gameState.energyGenerator.epTotal,
-      remainingSeconds: gameState.energyGenerator.remainingSeconds,
+      epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
+      remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
       ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
       ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+      lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
+      lastSavedTime: Date.now(),
       fuelCells: gameState.energyGenerator.fuelCells,
       consumed: gameState.energyGenerator.consumed,
       boosts: gameState.energyGenerator.boosts
@@ -544,9 +656,11 @@ const DOM = {
   // Tasks
   subtabDaily: document.getElementById('subtabDaily'),
   subtabTelegram: document.getElementById('subtabTelegram'),
+  subtabWebsite: document.getElementById('subtabWebsite'),
   tasksListContainer: document.getElementById('tasksListContainer'),
   dailyBadgeCount: document.getElementById('dailyBadgeCount'),
   telegramBadgeCount: document.getElementById('telegramBadgeCount'),
+  websiteBadgeCount: document.getElementById('websiteBadgeCount'),
   
   // Home: XP & Goals
   xpCard: document.getElementById('xpCard'),
@@ -573,12 +687,14 @@ const DOM = {
   fuelTimerVal: document.getElementById('fuelTimerVal'),
   fuelRateVal: document.getElementById('fuelRateVal'),
   greenCellCount: document.getElementById('greenCellCount'),
+  darkgreenCellCount: document.getElementById('darkgreenCellCount'),
   yellowCellCount: document.getElementById('yellowCellCount'),
   orangeCellCount: document.getElementById('orangeCellCount'),
   redCellCount: document.getElementById('redCellCount'),
   pinkCellCount: document.getElementById('pinkCellCount'),
   purpleCellCount: document.getElementById('purpleCellCount'),
   btnUseGreenFuel: document.getElementById('btnUseGreenFuel'),
+  btnUseDarkGreenFuel: document.getElementById('btnUseDarkGreenFuel'),
   
   // Streak & Ad Rewards Pages
   pageStreak: document.getElementById('pageStreak'),

@@ -70,6 +70,7 @@ class FirebaseSyncService {
             this.loadFromCloud();
             this.setupPresence();
             this.listenToMegaRewards();
+            this.listenToWebsiteTasks();
           })
           .catch((error) => {
             console.warn('Firebase Auth failed, falling back to local UID:', error);
@@ -79,6 +80,7 @@ class FirebaseSyncService {
             this.setSyncStatus('synced');
             this.loadFromCloud();
             this.listenToMegaRewards();
+            this.listenToWebsiteTasks();
           });
       } else {
         console.warn('Firebase SDK not loaded, using LocalStorage only.');
@@ -147,17 +149,49 @@ class FirebaseSyncService {
           // Merge cloud data into gameState
           if (cloudData.player) Object.assign(gameState.player, cloudData.player);
           if (cloudData.goal) Object.assign(gameState.goal, cloudData.goal);
-          if (cloudData.reactor) {
+          if (cloudData.tasksState) Object.assign(gameState.tasksState, cloudData.tasksState);
+          if (cloudData.xpState) Object.assign(gameState.xpState, cloudData.xpState);
+          if (cloudData.goalState) Object.assign(gameState.goalState, cloudData.goalState);
+          if (cloudData.dailyStats) Object.assign(gameState.dailyStats, cloudData.dailyStats);
+
+          let shouldCatchup = false;
+          let catchupTimestamp = null;
+
+          if (cloudData.energyGenerator) {
+            const cloudTick = Number(cloudData.energyGenerator.lastTickTime) || Number(cloudData.updatedAt) || 0;
+            const localTick = Number(gameState.energyGenerator.lastTickTime) || 0;
+
+            // If cloud tick is newer than local tick, accept cloud energy and generator state
+            if (cloudTick > localTick) {
+              Object.assign(gameState.energyGenerator, cloudData.energyGenerator);
+              if (cloudData.reactor) {
+                Object.assign(gameState.reactor, cloudData.reactor);
+                if (cloudData.reactor.currentEnergy !== undefined) {
+                  gameState.reactor.currentEnergy = Number(cloudData.reactor.currentEnergy);
+                }
+              }
+              catchupTimestamp = cloudTick;
+              shouldCatchup = true;
+            } else {
+              // Local state is already up to date or progressed ahead
+              if (cloudData.reactor) {
+                // Keep the higher or local energy to avoid reverting offline gains
+                const cloudEnergy = Number(cloudData.reactor.currentEnergy) || 0;
+                if ((gameState.reactor.currentEnergy || 0) < cloudEnergy) {
+                  gameState.reactor.currentEnergy = cloudEnergy;
+                }
+              }
+            }
+          } else if (cloudData.reactor) {
             Object.assign(gameState.reactor, cloudData.reactor);
             if (cloudData.reactor.currentEnergy !== undefined) {
               gameState.reactor.currentEnergy = Number(cloudData.reactor.currentEnergy);
             }
           }
-          if (cloudData.energyGenerator) Object.assign(gameState.energyGenerator, cloudData.energyGenerator);
-          if (cloudData.tasksState) Object.assign(gameState.tasksState, cloudData.tasksState);
-          if (cloudData.xpState) Object.assign(gameState.xpState, cloudData.xpState);
-          if (cloudData.goalState) Object.assign(gameState.goalState, cloudData.goalState);
-          if (cloudData.dailyStats) Object.assign(gameState.dailyStats, cloudData.dailyStats);
+
+          if (shouldCatchup && catchupTimestamp && typeof processEnergyGeneratorOfflineCatchup === 'function') {
+            processEnergyGeneratorOfflineCatchup(catchupTimestamp, 'firebaseCloud');
+          }
 
           // Synchronize Energy Counters on both Home and Energy pages
           const curEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
@@ -202,9 +236,11 @@ class FirebaseSyncService {
       (gameState.xpState ? (gameState.xpState.watchedAds || 0) : 0) + 
       (gameState.goalState ? ((gameState.goalState.levelAdsWatched || 0) + (gameState.goalState.megaWatchedAds || 0)) : 0);
 
-    const completedWebTasks = (gameState.tasksState && gameState.tasksState.claimedTelegram) 
-      ? Object.keys(gameState.tasksState.claimedTelegram).filter(k => gameState.tasksState.claimedTelegram[k]).length 
-      : (gameState.player.websiteTasksCompleted || 0);
+    const completedWebTasks = (gameState.tasksState && gameState.tasksState.claimedWebsite) 
+      ? Object.keys(gameState.tasksState.claimedWebsite).filter(k => gameState.tasksState.claimedWebsite[k]).length 
+      : ((gameState.tasksState && gameState.tasksState.claimedTelegram) 
+          ? Object.keys(gameState.tasksState.claimedTelegram).filter(k => gameState.tasksState.claimedTelegram[k]).length 
+          : (gameState.player.websiteTasksCompleted || 0));
 
     const playerPayload = {
       ...gameState.player,
@@ -218,17 +254,19 @@ class FirebaseSyncService {
       goal: gameState.goal,
       reactor: {
         tapPower: gameState.reactor.tapPower || 1,
-        currentEnergy: Math.floor(gameState.reactor.currentEnergy || 0),
+        currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
         maxEnergy: gameState.reactor.maxEnergy || 1000,
         energyTaps: gameState.reactor.energyTaps || 0,
         comboMultiplier: gameState.reactor.comboMultiplier || 1.0,
         comboTaps: gameState.reactor.comboTaps || 0
       },
       energyGenerator: {
-        epTotal: gameState.energyGenerator.epTotal || 0,
-        remainingSeconds: gameState.energyGenerator.remainingSeconds || 0,
+        epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
+        remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
         ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
         ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+        lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
+        lastSavedTime: Date.now(),
         fuelCells: gameState.energyGenerator.fuelCells,
         consumed: gameState.energyGenerator.consumed,
         boosts: gameState.energyGenerator.boosts
@@ -318,6 +356,49 @@ class FirebaseSyncService {
       }
     } catch (e) {}
     window.cloudMegaRewards = [];
+  }
+
+  // ==========================================================================
+  // WEBSITE TASKS REAL-TIME CONFIG LISTENER (/website_tasks_config)
+  // ==========================================================================
+  listenToWebsiteTasks() {
+    if (!this.database) {
+      this.loadCachedWebsiteTasks();
+      return;
+    }
+
+    const tasksRef = this.database.ref('/website_tasks_config');
+    tasksRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        window.cloudWebsiteTasks = Array.isArray(data) ? data : Object.values(data);
+        try {
+          localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(window.cloudWebsiteTasks));
+        } catch (e) {}
+        console.log(`🌐 Received ${window.cloudWebsiteTasks.length} website tasks from cloud.`);
+      } else {
+        this.loadCachedWebsiteTasks();
+      }
+
+      // Re-render tasks list if tasks page is active
+      if (typeof window.renderTasksList === 'function') {
+        window.renderTasksList();
+      }
+    }, (err) => {
+      console.warn('Could not fetch cloud website tasks, using local cache:', err);
+      this.loadCachedWebsiteTasks();
+    });
+  }
+
+  loadCachedWebsiteTasks() {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1');
+      if (cached) {
+        window.cloudWebsiteTasks = JSON.parse(cached);
+        return;
+      }
+    } catch (e) {}
+    window.cloudWebsiteTasks = null;
   }
 
   // ==========================================================================

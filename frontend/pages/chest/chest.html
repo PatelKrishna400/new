@@ -1,138 +1,269 @@
 <div class="page-view" id="pageChest">
-        
-        <!-- Top Action Nav Row -->
-        <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
 
-          <div class="xp-timer-pill">
-            <span>🧰 MYSTERY CHEST</span>
-          </div>
+    <div class="chest-header-title-pill">
+      <span class="chest-sparkle-icon">✨</span>
+      <span>CYBER MYSTERY VAULT</span>
+    </div>
 
-          <div class="xp-level-badge-btn" style="pointer-events: none;">
-            <span>🔑 <span id="chestKeysVal">0</span> Keys</span>
-          </div>
-        </div>
+    <!-- Live Key Balance Header Pill -->
+    <div class="chest-key-header-pill" id="chestKeyHeaderPill" onclick="handleChestActionButtonClick()">
+      <span class="key-pill-icon">🔑</span>
+      <span class="key-pill-val" id="chestKeysVal">0</span>
+      <span class="key-add-btn">+</span>
+    </div>
+  </div>
 
-        <!-- Key Balance Strip -->
-        <div class="spin-balance-pill-strip">
-          <div class="spin-balance-pill-inner chest-key-pill">
-            <span class="ticket-icon-glow">🔑</span>
-            <span class="ticket-balance-label">AVAILABLE KEYS:</span>
-            <span class="ticket-balance-val gold" id="chestAvailableKeys">0 Keys</span>
-          </div>
-        </div>
+  <!-- Hidden keys count fallback for scripts -->
+  <span id="chestAvailableKeys" style="display:none;">0</span>
 
-        <!-- 3 Interactive Chest Boxes Stage Card -->
-        <section class="chest-stage-card">
-          <div class="chest-rays-aura"></div>
+  <!-- 3 Interactive Chest Boxes Stage Card (Full Page View) -->
+  <section class="chest-stage-card">
+    <!-- Ambient Neon Halo & Rays Aura -->
+    <div class="chest-ambient-halo"></div>
+    <div class="chest-rays-aura"></div>
+
+    <div class="chest-stage-intro">
+      <h3 class="three-chest-title" id="chestStageTitle">⚡ Quantum Mystery Vault</h3>
+      <p class="three-chest-subtitle" id="chestStageSubtitle">Choose any chest or unlock random to decrypt secret rewards!</p>
+    </div>
+
+    <!-- 3 Chest Boxes Grid Container -->
+    <div class="three-chests-container" id="threeChestsContainer">
+      <!-- Chest Box 1: Golden Cyber Vault -->
+      <div class="chest-box-card gold-vault" id="chestBox1" onclick="onChestBoxClicked(1)">
+        <div class="chest-box-glow"></div>
+        <div class="chest-box-shimmer"></div>
+        <div class="chest-box-art">
+          <div class="chest-floating-prize" id="chestFloatingPrize1"></div>
           
-          <div class="chest-stage-intro">
-            <h3 class="three-chest-title" id="chestStageTitle">Choose 1 of 3 Mystery Chests</h3>
-            <p class="three-chest-subtitle" id="chestStageSubtitle">Pick any chest box to unlock using 1 Winning Key!</p>
+          <!-- Chest 1 Lid SVG -->
+          <div class="chest-mini-lid" id="chestLid1">
+            <svg viewBox="0 0 90 44" class="chest-svg-lid">
+              <defs>
+                <linearGradient id="lidGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#fbbf24"/>
+                  <stop offset="35%" stop-color="#d97706"/>
+                  <stop offset="100%" stop-color="#78350f"/>
+                </linearGradient>
+                <linearGradient id="lidTrimGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#fef08a"/>
+                  <stop offset="50%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#fde047"/>
+                </linearGradient>
+              </defs>
+              <!-- Lid Crown -->
+              <path d="M10 40 L18 10 Q45 2 72 10 L80 40 Z" fill="url(#lidGrad1)" stroke="#fde047" stroke-width="2"/>
+              <!-- High-Tech Reinforcement Straps -->
+              <path d="M26 10 L28 40" stroke="url(#lidTrimGrad1)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M64 10 L62 40" stroke="url(#lidTrimGrad1)" stroke-width="3" stroke-linecap="round"/>
+              <!-- Center Lock Top Clasp -->
+              <rect x="38" y="26" width="14" height="14" rx="3" fill="#fde047" stroke="#78350f" stroke-width="1.5"/>
+              <circle cx="45" cy="33" r="2.5" fill="#ef4444"/>
+            </svg>
           </div>
 
-          <!-- 3 Chest Boxes Container -->
-          <div class="three-chests-container" id="threeChestsContainer">
-            <!-- Chest Box 1 -->
-            <div class="chest-box-card" id="chestBox1" onclick="onChestBoxClicked(1)">
-              <div class="chest-box-glow"></div>
-              <div class="chest-mini-aura"></div>
-              <div class="chest-box-art">
-                <div class="chest-floating-prize" id="chestFloatingPrize1"></div>
-                <div class="chest-mini-lid" id="chestLid1">
-                  <svg viewBox="0 0 80 40" class="chest-svg-lid">
-                    <path d="M8 36 L16 12 Q40 4 64 12 L72 36 Z" fill="#1e293b" stroke="#facc15" stroke-width="2.5"/>
-                    <rect x="34" y="24" width="12" height="12" rx="2.5" fill="#eab308"/>
-                  </svg>
-                </div>
-                <div class="chest-mini-base">
-                  <svg viewBox="0 0 80 48" class="chest-svg-base">
-                    <rect x="8" y="4" width="64" height="40" rx="6" fill="#0f172a" stroke="#ca8a04" stroke-width="2.5"/>
-                    <rect x="33" y="4" width="14" height="16" rx="2.5" fill="#facc15"/>
-                    <circle cx="40" cy="11" r="2" fill="#000000"/>
-                  </svg>
-                </div>
-              </div>
-              <span class="chest-box-label">CHEST #1</span>
-              <div class="chest-box-bottom" id="chestBottom1">
-                <span class="chest-box-action">TAP TO OPEN</span>
-              </div>
-            </div>
-
-            <!-- Chest Box 2 -->
-            <div class="chest-box-card" id="chestBox2" onclick="onChestBoxClicked(2)">
-              <div class="chest-box-glow"></div>
-              <div class="chest-mini-aura"></div>
-              <div class="chest-box-art">
-                <div class="chest-floating-prize" id="chestFloatingPrize2"></div>
-                <div class="chest-mini-lid" id="chestLid2">
-                  <svg viewBox="0 0 80 40" class="chest-svg-lid">
-                    <path d="M8 36 L16 12 Q40 4 64 12 L72 36 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
-                    <rect x="34" y="24" width="12" height="12" rx="2.5" fill="#0284c7"/>
-                  </svg>
-                </div>
-                <div class="chest-mini-base">
-                  <svg viewBox="0 0 80 48" class="chest-svg-base">
-                    <rect x="8" y="4" width="64" height="40" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="2.5"/>
-                    <rect x="33" y="4" width="14" height="16" rx="2.5" fill="#38bdf8"/>
-                    <circle cx="40" cy="11" r="2" fill="#000000"/>
-                  </svg>
-                </div>
-              </div>
-              <span class="chest-box-label cyan">CHEST #2</span>
-              <div class="chest-box-bottom" id="chestBottom2">
-                <span class="chest-box-action">TAP TO OPEN</span>
-              </div>
-            </div>
-
-            <!-- Chest Box 3 -->
-            <div class="chest-box-card" id="chestBox3" onclick="onChestBoxClicked(3)">
-              <div class="chest-box-glow"></div>
-              <div class="chest-mini-aura"></div>
-              <div class="chest-box-art">
-                <div class="chest-floating-prize" id="chestFloatingPrize3"></div>
-                <div class="chest-mini-lid" id="chestLid3">
-                  <svg viewBox="0 0 80 40" class="chest-svg-lid">
-                    <path d="M8 36 L16 12 Q40 4 64 12 L72 36 Z" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
-                    <rect x="34" y="24" width="12" height="12" rx="2.5" fill="#9333ea"/>
-                  </svg>
-                </div>
-                <div class="chest-mini-base">
-                  <svg viewBox="0 0 80 48" class="chest-svg-base">
-                    <rect x="8" y="4" width="64" height="40" rx="6" fill="#0f172a" stroke="#9333ea" stroke-width="2.5"/>
-                    <rect x="33" y="4" width="14" height="16" rx="2.5" fill="#a855f7"/>
-                    <circle cx="40" cy="11" r="2" fill="#000000"/>
-                  </svg>
-                </div>
-              </div>
-              <span class="chest-box-label purple">CHEST #3</span>
-              <div class="chest-box-bottom" id="chestBottom3">
-                <span class="chest-box-action">TAP TO OPEN</span>
-              </div>
-            </div>
+          <!-- Chest 1 Base SVG -->
+          <div class="chest-mini-base">
+            <svg viewBox="0 0 90 52" class="chest-svg-base">
+              <defs>
+                <linearGradient id="baseGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0f172a"/>
+                  <stop offset="50%" stop-color="#1e293b"/>
+                  <stop offset="100%" stop-color="#0b1120"/>
+                </linearGradient>
+              </defs>
+              <!-- Chest Body -->
+              <rect x="10" y="4" width="70" height="44" rx="8" fill="url(#baseGrad1)" stroke="#f59e0b" stroke-width="2"/>
+              <!-- Metal Straps -->
+              <line x1="28" y1="4" x2="28" y2="48" stroke="#d97706" stroke-width="2.5"/>
+              <line x1="62" y1="4" x2="62" y2="48" stroke="#d97706" stroke-width="2.5"/>
+              <!-- Corner Golden Rivets -->
+              <circle cx="16" cy="12" r="2" fill="#fde047"/>
+              <circle cx="74" cy="12" r="2" fill="#fde047"/>
+              <circle cx="16" cy="40" r="2" fill="#fde047"/>
+              <circle cx="74" cy="40" r="2" fill="#fde047"/>
+              <!-- Center Lock Hasp Plate -->
+              <rect x="36" y="2" width="18" height="20" rx="3.5" fill="#f59e0b" stroke="#fde047" stroke-width="1.5"/>
+              <!-- Glowing Energy Keyhole -->
+              <circle cx="45" cy="10" r="3.2" fill="#030816"/>
+              <path d="M43.5 10 L46.5 10 L47 16 L43 16 Z" fill="#030816"/>
+              <circle cx="45" cy="10" r="1.5" fill="#fbbf24"/>
+            </svg>
           </div>
-
-          <div class="chest-loot-banner" id="chestLootBanner">
-            <h4 class="loot-title" id="chestLootTitle">Mystery Vault</h4>
-            <p class="loot-desc" id="chestLootDesc">Select any of the 3 chests to unlock with 1 Key for surprise rewards!</p>
-          </div>
-
-          <div class="chest-actions-wrapper">
-            <button class="chest-action-main-btn" id="btnUnlockChest" onclick="unlockMysteryChest()">
-              <span>🔑 UNLOCK RANDOM CHEST (1 KEY)</span>
-            </button>
-            <button class="chest-ad-buy-btn" id="btnChestAdBuy" onclick="buyChestKeyWithAd()">
-              <span>🎬 GET 1 KEY (WATCH AD)</span>
-            </button>
-            <button class="chest-action-main-btn reset-btn" id="btnChestReset" onclick="resetThreeChests()" style="display: none;">
-              <span>🔄 RESET CHESTS (NEXT ROUND)</span>
-            </button>
-          </div>
-        </section>
-
+        </div>
+        <div class="chest-box-title-tag gold">CHEST #1</div>
+        <div class="chest-box-bottom" id="chestBottom1">
+          <span class="chest-box-action">TAP TO UNLOCK</span>
+        </div>
       </div>
+
+      <!-- Chest Box 2: Plasma Neon Vault -->
+      <div class="chest-box-card cyan-vault" id="chestBox2" onclick="onChestBoxClicked(2)">
+        <div class="chest-box-glow"></div>
+        <div class="chest-box-shimmer"></div>
+        <div class="chest-box-art">
+          <div class="chest-floating-prize" id="chestFloatingPrize2"></div>
+          
+          <!-- Chest 2 Lid SVG -->
+          <div class="chest-mini-lid" id="chestLid2">
+            <svg viewBox="0 0 90 44" class="chest-svg-lid">
+              <defs>
+                <linearGradient id="lidGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="35%" stop-color="#0284c7"/>
+                  <stop offset="100%" stop-color="#0c4a6e"/>
+                </linearGradient>
+                <linearGradient id="lidTrimGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#bae6fd"/>
+                  <stop offset="50%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#38bdf8"/>
+                </linearGradient>
+              </defs>
+              <!-- Lid Crown -->
+              <path d="M10 40 L18 10 Q45 2 72 10 L80 40 Z" fill="url(#lidGrad2)" stroke="#38bdf8" stroke-width="2"/>
+              <!-- High-Tech Reinforcement Straps -->
+              <path d="M26 10 L28 40" stroke="url(#lidTrimGrad2)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M64 10 L62 40" stroke="url(#lidTrimGrad2)" stroke-width="3" stroke-linecap="round"/>
+              <!-- Center Lock Top Clasp -->
+              <rect x="38" y="26" width="14" height="14" rx="3" fill="#38bdf8" stroke="#0c4a6e" stroke-width="1.5"/>
+              <circle cx="45" cy="33" r="2.5" fill="#06b6d4"/>
+            </svg>
+          </div>
+
+          <!-- Chest 2 Base SVG -->
+          <div class="chest-mini-base">
+            <svg viewBox="0 0 90 52" class="chest-svg-base">
+              <defs>
+                <linearGradient id="baseGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#082f49"/>
+                  <stop offset="50%" stop-color="#0c4a6e"/>
+                  <stop offset="100%" stop-color="#041826"/>
+                </linearGradient>
+              </defs>
+              <!-- Chest Body -->
+              <rect x="10" y="4" width="70" height="44" rx="8" fill="url(#baseGrad2)" stroke="#0284c7" stroke-width="2"/>
+              <!-- Metal Straps -->
+              <line x1="28" y1="4" x2="28" y2="48" stroke="#0ea5e9" stroke-width="2.5"/>
+              <line x1="62" y1="4" x2="62" y2="48" stroke="#0ea5e9" stroke-width="2.5"/>
+              <!-- Corner Cyan Rivets -->
+              <circle cx="16" cy="12" r="2" fill="#38bdf8"/>
+              <circle cx="74" cy="12" r="2" fill="#38bdf8"/>
+              <circle cx="16" cy="40" r="2" fill="#38bdf8"/>
+              <circle cx="74" cy="40" r="2" fill="#38bdf8"/>
+              <!-- Center Lock Hasp Plate -->
+              <rect x="36" y="2" width="18" height="20" rx="3.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+              <!-- Glowing Energy Keyhole -->
+              <circle cx="45" cy="10" r="3.2" fill="#030816"/>
+              <path d="M43.5 10 L46.5 10 L47 16 L43 16 Z" fill="#030816"/>
+              <circle cx="45" cy="10" r="1.5" fill="#38bdf8"/>
+            </svg>
+          </div>
+        </div>
+        <div class="chest-box-title-tag cyan">CHEST #2</div>
+        <div class="chest-box-bottom" id="chestBottom2">
+          <span class="chest-box-action">TAP TO UNLOCK</span>
+        </div>
+      </div>
+
+      <!-- Chest Box 3: Quantum Void Vault -->
+      <div class="chest-box-card purple-vault" id="chestBox3" onclick="onChestBoxClicked(3)">
+        <div class="chest-box-glow"></div>
+        <div class="chest-box-shimmer"></div>
+        <div class="chest-box-art">
+          <div class="chest-floating-prize" id="chestFloatingPrize3"></div>
+          
+          <!-- Chest 3 Lid SVG -->
+          <div class="chest-mini-lid" id="chestLid3">
+            <svg viewBox="0 0 90 44" class="chest-svg-lid">
+              <defs>
+                <linearGradient id="lidGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#c084fc"/>
+                  <stop offset="35%" stop-color="#9333ea"/>
+                  <stop offset="100%" stop-color="#581c87"/>
+                </linearGradient>
+                <linearGradient id="lidTrimGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#f3e8ff"/>
+                  <stop offset="50%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#c084fc"/>
+                </linearGradient>
+              </defs>
+              <!-- Lid Crown -->
+              <path d="M10 40 L18 10 Q45 2 72 10 L80 40 Z" fill="url(#lidGrad3)" stroke="#c084fc" stroke-width="2"/>
+              <!-- High-Tech Reinforcement Straps -->
+              <path d="M26 10 L28 40" stroke="url(#lidTrimGrad3)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M64 10 L62 40" stroke="url(#lidTrimGrad3)" stroke-width="3" stroke-linecap="round"/>
+              <!-- Center Lock Top Clasp -->
+              <rect x="38" y="26" width="14" height="14" rx="3" fill="#c084fc" stroke="#581c87" stroke-width="1.5"/>
+              <circle cx="45" cy="33" r="2.5" fill="#a855f7"/>
+            </svg>
+          </div>
+
+          <!-- Chest 3 Base SVG -->
+          <div class="chest-mini-base">
+            <svg viewBox="0 0 90 52" class="chest-svg-base">
+              <defs>
+                <linearGradient id="baseGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#2e1065"/>
+                  <stop offset="50%" stop-color="#3b0764"/>
+                  <stop offset="100%" stop-color="#18042c"/>
+                </linearGradient>
+              </defs>
+              <!-- Chest Body -->
+              <rect x="10" y="4" width="70" height="44" rx="8" fill="url(#baseGrad3)" stroke="#7e22ce" stroke-width="2"/>
+              <!-- Metal Straps -->
+              <line x1="28" y1="4" x2="28" y2="48" stroke="#a855f7" stroke-width="2.5"/>
+              <line x1="62" y1="4" x2="62" y2="48" stroke="#a855f7" stroke-width="2.5"/>
+              <!-- Corner Purple Rivets -->
+              <circle cx="16" cy="12" r="2" fill="#c084fc"/>
+              <circle cx="74" cy="12" r="2" fill="#c084fc"/>
+              <circle cx="16" cy="40" r="2" fill="#c084fc"/>
+              <circle cx="74" cy="40" r="2" fill="#c084fc"/>
+              <!-- Center Lock Hasp Plate -->
+              <rect x="36" y="2" width="18" height="20" rx="3.5" fill="#9333ea" stroke="#c084fc" stroke-width="1.5"/>
+              <!-- Glowing Energy Keyhole -->
+              <circle cx="45" cy="10" r="3.2" fill="#030816"/>
+              <path d="M43.5 10 L46.5 10 L47 16 L43 16 Z" fill="#030816"/>
+              <circle cx="45" cy="10" r="1.5" fill="#c084fc"/>
+            </svg>
+          </div>
+        </div>
+        <div class="chest-box-title-tag purple">CHEST #3</div>
+        <div class="chest-box-bottom" id="chestBottom3">
+          <span class="chest-box-action">TAP TO UNLOCK</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prominent Winning Prize Showcase Card -->
+    <div class="chest-result-display" id="chestLootBanner">
+      <div class="chest-result-badge" id="chestLootBadge">🎯 VAULT READY</div>
+      <div class="chest-win-content" id="chestWinContent">
+        <div class="chest-win-icon-wrapper" id="chestWinIconWrapper">
+          <span class="chest-win-icon" id="chestWinIcon">🧰</span>
+        </div>
+        <div class="chest-win-details" id="chestWinDetails">
+          <div class="chest-win-title" id="chestLootTitle">Mystery Vault Armed</div>
+          <div class="chest-win-desc" id="chestLootDesc">Select any chest or tap UNLOCK below with 1 Key!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unified Dynamic Action Button Area -->
+    <div class="chest-actions-wrapper">
+      <button class="chest-action-main-btn key-mode" id="btnUnlockChest" onclick="handleChestActionButtonClick()">
+        <div class="chest-btn-shine"></div>
+        <span class="chest-btn-icon" id="chestBtnIcon">🔑</span>
+        <span class="chest-btn-text" id="chestBtnText">UNLOCK RANDOM CHEST (1 KEY)</span>
+      </button>
+    </div>
+  </section>
+</div>
+

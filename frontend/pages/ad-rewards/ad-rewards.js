@@ -17,9 +17,9 @@ let adSimulationInterval = null;
 function startAdSimulation(fuelType, title, desc, callback) {
   activeAdRewardState = { fuelType, rewardTitle: title, rewardDesc: desc, callback };
 
-  // Directly run Monetag Rewarded Interstitial Ad (show_11677609)
+  // Directly run Monetag Rewarded Interstitial Ad (show_11677609) with interactive modal fallback
   if (typeof showRewardedAd === 'function') {
-    showRewardedAd(callback);
+    showRewardedAd(callback, { adTitle: title, adDesc: desc });
     return;
   }
 

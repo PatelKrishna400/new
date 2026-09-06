@@ -10,12 +10,22 @@
     </button>
 
     <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
-      <svg class="subtab-icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="22" y1="2" x2="11" y2="13"/>
         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
       </svg>
       <span class="subtab-text">Telegram</span>
       <span class="subtab-badge-pill" id="telegramBadgeCount">3</span>
+    </button>
+
+    <button class="task-subtab-btn" id="subtabWebsite" onclick="switchTaskSubtab('website')">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+      <span class="subtab-text">Website Task</span>
+      <span class="subtab-badge-pill" id="websiteBadgeCount">3</span>
     </button>
   </div>
 
@@ -83,4 +93,79 @@
       </div>
     </div>
   </div>
+
+  <!-- Website Task 4-Digit Code Verification Modal -->
+  <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)">
+    <div class="web-code-modal" id="webCodeModal" onclick="event.stopPropagation()">
+      <div class="web-code-header">
+        <div class="web-code-icon-badge">🌐</div>
+        <div class="web-code-header-text">
+          <span class="web-code-subtag" id="webModalSubtag">WEBSITE QUEST VERIFICATION</span>
+          <h3 class="web-code-title" id="webModalTitle">Tap Empire Web Quest</h3>
+        </div>
+        <button class="web-code-close-btn" onclick="closeWebCodeModal()">&times;</button>
+      </div>
+
+      <div class="web-code-body">
+        <div class="web-code-instruction-box">
+          <div class="web-inst-row">
+            <span class="web-inst-step">1</span>
+            <span>Visit the opened website link in your browser.</span>
+          </div>
+          <div class="web-inst-row">
+            <span class="web-inst-step">2</span>
+            <span>Find the <strong>4-digit secret code</strong> provided on the website.</span>
+          </div>
+          <div class="web-inst-row">
+            <span class="web-inst-step">3</span>
+            <span>Enter the 4-digit PIN below to claim your <strong>Diamonds 💎</strong>!</span>
+          </div>
+        </div>
+
+        <div class="web-code-reward-banner">
+          <span class="web-reward-label">Quest Reward:</span>
+          <span class="web-reward-amount" id="webModalRewardText">+100 Diamonds 💎</span>
+        </div>
+
+        <div class="web-pin-container">
+          <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric" autocomplete="one-time-code">
+          <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
+          <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
+          <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
+        </div>
+
+        <div class="web-code-warning-notice">
+          ⚠️ <span>Note: If code is incorrect, task will be removed and you must try again later!</span>
+        </div>
+
+        <div class="web-code-modal-actions">
+          <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn" onclick="revisitWebsiteTaskUrl()">
+            <span>🔗 Revisit Web</span>
+          </button>
+          <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn" onclick="submitWebsiteCodeVerification()">
+            <span>Verify & Claim 💎</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website Task Verification Outcome Result Popup (Win Diamonds or Wrong Code Try Again) -->
+  <div class="web-result-modal-backdrop" id="webResultModalBackdrop" onclick="closeWebResultModal(event)">
+    <div class="web-result-modal" id="webResultModal" onclick="event.stopPropagation()">
+      <div class="web-result-glow" id="webResultGlow"></div>
+      <div class="web-result-icon" id="webResultIcon">💎</div>
+      <h3 class="web-result-title" id="webResultTitle">Quest Completed!</h3>
+      <p class="web-result-desc" id="webResultDesc">You cracked the 4-digit code and won Diamonds!</p>
+
+      <div class="web-result-reward-badge" id="webResultRewardBadge">
+        <span id="webResultRewardVal">+100 Diamonds 💎</span>
+      </div>
+
+      <button type="button" class="web-result-confirm-btn" id="webResultConfirmBtn" onclick="closeWebResultModal()">
+        <span>Continue</span>
+      </button>
+    </div>
+  </div>
+
 </div>

@@ -26,7 +26,11 @@ function initComboDecayEngine() {
 function updateHomeComboPill() {
   if (DOM.comboPill && DOM.comboMultiplierText) {
     const multiplier = gameState.reactor.comboMultiplier || 1.0;
-    DOM.comboMultiplierText.textContent = `*${multiplier.toFixed(1)} COMBO (${gameState.reactor.comboTaps} Taps)`;
+    DOM.comboMultiplierText.textContent = `*${multiplier.toFixed(1)} COMBO`;
+    const comboTapsEl = document.getElementById('comboTapsCount');
+    if (comboTapsEl) {
+      comboTapsEl.textContent = `(${gameState.reactor.comboTaps || 0} Taps)`;
+    }
     
     if (multiplier > 1.0) {
       DOM.comboPill.classList.add('combo-active');
@@ -113,11 +117,12 @@ function handleOrbTap(e) {
   const comboLvl = Math.floor(gameState.reactor.comboMultiplier);
   sfx.playTapSound(comboLvl);
 
-  // 3. Coin Reward Calculation
-  const baseGain = gameState.reactor.tapPower || 1;
-  const totalCoinGain = Math.round(baseGain * gameState.reactor.comboMultiplier);
-  gameState.player.coins += totalCoinGain;
-  gameState.reactor.energyTaps += 1;
+  // 3. Tap Registration (Coins removed: Coins are not created on circle tap)
+  gameState.reactor.energyTaps = (gameState.reactor.energyTaps || 0) + 1;
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) {
+    gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
+  }
 
   // 4. XP Progression (0.1 XP per tap, scaled with combo)
   const xpGain = +(0.1 * (gameState.reactor.comboMultiplier || 1.0)).toFixed(2);
@@ -185,7 +190,7 @@ function handleOrbTap(e) {
   }
 
   if (clientX && clientY) {
-    createFloatingNumber(clientX, clientY, `+${totalCoinGain}`);
+    createFloatingNumber(clientX, clientY, '+1 Tap', '#38bdf8');
     if (droppedItem) {
       setTimeout(() => {
         createFloatingNumber(clientX + (Math.random() - 0.5) * 30, clientY - 30, droppedItem.text, droppedItem.color);

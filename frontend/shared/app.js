@@ -98,11 +98,16 @@ function switchPage(pageName) {
   } else if (pageName === 'streak') {
     renderStreakView();
     startStreakTimer();
-  } else if (pageName === 'spin' || pageName === 'chest') {
+  } else if (pageName === 'spin') {
+    if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+    if (typeof initSpinChaserBulbs === 'function') initSpinChaserBulbs();
+    if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+  } else if (pageName === 'chest') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
   } else if (pageName === 'scratch') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-    if (typeof renderScratchGrid === 'function') renderScratchGrid();
+    if (typeof initScratchPage === 'function') initScratchPage();
+    else if (typeof renderScratchGrid === 'function') renderScratchGrid();
   } else if (pageName === 'egg') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
     if (typeof renderEggPageContent === 'function') renderEggPageContent();
@@ -195,6 +200,9 @@ function updateUI() {
 
   // Sync Goal & Grand Chest
   if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
+
+  // Sync Mystery Chest
+  if (typeof updateChestUI === 'function') updateChestUI();
 }
 
 window.updateUI = updateUI;
@@ -301,10 +309,114 @@ function initEvents() {
 
   if (DOM.soundToggleBtn) DOM.soundToggleBtn.addEventListener('click', toggleSound);
   if (DOM.autoTapToggleBtn) DOM.autoTapToggleBtn.addEventListener('click', toggleAutoBot);
+
+  // Background and Offline Lifecycle Handlers
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      if (gameState.energyGenerator) {
+        gameState.energyGenerator.lastTickTime = Date.now();
+      }
+      saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+    } else if (document.visibilityState === 'visible') {
+      if (typeof processEnergyGeneratorOfflineCatchup === 'function' && gameState.energyGenerator) {
+        processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'visibilityChange');
+      }
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    if (gameState.energyGenerator) gameState.energyGenerator.lastTickTime = Date.now();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (gameState.energyGenerator) gameState.energyGenerator.lastTickTime = Date.now();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    if (typeof processEnergyGeneratorOfflineCatchup === 'function' && gameState.energyGenerator) {
+      processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'windowFocus');
+    }
+  });
 }
+
+// High-Tech Quantum Splash / Loading Screen Controller
+function initSplashScreen() {
+  const splash = document.getElementById('appSplashScreen');
+  const bar = document.getElementById('splashProgressBar');
+  const glow = document.getElementById('splashProgressGlow');
+  const percentText = document.getElementById('splashPercentText');
+  const statusText = document.getElementById('splashStatusText');
+
+  if (!splash) return;
+
+  let currentPercent = 0;
+  const startTime = Date.now();
+  const totalDuration = 1800; // 1.8 seconds smooth progress
+
+  const statusMessages = [
+    { threshold: 25, text: 'Initializing Quantum Core...' },
+    { threshold: 50, text: 'Loading Neural State & Assets...' },
+    { threshold: 75, text: 'Connecting to Realtime Cloud...' },
+    { threshold: 92, text: 'Calibrating Energy Generators...' },
+    { threshold: 100, text: 'Quantum Systems Launch Ready!' }
+  ];
+
+  const interval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(1, elapsed / totalDuration);
+    // Smooth cubic ease out
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    currentPercent = Math.min(100, Math.round(easeProgress * 100));
+
+    if (bar) bar.style.width = `${currentPercent}%`;
+    if (glow) glow.style.width = `${currentPercent}%`;
+    if (percentText) percentText.textContent = `${currentPercent}%`;
+
+    if (statusText) {
+      for (const msg of statusMessages) {
+        if (currentPercent <= msg.threshold) {
+          statusText.textContent = msg.text;
+          break;
+        }
+      }
+    }
+
+    if (progress >= 1) {
+      clearInterval(interval);
+      setTimeout(() => {
+        splash.classList.add('fade-out');
+        setTimeout(() => {
+          splash.style.display = 'none';
+        }, 700);
+      }, 250);
+    }
+  }, 25);
+
+  // Safety fallback: guaranteed dismiss within 3.5s
+  setTimeout(() => {
+    if (splash && splash.style.display !== 'none') {
+      splash.classList.add('fade-out');
+      setTimeout(() => { splash.style.display = 'none'; }, 700);
+    }
+  }, 3500);
+}
+
+window.initSplashScreen = initSplashScreen;
 
 // Bootstrap
 document.addEventListener('DOMContentLoaded', () => {
+  initSplashScreen();
   initTelegramWebApp();
   loadSavedGame();
   initAmbientParticles();

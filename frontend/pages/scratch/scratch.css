@@ -1,19 +1,548 @@
 /* ==========================================================================
-   PAGE VIEW 12: SCRATCH CARD MINI-GAME STYLES (GRAY FOIL & FLAME BURN)
+   PAGE VIEW: SCRATCH CARD MINI-GAME (ONE CARD TICKET & GRAY FILM SCRATCH-OFF)
    ========================================================================== */
+
+/* Mode Switcher Tabs */
+.scratch-mode-tabs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+  background: rgba(8, 16, 36, 0.7);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+}
+
+.scratch-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scratch-mode-btn.active {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.9), rgba(244, 63, 94, 0.9));
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+  transform: translateY(-1px);
+}
+
+.scratch-mode-btn:active {
+  transform: scale(0.97);
+}
+
+/* Master Scratch Arena Card */
 .scratch-arena-card {
-  background: radial-gradient(circle at 50% 25%, rgba(236, 72, 153, 0.2) 0%, rgba(6, 17, 43, 0.95) 75%);
-  border: 1.5px solid rgba(236, 72, 153, 0.5);
+  background: radial-gradient(circle at 50% 15%, rgba(236, 72, 153, 0.18) 0%, rgba(6, 17, 43, 0.96) 80%);
+  border: 1.5px solid rgba(236, 72, 153, 0.45);
   border-radius: var(--radius-xl);
-  padding: 22px 16px;
+  padding: 18px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(236, 72, 153, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(236, 72, 153, 0.18);
+  width: 100%;
 }
 
+/* ==========================================================================
+   1. ONE CARD LUXURY CYBER TICKET
+   ========================================================================== */
+.quantum-ticket-card {
+  width: 100%;
+  background: linear-gradient(165deg, rgba(17, 24, 48, 0.95) 0%, rgba(10, 16, 33, 0.98) 100%);
+  border: 2px solid rgba(236, 72, 153, 0.5);
+  border-radius: 20px;
+  padding: 16px 14px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 30px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.quantum-ticket-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  animation: rotateTicketAura 18s linear infinite;
+}
+
+@keyframes rotateTicketAura {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ticket Header */
+.ticket-header-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.ticket-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-brand-name {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  background: linear-gradient(90deg, #f472b6, #ec4899, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ticket-brand-sub {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1.2px;
+}
+
+.ticket-meta-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.ticket-serial-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.ticket-tier-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+
+/* Perforation Divider */
+.ticket-perforation-line {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 8px -14px 14px -14px;
+}
+
+.ticket-perforation-line .notch {
+  width: 16px;
+  height: 16px;
+  background: #06112b;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.ticket-perforation-line .notch.left {
+  left: -8px;
+  border-right: 2px solid rgba(236, 72, 153, 0.5);
+}
+
+.ticket-perforation-line .notch.right {
+  right: -8px;
+  border-left: 2px solid rgba(236, 72, 153, 0.5);
+}
+
+.ticket-perforation-line .dashed-line {
+  flex: 1;
+  border-bottom: 1.5px dashed rgba(236, 72, 153, 0.35);
+  margin: 0 16px;
+}
+
+/* ==========================================================================
+   CENTRAL SCRATCH BOX (GRAY FILM COVERING REWARD)
+   ========================================================================== */
+.single-scratch-box-wrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(236, 72, 153, 0.4);
+  background: #090e21;
+}
+
+/* 1. Underneath: Secret Hidden Reward Layer */
+.single-reward-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, rgba(236, 72, 153, 0.25) 0%, rgba(9, 14, 33, 0.98) 80%);
+  padding: 12px;
+  user-select: none;
+  z-index: 1;
+}
+
+.reward-spinning-aura {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  background: conic-gradient(from 0deg, transparent, rgba(236, 72, 153, 0.3), transparent, rgba(251, 191, 36, 0.3), transparent);
+  border-radius: 50%;
+  animation: spinRays 8s linear infinite;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+@keyframes spinRays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.reward-icon-badge-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(244, 63, 94, 0.15));
+  border: 2px solid #ec4899;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+  margin-bottom: 6px;
+  z-index: 2;
+  animation: rewardIconPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes rewardIconPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
+  100% { transform: scale(1.06); box-shadow: 0 0 28px rgba(236, 72, 153, 0.9); }
+}
+
+.reward-icon-huge {
+  font-size: 38px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+.reward-meta-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  text-align: center;
+}
+
+.reward-revealed-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  margin-bottom: 2px;
+}
+
+.reward-amount-display {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(236, 72, 153, 0.8), 0 0 20px rgba(236, 72, 153, 0.4);
+}
+
+.reward-subtitle-desc {
+  font-size: 10px;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-top: 1px;
+}
+
+.reward-stamp-badge {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #10b981;
+  border: 1.5px solid #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  transform: rotate(12deg);
+  display: none;
+  z-index: 3;
+}
+
+.reward-stamp-badge.visible {
+  display: block;
+  animation: stampPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes stampPop {
+  0% { transform: scale(2) rotate(25deg); opacity: 0; }
+  100% { transform: scale(1) rotate(12deg); opacity: 1; }
+}
+
+/* 2. Overneath: Realistic Metallic Gray Film Canvas */
+.scratch-film-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none; /* Crucial: Prevents touch drag from scrolling page on mobile */
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 2;
+  transition: opacity 0.45s ease;
+}
+
+.scratch-film-canvas:active {
+  cursor: grabbing;
+}
+
+.scratch-film-canvas.cleared {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Scratch Dust Layer */
+.scratch-dust-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.scratch-dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: flyDust 0.5s ease-out forwards;
+}
+
+@keyframes flyDust {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+  }
+}
+
+/* Ticket Progress Bar */
+.ticket-progress-bar-wrap {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.ticket-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.progress-title {
+  color: #94a3b8;
+  letter-spacing: 0.6px;
+}
+
+.progress-percent {
+  color: #f472b6;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+.ticket-progress-track {
+  width: 100%;
+  height: 7px;
+  background: rgba(3, 8, 22, 0.85);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.ticket-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ec4899, #f43f5e, #fbbf24);
+  border-radius: var(--radius-pill);
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.8);
+}
+
+/* Barcode Strip */
+.ticket-barcode-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  opacity: 0.65;
+}
+
+.barcode-lines {
+  display: flex;
+  gap: 2px;
+  height: 14px;
+  align-items: center;
+}
+
+.barcode-lines span {
+  display: inline-block;
+  background: #64748b;
+  height: 100%;
+  width: 2px;
+}
+
+.barcode-lines span:nth-child(2n) { width: 3px; }
+.barcode-lines span:nth-child(3n) { width: 1px; }
+.barcode-lines span:nth-child(5n) { width: 4px; }
+
+.barcode-text {
+  font-family: var(--font-mono, monospace);
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   STATUS BOX & CONTROLS
+   ========================================================================== */
+.scratch-status-box {
+  background: rgba(3, 8, 22, 0.88);
+  border: 1px solid rgba(236, 72, 153, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f472b6;
+  margin-bottom: 12px;
+  width: 100%;
+  text-align: center;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.scratch-actions-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scratch-dual-btn-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.scratch-action-main-btn {
+  flex: 1.4;
+  padding: 13px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #ec4899, #f43f5e);
+  color: #ffffff;
+  font-family: var(--font-primary);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scratch-action-main-btn:active {
+  transform: scale(0.97);
+}
+
+.scratch-btn-secondary {
+  flex: 1;
+  padding: 13px 10px;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid rgba(236, 72, 153, 0.5);
+  color: #f472b6;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scratch-btn-secondary:active {
+  transform: scale(0.97);
+  background: rgba(236, 72, 153, 0.2);
+}
+
+.scratch-ad-buy-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: var(--radius-lg);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-family: var(--font-primary);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scratch-ad-buy-btn:active {
+  transform: scale(0.98);
+  background: rgba(56, 189, 248, 0.2);
+}
+
+/* ==========================================================================
+   2. 3x3 GRID SCRATCH STYLES (RETAINED AS ALTERNATE MODE)
+   ========================================================================== */
 .scratch-card-header {
   display: flex;
   align-items: center;
@@ -84,7 +613,7 @@
   padding: 0 4px;
 }
 
-/* Gray Tap Cover with Metallic Foil Finish */
+/* Gray Tap Cover with Metallic Foil Finish for 3x3 tiles */
 .tile-cover-gray-foil {
   position: absolute;
   inset: 0;
@@ -130,7 +659,6 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Gray Flame Burning Effect ("ruff a gray flames than reward show") */
 .gray-flame-overlay {
   position: absolute;
   inset: 0;
@@ -180,37 +708,4 @@
   opacity: 0;
   pointer-events: none;
   display: none;
-}
-
-.scratch-status-box {
-  background: rgba(3, 8, 22, 0.85);
-  border: 1px solid rgba(236, 72, 153, 0.35);
-  border-radius: var(--radius-lg);
-  padding: 10px 14px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #f472b6;
-  margin-bottom: 12px;
-  width: 100%;
-  text-align: center;
-}
-
-.scratch-action-main-btn {
-  width: 100%;
-  padding: 13px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #ec4899, #f43f5e);
-  color: #ffffff;
-  font-family: var(--font-primary);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
-  transition: all 0.2s ease;
-}
-
-.scratch-action-main-btn:active {
-  transform: scale(0.97);
 }

@@ -1,116 +1,201 @@
 /* ==========================================================================
-   PAGE VIEW 10: SPIN WHEEL MINI-GAME STYLES
+   PAGE VIEW 10: SPIN WHEEL MINI-GAME STYLES (pages/spin/spin.css)
+   Ultra-Decorative Cyber-Casino Aesthetic with Animated LED Chaser
    ========================================================================== */
 #pageSpin, #pageChest, #pageScratch, #pageMegaReward {
   display: none;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   overflow-y: auto;
-  padding-bottom: 24px;
+  padding-bottom: 74px;
 }
 
 #pageSpin.active, #pageChest.active, #pageScratch.active, #pageMegaReward.active {
   display: flex;
 }
 
-/* Common Balance Pill Strip for Mini-Games */
-.spin-balance-pill-strip {
+/* Header Title Pill */
+.spin-header-title-pill {
   display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: -4px;
-}
-
-.spin-balance-pill-inner {
-  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1.5px solid rgba(56, 189, 248, 0.35);
-  padding: 6px 16px;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.4);
+  padding: 5px 12px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.18);
-}
-
-.spin-balance-pill-inner.chest-key-pill {
-  border-color: rgba(234, 179, 8, 0.4);
-  box-shadow: 0 0 16px rgba(234, 179, 8, 0.2);
-}
-
-.spin-balance-pill-inner.scratch-card-pill {
-  border-color: rgba(236, 72, 153, 0.4);
-  box-shadow: 0 0 16px rgba(236, 72, 153, 0.2);
-}
-
-.ticket-icon-glow {
-  font-size: 16px;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
-}
-
-.ticket-balance-label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.6px;
-  color: #94a3b8;
+  color: #fef08a;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.15);
 }
 
-.ticket-balance-val {
-  font-family: 'JetBrains Mono', monospace;
+.spin-sparkle-icon {
   font-size: 13px;
+  animation: pulseSparkle 2s infinite ease-in-out;
+}
+
+@keyframes pulseSparkle {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Header Live Ticket Balance Pill */
+.spin-ticket-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+  transition: all 0.2s ease;
+}
+
+.spin-ticket-header-pill:active {
+  transform: scale(0.94);
+}
+
+.ticket-pill-icon {
+  font-size: 13px;
+}
+
+.ticket-pill-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
   font-weight: 800;
   color: #38bdf8;
 }
 
-.ticket-balance-val.gold {
-  color: #facc15;
+.ticket-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #040919;
+  font-size: 11px;
+  font-weight: 900;
+  margin-left: 2px;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.8);
 }
-
-.ticket-balance-val.pink {
-  color: #f472b6;
-}
-
 
 /* ==========================================================================
-   PAGE VIEW 10: SPIN WHEEL MINI-GAME STYLES
+   SPIN ARENA CARD & WHEEL STYLES
    ========================================================================== */
 .spin-arena-card {
-  background: radial-gradient(circle at 50% 30%, rgba(6, 182, 212, 0.2) 0%, rgba(6, 17, 43, 0.95) 75%);
-  border: 1.5px solid rgba(6, 182, 212, 0.5);
+  background: radial-gradient(circle at 50% 25%, rgba(251, 191, 36, 0.12) 0%, rgba(6, 182, 212, 0.1) 40%, rgba(3, 8, 22, 0.96) 80%);
+  border: 1.8px solid rgba(251, 191, 36, 0.4);
   border-radius: var(--radius-xl);
-  padding: 24px 18px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(6, 182, 212, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.12);
 }
 
+/* Ambient Neon Halo Glow */
+.spin-ambient-halo {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.18) 0%, rgba(6, 182, 212, 0.15) 50%, transparent 70%);
+  filter: blur(24px);
+  pointer-events: none;
+  animation: haloBreathe 4s infinite ease-in-out;
+}
+
+@keyframes haloBreathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
+}
+
+/* Mechanical Flapper Pointer Arrow */
 .spin-pointer-arrow {
   position: absolute;
-  top: 8px;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 12;
-  filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.9));
+  z-index: 15;
+  filter: drop-shadow(0 4px 14px rgba(251, 191, 36, 0.95));
   pointer-events: none;
+  transform-origin: 50% 14px;
+  transition: transform 0.08s ease;
 }
 
+.spin-pointer-arrow.ticking {
+  animation: pointerVibrate 0.12s ease-in-out;
+}
+
+@keyframes pointerVibrate {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  35% { transform: translateX(-50%) rotate(-15deg); }
+  70% { transform: translateX(-50%) rotate(8deg); }
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+/* Spin Wheel Frame (216px x 216px) */
 .spin-wheel-frame {
-  width: 270px;
-  height: 270px;
+  width: 216px;
+  height: 216px;
   position: relative;
-  margin: 16px 0 20px 0;
+  margin: 6px 0 8px 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+
+/* Outer LED Chaser Ring */
+.spin-chaser-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.chaser-bulb {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fde047;
+  box-shadow: 0 0 6px #fde047, 0 0 12px rgba(251, 191, 36, 0.8);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.chaser-bulb.alt {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8, 0 0 12px rgba(56, 189, 248, 0.8);
+}
+
+.spinning-active .chaser-bulb {
+  animation: bulbStrobe 0.25s infinite alternate;
+}
+
+@keyframes bulbStrobe {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; filter: brightness(1.5); }
+}
+
+/* Rotating Wheel Disc */
 .spin-wheel-disc {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.45), 0 10px 25px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 35px rgba(251, 191, 36, 0.35), 0 12px 30px rgba(0, 0, 0, 0.85);
   position: relative;
   transition: transform 4s cubic-bezier(0.12, 0.85, 0.2, 1);
   will-change: transform;
@@ -122,96 +207,430 @@
   display: block;
 }
 
+/* 3D Luxury Metallic Center Hub */
 .spin-wheel-center-hub {
   position: absolute;
-  width: 62px;
-  height: 62px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 60%, #0369a1 100%);
-  border: 3.5px solid #ffffff;
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  background: radial-gradient(circle at 35% 30%, #fef08a 0%, #f59e0b 45%, #78350f 90%);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.85), inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 8px 18px rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
-  color: #ffffff;
   cursor: pointer;
-  z-index: 8;
+  z-index: 10;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   user-select: none;
 }
 
 .spin-wheel-center-hub:hover {
-  transform: scale(1.06);
-  box-shadow: 0 0 25px rgba(6, 182, 212, 1);
+  transform: scale(1.08);
+  box-shadow: 0 0 30px rgba(251, 191, 36, 1);
 }
 
 .spin-wheel-center-hub:active {
   transform: scale(0.92);
 }
 
-.spin-result-display {
-  background: rgba(3, 8, 22, 0.85);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  border-radius: var(--radius-lg);
-  padding: 10px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #38bdf8;
-  margin-bottom: 12px;
-  width: 100%;
-  text-align: center;
+.hub-outer-gear {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  animation: gearSpin 15s linear infinite;
 }
 
-.spin-actions-wrapper, .chest-actions-wrapper, .scratch-actions-wrapper {
+@keyframes gearSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hub-pulsing-glow {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 80%);
+  pointer-events: none;
+  animation: pulseHubGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseHubGlow {
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.hub-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  gap: 2px;
+}
+
+.hub-content span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* ==========================================================================
+   DEDICATED TICKET BALANCE TAB
+   ========================================================================== */
+.spin-ticket-balance-tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 0 14px rgba(6, 182, 212, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.spin-ticket-balance-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.spin-ticket-tab-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spin-ticket-tab-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+}
+
+.spin-ticket-tab-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spin-ticket-tab-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.6px;
+}
+
+.spin-ticket-tab-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.spin-ticket-tab-right {
+  display: flex;
+  align-items: center;
+}
+
+.spin-ticket-tab-count-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(3, 8, 22, 0.8);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.15);
+}
+
+.spin-ticket-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fde047;
+  line-height: 1;
+}
+
+.spin-ticket-unit {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   PROMINENT WINNING PRIZE SHOWCASE CARD
+   ========================================================================== */
+.spin-result-display {
+  background: linear-gradient(135deg, rgba(6, 12, 32, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.8px solid rgba(251, 191, 36, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), inset 0 0 18px rgba(251, 191, 36, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.spin-result-display.winner-active {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(6, 40, 25, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.18);
+  transform: scale(1.02);
+}
+
+.spin-result-display.jackpot-active {
+  border-color: #fde047;
+  background: linear-gradient(135deg, rgba(45, 28, 5, 0.95) 0%, rgba(20, 14, 5, 0.95) 100%);
+  box-shadow: 0 0 36px rgba(251, 191, 36, 0.55), inset 0 0 24px rgba(251, 191, 36, 0.3);
+  transform: scale(1.03);
+}
+
+.spin-result-display.miss-active {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, rgba(30, 10, 15, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+}
+
+.spin-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fde047;
+  text-transform: uppercase;
+}
+
+.spin-result-badge.spinning {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: #06b6d4;
+  color: #38bdf8;
+  animation: pulseBadge 1s infinite alternate;
+}
+
+.spin-result-badge.winner {
+  background: linear-gradient(90deg, #059669, #10b981);
+  border-color: #34d399;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.spin-result-badge.jackpot {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
+  animation: pulseJackpot 0.8s infinite alternate;
+}
+
+.spin-result-badge.missed {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+@keyframes pulseBadge {
+  0% { opacity: 0.7; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes pulseJackpot {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.06); filter: brightness(1.3); }
+}
+
+.spin-win-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+.spin-win-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.2);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.winner-active .spin-win-icon-wrapper {
+  border-color: #34d399;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(6, 78, 59, 0.8) 100%);
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.55);
+  animation: winIconBounce 0.9s infinite ease-in-out alternate;
+}
+
+.jackpot-active .spin-win-icon-wrapper {
+  border-color: #fde047;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.45) 0%, rgba(120, 53, 15, 0.9) 100%);
+  box-shadow: 0 0 28px rgba(251, 191, 36, 0.85);
+  animation: winIconBounce 0.65s infinite ease-in-out alternate;
+}
+
+@keyframes winIconBounce {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-4px) scale(1.1); }
+}
+
+.spin-win-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.spin-win-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.spin-win-title {
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.winner-active .spin-win-title {
+  color: #34d399;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+.jackpot-active .spin-win-title {
+  color: #fde047;
+  text-shadow: 0 0 14px rgba(251, 191, 36, 0.9);
+}
+
+.spin-win-desc {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   SINGLE UNIFIED SPIN / AD ACTION BUTTON
+   ========================================================================== */
+.spin-actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
   width: 100%;
 }
 
 .spin-action-main-btn {
   width: 100%;
-  padding: 13px;
+  padding: 15px 20px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #06b6d4, #38bdf8);
-  color: #030712;
   font-family: var(--font-primary);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  border: none;
+  font-size: 14.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-  transition: all 0.2s ease;
-}
-
-.spin-action-main-btn:active {
-  transform: scale(0.97);
-}
-
-.spin-ad-buy-btn, .chest-ad-buy-btn, .scratch-ad-buy-btn {
-  width: 100%;
-  padding: 11px 16px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
-  font-family: var(--font-primary);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 9px;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
 }
 
-.spin-ad-buy-btn:active, .chest-ad-buy-btn:active, .scratch-ad-buy-btn:active {
-  transform: scale(0.97);
-  background: rgba(30, 41, 59, 0.9);
+/* Spin Mode (when tickets > 0) */
+.spin-action-main-btn.spin-mode {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  color: #030712;
+  border: 1.8px solid #fde047;
+  box-shadow: 0 0 26px rgba(245, 158, 11, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
 }
+
+.spin-action-main-btn.spin-mode:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 32px rgba(245, 158, 11, 0.85);
+}
+
+.spin-action-main-btn.spin-mode:active {
+  transform: scale(0.97);
+}
+
+/* Ad Mode (when tickets === 0) */
+.spin-action-main-btn.ad-mode {
+  background: linear-gradient(135deg, #8b5cf6 0%, #0284c7 50%, #06b6d4 100%);
+  color: #ffffff;
+  border: 1.8px solid #38bdf8;
+  box-shadow: 0 0 26px rgba(6, 182, 212, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.spin-action-main-btn.ad-mode:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 34px rgba(6, 182, 212, 0.85);
+}
+
+.spin-action-main-btn.ad-mode:active {
+  transform: scale(0.97);
+}
+
+.spin-action-main-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.spin-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-25deg);
+  animation: shineSwipe 3.5s infinite ease-in-out;
+}
+
+@keyframes shineSwipe {
+  0% { left: -100%; }
+  35%, 100% { left: 160%; }
+}
+
+

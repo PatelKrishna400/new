@@ -8,164 +8,260 @@
       <span>Back</span>
     </button>
 
-    <div class="xp-timer-pill">
-      <span>🎡 LUCKY SPINNER</span>
+    <div class="spin-header-title-pill">
+      <span class="spin-sparkle-icon">✨</span>
+      <span>CYBER LUCKY WHEEL</span>
     </div>
 
-    <div class="suggest-status-pill" style="pointer-events: none;">
-      <span class="suggest-live-dot"></span>
-      <span>Ready</span>
+    <!-- Live Ticket Balance Pill -->
+    <div class="spin-ticket-header-pill" id="spinTicketHeaderPill" onclick="handleSpinButtonClick()">
+      <span class="ticket-pill-icon">🎫</span>
+      <span class="ticket-pill-val" id="spinTicketHeaderCount">0</span>
+      <span class="ticket-add-btn">+</span>
     </div>
   </div>
 
-  <!-- Spin Wheel Game Card -->
+  <!-- Hidden ticket count fallback for scripts -->
+  <span id="spinTicketCountVal" style="display:none;">0</span>
+
+  <!-- Spin Wheel Game Card (Full Page View) -->
   <section class="spin-arena-card">
-    <!-- Top Pointer Arrow (Points to 12 o'clock winning slice) -->
-    <div class="spin-pointer-arrow">
-      <svg viewBox="0 0 34 42" width="34" height="42" fill="none">
-        <path d="M17 40 L4 12 Q2 6 7 4 Q17 1 27 4 Q32 6 30 12 Z" fill="url(#pointerGrad)" stroke="#ffffff" stroke-width="2"/>
-        <circle cx="17" cy="12" r="5" fill="#0f172a"/>
-        <circle cx="17" cy="12" r="2.5" fill="#facc15"/>
+    <!-- Ambient Neon Halo Glow -->
+    <div class="spin-ambient-halo"></div>
+
+    <!-- Top Pointer Arrow / Mechanical Flapper -->
+    <div class="spin-pointer-arrow" id="spinPointerArrow">
+      <svg viewBox="0 0 40 48" width="38" height="46" fill="none">
         <defs>
-          <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#fde047"/>
-            <stop offset="50%" stop-color="#f59e0b"/>
+          <linearGradient id="pointerBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fffbeb"/>
+            <stop offset="25%" stop-color="#fef08a"/>
+            <stop offset="65%" stop-color="#f59e0b"/>
             <stop offset="100%" stop-color="#b45309"/>
           </linearGradient>
+          <filter id="pointerGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.8"/>
+          </filter>
         </defs>
+        <!-- Needle Body -->
+        <path d="M20 46 L6 14 Q3 6 10 3 Q20 0 30 3 Q37 6 34 14 Z" fill="url(#pointerBodyGrad)" stroke="#ffffff" stroke-width="1.8" filter="url(#pointerGlow)"/>
+        <!-- Inner Bezel -->
+        <circle cx="20" cy="14" r="7" fill="#0f172a" stroke="#fef08a" stroke-width="1.5"/>
+        <!-- Ruby Gem Center -->
+        <circle cx="20" cy="14" r="4.2" fill="#ef4444"/>
+        <circle cx="18.5" cy="12.5" r="1.5" fill="#ffffff" opacity="0.8"/>
       </svg>
     </div>
 
-    <!-- Spin Wheel Frame -->
-    <div class="spin-wheel-frame">
+    <!-- Spin Wheel Frame with LED Chaser Bulbs -->
+    <div class="spin-wheel-frame" id="spinWheelFrame">
+      <!-- Outer LED Chaser Ring (24 bulbs) -->
+      <div class="spin-chaser-ring" id="spinChaserRing"></div>
+
+      <!-- Rotating Wheel Disc -->
       <div class="spin-wheel-disc" id="spinWheelCircle">
         <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
           <defs>
-            <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <!-- Slice Gradients -->
+            <!-- Slice 0 & 7: Try Again -->
+            <linearGradient id="sliceTryAgainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#1e293b"/>
+              <stop offset="60%" stop-color="#0f172a"/>
+              <stop offset="100%" stop-color="#090d16"/>
+            </linearGradient>
+
+            <!-- Slice 1: Green Fuel -->
+            <linearGradient id="sliceGreenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="50%" stop-color="#059669"/>
+              <stop offset="100%" stop-color="#064e3b"/>
+            </linearGradient>
+
+            <!-- Slice 2: Yellow Fuel -->
+            <linearGradient id="sliceYellowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#f59e0b"/>
               <stop offset="50%" stop-color="#d97706"/>
               <stop offset="100%" stop-color="#78350f"/>
             </linearGradient>
-            <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#06b6d4"/>
-              <stop offset="50%" stop-color="#3b82f6"/>
-              <stop offset="100%" stop-color="#0284c7"/>
+
+            <!-- Slice 3: Key -->
+            <linearGradient id="sliceKeyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#8b5cf6"/>
+              <stop offset="50%" stop-color="#6d28d9"/>
+              <stop offset="100%" stop-color="#4c1d95"/>
             </linearGradient>
-            <filter id="glowRim" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
+
+            <!-- Slice 4: Energy -->
+            <linearGradient id="sliceEnergyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="50%" stop-color="#0284c7"/>
+              <stop offset="100%" stop-color="#0c4a6e"/>
+            </linearGradient>
+
+            <!-- Slice 5: Egg -->
+            <linearGradient id="sliceEggGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#14b8a6"/>
+              <stop offset="50%" stop-color="#0f766e"/>
+              <stop offset="100%" stop-color="#134e4a"/>
+            </linearGradient>
+
+            <!-- Slice 6: Jackpot Coins (2%) -->
+            <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fde047"/>
+              <stop offset="35%" stop-color="#f59e0b"/>
+              <stop offset="70%" stop-color="#b45309"/>
+              <stop offset="100%" stop-color="#78350f"/>
+            </linearGradient>
+
+            <filter id="jackpotGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
               <feComposite in="SourceGraphic" in2="blur" operator="over"/>
             </filter>
           </defs>
 
-          <!-- Outer Glow Rim -->
-          <circle cx="150" cy="150" r="146" fill="#030816" stroke="url(#rimGrad)" stroke-width="6" filter="url(#glowRim)"/>
+          <!-- Outer Housing Circle -->
+          <circle cx="150" cy="150" r="148" fill="#030816" stroke="#fbbf24" stroke-width="3"/>
+          <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5"/>
 
-          <!-- 8 Exact Wedges (45 deg each), centered so slice 0 is at 12 o'clock (-22.5 to +22.5 deg) -->
+          <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg -->
           <!-- Slice 0: Try Again (0 deg / 12 o'clock) -->
-          <path d="M 150 150 L 96.1 19.3 A 142 142 0 0 1 203.9 19.3 Z" fill="#1e293b" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 1: 1 Green Fuel (45 deg / 1:30) -->
-          <path d="M 150 150 L 203.9 19.3 A 142 142 0 0 1 280.7 96.1 Z" fill="#065f46" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 2: 1 Yellow Fuel (90 deg / 3 o'clock) -->
-          <path d="M 150 150 L 280.7 96.1 A 142 142 0 0 1 280.7 203.9 Z" fill="#854d0e" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 3: 1 Winning Key (135 deg / 4:30) -->
-          <path d="M 150 150 L 280.7 203.9 A 142 142 0 0 1 203.9 280.7 Z" fill="#581c87" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 4: 10 Energy (180 deg / 6 o'clock) -->
-          <path d="M 150 150 L 203.9 280.7 A 142 142 0 0 1 96.1 280.7 Z" fill="#0c4a6e" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 5: 1 Cyber Egg (225 deg / 7:30) -->
-          <path d="M 150 150 L 96.1 280.7 A 142 142 0 0 1 19.3 203.9 Z" fill="#134e4a" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-          <!-- Slice 6: 10 Coins Jackpot 2% (270 deg / 9 o'clock) -->
-          <path d="M 150 150 L 19.3 203.9 A 142 142 0 0 1 19.3 96.1 Z" fill="url(#sliceJackpotGrad)" stroke="#fbbf24" stroke-width="2"/>
-          <!-- Slice 7: Try Again (315 deg / 10:30) -->
-          <path d="M 150 150 L 19.3 96.1 A 142 142 0 0 1 96.1 19.3 Z" fill="#334155" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
 
+          <!-- Slice 1: 1 Green Fuel (45 deg / 1:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceGreenGrad)" stroke="#047857" stroke-width="1.2"/>
+
+          <!-- Slice 2: 1 Yellow Fuel (90 deg / 3 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceYellowGrad)" stroke="#b45309" stroke-width="1.2"/>
+
+          <!-- Slice 3: 1 Winning Key (135 deg / 4:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceKeyGrad)" stroke="#6d28d9" stroke-width="1.2"/>
+
+          <!-- Slice 4: 10 Energy (180 deg / 6 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceEnergyGrad)" stroke="#0284c7" stroke-width="1.2"/>
+
+          <!-- Slice 5: 1 Cyber Egg (225 deg / 7:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceEggGrad)" stroke="#0f766e" stroke-width="1.2"/>
+
+          <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
+
+          <!-- Slice 7: Try Again (315 deg / 10:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+
+          <!-- Divider Rays between Slices with Golden Metallic Sheen -->
+          <g stroke="#fde047" stroke-width="1.8" opacity="0.6">
+            <line x1="150" y1="150" x2="95.7" y2="18.8"/>
+            <line x1="150" y1="150" x2="204.3" y2="18.8"/>
+            <line x1="150" y1="150" x2="281.2" y2="95.7"/>
+            <line x1="150" y1="150" x2="281.2" y2="204.3"/>
+            <line x1="150" y1="150" x2="204.3" y2="281.2"/>
+            <line x1="150" y1="150" x2="95.7" y2="281.2"/>
+            <line x1="150" y1="150" x2="18.8" y2="204.3"/>
+            <line x1="150" y1="150" x2="18.8" y2="95.7"/>
+          </g>
+
+          <!-- Inner Golden Ring Divider -->
+          <circle cx="150" cy="150" r="48" fill="none" stroke="#fde047" stroke-width="2" opacity="0.75"/>
+
+          <!-- Slice Labels & Icons with Premium Shadows -->
           <!-- Slice 0 Label: Try Again (0 deg) -->
-          <g transform="translate(150, 150) rotate(0) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">❌</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+          <g transform="translate(150, 150) rotate(0) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">❌</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
           </g>
 
           <!-- Slice 1 Label: 1 Green (45 deg) -->
-          <g transform="translate(150, 150) rotate(45) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">🟢</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#34d399" font-family="'Plus Jakarta Sans', sans-serif">1 GREEN</text>
+          <g transform="translate(150, 150) rotate(45) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🟢</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#a7f3d0" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 GREEN</text>
           </g>
 
           <!-- Slice 2 Label: 1 Yellow (90 deg) -->
-          <g transform="translate(150, 150) rotate(90) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">🟡</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#fbbf24" font-family="'Plus Jakarta Sans', sans-serif">1 YELLOW</text>
+          <g transform="translate(150, 150) rotate(90) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🟡</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fef08a" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 YELLOW</text>
           </g>
 
           <!-- Slice 3 Label: 1 Key (135 deg) -->
-          <g transform="translate(150, 150) rotate(135) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">🔑</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#c084fc" font-family="'Plus Jakarta Sans', sans-serif">1 KEY</text>
+          <g transform="translate(150, 150) rotate(135) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔑</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#e9d5ff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 KEY</text>
           </g>
 
           <!-- Slice 4 Label: 10 Energy (180 deg) -->
-          <g transform="translate(150, 150) rotate(180) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">⚡</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#38bdf8" font-family="'Plus Jakarta Sans', sans-serif">10 ENERGY</text>
+          <g transform="translate(150, 150) rotate(180) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">⚡</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">10 ENERGY</text>
           </g>
 
           <!-- Slice 5 Label: 1 Egg (225 deg) -->
-          <g transform="translate(150, 150) rotate(225) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">🥚</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2dd4bf" font-family="'Plus Jakarta Sans', sans-serif">1 EGG</text>
+          <g transform="translate(150, 150) rotate(225) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🥚</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#99f6e4" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 EGG</text>
           </g>
 
           <!-- Slice 6 Label: 10 Coins (270 deg) -->
-          <g transform="translate(150, 150) rotate(270) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">🪙</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="900" fill="#fde047" font-family="'Plus Jakarta Sans', sans-serif">10 COINS</text>
-            <text y="28" text-anchor="middle" font-size="8" font-weight="800" fill="#fef08a" font-family="'Plus Jakarta Sans', sans-serif">(JACKPOT)</text>
+          <g transform="translate(150, 150) rotate(270) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="18" filter="drop-shadow(0 2px 6px rgba(251,191,36,0.9))">🪙</text>
+            <text y="16" text-anchor="middle" font-size="10.5" font-weight="900" fill="#ffffff" letter-spacing="0.6" font-family="'Plus Jakarta Sans', sans-serif">10 COINS</text>
+            <text y="27" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fef08a" letter-spacing="0.8" font-family="'Plus Jakarta Sans', sans-serif">★ JACKPOT 2% ★</text>
           </g>
 
           <!-- Slice 7 Label: Try Again (315 deg) -->
-          <g transform="translate(150, 150) rotate(315) translate(0, -95)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="14">❌</text>
-            <text y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+          <g transform="translate(150, 150) rotate(315) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">❌</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
           </g>
 
-          <!-- Golden Studs around the Rim (16 rivets) -->
-          <g id="rimStuds" fill="#fde047">
-            <circle cx="150" cy="11" r="3.5"/>
-            <circle cx="203" cy="22" r="3.5"/>
-            <circle cx="248" cy="52" r="3.5"/>
-            <circle cx="278" cy="97" r="3.5"/>
-            <circle cx="289" cy="150" r="3.5"/>
-            <circle cx="278" cy="203" r="3.5"/>
-            <circle cx="248" cy="248" r="3.5"/>
-            <circle cx="203" cy="278" r="3.5"/>
-            <circle cx="150" cy="289" r="3.5"/>
-            <circle cx="97" cy="278" r="3.5"/>
-            <circle cx="52" cy="248" r="3.5"/>
-            <circle cx="22" cy="203" r="3.5"/>
-            <circle cx="11" cy="150" r="3.5"/>
-            <circle cx="22" cy="97" r="3.5"/>
-            <circle cx="52" cy="52" r="3.5"/>
-            <circle cx="97" cy="22" r="3.5"/>
+          <!-- Perimeter Golden Rivet Studs (8 pegs exactly placed on slice divider rays) -->
+          <g id="wheelOuterPegs" fill="#fef08a" stroke="#b45309" stroke-width="0.9">
+            <circle cx="204.0" cy="19.7" r="3.2"/>
+            <circle cx="280.3" cy="96.0" r="3.2"/>
+            <circle cx="280.3" cy="204.0" r="3.2"/>
+            <circle cx="204.0" cy="280.3" r="3.2"/>
+            <circle cx="96.0" cy="280.3" r="3.2"/>
+            <circle cx="19.7" cy="204.0" r="3.2"/>
+            <circle cx="19.7" cy="96.0" r="3.2"/>
+            <circle cx="96.0" cy="19.7" r="3.2"/>
           </g>
         </svg>
       </div>
 
-      <!-- Center Hub -->
-      <div class="spin-wheel-center-hub" onclick="spinLuckyWheel()">
-        <div class="hub-ring"></div>
-        <span>SPIN</span>
+      <!-- 3D Luxury Metallic Center Hub Button -->
+      <div class="spin-wheel-center-hub" id="spinCenterHub" onclick="handleSpinButtonClick()">
+        <div class="hub-outer-gear"></div>
+        <div class="hub-pulsing-glow"></div>
+        <div class="hub-content">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span id="spinCenterHubLabel">SPIN</span>
+        </div>
       </div>
     </div>
 
-    <!-- Spin Result Display Box -->
+    <!-- Prominent Winning Prize Showcase Card -->
     <div class="spin-result-display" id="spinResultBox">
-      <span id="spinResultText">Tap SPIN to spin the lucky wheel and win fuels, keys, eggs & coins!</span>
+      <div class="spin-result-badge" id="spinResultTag">🎯 READY TO SPIN</div>
+      <div class="spin-win-content" id="spinWinContent">
+        <div class="spin-win-icon-wrapper" id="spinWinIconWrapper">
+          <span class="spin-win-icon" id="spinWinIcon">🎡</span>
+        </div>
+        <div class="spin-win-details" id="spinWinDetails">
+          <div class="spin-win-title" id="spinWinTitle">Cyber Lucky Wheel</div>
+          <div class="spin-win-desc" id="spinWinDesc">Spin to win Coins, Keys, Energy & Fuel Cells!</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Spin Actions Wrapper -->
+    <!-- Single Unified Spin / Ad Action Button -->
     <div class="spin-actions-wrapper">
-      <button class="spin-action-main-btn" id="btnSpinWheel" onclick="spinLuckyWheel()">
-        <span>🎡 SPIN THE WHEEL</span>
+      <button class="spin-action-main-btn spin-mode" id="btnSpinWheel" onclick="handleSpinButtonClick()">
+        <div class="spin-btn-shine"></div>
+        <span class="spin-btn-icon" id="spinBtnIcon">🎡</span>
+        <span class="spin-btn-text" id="spinBtnText">SPIN THE WHEEL</span>
       </button>
     </div>
   </section>
 </div>
+

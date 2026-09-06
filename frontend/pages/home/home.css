@@ -159,6 +159,7 @@
 
 .combo-flame { color: #94a3b8; transition: color 0.2s; }
 .reactor-pill-dark.combo-active .combo-flame { color: #f97316; filter: drop-shadow(0 0 6px #f97316); }
+.combo-taps-count { display: none !important; }
 
 .orb-stage {
   position: relative;

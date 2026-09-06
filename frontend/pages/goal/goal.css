@@ -773,9 +773,9 @@
 .ctrl-btn:hover { color: #ffffff; border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
 .ctrl-btn.active { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border-color: #0ea5e9; }
 
-/* Firebase Cloud Status Badge */
+/* Firebase Cloud Status Badge (Hidden from heading) */
 .firebase-cloud-status-badge {
-  display: inline-flex;
+  display: none !important;
   align-items: center;
   gap: 5px;
   font-size: 10px;

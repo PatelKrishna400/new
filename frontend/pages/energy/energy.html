@@ -89,6 +89,31 @@
             </button>
           </div>
 
+          <div class="fuel-card darkgreen-fuel-card" id="fuelCardDarkGreen">
+            <div class="fuel-card-top">
+              <div class="fuel-icon-box darkgreen-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                  <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                  <rect x="6" y="7" width="4" height="4" rx="1"/>
+                </svg>
+              </div>
+              <div class="fuel-cell-badge darkgreen-badge-pill" id="darkgreenCellCount">0 Cells</div>
+            </div>
+            <div class="fuel-card-body">
+              <h3 class="fuel-name" style="color: #34d399;">Dark Green Fuel</h3>
+              <p class="fuel-timer-bonus" style="color: #10b981;">+1 Min Timer</p>
+              <p class="fuel-meta-desc">Unlimited ad fuel</p>
+            </div>
+            <button class="fuel-action-btn ad-blue-btn darkgreen-btn" id="btnUseDarkGreenFuel" onclick="handleFuelAction('darkgreen')">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                <polyline points="17 2 12 7 7 2"/>
+              </svg>
+              <span id="btnDarkGreenText">Watch Ad (+1 Fuel)</span>
+            </button>
+          </div>
+
           <div class="fuel-card yellow-fuel-card" id="fuelCardYellow">
             <div class="fuel-card-top">
               <div class="fuel-icon-box yellow-icon-box">
