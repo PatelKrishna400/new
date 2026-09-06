@@ -1,0 +1,12 @@
+/* ==========================================================================
+   PAGE: TASKS & WEB STYLES (pages/tasks-web/tasks-web.css)
+   ========================================================================== */
+
+#websiteTasksContainer .card-panel {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+#websiteTasksContainer .card-panel:hover {
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+}

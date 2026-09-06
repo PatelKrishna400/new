@@ -1,0 +1,10 @@
+/* ==========================================================================
+   PAGE: MEGA REQUEST STYLES (pages/mega-request/mega-request.css)
+   ========================================================================== */
+
+[data-reqfilter].active {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.4);
+}

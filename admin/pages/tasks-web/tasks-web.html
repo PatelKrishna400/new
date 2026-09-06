@@ -1,0 +1,45 @@
+<!-- PAGE: TASKS & WEB -->
+<section class="page-panel" id="page-tasks_web">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Website Quests Configuration</h2>
+      <p style="font-size: 12px; color: #94a3b8;">Manage the 3 sponsor quests saved at <code style="color: #38bdf8;">/website_tasks_config</code> in Firebase.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="resetDefaultWebsiteTasks()" class="btn-secondary">Reset Defaults</button>
+      <button onclick="saveWebsiteTasksToFirebase()" class="btn-primary">💾 Save to Firebase</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="websiteTasksContainer">
+    <!-- Injected dynamically -->
+  </div>
+
+  <!-- Daily Targets Summary Card -->
+  <div class="card-panel">
+    <h3 style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 12px;">Daily Task Targets Reference</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; font-size: 12px;">
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Green Fuel:</span> <strong style="color: #34d399;">2,000 Times</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Dark Green Fuel:</span> <strong style="color: #10b981;">2,000 Times (+1m)</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Yellow Fuel:</span> <strong style="color: #facc15;">1,000 Times</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Wheel Spins:</span> <strong style="color: #c084fc;">250 Times</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Vault Chests:</span> <strong style="color: #38bdf8;">250 Times</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Scratch Cards:</span> <strong style="color: #f472b6;">200 Times</strong>
+      </div>
+      <div style="background: rgba(4, 10, 26, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
+        <span style="color: #94a3b8;">Egg Coins:</span> <strong style="color: #a3e635;">300 Coins</strong>
+      </div>
+    </div>
+  </div>
+</section>

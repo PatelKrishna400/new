@@ -1,0 +1,35 @@
+/* ==========================================================================
+   PAGE: MEGA ADD STYLES (pages/mega-add/mega-add.css)
+   ========================================================================== */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.cat-btn {
+  background: rgba(4, 10, 26, 0.7);
+  border: 1px solid rgba(25, 55, 120, 0.4);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.cat-btn:hover {
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+.cat-btn.active {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(37, 99, 235, 0.45) 100%);
+  border-color: #0284c7;
+  color: #fff;
+}

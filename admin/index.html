@@ -7,532 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  
+  <!-- Shared Global Styles -->
+  <link rel="stylesheet" href="shared/common.css">
 
-    body {
-      min-height: 100vh;
-      background-color: #060d24;
-      color: #f8fafc;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-    }
-
-    /* Permanent Fixed Left Vertical Menu Bar (Never Hides) */
-    .sidebar {
-      width: 260px;
-      min-width: 260px;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #040819;
-      border-right: 1.5px solid rgba(25, 55, 120, 0.45);
-      display: flex;
-      flex-direction: column;
-      z-index: 100;
-    }
-
-    /* Sidebar Brand */
-    .sidebar-brand {
-      padding: 22px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(25, 55, 120, 0.35);
-    }
-
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 0 12px rgba(2, 132, 199, 0.35);
-      flex-shrink: 0;
-    }
-
-    .brand-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 0.5px;
-    }
-
-    .brand-subtitle {
-      font-size: 10px;
-      color: #38bdf8;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    /* Navigation List */
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      overflow-y: auto;
-    }
-
-    .nav-section-label {
-      font-size: 10px;
-      font-weight: 800;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 10px 12px 6px 12px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      color: #94a3b8;
-      text-decoration: none;
-      font-size: 13.5px;
-      font-weight: 700;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: 1px solid transparent;
-      background: transparent;
-      width: 100%;
-      text-align: left;
-    }
-
-    .nav-item:hover {
-      background: rgba(14, 165, 233, 0.12);
-      color: #ffffff;
-      border-color: rgba(56, 189, 248, 0.25);
-    }
-
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(29, 78, 216, 0.45) 100%);
-      color: #ffffff;
-      border-color: rgba(56, 189, 248, 0.6);
-      box-shadow: 0 0 14px rgba(2, 132, 199, 0.25);
-    }
-
-    .nav-icon {
-      font-size: 17px;
-      width: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .nav-badge {
-      margin-left: auto;
-      background: rgba(14, 165, 233, 0.2);
-      color: #38bdf8;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 99px;
-      border: 1px solid rgba(14, 165, 233, 0.4);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .nav-badge.badge-amber {
-      background: rgba(245, 158, 11, 0.2);
-      color: #fbbf24;
-      border-color: rgba(245, 158, 11, 0.4);
-    }
-
-    /* Sidebar Footer Status */
-    .sidebar-footer {
-      padding: 16px;
-      border-top: 1px solid rgba(25, 55, 120, 0.35);
-      background: rgba(2, 6, 18, 0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .cloud-status-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(5, 14, 38, 0.7);
-      border: 1px solid rgba(25, 55, 120, 0.4);
-      border-radius: 8px;
-      padding: 8px 10px;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
-      flex-shrink: 0;
-      transition: all 0.3s ease;
-    }
-
-    .status-dot.online {
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-    }
-
-    .status-info {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .status-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: #ffffff;
-    }
-
-    .status-sub {
-      font-size: 9.5px;
-      color: #94a3b8;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* Main Content Area */
-    .main-content {
-      margin-left: 260px;
-      flex: 1;
-      min-height: 100vh;
-      background-color: #060d24;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Top Navigation Header */
-    .top-header {
-      height: 68px;
-      background: #040819;
-      border-bottom: 1.5px solid rgba(25, 55, 120, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      position: sticky;
-      top: 0;
-      z-index: 90;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .page-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: #ffffff;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .app-link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
-      transition: all 0.2s ease;
-    }
-
-    .app-link-btn:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
-
-    /* Views Container */
-    .content-body {
-      flex: 1;
-      padding: 28px;
-      max-width: 1440px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .page-panel {
-      display: none;
-      flex-direction: column;
-      gap: 22px;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .page-panel.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards & Containers */
-    .card-panel {
-      background: rgba(8, 18, 44, 0.85);
-      border: 1.5px solid rgba(25, 55, 120, 0.45);
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-    }
-
-    .metric-box {
-      background: rgba(4, 10, 26, 0.7);
-      border: 1px solid rgba(25, 55, 120, 0.45);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .metric-box:hover {
-      border-color: #38bdf8;
-      background: rgba(14, 165, 233, 0.08);
-      transform: translateY(-2px);
-    }
-
-    .metric-icon-box {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .metric-meta {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .metric-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-    }
-
-    .metric-value {
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffffff;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* Tables */
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 10px;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .data-table th {
-      background: rgba(4, 10, 26, 0.95);
-      padding: 12px 16px;
-      font-size: 11px;
-      font-weight: 800;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1.5px solid rgba(25, 55, 120, 0.5);
-    }
-
-    .data-table td {
-      padding: 14px 16px;
-      font-size: 13px;
-      color: #f8fafc;
-      border-bottom: 1px solid rgba(25, 55, 120, 0.3);
-      vertical-align: middle;
-    }
-
-    .data-table tr:hover td {
-      background: rgba(14, 165, 233, 0.05);
-    }
-
-    /* Form Controls */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-label {
-      font-size: 11px;
-      font-weight: 800;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .form-input {
-      background: rgba(4, 10, 26, 0.85);
-      border: 1px solid rgba(25, 55, 120, 0.5);
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .form-input:focus {
-      border-color: #0284c7;
-      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-      border: none;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.1);
-    }
-
-    .btn-secondary {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(25, 55, 120, 0.5);
-      color: #94a3b8;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      color: #ffffff;
-      border-color: #38bdf8;
-    }
-
-    /* Status Badges */
-    .status-pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 99px;
-      display: inline-block;
-    }
-    .pill-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); }
-    .pill-approved { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); }
-    .pill-delivered { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5); }
-    .pill-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
-
-    /* Category Buttons Grid */
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-    }
-
-    .cat-btn {
-      background: rgba(4, 10, 26, 0.7);
-      border: 1px solid rgba(25, 55, 120, 0.4);
-      border-radius: 8px;
-      padding: 8px 10px;
-      color: #94a3b8;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .cat-btn:hover { border-color: #38bdf8; color: #fff; }
-    .cat-btn.active {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(37, 99, 235, 0.45) 100%);
-      border-color: #0284c7;
-      color: #fff;
-    }
-
-    /* Modal Backdrop */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 20, 0.85);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-card {
-      background: #040d24;
-      border: 1.5px solid rgba(30, 68, 140, 0.6);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 520px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-  </style>
+  <!-- Modular Page-Wise Styles -->
+  <link rel="stylesheet" href="pages/dashboard/dashboard.css">
+  <link rel="stylesheet" href="pages/users/users.css">
+  <link rel="stylesheet" href="pages/mega-add/mega-add.css">
+  <link rel="stylesheet" href="pages/mega-request/mega-request.css">
+  <link rel="stylesheet" href="pages/tasks-web/tasks-web.css">
+  <link rel="stylesheet" href="pages/settings/settings.css">
 </head>
 <body>
 
@@ -560,19 +45,19 @@
         <span class="nav-badge" id="badgeUsersCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="mega_add" onclick="switchAdminPage('mega_add', 'Mega Add & Item Catalog')">
+      <button class="nav-item" data-page="mega-add" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
         <span class="nav-icon">🎁</span>
         <span>Mega Add</span>
         <span class="nav-badge" id="badgeRewardsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="mega_request" onclick="switchAdminPage('mega_request', 'Mega Redemption Requests')">
+      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
         <span class="nav-icon">📨</span>
         <span>Mega Request</span>
         <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="tasks_web" onclick="switchAdminPage('tasks_web', 'Tasks & Website Quests')">
+      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
         <span class="nav-icon">🌐</span>
         <span>Tasks & Web</span>
       </button>
@@ -612,10 +97,8 @@
     </header>
 
     <div class="content-body">
-
-      <!-- ============================================================
-           PAGE 1: DASHBOARD
-           ============================================================ -->
+      <!-- ================= PAGE: DASHBOARD ================= -->
+      <!-- PAGE: DASHBOARD -->
       <section class="page-panel active" id="page-dashboard">
         <!-- 4 Key Metrics -->
         <div class="metrics-row">
@@ -626,23 +109,23 @@
               <span class="metric-value" id="dashTotalUsers">0</span>
             </div>
           </div>
-
-          <div class="metric-box" onclick="switchAdminPage('mega_add', 'Mega Add & Item Catalog')">
+      
+          <div class="metric-box" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
             <div class="metric-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🎁</div>
             <div class="metric-meta">
               <span class="metric-label">Reward Items</span>
               <span class="metric-value" id="dashTotalRewards">0</span>
             </div>
           </div>
-
-          <div class="metric-box" onclick="switchAdminPage('mega_request', 'Mega Redemption Requests')">
+      
+          <div class="metric-box" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
             <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">📨</div>
             <div class="metric-meta">
               <span class="metric-label">Pending Orders</span>
               <span class="metric-value" id="dashPendingOrders">0</span>
             </div>
           </div>
-
+      
           <div class="metric-box">
             <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">💎</div>
             <div class="metric-meta">
@@ -651,20 +134,20 @@
             </div>
           </div>
         </div>
-
+      
         <!-- Split Grid: Recent Orders & Recent Users -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
           <!-- Recent Redemptions -->
           <div class="card-panel">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
               <h3 style="font-size: 15px; font-weight: 800; color: #fff;">Recent Redemption Requests</h3>
-              <button onclick="switchAdminPage('mega_request', 'Mega Redemption Requests')" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">View All ➔</button>
+              <button onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">View All ➔</button>
             </div>
             <div id="dashRecentOrdersList">
               <div style="padding: 20px; text-align: center; color: #64748b;">Loading requests from Firebase...</div>
             </div>
           </div>
-
+      
           <!-- Top Players -->
           <div class="card-panel">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
@@ -677,10 +160,10 @@
           </div>
         </div>
       </section>
+      
 
-      <!-- ============================================================
-           PAGE 2: USERS (LIVE PLAYERS FROM FIREBASE /players)
-           ============================================================ -->
+      <!-- ================= PAGE: USERS ================= -->
+      <!-- PAGE: USERS -->
       <section class="page-panel" id="page-users">
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
@@ -690,7 +173,7 @@
             </div>
             <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search username or UID..." class="form-input" style="width: 240px;">
           </div>
-
+      
           <div class="table-wrapper">
             <table class="data-table">
               <thead>
@@ -713,27 +196,26 @@
           </div>
         </div>
       </section>
+      
 
-      <!-- ============================================================
-           PAGE 3: MEGA ADD (REWARDS FROM FIREBASE /mega_rewards)
-           ============================================================ -->
+      <!-- ================= PAGE: MEGA-ADD ================= -->
+      <!-- PAGE: MEGA ADD -->
       <section class="page-panel" id="page-mega_add">
-        
         <!-- Add / Edit Form -->
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
             <h3 style="font-size: 16px; font-weight: 800; color: #fff;" id="rewardFormTitle">Add New Mega Reward</h3>
             <button onclick="seedSampleRewardsToFirebase()" class="btn-secondary" style="padding: 6px 12px; font-size: 11px;">✨ Seed 9 Sample Items</button>
           </div>
-
+      
           <!-- Category Selection -->
           <div class="form-group">
-            <label class="form-label">Category</label>
+            <label class="form-label">Category (9 Types)</label>
             <div class="category-grid" id="categoryChips">
               <!-- Injected dynamically -->
             </div>
           </div>
-
+      
           <!-- Title & Tag -->
           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
             <div class="form-group">
@@ -745,7 +227,7 @@
               <input type="text" id="inpRewardTag" placeholder="e.g. SMART TECH" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #22d3ee;">
             </div>
           </div>
-
+      
           <!-- Diamond Cost & Stock Units -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="form-group">
@@ -757,13 +239,13 @@
               <input type="number" id="inpRewardStock" placeholder="e.g. 20" class="form-input" style="font-weight: 800;">
             </div>
           </div>
-
+      
           <!-- Image Link -->
           <div class="form-group">
             <label class="form-label">Image URL (Optional)</label>
             <input type="url" id="inpRewardImage" placeholder="https://..." class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
           </div>
-
+      
           <div style="display: flex; gap: 10px; margin-top: 4px;">
             <button onclick="saveRewardToFirebase()" class="btn-primary" id="btnSaveReward">
               Save Reward to Firebase
@@ -773,24 +255,23 @@
             </button>
           </div>
         </div>
-
+      
         <!-- Rewards Catalog Grid -->
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <h3 style="font-size: 16px; font-weight: 800; color: #fff;">Rewards Inventory</h3>
             <span style="font-size: 12px; color: #94a3b8;" id="rewardsInventoryMeta">0 items</span>
           </div>
-
+      
           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;" id="rewardsCatalogGrid">
             <!-- Injected dynamically -->
           </div>
         </div>
-
       </section>
+      
 
-      <!-- ============================================================
-           PAGE 4: MEGA REQUEST (REDEMPTIONS FROM FIREBASE /reward_requests)
-           ============================================================ -->
+      <!-- ================= PAGE: MEGA-REQUEST ================= -->
+      <!-- PAGE: MEGA REQUEST -->
       <section class="page-panel" id="page-mega_request">
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
@@ -798,7 +279,7 @@
               <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Redemption Orders Queue</h2>
               <p style="font-size: 12px; color: #94a3b8;">Player prize claims from Firebase (<code style="color: #38bdf8;">/reward_requests</code>).</p>
             </div>
-
+      
             <div style="display: flex; gap: 8px;">
               <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
               <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
@@ -807,7 +288,7 @@
               <button class="btn-secondary" data-reqfilter="rejected" onclick="filterRequestsTable('rejected')">Rejected</button>
             </div>
           </div>
-
+      
           <div class="table-wrapper">
             <table class="data-table">
               <thead>
@@ -829,10 +310,10 @@
           </div>
         </div>
       </section>
+      
 
-      <!-- ============================================================
-           PAGE 5: TASKS & WEBSITE QUESTS (/website_tasks_config)
-           ============================================================ -->
+      <!-- ================= PAGE: TASKS-WEB ================= -->
+      <!-- PAGE: TASKS & WEB -->
       <section class="page-panel" id="page-tasks_web">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
           <div>
@@ -844,11 +325,11 @@
             <button onclick="saveWebsiteTasksToFirebase()" class="btn-primary">💾 Save to Firebase</button>
           </div>
         </div>
-
+      
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="websiteTasksContainer">
           <!-- Injected dynamically -->
         </div>
-
+      
         <!-- Daily Targets Summary Card -->
         <div class="card-panel">
           <h3 style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 12px;">Daily Task Targets Reference</h3>
@@ -877,10 +358,10 @@
           </div>
         </div>
       </section>
+      
 
-      <!-- ============================================================
-           PAGE 6: SETTINGS (FIREBASE STATUS & DB PATHS)
-           ============================================================ -->
+      <!-- ================= PAGE: SETTINGS ================= -->
+      <!-- PAGE: SETTINGS -->
       <section class="page-panel" id="page-settings">
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Firebase Realtime Database Settings</h2>
@@ -890,44 +371,44 @@
               <span style="color: #94a3b8;">Database URL:</span>
               <code style="color: #38bdf8;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
             </div>
-
+      
             <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
               <span style="color: #94a3b8;">Project ID:</span>
               <code style="color: #38bdf8;">tap-game-80070</code>
             </div>
-
+      
             <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
               <span style="color: #94a3b8;">Players Path:</span>
               <code style="color: #22d3ee;">/players</code>
             </div>
-
+      
             <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
               <span style="color: #94a3b8;">Mega Rewards Path:</span>
               <code style="color: #22d3ee;">/mega_rewards</code>
             </div>
-
+      
             <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
               <span style="color: #94a3b8;">Reward Requests Path:</span>
               <code style="color: #22d3ee;">/reward_requests</code>
             </div>
-
+      
             <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
               <span style="color: #94a3b8;">Website Tasks Path:</span>
               <code style="color: #22d3ee;">/website_tasks_config</code>
             </div>
           </div>
-
+      
           <div style="margin-top: 10px;">
             <button onclick="reconnectFirebase()" class="btn-primary">🔄 Reconnect to Firebase</button>
           </div>
         </div>
       </section>
-
+      
     </div>
   </main>
 
   <!-- ============================================================
-       MODAL 1: EDIT PLAYER (Firebase /players/{uid}/player)
+       SHARED MODAL: EDIT PLAYER (Firebase /players/{uid}/player)
        ============================================================ -->
   <div class="modal-overlay" id="userEditModal" onclick="closeUserEditModal()">
     <div class="modal-card" onclick="event.stopPropagation()">
@@ -967,7 +448,7 @@
   </div>
 
   <!-- ============================================================
-       MODAL 2: MANAGE REQUEST (Firebase /reward_requests/{id})
+       SHARED MODAL: MANAGE REQUEST (Firebase /reward_requests/{id})
        ============================================================ -->
   <div class="modal-overlay" id="requestManageModal" onclick="closeRequestManageModal()">
     <div class="modal-card" onclick="event.stopPropagation()">
@@ -1017,220 +498,19 @@
     </div>
   </div>
 
-  <!-- Firebase Realtime Database SDKs -->
+  <!-- Firebase Cloud SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-  <!-- Admin Controller -->
+  <!-- Shared Firebase Service -->
+  <script src="shared/firebase.js"></script>
+
+  <!-- Global Router Logic -->
   <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDnujl5_iBlSzwDfjCLA7sFQ7zW1DxROic",
-      authDomain: "tap-game-80070.firebaseapp.com",
-      databaseURL: "https://tap-game-80070-default-rtdb.firebaseio.com",
-      projectId: "tap-game-80070",
-      storageBucket: "tap-game-80070.firebasestorage.app",
-      messagingSenderId: "1028935905694",
-      appId: "1:1028935905694:web:af5190281ad93c0ebbe68f",
-      measurementId: "G-B8KMYEQ0L4"
-    };
-
-    const CATEGORIES = [
-      { id: 'gift-card', name: 'Gift Card', icon: '🎁', tag: 'VOUCHER' },
-      { id: 'gadgets', name: 'Gadgets', icon: '📱', tag: 'SMART TECH' },
-      { id: 'accessories', name: 'Accessories', icon: '🎒', tag: 'EDC GEAR' },
-      { id: 'gaming-tool', name: 'Gaming Tool', icon: '🎮', tag: 'PRO GAMING' },
-      { id: 'kitchen', name: 'Kitchen', icon: '☕', tag: 'GOURMET' },
-      { id: 'stationery', name: 'Stationery', icon: '✒️', tag: 'STUDIO' },
-      { id: 'fitness', name: 'Fitness', icon: '🏋️', tag: 'ATHLETICS' },
-      { id: 'home-decorate', name: 'Home Decorate', icon: '🏠', tag: 'INTERIOR' },
-      { id: 'custom', name: 'Custom', icon: '⭐', tag: 'VIP EXCLUSIVE' }
-    ];
-
-    const DEFAULT_WEBSITE_TASKS = [
-      { id: 'web1', title: 'Visit: Tap Empire Official Web', url: 'https://tapempire.io', code: '4829', costCoins: 1000, diamondReward: 100, tag: 'SPONSOR QUEST' },
-      { id: 'web2', title: 'Visit Partner: CoinMarketCap Hub', url: 'https://coinmarketcap.com', code: '7105', costCoins: 1000, diamondReward: 150, tag: 'PARTNER QUEST' },
-      { id: 'web3', title: 'Visit: Airdrop & Rewards Directory', url: 'https://dappradar.com', code: '9364', costCoins: 1000, diamondReward: 200, tag: 'EXCLUSIVE QUEST' }
-    ];
-
-    // Local State
-    let adminState = {
-      activePage: 'dashboard',
-      users: [],
-      rewards: [],
-      requests: [],
-      websiteTasks: [...DEFAULT_WEBSITE_TASKS],
-      selectedCategory: 'gift-card',
-      editingRewardId: null,
-      editingUserUid: null,
-      managingRequestId: null,
-      requestsFilter: 'all',
-      isFirebaseConnected: false
-    };
-
-    let db = null;
-    let auth = null;
-
-    // Initialize on load
-    document.addEventListener('DOMContentLoaded', () => {
-      initCategoryChips();
-      initFirebase();
-      renderWebsiteTasksUI();
-    });
-
-    function initCategoryChips() {
-      const container = document.getElementById('categoryChips');
-      if (!container) return;
-      let html = '';
-      CATEGORIES.forEach(c => {
-        const isAct = c.id === adminState.selectedCategory;
-        html += `
-          <button type="button" class="cat-btn ${isAct ? 'active' : ''}" onclick="selectCategory('${c.id}')">
-            <span>${c.icon}</span> <span>${c.name}</span>
-          </button>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    function selectCategory(catId) {
-      adminState.selectedCategory = catId;
-      initCategoryChips();
-      const catObj = CATEGORIES.find(c => c.id === catId);
-      const tagInp = document.getElementById('inpRewardTag');
-      if (tagInp && !tagInp.value) {
-        tagInp.value = catObj ? catObj.tag : 'SPECIAL';
-      }
-    }
-
-    // ==============================================================
-    // FIREBASE INITIALIZATION & REALTIME LISTENERS
-    // ==============================================================
-    function initFirebase() {
-      try {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
-        }
-        db = firebase.database();
-        auth = firebase.auth();
-
-        auth.signInAnonymously()
-          .then(() => {
-            setFirebaseOnline(true);
-            listenToAllCollections();
-          })
-          .catch(err => {
-            console.warn('Anonymous Auth fallback, trying direct read:', err);
-            setFirebaseOnline(true);
-            listenToAllCollections();
-          });
-      } catch (err) {
-        console.error('Firebase connection error:', err);
-        setFirebaseOnline(false);
-      }
-    }
-
-    function setFirebaseOnline(isOnline) {
-      adminState.isFirebaseConnected = isOnline;
-      const dot = document.getElementById('firebaseStatusDot');
-      const text = document.getElementById('firebaseStatusText');
-      if (dot && text) {
-        if (isOnline) {
-          dot.className = 'status-dot online';
-          text.textContent = 'Cloud Live (RTDB)';
-        } else {
-          dot.className = 'status-dot';
-          text.textContent = 'Disconnected / Offline';
-        }
-      }
-    }
-
-    function reconnectFirebase() {
-      setFirebaseOnline(false);
-      initFirebase();
-    }
-
-    function listenToAllCollections() {
-      if (!db) return;
-
-      // 1. Players (/players)
-      db.ref('/players').on('value', snapshot => {
-        const val = snapshot.val();
-        const userList = [];
-        if (val) {
-          Object.keys(val).forEach(uid => {
-            const data = val[uid] || {};
-            const pl = data.player || {};
-            const tasksObj = data.tasksState || {};
-            const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : 0;
-            const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : 0;
-
-            userList.push({
-              uid,
-              username: pl.username || 'User_' + uid.substring(0, 6),
-              level: pl.level || 1,
-              coins: pl.coins || 0,
-              diamonds: pl.diamonds || 0,
-              chestKeys: pl.chestKeys || 0,
-              scratchCards: pl.scratchCards || 0,
-              tasksCount: webDone + tgDone,
-              lastActive: pl.lastActive || new Date().toISOString()
-            });
-          });
-        }
-        adminState.users = userList;
-        updateMetricsUI();
-        renderUsersTable();
-        renderDashRecentUsers();
-      });
-
-      // 2. Mega Rewards (/mega_rewards)
-      db.ref('/mega_rewards').on('value', snapshot => {
-        const val = snapshot.val();
-        if (val && Array.isArray(val)) {
-          adminState.rewards = val;
-        } else if (val && typeof val === 'object') {
-          adminState.rewards = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-        } else {
-          adminState.rewards = [];
-        }
-        updateMetricsUI();
-        renderRewardsCatalog();
-      });
-
-      // 3. Reward Requests (/reward_requests)
-      db.ref('/reward_requests').on('value', snapshot => {
-        const val = snapshot.val();
-        const reqList = [];
-        if (val) {
-          Object.keys(val).forEach(id => {
-            reqList.push({ id, ...val[id] });
-          });
-        }
-        adminState.requests = reqList.reverse();
-        updateMetricsUI();
-        renderRequestsTable();
-        renderDashRecentOrders();
-      });
-
-      // 4. Website Tasks (/website_tasks_config)
-      db.ref('/website_tasks_config').on('value', snapshot => {
-        const val = snapshot.val();
-        if (val && Array.isArray(val) && val.length > 0) {
-          adminState.websiteTasks = val;
-          renderWebsiteTasksUI();
-        }
-      });
-    }
-
-    // ==============================================================
-    // NAVIGATION & VIEW SWITCHER
-    // ==============================================================
     function switchAdminPage(pageKey, pageTitle) {
-      adminState.activePage = pageKey;
+      if (window.adminState) window.adminState.activePage = pageKey;
 
-      // Update Menu Item Active Classes
       document.querySelectorAll('.nav-item').forEach(item => {
         if (item.getAttribute('data-page') === pageKey) {
           item.classList.add('active');
@@ -1239,10 +519,9 @@
         }
       });
 
-      // Update Header Title
-      document.getElementById('activeHeaderTitle').textContent = pageTitle;
+      const titleEl = document.getElementById('activeHeaderTitle');
+      if (titleEl) titleEl.textContent = pageTitle;
 
-      // Show Selected Panel
       document.querySelectorAll('.page-panel').forEach(panel => {
         if (panel.id === `page-${pageKey}`) {
           panel.classList.add('active');
@@ -1253,504 +532,24 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    window.switchAdminPage = switchAdminPage;
+  </script>
 
-    // ==============================================================
-    // METRICS UPDATES
-    // ==============================================================
-    function updateMetricsUI() {
-      const uCount = adminState.users.length;
-      const rCount = adminState.rewards.length;
-      const pendingCount = adminState.requests.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
-      const totalDiamonds = adminState.rewards.reduce((s, r) => s + (Number(r.diamondCost) || 0) * (Number(r.stock) || 0), 0);
+  <!-- Modular Page-Wise Scripts -->
+  <script src="pages/dashboard/dashboard.js"></script>
+  <script src="pages/users/users.js"></script>
+  <script src="pages/mega-add/mega-add.js"></script>
+  <script src="pages/mega-request/mega-request.js"></script>
+  <script src="pages/tasks-web/tasks-web.js"></script>
+  <script src="pages/settings/settings.js"></script>
 
-      document.getElementById('dashTotalUsers').textContent = uCount.toLocaleString();
-      document.getElementById('dashTotalRewards').textContent = rCount.toLocaleString();
-      document.getElementById('dashPendingOrders').textContent = pendingCount.toLocaleString();
-      document.getElementById('dashTotalDiamonds').textContent = totalDiamonds.toLocaleString() + ' 💎';
-
-      document.getElementById('badgeUsersCount').textContent = uCount;
-      document.getElementById('badgeRewardsCount').textContent = rCount;
-      document.getElementById('badgeRequestsCount').textContent = pendingCount;
-    }
-
-    // ==============================================================
-    // 1. DASHBOARD RECENT LISTS
-    // ==============================================================
-    function renderDashRecentOrders() {
-      const el = document.getElementById('dashRecentOrdersList');
-      if (!el) return;
-      const recent = adminState.requests.slice(0, 5);
-      if (recent.length === 0) {
-        el.innerHTML = '<div style="padding: 16px; text-align: center; color: #64748b;">No recent requests found in Firebase.</div>';
-        return;
+  <!-- Auto-Init Firebase -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof initFirebase === 'function') {
+        initFirebase();
       }
-      let html = '';
-      recent.forEach(r => {
-        const pillClass = getPillClass(r.status);
-        html += `
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(25, 55, 120, 0.35); border-radius: 8px; margin-bottom: 8px;">
-            <div>
-              <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">${r.rewardTitle || 'Reward Item'}</div>
-              <div style="font-size: 11px; color: #94a3b8;">${r.username || 'User'} • ${Number(r.diamondCost || 0).toLocaleString()} 💎</div>
-            </div>
-            <span class="status-pill ${pillClass}">${(r.status || 'pending').toUpperCase()}</span>
-          </div>
-        `;
-      });
-      el.innerHTML = html;
-    }
-
-    function renderDashRecentUsers() {
-      const el = document.getElementById('dashRecentUsersList');
-      if (!el) return;
-      const recent = adminState.users.slice(0, 5);
-      if (recent.length === 0) {
-        el.innerHTML = '<div style="padding: 16px; text-align: center; color: #64748b;">No players found in Firebase.</div>';
-        return;
-      }
-      let html = '';
-      recent.forEach(u => {
-        html += `
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(25, 55, 120, 0.35); border-radius: 8px; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 30px; height: 30px; border-radius: 8px; background: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 12px;">${(u.username || 'U').charAt(0).toUpperCase()}</div>
-              <div>
-                <div style="font-weight: 800; font-size: 13px; color: #f8fafc;">${u.username}</div>
-                <div style="font-size: 11px; color: #22d3ee;">${Number(u.diamonds).toLocaleString()} 💎 • Lv.${u.level}</div>
-              </div>
-            </div>
-            <button onclick="openUserEditModal('${u.uid}')" class="btn-secondary" style="padding: 4px 8px; font-size: 10.5px;">Edit</button>
-          </div>
-        `;
-      });
-      el.innerHTML = html;
-    }
-
-    // ==============================================================
-    // 2. USERS TABLE
-    // ==============================================================
-    function renderUsersTable() {
-      const tbody = document.getElementById('usersTableBody');
-      if (!tbody) return;
-
-      const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
-      const filtered = adminState.users.filter(u => {
-        return (u.username || '').toLowerCase().includes(q) || (u.uid || '').toLowerCase().includes(q);
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #64748b; padding: 24px;">No players found.</td></tr>`;
-        return;
-      }
-
-      let html = '';
-      filtered.forEach((u, i) => {
-        html += `
-          <tr>
-            <td style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #64748b;">#${i + 1}</td>
-            <td>
-              <div style="font-weight: 800; color: #f8fafc;">${u.username}</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b;">${u.uid.substring(0, 12)}...</div>
-            </td>
-            <td><span style="color: #38bdf8; font-weight: 800;">Lv.${u.level}</span></td>
-            <td style="color: #fbbf24; font-weight: 800;">${Number(u.coins).toLocaleString()} 🪙</td>
-            <td style="color: #22d3ee; font-weight: 800;">${Number(u.diamonds).toLocaleString()} 💎</td>
-            <td style="color: #a855f7; font-weight: 800;">${Number(u.chestKeys)} 🗝️</td>
-            <td style="color: #ec4899; font-weight: 800;">${Number(u.scratchCards)} 🎴</td>
-            <td><span style="color: #34d399; font-weight: 700;">${u.tasksCount} done</span></td>
-            <td>
-              <button onclick="openUserEditModal('${u.uid}')" class="btn-primary" style="padding: 5px 12px; font-size: 11px;">Edit Profile</button>
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
-    }
-
-    function filterUsersTable() {
-      renderUsersTable();
-    }
-
-    function openUserEditModal(uid) {
-      const u = adminState.users.find(x => x.uid === uid);
-      if (!u) return;
-      adminState.editingUserUid = uid;
-
-      document.getElementById('editModalPlayerName').textContent = `Edit Player: ${u.username}`;
-      document.getElementById('editModalCoins').value = u.coins || 0;
-      document.getElementById('editModalDiamonds').value = u.diamonds || 0;
-      document.getElementById('editModalKeys').value = u.chestKeys || 0;
-      document.getElementById('editModalCards').value = u.scratchCards || 0;
-      document.getElementById('editModalLevel').value = u.level || 1;
-
-      document.getElementById('userEditModal').classList.add('open');
-    }
-
-    function closeUserEditModal() {
-      document.getElementById('userEditModal').classList.remove('open');
-      adminState.editingUserUid = null;
-    }
-
-    function savePlayerEditToFirebase() {
-      if (!adminState.editingUserUid || !db) return;
-      const uid = adminState.editingUserUid;
-      const coins = Number(document.getElementById('editModalCoins').value) || 0;
-      const diamonds = Number(document.getElementById('editModalDiamonds').value) || 0;
-      const keys = Number(document.getElementById('editModalKeys').value) || 0;
-      const cards = Number(document.getElementById('editModalCards').value) || 0;
-      const level = Number(document.getElementById('editModalLevel').value) || 1;
-
-      db.ref(`/players/${uid}/player`).update({
-        coins,
-        diamonds,
-        chestKeys: keys,
-        scratchCards: cards,
-        level
-      }).then(() => {
-        closeUserEditModal();
-        alert('Player profile updated in Firebase!');
-      }).catch(err => alert('Error saving to Firebase: ' + err.message));
-    }
-
-    // ==============================================================
-    // 3. MEGA REWARDS CATALOG & CRUD
-    // ==============================================================
-    function saveRewardToFirebase() {
-      if (!db) {
-        alert('Firebase is not connected!');
-        return;
-      }
-      const title = document.getElementById('inpRewardTitle').value.trim();
-      const diamonds = Number(document.getElementById('inpRewardDiamonds').value);
-      const stock = Number(document.getElementById('inpRewardStock').value);
-      const tag = document.getElementById('inpRewardTag').value.trim();
-      const img = document.getElementById('inpRewardImage').value.trim();
-
-      if (!title || !diamonds) {
-        alert('Please provide Title and Diamond cost!');
-        return;
-      }
-
-      const catObj = CATEGORIES.find(c => c.id === adminState.selectedCategory) || CATEGORIES[0];
-
-      if (adminState.editingRewardId) {
-        // Update existing
-        const idx = adminState.rewards.findIndex(r => r.id === adminState.editingRewardId);
-        if (idx !== -1) {
-          adminState.rewards[idx] = {
-            ...adminState.rewards[idx],
-            title,
-            category: adminState.selectedCategory,
-            diamondCost: diamonds,
-            stock: stock >= 0 ? stock : 10,
-            tag: tag || catObj.tag,
-            imageUrl: img
-          };
-        }
-        adminState.editingRewardId = null;
-        document.getElementById('rewardFormTitle').textContent = 'Add New Mega Reward';
-        document.getElementById('btnSaveReward').textContent = 'Save Reward to Firebase';
-      } else {
-        // Create new
-        const newReward = {
-          id: 'reward_' + Date.now(),
-          title,
-          category: adminState.selectedCategory,
-          diamondCost: diamonds,
-          stock: stock >= 0 ? stock : 15,
-          tag: tag || catObj.tag,
-          imageUrl: img,
-          active: true,
-          createdAt: new Date().toISOString()
-        };
-        adminState.rewards.unshift(newReward);
-      }
-
-      db.ref('/mega_rewards').set(adminState.rewards)
-        .then(() => {
-          clearRewardForm();
-          alert('Reward saved to Firebase!');
-        })
-        .catch(err => alert('Firebase error: ' + err.message));
-    }
-
-    function clearRewardForm() {
-      adminState.editingRewardId = null;
-      document.getElementById('inpRewardTitle').value = '';
-      document.getElementById('inpRewardDiamonds').value = '';
-      document.getElementById('inpRewardStock').value = '';
-      document.getElementById('inpRewardTag').value = '';
-      document.getElementById('inpRewardImage').value = '';
-      document.getElementById('rewardFormTitle').textContent = 'Add New Mega Reward';
-      document.getElementById('btnSaveReward').textContent = 'Save Reward to Firebase';
-    }
-
-    function editRewardItem(id) {
-      const item = adminState.rewards.find(r => r.id === id);
-      if (!item) return;
-      adminState.editingRewardId = id;
-      selectCategory(item.category || 'gift-card');
-
-      document.getElementById('inpRewardTitle').value = item.title;
-      document.getElementById('inpRewardDiamonds').value = item.diamondCost;
-      document.getElementById('inpRewardStock').value = item.stock;
-      document.getElementById('inpRewardTag').value = item.tag || '';
-      document.getElementById('inpRewardImage').value = item.imageUrl || '';
-
-      document.getElementById('rewardFormTitle').textContent = `Editing: ${item.title}`;
-      document.getElementById('btnSaveReward').textContent = 'Update Reward in Firebase';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function deleteRewardItem(id) {
-      if (!confirm('Are you sure you want to delete this reward from Firebase?')) return;
-      adminState.rewards = adminState.rewards.filter(r => r.id !== id);
-      db.ref('/mega_rewards').set(adminState.rewards)
-        .then(() => alert('Item deleted from Firebase!'))
-        .catch(err => alert('Error: ' + err.message));
-    }
-
-    function seedSampleRewardsToFirebase() {
-      const sample = [
-        { id: 'seed_1', title: '$100 Amazon Gift Card', category: 'gift-card', diamondCost: 1500, stock: 20, tag: 'VOUCHER', active: true, imageUrl: '' },
-        { id: 'seed_2', title: 'Apple AirPods Pro 2', category: 'gadgets', diamondCost: 3500, stock: 12, tag: 'SMART TECH', active: true, imageUrl: '' },
-        { id: 'seed_3', title: 'Nomad Titanium Band', category: 'accessories', diamondCost: 1800, stock: 15, tag: 'EDC GEAR', active: true, imageUrl: '' },
-        { id: 'seed_4', title: 'Razer DeathAdder V3 Pro', category: 'gaming-tool', diamondCost: 2200, stock: 10, tag: 'PRO GAMING', active: true, imageUrl: '' },
-        { id: 'seed_5', title: 'Ember Temperature Mug', category: 'kitchen', diamondCost: 1950, stock: 18, tag: 'GOURMET', active: true, imageUrl: '' },
-        { id: 'seed_6', title: 'Lamy 2000 Bauhaus Pen', category: 'stationery', diamondCost: 2400, stock: 8, tag: 'STUDIO', active: true, imageUrl: '' },
-        { id: 'seed_7', title: 'Theragun Mini Massager', category: 'fitness', diamondCost: 2800, stock: 14, tag: 'ATHLETICS', active: true, imageUrl: '' },
-        { id: 'seed_8', title: 'Nanoleaf Hexagons Starter', category: 'home-decorate', diamondCost: 3100, stock: 9, tag: 'INTERIOR', active: true, imageUrl: '' },
-        { id: 'seed_9', title: 'Energy Tap 24K Gold Founder Card', category: 'custom', diamondCost: 10000, stock: 3, tag: 'VIP EXCLUSIVE', active: true, imageUrl: '' }
-      ];
-      adminState.rewards = sample;
-      db.ref('/mega_rewards').set(sample)
-        .then(() => alert('9 Sample Rewards seeded to Firebase!'))
-        .catch(err => alert('Firebase error: ' + err.message));
-    }
-
-    function renderRewardsCatalog() {
-      const grid = document.getElementById('rewardsCatalogGrid');
-      const meta = document.getElementById('rewardsInventoryMeta');
-      if (!grid) return;
-
-      if (meta) meta.textContent = `${adminState.rewards.length} items registered`;
-
-      if (adminState.rewards.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: #64748b;">
-            No reward items found in Firebase. Click "Seed 9 Sample Items" or add one above!
-          </div>
-        `;
-        return;
-      }
-
-      let html = '';
-      adminState.rewards.forEach(r => {
-        const cat = CATEGORIES.find(c => c.id === r.category) || CATEGORIES[0];
-        html += `
-          <div style="background: rgba(4, 10, 26, 0.7); border: 1px solid rgba(25, 55, 120, 0.4); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
-            <div style="height: 120px; background: #030818; position: relative; display: flex; align-items: center; justify-content: center;">
-              ${r.imageUrl ? `<img src="${r.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : `<span style="font-size: 38px;">${cat.icon}</span>`}
-              <span style="position: absolute; top: 8px; left: 8px; background: rgba(2, 6, 20, 0.85); color: #38bdf8; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 99px;">${r.tag || cat.tag}</span>
-              <span style="position: absolute; bottom: 8px; right: 8px; background: #0284c7; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">${Number(r.diamondCost).toLocaleString()} 💎</span>
-            </div>
-            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1;">
-              <div style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">${cat.name}</div>
-              <h4 style="font-size: 13.5px; font-weight: 800; color: #fff;">${r.title}</h4>
-              <div style="font-size: 11px; color: #94a3b8; margin-top: auto;">Stock: <strong>${r.stock}</strong> units</div>
-              <div style="display: flex; gap: 6px; margin-top: 8px;">
-                <button onclick="editRewardItem('${r.id}')" class="btn-secondary" style="flex: 1; padding: 5px; font-size: 11px;">Edit</button>
-                <button onclick="deleteRewardItem('${r.id}')" class="btn-secondary" style="padding: 5px 8px; font-size: 11px; color: #f87171;">🗑️</button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      grid.innerHTML = html;
-    }
-
-    // ==============================================================
-    // 4. MEGA REQUESTS MANAGEMENT
-    // ==============================================================
-    function renderRequestsTable() {
-      const tbody = document.getElementById('requestsTableBody');
-      if (!tbody) return;
-
-      const filter = adminState.requestsFilter;
-      const filtered = adminState.requests.filter(r => {
-        if (filter === 'all') return true;
-        return (r.status || 'pending').toLowerCase() === filter.toLowerCase();
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;">No requests in "${filter}" status.</td></tr>`;
-        return;
-      }
-
-      let html = '';
-      filtered.forEach(r => {
-        const pillClass = getPillClass(r.status);
-        html += `
-          <tr>
-            <td style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #38bdf8;">#${(r.id || 'REQ').substring(0, 8)}</td>
-            <td>
-              <div style="font-weight: 800; color: #fff;">${r.username || 'Anonymous'}</div>
-              <div style="font-size: 11px; color: #64748b;">${r.telegramHandle || r.telegramId || 'N/A'}</div>
-            </td>
-            <td>
-              <div style="font-weight: 800; color: #22d3ee;">${r.rewardTitle || 'Reward'}</div>
-            </td>
-            <td style="font-weight: 800; color: #fbbf24;">${Number(r.diamondCost || 0).toLocaleString()} 💎</td>
-            <td style="font-size: 11px; color: #94a3b8;">${r.shippingDetails || 'In-App Direct'}</td>
-            <td style="font-size: 11px; color: #64748b;">${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'Recent'}</td>
-            <td><span class="status-pill ${pillClass}">${(r.status || 'pending').toUpperCase()}</span></td>
-            <td>
-              <button onclick="openRequestManageModal('${r.id}')" class="btn-primary" style="padding: 5px 12px; font-size: 11px;">Manage</button>
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
-    }
-
-    function filterRequestsTable(status) {
-      adminState.requestsFilter = status;
-      document.querySelectorAll('[data-reqfilter]').forEach(b => {
-        if (b.getAttribute('data-reqfilter') === status) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-      renderRequestsTable();
-    }
-
-    function openRequestManageModal(id) {
-      const req = adminState.requests.find(r => r.id === id);
-      if (!req) return;
-      adminState.managingRequestId = id;
-
-      document.getElementById('modalReqUser').textContent = req.username || 'User';
-      document.getElementById('modalReqItem').textContent = req.rewardTitle || 'Reward';
-      document.getElementById('modalReqDiamonds').textContent = `${Number(req.diamondCost || 0).toLocaleString()} Diamonds 💎`;
-      document.getElementById('modalReqShipping').textContent = req.shippingDetails || 'No address';
-      document.getElementById('modalReqStatus').value = (req.status || 'pending').toLowerCase();
-      document.getElementById('modalReqNotes').value = req.adminNotes || '';
-
-      document.getElementById('requestManageModal').classList.add('open');
-    }
-
-    function closeRequestManageModal() {
-      document.getElementById('requestManageModal').classList.remove('open');
-      adminState.managingRequestId = null;
-    }
-
-    function saveRequestStatusToFirebase() {
-      if (!adminState.managingRequestId || !db) return;
-      const id = adminState.managingRequestId;
-      const status = document.getElementById('modalReqStatus').value;
-      const notes = document.getElementById('modalReqNotes').value.trim();
-
-      db.ref(`/reward_requests/${id}`).update({
-        status,
-        adminNotes: notes,
-        updatedAt: new Date().toISOString()
-      }).then(() => {
-        closeRequestManageModal();
-        alert(`Order status updated to ${status.toUpperCase()} in Firebase!`);
-      }).catch(err => alert('Error: ' + err.message));
-    }
-
-    // ==============================================================
-    // 5. WEBSITE TASKS MANAGEMENT
-    // ==============================================================
-    function renderWebsiteTasksUI() {
-      const container = document.getElementById('websiteTasksContainer');
-      if (!container) return;
-
-      let html = '';
-      adminState.websiteTasks.forEach((task, idx) => {
-        html += `
-          <div class="card-panel" style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 8px;">
-              <span style="font-weight: 800; color: #22d3ee; font-size: 13px;">🌐 QUEST #${idx + 1}</span>
-              <span style="font-size: 11px; color: #fbbf24; font-weight: 800;">Entry Cost: 1,000 🪙</span>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Quest Title</label>
-              <input type="text" id="wtTitle_${task.id}" value="${task.title}" class="form-input">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Destination URL</label>
-              <input type="url" id="wtUrl_${task.id}" value="${task.url}" class="form-input" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="form-group">
-                <div style="display: flex; justify-content: space-between;">
-                  <label class="form-label">4-Digit PIN</label>
-                  <button type="button" onclick="genPin('${task.id}')" style="background: none; border: none; color: #38bdf8; font-size: 10px; font-weight: 800; cursor: pointer;">🎲 Gen</button>
-                </div>
-                <input type="text" maxlength="4" id="wtCode_${task.id}" value="${task.code}" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; text-align: center; color: #fbbf24; font-weight: 800; letter-spacing: 2px;">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Prize (Diamonds)</label>
-                <input type="number" id="wtDiamonds_${task.id}" value="${task.diamondReward || 100}" class="form-input" style="color: #22d3ee; font-weight: 800; text-align: center;">
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    function genPin(taskId) {
-      const pin = Math.floor(1000 + Math.random() * 9000).toString();
-      const el = document.getElementById(`wtCode_${taskId}`);
-      if (el) el.value = pin;
-    }
-
-    function saveWebsiteTasksToFirebase() {
-      if (!db) {
-        alert('Firebase is not connected!');
-        return;
-      }
-
-      const updated = adminState.websiteTasks.map(t => {
-        const title = document.getElementById(`wtTitle_${t.id}`)?.value.trim() || t.title;
-        const url = document.getElementById(`wtUrl_${t.id}`)?.value.trim() || t.url;
-        const code = document.getElementById(`wtCode_${t.id}`)?.value.trim() || t.code;
-        const diamonds = Number(document.getElementById(`wtDiamonds_${t.id}`)?.value) || t.diamondReward || 100;
-        return {
-          ...t,
-          title,
-          url,
-          code,
-          diamondReward: diamonds,
-          costCoins: 1000
-        };
-      });
-
-      adminState.websiteTasks = updated;
-      db.ref('/website_tasks_config').set(updated)
-        .then(() => alert('Website tasks configuration saved to Firebase!'))
-        .catch(err => alert('Firebase error: ' + err.message));
-    }
-
-    function resetDefaultWebsiteTasks() {
-      if (!confirm('Reset tasks to default?')) return;
-      adminState.websiteTasks = [...DEFAULT_WEBSITE_TASKS];
-      renderWebsiteTasksUI();
-      saveWebsiteTasksToFirebase();
-    }
-
-    function getPillClass(status) {
-      const s = (status || 'pending').toLowerCase();
-      if (s === 'approved') return 'pill-approved';
-      if (s === 'delivered') return 'pill-delivered';
-      if (s === 'rejected') return 'pill-rejected';
-      return 'pill-pending';
-    }
+    });
   </script>
 </body>
 </html>

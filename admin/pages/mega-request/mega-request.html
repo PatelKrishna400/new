@@ -1,0 +1,39 @@
+<!-- PAGE: MEGA REQUEST -->
+<section class="page-panel" id="page-mega_request">
+  <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Redemption Orders Queue</h2>
+        <p style="font-size: 12px; color: #94a3b8;">Player prize claims from Firebase (<code style="color: #38bdf8;">/reward_requests</code>).</p>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
+        <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
+        <button class="btn-secondary" data-reqfilter="approved" onclick="filterRequestsTable('approved')">Approved</button>
+        <button class="btn-secondary" data-reqfilter="delivered" onclick="filterRequestsTable('delivered')">Delivered</button>
+        <button class="btn-secondary" data-reqfilter="rejected" onclick="filterRequestsTable('rejected')">Rejected</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Player</th>
+            <th>Reward Item</th>
+            <th>Diamonds</th>
+            <th>Shipping / Delivery Handle</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="requestsTableBody">
+          <tr><td colspan="8" style="text-align: center; color: #64748b;">Loading requests from Firebase...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

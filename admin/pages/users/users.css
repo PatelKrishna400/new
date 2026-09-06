@@ -1,0 +1,14 @@
+/* ==========================================================================
+   PAGE: USERS STYLES (pages/users/users.css)
+   ========================================================================== */
+
+#userSearchInput {
+  background: rgba(4, 10, 26, 0.8);
+  border: 1px solid rgba(25, 55, 120, 0.5);
+  color: #fff;
+  transition: border-color 0.2s ease;
+}
+
+#userSearchInput:focus {
+  border-color: #0284c7;
+}
