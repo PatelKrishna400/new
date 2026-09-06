@@ -230,25 +230,6 @@ body {
   color: #ffffff;
 }
 
-.app-link-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-  color: #fff;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
-  transition: all 0.2s ease;
-}
-
-.app-link-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
 
 /* Content Body & Page Panels */
 .content-body {
