@@ -49,6 +49,7 @@ function renderUsersTable() {
         <td style="text-align: center; white-space: nowrap;">
           <div style="display: inline-flex; gap: 6px;">
             <button onclick="openUserEditModal('${u.uid}')" class="btn-primary" style="padding: 4px 10px; font-size: 11px;">✏️ Edit</button>
+            <button onclick="restartPlayerInFirebase('${u.uid}', '${u.username}')" class="btn-secondary" style="padding: 4px 8px; font-size: 11px; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Restart Player (Clean All Stats to 0)">🔄</button>
             <button onclick="removeUserFromFirebase('${u.uid}', '${u.username}')" class="btn-secondary" style="padding: 4px 8px; font-size: 11px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);" title="Remove Player">🗑️</button>
           </div>
         </td>
@@ -105,8 +106,10 @@ function savePlayerEditToFirebase() {
   updates[`/players/${uid}/player/chestKeys`] = keys;
   updates[`/players/${uid}/player/scratchCards`] = cards;
   updates[`/players/${uid}/player/chestTickets`] = tickets;
+  updates[`/players/${uid}/player/lastActive`] = new Date().toISOString();
   updates[`/players/${uid}/goal/level`] = goalLevel;
   updates[`/players/${uid}/goalState/currentLevel`] = goalLevel;
+  updates[`/players/${uid}/xpState/currentLevel`] = xpLevel;
 
   db.ref().update(updates).then(() => {
     closeUserEditModal();
@@ -114,41 +117,89 @@ function savePlayerEditToFirebase() {
   }).catch(err => alert('Error saving to Firebase: ' + err.message));
 }
 
-function restartPlayerInFirebase(uid) {
+function restartPlayerInFirebase(uid, uname) {
   const db = window.getDb ? window.getDb() : null;
   const targetUid = uid || editingUserUid;
   if (!targetUid || !db) return;
 
   const user = (window.adminState.users || []).find(u => u.uid === targetUid);
-  const username = user ? user.username : 'this player';
+  const username = uname || (user ? user.username : 'this player');
 
-  if (!confirm(`⚠️ Are you sure you want to RESTART ${username}?\nAll Coins, Diamonds, Keys, Cards, Tickets, XP, and Goal levels will be reset to 0 in Firebase!`)) {
+  if (!confirm(`⚠️ Are you sure you want to RESTART ${username} to 0?\n\nThis will keep the SAME user account in Firebase, but completely clean and reset all their stats (Level, Goal, Coins, Diamonds, Keys, Cards, Tickets, Tasks, and Energy) to fresh 0 starting values!`)) {
     return;
   }
 
-  const resetUpdates = {};
-  resetUpdates[`/players/${targetUid}/player/level`] = 0;
-  resetUpdates[`/players/${targetUid}/player/xp`] = 0;
-  resetUpdates[`/players/${targetUid}/player/coins`] = 0;
-  resetUpdates[`/players/${targetUid}/player/diamonds`] = 0;
-  resetUpdates[`/players/${targetUid}/player/chestKeys`] = 0;
-  resetUpdates[`/players/${targetUid}/player/scratchCards`] = 0;
-  resetUpdates[`/players/${targetUid}/player/chestTickets`] = 0;
-  resetUpdates[`/players/${targetUid}/player/streakDays`] = 0;
-  resetUpdates[`/players/${targetUid}/goal/level`] = 0;
-  resetUpdates[`/players/${targetUid}/goal/currentCoins`] = 0;
-  resetUpdates[`/players/${targetUid}/goal/currentKeys`] = 0;
-  resetUpdates[`/players/${targetUid}/goal/currentTickets`] = 0;
-  resetUpdates[`/players/${targetUid}/goalState/currentLevel`] = 0;
-  resetUpdates[`/players/${targetUid}/goalState/claimedGoals`] = {};
-  resetUpdates[`/players/${targetUid}/tasksState/claimedDaily`] = {};
-  resetUpdates[`/players/${targetUid}/tasksState/claimedWebsite`] = {};
-  resetUpdates[`/players/${targetUid}/reactor/currentEnergy`] = 0;
-  resetUpdates[`/players/${targetUid}/reactor/energyTaps`] = 0;
+  // Same user account in Firebase, but clean all data nodes to fresh starting 0 values
+  const cleanPlayerData = {
+    player: {
+      uid: targetUid,
+      username: username,
+      name: username,
+      level: 0,
+      xp: 0,
+      coins: 0,
+      diamonds: 0,
+      chestKeys: 0,
+      scratchCards: 0,
+      chestTickets: 0,
+      streakDays: 0,
+      adsWatchedCount: 0,
+      websiteTasksCompleted: 0,
+      lastActive: new Date().toISOString()
+    },
+    goal: {
+      level: 0,
+      currentCoins: 0,
+      currentKeys: 0,
+      currentTickets: 0
+    },
+    goalState: {
+      currentLevel: 0,
+      levelAdsWatched: 0,
+      megaWatchedAds: 0,
+      claimedGoals: {}
+    },
+    tasksState: {
+      claimedDaily: {},
+      claimedTelegram: {},
+      claimedWebsite: {},
+      failedWebsite: {},
+      openedWebsite: {}
+    },
+    dailyStats: {
+      taps: 0,
+      adsWatched: 0,
+      wheelSpins: 0,
+      chestsOpened: 0,
+      scratchCards: 0,
+      eggCoins: 0,
+      greenTaps: 0,
+      darkGreenTaps: 0,
+      yellowTaps: 0
+    },
+    xpState: {
+      currentLevel: 0,
+      currentXP: 0,
+      watchedAds: 0
+    },
+    reactor: {
+      currentEnergy: 0,
+      energyTaps: 0,
+      maxEnergy: 1000
+    },
+    energyGenerator: {
+      currentTankEnergy: 0,
+      boosts: {
+        pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
+        purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
+      }
+    }
+  };
 
-  db.ref().update(resetUpdates).then(() => {
+  // .set() completely cleans all residual data under the same user UID
+  db.ref(`/players/${targetUid}`).set(cleanPlayerData).then(() => {
     closeUserEditModal();
-    alert(`🔄 Player ${username} has been successfully restarted to 0!`);
+    alert(`🔄 Player "${username}" data successfully cleaned and restarted to 0!`);
   }).catch(err => alert('Error restarting player in Firebase: ' + err.message));
 }
 
@@ -164,8 +215,17 @@ function removeUserFromFirebase(uid, username) {
   }
 
   db.ref(`/players/${uid}`).remove().then(() => {
+    if (editingUserUid === uid) {
+      closeUserEditModal();
+    }
     alert(`Player "${username || uid}" removed from Firebase!`);
   }).catch(err => alert('Error removing player: ' + err.message));
+}
+
+function removeUserFromModal() {
+  if (!editingUserUid) return;
+  const user = (window.adminState.users || []).find(u => u.uid === editingUserUid);
+  removeUserFromFirebase(editingUserUid, user ? user.username : '');
 }
 
 window.renderUsersTable = renderUsersTable;
@@ -175,3 +235,4 @@ window.closeUserEditModal = closeUserEditModal;
 window.savePlayerEditToFirebase = savePlayerEditToFirebase;
 window.restartPlayerInFirebase = restartPlayerInFirebase;
 window.removeUserFromFirebase = removeUserFromFirebase;
+window.removeUserFromModal = removeUserFromModal;

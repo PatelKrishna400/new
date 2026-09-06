@@ -812,9 +812,14 @@
           <button onclick="savePlayerEditToFirebase()" class="btn-primary" style="flex: 1;">Save Changes</button>
           <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
         </div>
-        <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
-          🔄 Restart Player (Reset to 0)
-        </button>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+            🔄 Restart to 0 (Clean Data)
+          </button>
+          <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); padding: 8px 12px;" title="Permanently Remove Player">
+            🗑️ Remove
+          </button>
+        </div>
       </div>
     </div>
   </div>

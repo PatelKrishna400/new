@@ -72,6 +72,7 @@ class FirebaseSyncService {
             this.listenToMegaRewards();
             this.listenToWebsiteTasks();
             this.listenToTelegramTasks();
+            this.listenToUser();
           })
           .catch((error) => {
             console.warn('Firebase Auth failed, falling back to local UID:', error);
@@ -83,6 +84,7 @@ class FirebaseSyncService {
             this.listenToMegaRewards();
             this.listenToWebsiteTasks();
             this.listenToTelegramTasks();
+            this.listenToUser();
           });
       } else {
         console.warn('Firebase SDK not loaded, using LocalStorage only.');
@@ -217,6 +219,77 @@ class FirebaseSyncService {
       .catch((err) => {
         console.warn('Error fetching data from Firebase:', err);
       });
+  }
+
+  // Real-time listener for user updates / resets from Admin Portal
+  listenToUser() {
+    if (!this.database || !this.userId) return;
+
+    const userRef = this.database.ref(`players/${this.userId}`);
+    userRef.on('value', (snapshot) => {
+      const cloudData = snapshot.val();
+      if (!cloudData || typeof cloudData !== 'object') return;
+
+      let hasChanged = false;
+
+      if (cloudData.player && typeof gameState !== 'undefined' && gameState.player) {
+        if (gameState.player.level !== cloudData.player.level) {
+          gameState.player.level = cloudData.player.level || 0;
+          hasChanged = true;
+        }
+        if (gameState.player.coins !== cloudData.player.coins) {
+          gameState.player.coins = cloudData.player.coins || 0;
+          hasChanged = true;
+        }
+        if (gameState.player.diamonds !== cloudData.player.diamonds) {
+          gameState.player.diamonds = cloudData.player.diamonds || 0;
+          hasChanged = true;
+        }
+        if (gameState.player.chestKeys !== cloudData.player.chestKeys) {
+          gameState.player.chestKeys = cloudData.player.chestKeys || 0;
+          hasChanged = true;
+        }
+        if (gameState.player.scratchCards !== cloudData.player.scratchCards) {
+          gameState.player.scratchCards = cloudData.player.scratchCards || 0;
+          hasChanged = true;
+        }
+        if (gameState.player.chestTickets !== cloudData.player.chestTickets) {
+          gameState.player.chestTickets = cloudData.player.chestTickets || 0;
+          hasChanged = true;
+        }
+        if (cloudData.player.xp !== undefined && gameState.player.xp !== cloudData.player.xp) {
+          gameState.player.xp = cloudData.player.xp || 0;
+          hasChanged = true;
+        }
+      }
+
+      if (cloudData.goal && typeof gameState !== 'undefined' && gameState.goal) {
+        if (gameState.goal.level !== cloudData.goal.level) {
+          gameState.goal.level = cloudData.goal.level || 0;
+          gameState.goal.currentCoins = cloudData.goal.currentCoins || 0;
+          gameState.goal.currentKeys = cloudData.goal.currentKeys || 0;
+          gameState.goal.currentTickets = cloudData.goal.currentTickets || 0;
+          hasChanged = true;
+        }
+      }
+
+      if (cloudData.goalState && typeof gameState !== 'undefined' && gameState.goalState) {
+        if (gameState.goalState.currentLevel !== cloudData.goalState.currentLevel) {
+          gameState.goalState.currentLevel = cloudData.goalState.currentLevel || 0;
+          gameState.goalState.claimedGoals = cloudData.goalState.claimedGoals || {};
+          hasChanged = true;
+        }
+      }
+
+      if (hasChanged) {
+        if (typeof saveGame === 'function') saveGame();
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof renderTasksList === 'function') renderTasksList();
+        if (typeof renderLevelsList === 'function') renderLevelsList();
+        if (typeof renderGoalsList === 'function') renderGoalsList();
+        if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
+      }
+    });
   }
 
   // Debounced Save (efficient for fast taps)
