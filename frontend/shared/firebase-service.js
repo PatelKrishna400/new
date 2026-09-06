@@ -212,8 +212,20 @@ class FirebaseSyncService {
           if (typeof renderGoalsList === 'function') renderGoalsList();
           if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
         } else {
-          // First time player in cloud, save current initial state
-          this.saveToCloudImmediate();
+          // Data was removed from Firebase or first time: initialize clean 0 state
+          if (typeof gameState !== 'undefined' && gameState.player) {
+            gameState.player.level = 0;
+            gameState.player.xp = 0;
+            gameState.player.coins = 0;
+            gameState.player.diamonds = 0;
+            gameState.player.chestKeys = 0;
+            gameState.player.scratchCards = 0;
+            gameState.player.chestTickets = 0;
+            gameState.player.adsWatchedCount = 0;
+            gameState.player.websiteTasksCompleted = 0;
+          }
+          if (typeof saveGame === 'function') saveGame();
+          if (typeof updateUI === 'function') updateUI();
         }
       })
       .catch((err) => {
@@ -228,7 +240,34 @@ class FirebaseSyncService {
     const userRef = this.database.ref(`players/${this.userId}`);
     userRef.on('value', (snapshot) => {
       const cloudData = snapshot.val();
-      if (!cloudData || typeof cloudData !== 'object') return;
+      if (!cloudData || typeof cloudData !== 'object') {
+        // Player was removed from Firebase: reset local state to 0
+        if (typeof gameState !== 'undefined' && gameState.player) {
+          gameState.player.level = 0;
+          gameState.player.xp = 0;
+          gameState.player.coins = 0;
+          gameState.player.diamonds = 0;
+          gameState.player.chestKeys = 0;
+          gameState.player.scratchCards = 0;
+          gameState.player.chestTickets = 0;
+          gameState.player.adsWatchedCount = 0;
+          gameState.player.websiteTasksCompleted = 0;
+        }
+        if (typeof gameState !== 'undefined' && gameState.goal) {
+          gameState.goal.level = 0;
+          gameState.goal.currentCoins = 0;
+          gameState.goal.currentKeys = 0;
+          gameState.goal.currentTickets = 0;
+        }
+        if (typeof gameState !== 'undefined' && gameState.tasksState) {
+          gameState.tasksState.claimedDaily = {};
+          gameState.tasksState.claimedTelegram = {};
+          gameState.tasksState.claimedWebsite = {};
+        }
+        if (typeof saveGame === 'function') saveGame();
+        if (typeof updateUI === 'function') updateUI();
+        return;
+      }
 
       let hasChanged = false;
 

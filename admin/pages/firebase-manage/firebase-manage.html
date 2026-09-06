@@ -3,11 +3,12 @@
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
     <div>
       <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Firebase Database Manager</h2>
-      <p style="font-size: 12px; color: #94a3b8;">Monitor database health, inspect collections, test connection ping, and backup data.</p>
+      <p style="font-size: 12px; color: #94a3b8;">Monitor database health, inspect collections, test connection ping, backup, and remove data.</p>
     </div>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
       <button onclick="testFirebasePing()" class="btn-secondary">⚡ Ping Test</button>
       <button onclick="exportDatabaseJson()" class="btn-primary">📥 Export DB JSON</button>
+      <button onclick="wipeAllFirebaseData()" class="btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1);">🔥 Remove All Data</button>
     </div>
   </div>
 
@@ -65,21 +66,50 @@
     </div>
   </div>
 
-  <!-- Database Maintenance Tools -->
+  <!-- Database Maintenance & Data Cleanup Operations -->
   <div class="card-panel">
-    <h3 style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 12px;">Database Maintenance Operations</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+    <h3 style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 12px;">Database Operations & Data Cleaning</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+      <!-- Operation 1: Clean Finished Orders -->
       <div style="padding: 14px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(25, 55, 120, 0.4); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
         <div style="font-weight: 800; color: #fff; font-size: 13px;">🧹 Clean Fulfilled Requests</div>
         <p style="font-size: 11px; color: #94a3b8;">Remove all orders marked as "delivered" or "rejected" to optimize storage.</p>
         <button onclick="cleanFinishedRequests()" class="btn-secondary" style="margin-top: auto; font-size: 11px;">Clean Finished Orders</button>
       </div>
 
-      <div style="padding: 14px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(25, 55, 120, 0.4); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
-        <div style="font-weight: 800; color: #fff; font-size: 13px;">🔄 Refresh All Listeners</div>
-        <p style="font-size: 11px; color: #94a3b8;">Force re-sync of all Realtime Database nodes from Firebase.</p>
-        <button onclick="reconnectFirebase()" class="btn-secondary" style="margin-top: auto; font-size: 11px;">Re-Sync Realtime Nodes</button>
+      <!-- Operation 2: Remove All Players -->
+      <div style="padding: 14px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-weight: 800; color: #f87171; font-size: 13px;">👥 Remove All Players</div>
+        <p style="font-size: 11px; color: #94a3b8;">Wipe all user accounts and progression data under <code style="color: #f87171;">/players</code>.</p>
+        <button onclick="removeAllPlayersData()" class="btn-secondary" style="margin-top: auto; font-size: 11px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);">Delete All Players</button>
       </div>
+
+      <!-- Operation 3: Clear Leaderboard -->
+      <div style="padding: 14px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-weight: 800; color: #fbbf24; font-size: 13px;">🏆 Clear Leaderboard Cache</div>
+        <p style="font-size: 11px; color: #94a3b8;">Reset all leaderboard rankings and cached stats under <code style="color: #fbbf24;">/leaderboard</code>.</p>
+        <button onclick="removeAllLeaderboardData()" class="btn-secondary" style="margin-top: auto; font-size: 11px; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Clear Leaderboard</button>
+      </div>
+
+      <!-- Operation 4: Clear All Requests -->
+      <div style="padding: 14px; background: rgba(4, 10, 26, 0.6); border: 1px solid rgba(25, 55, 120, 0.4); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-weight: 800; color: #fff; font-size: 13px;">📨 Clear Reward Orders</div>
+        <p style="font-size: 11px; color: #94a3b8;">Delete all prize redemption submissions under <code style="color: #38bdf8;">/reward_requests</code>.</p>
+        <button onclick="removeAllRequestsData()" class="btn-secondary" style="margin-top: auto; font-size: 11px;">Clear All Orders</button>
+      </div>
+    </div>
+
+    <!-- Full Data Removal Banner (Danger Zone) -->
+    <div style="margin-top: 16px; padding: 16px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h4 style="font-size: 14px; font-weight: 800; color: #f87171; display: flex; align-items: center; gap: 6px;">
+          <span>🔥 DANGER ZONE: Wipe All Firebase Data</span>
+        </h4>
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Permanently wipe all players, leaderboard rankings, and reward orders from the cloud database.</p>
+      </div>
+      <button onclick="wipeAllFirebaseData()" class="btn-primary" style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; font-weight: 800; box-shadow: 0 0 16px rgba(220, 38, 38, 0.4);">
+        🗑️ WIPE ALL FIREBASE DATA
+      </button>
     </div>
   </div>
 </section>
