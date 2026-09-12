@@ -16,27 +16,29 @@
 }
 
 .metric-box {
-  background: rgba(4, 10, 26, 0.7);
-  border: 1px solid rgba(25, 55, 120, 0.45);
-  border-radius: 12px;
-  padding: 16px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 16px;
   display: flex;
   align-items: center;
   gap: 14px;
   cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
 
 .metric-box:hover {
-  border-color: #38bdf8;
-  background: rgba(14, 165, 233, 0.08);
+  border-color: #0284c7;
+  background: #f8fafc;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.12);
   transform: translateY(-2px);
 }
 
 .metric-icon-box {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,14 +53,16 @@
 
 .metric-label {
   font-size: 11px;
-  font-weight: 700;
-  color: #94a3b8;
+  font-weight: 800;
+  color: #64748b;
   text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .metric-value {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: #ffffff;
+  color: #0f172a;
   font-family: 'JetBrains Mono', monospace;
 }
+

@@ -9,11 +9,11 @@
 }
 
 .cat-btn {
-  background: rgba(4, 10, 26, 0.7);
-  border: 1px solid rgba(25, 55, 120, 0.4);
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
   border-radius: 8px;
   padding: 8px 10px;
-  color: #94a3b8;
+  color: #475569;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -24,14 +24,16 @@
 }
 
 .cat-btn:hover {
-  border-color: #38bdf8;
-  color: #fff;
+  border-color: #0284c7;
+  color: #0284c7;
+  background: #e0f2fe;
 }
 
 .cat-btn.active {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(37, 99, 235, 0.45) 100%);
+  background: #0284c7;
   border-color: #0284c7;
-  color: #fff;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
 }
 
 .mega-form-row-2col {
@@ -59,4 +61,5 @@
     gap: 12px;
   }
 }
+
 

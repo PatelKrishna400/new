@@ -199,43 +199,43 @@ const footerContent = `
        ============================================================ -->
   <div class="modal-overlay" id="userEditModal" onclick="closeUserEditModal()">
     <div class="modal-card" onclick="event.stopPropagation()">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
-        <h3 style="font-size: 15px; font-weight: 800; color: #38bdf8;" id="editModalPlayerName">Edit Player</h3>
-        <button onclick="closeUserEditModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">&times;</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;" id="editModalPlayerName">Edit Player</h3>
+        <button onclick="closeUserEditModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
           <label class="form-label">XP Level</label>
-          <input type="number" id="editModalLevel" class="form-input" style="color: #38bdf8; font-weight: 800;">
+          <input type="number" id="editModalLevel" class="form-input" style="color: #0284c7; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Goal Level</label>
-          <input type="number" id="editModalGoalLevel" class="form-input" style="color: #60a5fa; font-weight: 800;">
+          <input type="number" id="editModalGoalLevel" class="form-input" style="color: #2563eb; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Coins 🪙</label>
-          <input type="number" id="editModalCoins" class="form-input" style="color: #fbbf24; font-weight: 800;">
+          <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Diamonds 💎</label>
-          <input type="number" id="editModalDiamonds" class="form-input" style="color: #22d3ee; font-weight: 800;">
+          <input type="number" id="editModalDiamonds" class="form-input" style="color: #0891b2; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Chest Keys 🗝️</label>
-          <input type="number" id="editModalKeys" class="form-input" style="color: #a855f7; font-weight: 800;">
+          <input type="number" id="editModalKeys" class="form-input" style="color: #9333ea; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Scratch Cards 🎴</label>
-          <input type="number" id="editModalCards" class="form-input" style="color: #ec4899; font-weight: 800;">
+          <input type="number" id="editModalCards" class="form-input" style="color: #db2777; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Tickets 🎟️</label>
-          <input type="number" id="editModalTickets" class="form-input" style="color: #f59e0b; font-weight: 800;">
+          <input type="number" id="editModalTickets" class="form-input" style="color: #d97706; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Egg Coins 🥚</label>
-          <input type="number" id="editModalEggs" class="form-input" style="color: #10b981; font-weight: 800;">
+          <input type="number" id="editModalEggs" class="form-input" style="color: #059669; font-weight: 800;">
         </div>
       </div>
 
@@ -245,15 +245,15 @@ const footerContent = `
           <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
         </div>
         <div style="display: flex; gap: 10px;">
-          <button onclick="restartUserSeasonInFirebase()" class="btn-secondary" style="flex: 1; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+          <button onclick="restartUserSeasonInFirebase()" class="btn-secondary" style="flex: 1; color: #0284c7; border-color: #0284c7; text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
             🌟 Restart Season (Level 0 & New Claims)
           </button>
         </div>
         <div style="display: flex; gap: 10px;">
-          <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+          <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #d97706; border-color: #d97706; text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
             🔄 Full Reset to 0 (Clean All Data)
           </button>
-          <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); padding: 8px 12px;" title="Permanently Remove Player">
+          <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #dc2626; border-color: #dc2626; padding: 8px 12px;" title="Permanently Remove Player">
             🗑️ Remove
           </button>
         </div>
@@ -266,27 +266,27 @@ const footerContent = `
        ============================================================ -->
   <div class="modal-overlay" id="requestManageModal" onclick="closeRequestManageModal()">
     <div class="modal-card" onclick="event.stopPropagation()">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
-        <h3 style="font-size: 15px; font-weight: 800; color: #22d3ee;">Manage Order Fulfillment</h3>
-        <button onclick="closeRequestManageModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">&times;</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">Manage Order Fulfillment</h3>
+        <button onclick="closeRequestManageModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-        <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-          <span style="color: #94a3b8;">User:</span>
-          <strong style="color: #fff;" id="modalReqUser">User</strong>
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">User:</span>
+          <strong style="color: #0f172a;" id="modalReqUser">User</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-          <span style="color: #94a3b8;">Reward Item:</span>
-          <strong style="color: #22d3ee;" id="modalReqItem">Reward</strong>
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">Reward Item:</span>
+          <strong style="color: #0284c7;" id="modalReqItem">Reward</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-          <span style="color: #94a3b8;">Diamonds:</span>
-          <strong style="color: #fbbf24;" id="modalReqDiamonds">0 💎</strong>
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">Diamonds:</span>
+          <strong style="color: #d97706;" id="modalReqDiamonds">0 💎</strong>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-          <span style="color: #94a3b8; font-size: 11px;">Shipping / Delivery Details:</span>
-          <span style="color: #fff;" id="modalReqShipping">Address</span>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-size: 11px; font-weight: 700;">Shipping / Delivery Details:</span>
+          <span style="color: #0f172a;" id="modalReqShipping">Address</span>
         </div>
 
         <div class="form-group" style="margin-top: 6px;">
@@ -317,18 +317,18 @@ const footerContent = `
        ============================================================ -->
   <div class="modal-overlay" id="addAdminModal" onclick="closeAddAdminModal()">
     <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 420px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
         <div>
-          <h3 style="font-size: 16px; font-weight: 800; color: #38bdf8;">Add Admin User</h3>
-          <span style="font-size: 11.5px; color: #94a3b8;">Restricted Access: 2 to 5 Admins Maximum</span>
+          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">Add Admin User</h3>
+          <span style="font-size: 11.5px; color: #64748b;">Restricted Access: 2 to 5 Admins Maximum</span>
         </div>
-        <button onclick="closeAddAdminModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">&times;</button>
+        <button onclick="closeAddAdminModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
         <div class="form-group">
           <label class="form-label">Username (alphanumeric)</label>
-          <input type="text" id="newAdminUsername" class="form-input" placeholder="e.g. admin3 or ops_lead" style="color: #38bdf8;">
+          <input type="text" id="newAdminUsername" class="form-input" placeholder="e.g. admin3 or ops_lead" style="color: #0284c7; font-weight: 700;">
         </div>
 
         <div class="form-group">
@@ -375,16 +375,16 @@ const footerContent = `
 
       <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
         <div class="form-group">
-          <label class="form-label" for="loginAdminUser" style="color: #cbd5e1;">Admin Username</label>
-          <input type="text" id="loginAdminUser" class="form-input" placeholder="admin" required autocomplete="username" style="background: rgba(4, 10, 26, 0.85); border-color: rgba(56, 189, 248, 0.35);">
+          <label class="form-label" for="loginAdminUser" style="color: #475569;">Admin Username</label>
+          <input type="text" id="loginAdminUser" class="form-input" placeholder="admin" required autocomplete="username">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="loginAdminPass" style="color: #cbd5e1;">Admin Password</label>
-          <input type="password" id="loginAdminPass" class="form-input" placeholder="••••••••" required autocomplete="current-password" style="background: rgba(4, 10, 26, 0.85); border-color: rgba(56, 189, 248, 0.35);">
+          <label class="form-label" for="loginAdminPass" style="color: #475569;">Admin Password</label>
+          <input type="password" id="loginAdminPass" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
 
-        <div id="loginErrorMessage" style="display: none; padding: 8px 12px; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; font-size: 12px; text-align: center;">
+        <div id="loginErrorMessage" style="display: none; padding: 8px 12px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); color: #dc2626; font-size: 12px; font-weight: 700; text-align: center;">
         </div>
 
         <button type="submit" id="adminLoginSubmitBtn" class="btn-primary" style="margin-top: 4px; padding: 12px; font-size: 14px; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -393,8 +393,8 @@ const footerContent = `
         </button>
       </form>
 
-      <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; text-align: center; font-size: 11.5px; color: #64748b;">
-        Default Credentials: <code style="color: #38bdf8;">admin</code> / <code style="color: #38bdf8;">password123</code>
+      <div style="border-top: 1.5px solid #f1f5f9; padding-top: 14px; text-align: center; font-size: 11.5px; color: #64748b;">
+        Default Credentials: <code style="color: #0284c7; font-weight: 700;">admin</code> / <code style="color: #0284c7; font-weight: 700;">password123</code>
       </div>
     </div>
   </div>

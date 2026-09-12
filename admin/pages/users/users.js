@@ -655,7 +655,7 @@ function renderUsersTable() {
               ${(u.username || 'U').substring(0, 2).toUpperCase()}
             </div>
             <div>
-              <div style="font-weight: 800; color: #f8fafc; font-size: 13px;">${u.username}</div>
+              <div style="font-weight: 800; color: #0f172a; font-size: 13px;">${u.username}</div>
               <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b;">${u.uid ? u.uid.substring(0, 10) + '...' : ''}</div>
             </div>
           </div>

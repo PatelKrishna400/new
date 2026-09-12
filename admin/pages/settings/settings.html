@@ -1,37 +1,37 @@
 <!-- PAGE: SETTINGS -->
 <section class="page-panel" id="page-settings">
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
-    <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Firebase Realtime Database Settings</h2>
+    <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Firebase Realtime Database Settings</h2>
     
     <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Database URL:</span>
-        <code style="color: #38bdf8;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Database URL:</span>
+        <code style="color: #0284c7; font-weight: 700;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
       </div>
 
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Project ID:</span>
-        <code style="color: #38bdf8;">tap-game-80070</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Project ID:</span>
+        <code style="color: #0284c7; font-weight: 700;">tap-game-80070</code>
       </div>
 
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Players Path:</span>
-        <code style="color: #22d3ee;">/players</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Players Path:</span>
+        <code style="color: #0891b2; font-weight: 700;">/players</code>
       </div>
 
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Mega Rewards Path:</span>
-        <code style="color: #22d3ee;">/mega_rewards</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Mega Rewards Path:</span>
+        <code style="color: #0891b2; font-weight: 700;">/mega_rewards</code>
       </div>
 
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Reward Requests Path:</span>
-        <code style="color: #22d3ee;">/reward_requests</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Reward Requests Path:</span>
+        <code style="color: #0891b2; font-weight: 700;">/reward_requests</code>
       </div>
 
-      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(4, 10, 26, 0.6); border-radius: 8px;">
-        <span style="color: #94a3b8;">Website Tasks Path:</span>
-        <code style="color: #22d3ee;">/website_tasks_config</code>
+      <div style="display: flex; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <span style="color: #64748b; font-weight: 600;">Website Tasks Path:</span>
+        <code style="color: #0891b2; font-weight: 700;">/website_tasks_config</code>
       </div>
     </div>
 
@@ -41,27 +41,29 @@
   </div>
 
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-    <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Global Season & Competition Controls</h2>
-    <p style="font-size: 13px; color: #94a3b8;">Trigger a global season reset across all connected players via Firebase (<code style="color: #38bdf8;">/season</code>). All players will start fresh from Level 0 and have level-wise reward claims restored!</p>
+    <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Global Season & Competition Controls</h2>
+    <p style="font-size: 13px; color: #64748b;">Trigger a global season reset across all connected players via Firebase (<code style="color: #0284c7;">/season</code>). All players will start fresh from Level 0 and have level-wise reward claims restored!</p>
 
     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-      <button onclick="triggerGlobalSeasonReset()" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #38bdf8;">
+      <button onclick="triggerGlobalSeasonReset()" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
         🚀 Trigger Global Season Restart (30 Days)
       </button>
-      <button onclick="triggerMonthlyCompetitionReset()" class="btn-secondary" style="color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
+      <button onclick="triggerMonthlyCompetitionReset()" class="btn-secondary" style="color: #059669; border-color: rgba(16, 185, 129, 0.4);">
         🏆 Reset 30-Day Task Competition (/monthly_competition)
       </button>
     </div>
+  </div>
+
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
       <div>
-        <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Admin Team & Access Control (2 - 5 Admins Only)</h2>
-        <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">
-          Strict Security Policy: Exactly <strong style="color: #38bdf8;">2 to 5 authorized admin users</strong> can access this admin portal. Minimum 2 admins required, maximum 5 admins allowed.
+        <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Admin Team & Access Control (2 - 5 Admins Only)</h2>
+        <p style="font-size: 13px; color: #64748b; margin-top: 4px;">
+          Strict Security Policy: Exactly <strong style="color: #0284c7;">2 to 5 authorized admin users</strong> can access this admin portal. Minimum 2 admins required, maximum 5 admins allowed.
         </p>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span id="adminCountPill" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
+        <span id="adminCountPill" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.3); color: #0284c7;">
           Admins: 0 / 5
         </span>
         <button id="openAddAdminBtn" onclick="openAddAdminModal()" class="btn-primary" style="padding: 6px 14px; font-size: 13px;">
@@ -85,11 +87,12 @@
         </thead>
         <tbody id="adminUsersTableBody">
           <tr>
-            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Loading admin team...</td>
+            <td colspan="6" style="text-align: center; color: #64748b; padding: 24px;">Loading admin team...</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
+
 
