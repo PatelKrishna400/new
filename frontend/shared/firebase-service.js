@@ -571,8 +571,14 @@ class FirebaseSyncService {
           ? Object.keys(gameState.tasksState.claimedTelegram).filter(k => gameState.tasksState.claimedTelegram[k]).length 
           : (gameState.player.websiteTasksCompleted || 0));
 
+    if (!gameState.player.profileCode && this.userId) {
+      const cleanUid = this.userId.replace(/[^a-zA-Z0-9]/g, '');
+      gameState.player.profileCode = 'ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : this.userId.toUpperCase());
+    }
+
     const playerPayload = {
       ...gameState.player,
+      profileCode: gameState.player.profileCode,
       adsWatchedCount: totalAdsWatched,
       websiteTasksCompleted: completedWebTasks
     };
@@ -864,6 +870,179 @@ class FirebaseSyncService {
         });
     }
     return Promise.resolve(payload);
+  }
+
+  // ==========================================================================
+  // ACCOUNT SECURITY & STRICT UNIQUENESS VALIDATION
+  // (Prevents duplicate Profile Code, Username, Telegram Link, and Mobile Number)
+  // ==========================================================================
+  async validateUniqueCredentials({ profileCode, username, telegram, mobile, excludeUid }) {
+    if (!this.database) return { ok: true };
+
+    const targetUid = excludeUid || this.userId;
+    const normCode = (c) => (c || '').toString().trim().toUpperCase();
+    const normName = (n) => (n || '').toString().trim().toLowerCase();
+    const normTg = (t) => (t || '').toString().trim().toLowerCase().replace(/^https?:\/\/t\.me\//, '').replace(/^@/, '');
+    const normMobile = (m) => (m || '').toString().replace(/[^0-9]/g, '');
+
+    const targetCode = normCode(profileCode);
+    const targetUsername = normName(username);
+    const targetTg = normTg(telegram);
+    const targetPhone = normMobile(mobile);
+
+    try {
+      const snap = await this.database.ref('/players').once('value');
+      const val = snap.val();
+      if (!val) return { ok: true };
+
+      for (const [uid, node] of Object.entries(val)) {
+        if (uid === targetUid) continue; // Skip self
+        const pl = node.player || {};
+
+        // 1. Check Profile Code Uniqueness
+        if (targetCode && normCode(pl.profileCode) === targetCode) {
+          return {
+            ok: false,
+            field: 'profileCode',
+            error: `Security Error: Profile Code "${profileCode}" is already in use by another player! Each profile code must be unique.`
+          };
+        }
+
+        // 2. Check Username Uniqueness
+        if (targetUsername) {
+          const existingUser = normName(pl.username || pl.name);
+          if (existingUser === targetUsername) {
+            return {
+              ok: false,
+              field: 'username',
+              error: `Security Error: Username "${username}" is already registered by another player! Please choose a unique username.`
+            };
+          }
+        }
+
+        // 3. Check Telegram Link / Account Uniqueness
+        if (targetTg) {
+          const existingTg = normTg(pl.telegram || pl.handle);
+          if (existingTg && existingTg === targetTg) {
+            return {
+              ok: false,
+              field: 'telegram',
+              error: `Security Error: Telegram account "${telegram}" is already linked to another player! A Telegram link can only be registered once.`
+            };
+          }
+        }
+
+        // 4. Check Mobile Number Uniqueness
+        if (targetPhone) {
+          const existingPhone = normMobile(pl.mobile || pl.phone);
+          if (existingPhone && existingPhone === targetPhone) {
+            return {
+              ok: false,
+              field: 'mobile',
+              error: `Security Error: Mobile number "${mobile}" is already registered to another player! Each phone number can only be used once.`
+            };
+          }
+        }
+      }
+
+      return { ok: true };
+    } catch (err) {
+      console.warn('Validation query notice:', err);
+      return { ok: true }; // Allow if offline
+    }
+  }
+
+  // Login / Switch account using Profile Code
+  async loginWithProfileCode(rawCode) {
+    if (!rawCode || !rawCode.trim()) {
+      return { ok: false, error: 'Please enter a valid Profile Code.' };
+    }
+    const cleanQuery = rawCode.trim().toUpperCase();
+
+    if (!this.database) {
+      return { ok: false, error: 'Database is offline. Please check your internet connection.' };
+    }
+
+    try {
+      const snap = await this.database.ref('/players').once('value');
+      const val = snap.val();
+      if (!val) {
+        return { ok: false, error: 'No players found in database.' };
+      }
+
+      let foundUid = null;
+      let foundData = null;
+
+      for (const [uid, node] of Object.entries(val)) {
+        const pl = node.player || {};
+        const code = (pl.profileCode || '').trim().toUpperCase();
+        if (code === cleanQuery || uid === rawCode.trim()) {
+          foundUid = uid;
+          foundData = node;
+          break;
+        }
+      }
+
+      if (!foundUid) {
+        return { ok: false, error: `No player account found with Profile Code "${rawCode}".` };
+      }
+
+      // Switch active player session to this UID
+      this.userId = foundUid;
+      localStorage.setItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5', foundUid);
+      
+      // Load all cloud data
+      this.loadFromCloud();
+      this.listenToUser();
+
+      return {
+        ok: true,
+        uid: foundUid,
+        player: foundData.player || {},
+        profileCode: foundData.player?.profileCode || rawCode
+      };
+    } catch (err) {
+      return { ok: false, error: 'Login failed: ' + err.message };
+    }
+  }
+
+  // Save / Update Account Security (validates uniqueness before committing)
+  async saveAccountSecurityCredentials({ profileCode, username, telegram, mobile }) {
+    // 1. Enforce Uniqueness
+    const check = await this.validateUniqueCredentials({
+      profileCode,
+      username,
+      telegram,
+      mobile,
+      excludeUid: this.userId
+    });
+
+    if (!check.ok) {
+      return check;
+    }
+
+    // 2. Apply to local gameState
+    if (profileCode) gameState.player.profileCode = profileCode.trim().toUpperCase();
+    if (username) {
+      gameState.player.name = username.trim();
+      gameState.player.username = username.trim();
+    }
+    if (telegram) {
+      gameState.player.telegram = telegram.trim();
+      gameState.player.handle = telegram.trim().replace(/^https?:\/\/t\.me\//, '').replace(/^@/, '');
+    }
+    if (mobile) {
+      gameState.player.mobile = mobile.trim();
+    }
+
+    // 3. Sync immediately to Firebase
+    this.saveToCloudImmediate();
+
+    if (typeof saveGame === 'function') saveGame();
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof updateProfileUI === 'function') updateProfileUI();
+
+    return { ok: true };
   }
 }
 

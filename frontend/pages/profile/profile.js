@@ -695,6 +695,19 @@ function updateProfileUI() {
     promoCodeEl.textContent = gameState.player.promoCode;
   }
 
+  // Account Security credentials
+  const codeEl = document.getElementById('profileCodeVal');
+  if (codeEl) codeEl.textContent = gameState.player.profileCode || 'ET-000000';
+
+  const userValEl = document.getElementById('profileUsernameVal');
+  if (userValEl) userValEl.textContent = gameState.player.name || 'Alex Vance';
+
+  const tgValEl = document.getElementById('profileTelegramVal');
+  if (tgValEl) tgValEl.textContent = gameState.player.telegram || `@${gameState.player.handle || 'alex_blue'}`;
+
+  const mobValEl = document.getElementById('profileMobileVal');
+  if (mobValEl) mobValEl.textContent = gameState.player.mobile || 'Not linked';
+
   // Apply avatar preset if saved
   if (gameState.player.avatarPreset) {
     applyAvatarPresetToElements(gameState.player.avatarPreset);
@@ -706,6 +719,229 @@ function updateProfileUI() {
 }
 
 window.updateProfileUI = updateProfileUI;
+
+// Copy Profile Code
+window.copyPlayerProfileCode = function() {
+  const code = gameState.player.profileCode || 'ET-000000';
+  navigator.clipboard.writeText(code).then(() => {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`📋 Profile Code copied: ${code}`);
+    } else {
+      alert(`Profile Code copied: ${code}`);
+    }
+  }).catch(() => {
+    prompt('Copy Profile Code:', code);
+  });
+};
+
+// Open Account Security & Verification Modal
+window.openAccountSecurityModal = function() {
+  DOM.sheetTitle.textContent = 'Account Security & Verification';
+
+  const currentCode = gameState.player.profileCode || '';
+  const currentName = gameState.player.name || '';
+  const currentTg = gameState.player.telegram || (gameState.player.handle ? `@${gameState.player.handle}` : '');
+  const currentMobile = gameState.player.mobile || '';
+
+  DOM.sheetContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 10px 12px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+        <strong style="color: #38bdf8;">🛡️ Security Guarantee:</strong> All 4 fields (Profile Code, Username, Telegram link, and Mobile number) must be unique. Duplicate values are strictly blocked to protect your account.
+      </div>
+
+      <!-- Profile Code Field -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Login Code</label>
+        <input type="text" id="secInputCode" value="${currentCode}" placeholder="e.g. ET-8A2F9B" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: #38bdf8; outline: none;">
+        <span style="font-size: 10px; color: #64748b;">Keep this code safe. You can use it to log in on any device.</span>
+      </div>
+
+      <!-- Username Field -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Username</label>
+        <input type="text" id="secInputUsername" value="${currentName}" placeholder="e.g. Alex Vance" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 700; color: #fff; outline: none;">
+      </div>
+
+      <!-- Telegram Link Field -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Telegram Link / Handle</label>
+        <input type="text" id="secInputTelegram" value="${currentTg}" placeholder="e.g. @username or https://t.me/username" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #60a5fa; outline: none;">
+      </div>
+
+      <!-- Mobile Number Field -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Mobile / Phone Number</label>
+        <input type="tel" id="secInputMobile" value="${currentMobile}" placeholder="e.g. +1234567890 or 9876543210" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #34d399; outline: none;">
+      </div>
+
+      <div id="secErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+      <button id="btnSaveSecurity" class="feature-btn" onclick="submitAccountSecurityForm()" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+        <span>🛡️</span>
+        <span>Verify & Save Credentials</span>
+      </button>
+    </div>
+  `;
+
+  DOM.modalBackdrop.classList.add('open');
+};
+
+// Submit security credentials form
+window.submitAccountSecurityForm = async function() {
+  const codeEl = document.getElementById('secInputCode');
+  const userEl = document.getElementById('secInputUsername');
+  const tgEl = document.getElementById('secInputTelegram');
+  const mobEl = document.getElementById('secInputMobile');
+  const errNotice = document.getElementById('secErrorNotice');
+  const btn = document.getElementById('btnSaveSecurity');
+
+  const profileCode = codeEl?.value.trim().toUpperCase() || '';
+  const username = userEl?.value.trim() || '';
+  const telegram = tgEl?.value.trim() || '';
+  const mobile = mobEl?.value.trim() || '';
+
+  if (!profileCode) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter a valid Profile Code.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+  if (!username) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter a valid Username.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Verifying security with Firebase...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.saveAccountSecurityCredentials === 'function') {
+    const res = await window.firebaseSync.saveAccountSecurityCredentials({
+      profileCode,
+      username,
+      telegram,
+      mobile
+    });
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Verify & Save Credentials';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Verification failed. Value already in use.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    // Success
+    DOM.modalBackdrop.classList.remove('open');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('✅ Account credentials secured and saved in Firebase!');
+    } else {
+      alert('Account credentials secured successfully in Firebase!');
+    }
+    updateProfileUI();
+  } else {
+    // Local fallback
+    gameState.player.profileCode = profileCode;
+    gameState.player.name = username;
+    gameState.player.username = username;
+    gameState.player.telegram = telegram;
+    gameState.player.mobile = mobile;
+    if (typeof saveGame === 'function') saveGame();
+    DOM.modalBackdrop.classList.remove('open');
+    updateProfileUI();
+  }
+};
+
+// Open Login with Code Modal
+window.openLoginWithCodeModal = function() {
+  DOM.sheetTitle.textContent = 'Cloud Login with Profile Code';
+
+  DOM.sheetContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+        Enter your unique <strong>Profile Code</strong> (e.g. <code style="color: #38bdf8;">ET-8A2F9B</code>) to log in and instantly restore all your energy, levels, coins, diamonds, and progress.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Code</label>
+        <input type="text" id="loginCodeInput" placeholder="ET-XXXXXX" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #38bdf8; outline: none; text-align: center; text-transform: uppercase;">
+      </div>
+
+      <div id="loginErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+      <button id="btnLoginSubmit" class="feature-btn" onclick="submitLoginWithCode()" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+        <span>🔑</span>
+        <span>Login & Restore Progress</span>
+      </button>
+    </div>
+  `;
+
+  DOM.modalBackdrop.classList.add('open');
+};
+
+// Submit Login with Code
+window.submitLoginWithCode = async function() {
+  const input = document.getElementById('loginCodeInput');
+  const errNotice = document.getElementById('loginErrorNotice');
+  const btn = document.getElementById('btnLoginSubmit');
+  const code = input?.value.trim();
+
+  if (!code) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter your Profile Code.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Connecting to Firebase...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.loginWithProfileCode === 'function') {
+    const res = await window.firebaseSync.loginWithProfileCode(code);
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Login & Restore Progress';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Account not found.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    DOM.modalBackdrop.classList.remove('open');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎉 Welcome back, ${res.player?.name || 'Player'}! Account loaded.`);
+    } else {
+      alert(`Welcome back, ${res.player?.name || 'Player'}!`);
+    }
+    updateProfileUI();
+  } else {
+    alert('Firebase is not ready yet.');
+  }
+};
 
 // Auto-apply avatar styling on initial load
 setTimeout(() => {

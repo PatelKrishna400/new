@@ -207,40 +207,578 @@
       
 
       <!-- ================= PAGE: USERS ================= -->
-      <!-- PAGE: USERS -->
+      <!-- PAGE: USERS (All Users List with Search & 14-Metrics More Detail Page) -->
       <section class="page-panel" id="page-users">
-        <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-            <div>
-              <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Registered Players & Stats</h2>
-              <p style="font-size: 12px; color: #94a3b8;">Real-time synchronized Telegram users from Firebase (<code style="color: #38bdf8;">/players</code>).</p>
+      
+        <!-- TOP HEADER & VIEW TABS CONTROLLER -->
+        <div class="user-page-top-bar">
+          <div class="user-page-title-group">
+            <div class="user-page-badge">
+              <span class="pulse-indicator"></span> Realtime Firebase Players
             </div>
-            <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search username or UID..." class="form-input" style="width: 240px;">
+            <h2 class="user-page-title">User Analytics & Profile Manager</h2>
+            <p class="user-page-subtitle">View all registered players with their User Name, Code, Telegram Account, and Ads Balance. Click "More Detail" to inspect all 14 core metrics.</p>
           </div>
       
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player</th>
-                  <th>XP Lv</th>
-                  <th>Goal Lv</th>
-                  <th>Coin</th>
-                  <th>Diamond</th>
-                  <th>Keys</th>
-                  <th>Card</th>
-                  <th>Ticket</th>
-                  <th>Egg</th>
-                  <th style="text-align: center;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody">
-                <tr><td colspan="11" style="text-align: center; color: #64748b; padding: 24px;">Syncing with Firebase...</td></tr>
-              </tbody>
-            </table>
+          <!-- View Mode Switcher Tabs -->
+          <div class="user-view-switch-pills">
+            <button class="user-view-pill-btn active" id="btnViewList" onclick="setUserViewMode('list')">
+              <span class="pill-icon">👥</span>
+              <span>All Users List</span>
+              <span class="pill-count-badge" id="pillTotalUsersCount">0</span>
+            </button>
+            <button class="user-view-pill-btn" id="btnViewDetail" onclick="setUserViewMode('detail')">
+              <span class="pill-icon">📋</span>
+              <span>More Detail</span>
+            </button>
           </div>
         </div>
+      
+        <!-- =========================================================================
+             TAB 1: ALL USERS LIST & SEARCH (DEFAULT PRIMARY VIEW)
+             Shows User Name, Code, Telegram Account, Ads Count Balance, and More Detail button
+             ========================================================================= -->
+        <div id="userListTabContainer" class="user-view-container active">
+          
+          <!-- SEARCH & METRICS SUMMARY BAR -->
+          <div class="user-list-header-panel">
+            <div class="user-search-wrapper">
+              <span class="user-search-icon">🔍</span>
+              <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search by User Name, Profile Code, Telegram Account, Mobile, or UID..." class="user-search-input">
+              <button class="user-search-clear-btn" onclick="clearUserSearch()" title="Clear search">✕</button>
+            </div>
+      
+            <div class="user-quick-stats-row">
+              <div class="uqs-pill">
+                <span class="uqs-label">Total Players:</span>
+                <strong class="uqs-val" id="summaryTotalPlayers">0</strong>
+              </div>
+              <div class="uqs-pill">
+                <span class="uqs-label">Total Ads Watched:</span>
+                <strong class="uqs-val" style="color: #fbbf24;" id="summaryTotalAds">0 🎬</strong>
+              </div>
+            </div>
+          </div>
+      
+          <!-- USERS DIRECTORY TABLE -->
+          <div class="card-panel" style="padding: 0; overflow: hidden; border-radius: 16px;">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>User Name</th>
+                    <th>Code</th>
+                    <th>Telegram Account</th>
+                    <th>Ads Count Balance</th>
+                    <th>XP Level</th>
+                    <th>Coins</th>
+                    <th>Diamonds</th>
+                    <th style="text-align: center; width: 170px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="9" style="text-align: center; color: #64748b; padding: 36px;">
+                      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <span style="font-size: 24px;">⏳</span>
+                        <span>Syncing players with Firebase...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      
+        </div>
+      
+        <!-- =========================================================================
+             TAB 2: MORE DETAIL (14 CORE METRICS NOTED IN ONE PAGE FOR ANY USER BY CODE)
+             ========================================================================= -->
+        <div id="userDetailTabContainer" class="user-view-container">
+      
+          <!-- TOP CONTROLLER: BACK BUTTON & PROFILE CODE SWITCHER -->
+          <div class="profile-code-controller-card">
+            <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: space-between; flex-wrap: wrap; margin-bottom: 4px;">
+              <button class="btn-back-list" onclick="setUserViewMode('list')" title="Return to All Users List">
+                <span>◀</span>
+                <span>Back to All Users List</span>
+              </button>
+      
+              <div style="font-size: 11px; color: #94a3b8;">
+                Currently Inspecting: <strong style="color: #38bdf8;" id="topActiveUserLabel">—</strong>
+              </div>
+            </div>
+      
+            <div class="pcc-left">
+              <label class="pcc-label">
+                <span class="pcc-icon">🔑</span>
+                <span>Enter Profile Code / UID:</span>
+              </label>
+              <div class="pcc-input-group">
+                <input type="text" id="profileCodeInput" class="pcc-input" placeholder="e.g. ET-8A2F9B, UID, or Username..." onkeydown="if(event.key==='Enter') loadUserByProfileCodeInput()">
+                <button class="btn-primary pcc-load-btn" onclick="loadUserByProfileCodeInput()" title="Load player by Profile Code">
+                  <span>🔍</span>
+                  <span>Load Profile</span>
+                </button>
+              </div>
+            </div>
+      
+            <div class="pcc-divider"></div>
+      
+            <div class="pcc-right">
+              <label class="pcc-label">
+                <span class="pcc-icon">👥</span>
+                <span>Quick Select Player:</span>
+              </label>
+              <div class="pcc-select-group">
+                <select id="profileUserDropdown" class="pcc-select" onchange="onUserDropdownChange()">
+                  <option value="">Syncing with Firebase...</option>
+                </select>
+                <div class="pcc-nav-arrows">
+                  <button class="pcc-arrow-btn" onclick="navigateUserStep(-1)" title="Previous User (Alt+Left)">◀</button>
+                  <button class="pcc-arrow-btn" onclick="navigateUserStep(1)" title="Next User (Alt+Right)">▶</button>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <!-- HERO PLAYER BANNER -->
+          <div class="player-hero-card" id="playerHeroCard">
+            <div class="hero-left">
+              <div class="hero-avatar-wrapper">
+                <div class="hero-avatar" id="heroAvatarLetter">⚡</div>
+                <div class="hero-level-badge" id="heroLevelBadge">Lv.0</div>
+              </div>
+              <div class="hero-info">
+                <div class="hero-name-row">
+                  <h3 class="hero-username" id="heroUsername">Select or Enter Profile Code</h3>
+                  <span class="hero-status-pill online" id="heroOnlineStatus">🟢 Live in Cloud</span>
+                </div>
+                <div class="hero-handle" id="heroHandle">@username</div>
+                
+                <div class="hero-badges-row">
+                  <div class="hero-code-badge" title="Click to copy Profile Code" onclick="copyCurrentProfileCode()">
+                    <span class="badge-tag">CODE</span>
+                    <span class="badge-val" id="heroProfileCodeText">ET-000000</span>
+                    <span class="copy-icon">📋</span>
+                  </div>
+                  <div class="hero-code-badge" title="Telegram Account">
+                    <span class="badge-tag">TELEGRAM</span>
+                    <span class="badge-val" id="heroTelegramText" style="color: #60a5fa;">@username</span>
+                  </div>
+                  <div class="hero-code-badge" title="Ads Count Balance">
+                    <span class="badge-tag">ADS BALANCE</span>
+                    <span class="badge-val" id="heroAdsText" style="color: #fbbf24;">0 🎬</span>
+                  </div>
+                  <div class="hero-code-badge" title="Mobile Number">
+                    <span class="badge-tag">MOBILE</span>
+                    <span class="badge-val" id="heroMobileText" style="color: #34d399;">Not set</span>
+                  </div>
+                  <div class="hero-uid-badge" title="Click to copy Firebase UID" onclick="copyCurrentUid()">
+                    <span class="badge-tag">UID</span>
+                    <span class="badge-val" id="heroUidText">user_...</span>
+                    <span class="copy-icon">📋</span>
+                  </div>
+                  <div class="hero-last-active" id="heroLastActive">Last Active: Recently</div>
+                </div>
+              </div>
+            </div>
+      
+            <div class="hero-actions">
+              <button class="btn-primary hero-save-btn" onclick="saveCurrentProfileStatsToFirebase()" id="btnHeroSave">
+                <span>💾</span>
+                <span>Save Changes to Firebase</span>
+              </button>
+              <div class="hero-btn-row">
+                <button class="btn-secondary hero-action-btn season-btn" onclick="restartCurrentProfileSeason()" title="Reset Season to Level 0 & Allow Claiming Again">
+                  <span>🌟</span>
+                  <span>Restart Season</span>
+                </button>
+                <button class="btn-secondary hero-action-btn reset-btn" onclick="restartCurrentProfilePlayer()" title="Clean all stats to 0">
+                  <span>🔄</span>
+                  <span>Reset to 0</span>
+                </button>
+                <button class="btn-secondary hero-action-btn delete-btn" onclick="removeCurrentProfileUser()" title="Permanently delete user from Firebase">
+                  <span>🗑️</span>
+                  <span>Remove</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- ACCOUNT SECURITY & IDENTITY (4 UNIQUE FIELDS) -->
+          <div class="account-security-editor-card" style="background: linear-gradient(135deg, rgba(8, 20, 52, 0.95) 0%, rgba(4, 12, 34, 0.98) 100%); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 16px 20px; margin-bottom: 22px; box-shadow: 0 6px 25px rgba(0,0,0,0.4);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">🛡️</span>
+                <div>
+                  <h4 style="font-size: 14px; font-weight: 800; color: #fff; margin: 0;">Account Identity & Credentials (Strict Uniqueness Security)</h4>
+                  <p style="font-size: 11px; color: #94a3b8; margin: 2px 0 0 0;">Profile Code, User Name, Telegram Account, and Mobile number are guaranteed unique. Duplicates are strictly prevented.</p>
+                </div>
+              </div>
+              <span style="font-size: 10px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 9999px;">Zero Duplication Active</span>
+            </div>
+      
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+              <div class="mc-input-field">
+                <label style="color: #38bdf8;">Code (Profile Login Code)</label>
+                <input type="text" id="inpInspProfileCode" class="mc-input" style="color: #38bdf8; font-weight: 800; text-transform: uppercase;" placeholder="ET-XXXXXX">
+              </div>
+              <div class="mc-input-field">
+                <label style="color: #fff;">User Name</label>
+                <input type="text" id="inpInspUsername" class="mc-input" style="color: #fff; font-weight: 700;" placeholder="Player name">
+              </div>
+              <div class="mc-input-field">
+                <label style="color: #60a5fa;">Telegram Account (Handle/Link)</label>
+                <input type="text" id="inpInspTelegram" class="mc-input" style="color: #60a5fa; font-weight: 700;" placeholder="@username or t.me/...">
+              </div>
+              <div class="mc-input-field">
+                <label style="color: #fbbf24;">Ads Count Balance</label>
+                <input type="number" id="inpInspAdsWatched" class="mc-input" style="color: #fbbf24; font-weight: 800;" placeholder="0">
+              </div>
+              <div class="mc-input-field">
+                <label style="color: #34d399;">Mobile Number</label>
+                <input type="text" id="inpInspMobile" class="mc-input" style="color: #34d399; font-weight: 700;" placeholder="+1234567890">
+              </div>
+            </div>
+          </div>
+      
+          <!-- 14 CORE METRICS NOTATION GRID -->
+          <div class="inspector-section-header">
+            <div class="ish-title">
+              <span class="ish-dot"></span>
+              <h3>All 14 Core Player Metrics Denoted on this Page</h3>
+            </div>
+            <span class="ish-hint">Direct live inspection & instant edit values. Click "Save Changes" to commit to Firebase.</span>
+          </div>
+      
+          <div class="metrics-14-grid">
+      
+            <!-- 1. ENERGY -->
+            <div class="metric-card card-energy">
+              <div class="mc-head">
+                <div class="mc-icon-box energy-glow">⚡</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Reactor Engine</span>
+                  <h4 class="mc-title">Energy</h4>
+                </div>
+                <span class="mc-badge" id="badgeEnergyPct">100%</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricEnergy">0 / 1,000</div>
+              <div class="mc-progress-track">
+                <div class="mc-progress-bar energy-bar" id="barMetricEnergy" style="width: 0%;"></div>
+              </div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field">
+                  <label>Current Energy</label>
+                  <input type="number" id="inpInspEnergy" class="mc-input" step="1" placeholder="0">
+                </div>
+                <div class="mc-input-field">
+                  <label>Max Energy</label>
+                  <input type="number" id="inpInspMaxEnergy" class="mc-input" step="100" placeholder="1000">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 2. COUNT TAPS -->
+            <div class="metric-card card-taps">
+              <div class="mc-head">
+                <div class="mc-icon-box taps-glow">👆</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Tap Statistics</span>
+                  <h4 class="mc-title">Count Taps</h4>
+                </div>
+                <span class="mc-badge" id="badgeTapPower">1x Power</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricCountTaps">0</div>
+              <div class="mc-sub-info" id="dispMetricDailyTaps">Daily Taps: 0</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field">
+                  <label>Total Energy Taps</label>
+                  <input type="number" id="inpInspCountTaps" class="mc-input" step="10" placeholder="0">
+                </div>
+                <div class="mc-input-field">
+                  <label>Tap Power</label>
+                  <input type="number" id="inpInspTapPower" class="mc-input" step="1" placeholder="1">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 3. XP LEVEL -->
+            <div class="metric-card card-xp">
+              <div class="mc-head">
+                <div class="mc-icon-box xp-glow">🌟</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Progression</span>
+                  <h4 class="mc-title">XP Level</h4>
+                </div>
+                <span class="mc-badge" id="badgeXpRank">BRONZE</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricXpLevel">Lv. 0</div>
+              <div class="mc-progress-track">
+                <div class="mc-progress-bar xp-bar" id="barMetricXp" style="width: 0%;"></div>
+              </div>
+              <div class="mc-sub-info" id="dispMetricXpProgress">0 / 1,000 XP (0%)</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field">
+                  <label>XP Level</label>
+                  <input type="number" id="inpInspXpLevel" class="mc-input" step="1" min="0" max="100" placeholder="0">
+                </div>
+                <div class="mc-input-field">
+                  <label>Current XP</label>
+                  <input type="number" id="inpInspXp" class="mc-input" step="50" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 4. GOAL LEVEL -->
+            <div class="metric-card card-goal">
+              <div class="mc-head">
+                <div class="mc-icon-box goal-glow">🎯</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Milestones</span>
+                  <h4 class="mc-title">Goal Level</h4>
+                </div>
+                <span class="mc-badge" id="badgeGoalStage">Stage 0</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricGoalLevel">G-Lv. 0</div>
+              <div class="mc-sub-info" id="dispMetricGoalTargets">Targets: 85 Coins • 71 Keys • 49 Tix</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Goal Level</label>
+                  <input type="number" id="inpInspGoalLevel" class="mc-input" step="1" min="0" max="50" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 5. MONTHLY TASK COMPLETE -->
+            <div class="metric-card card-tasks-monthly">
+              <div class="mc-head">
+                <div class="mc-icon-box monthly-glow">📅</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Questline</span>
+                  <h4 class="mc-title">Monthly Task Complete</h4>
+                </div>
+                <span class="mc-badge">30-Day Cycle</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricMonthlyTasks">0 Done</div>
+              <div class="mc-sub-info" id="dispMetricMonthlyBreakdown">Claimed Quests: 0 / 30</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Monthly Tasks Completed</label>
+                  <input type="number" id="inpInspMonthlyTasks" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 6. TELEGRAM TASK COMPLETED -->
+            <div class="metric-card card-tasks-tg">
+              <div class="mc-head">
+                <div class="mc-icon-box tg-glow">✈️</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Social Tasks</span>
+                  <h4 class="mc-title">Telegram Task Completed</h4>
+                </div>
+                <span class="mc-badge">Channels</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricTgTasks">0 Done</div>
+              <div class="mc-sub-info" id="dispMetricTgBreakdown">Claimed Telegram tasks: 0</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Telegram Tasks Completed</label>
+                  <input type="number" id="inpInspTgTasks" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 7. WEBSITE TASK COMPLETED -->
+            <div class="metric-card card-tasks-web">
+              <div class="mc-head">
+                <div class="mc-icon-box web-glow">🌐</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Web Visits</span>
+                  <h4 class="mc-title">Website Task Completed</h4>
+                </div>
+                <span class="mc-badge">Web Traffic</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricWebTasks">0 Done</div>
+              <div class="mc-sub-info" id="dispMetricWebBreakdown">Claimed Website tasks: 0</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Website Tasks Completed</label>
+                  <input type="number" id="inpInspWebTasks" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 8. KEY -->
+            <div class="metric-card card-key">
+              <div class="mc-head">
+                <div class="mc-icon-box key-glow">🗝️</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Inventory Item</span>
+                  <h4 class="mc-title">Key</h4>
+                </div>
+                <span class="mc-badge">Chests</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricKeys">0 🗝️</div>
+              <div class="mc-sub-info">Available for unlocking rare chests</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Chest Keys</label>
+                  <input type="number" id="inpInspKeys" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 9. EGG -->
+            <div class="metric-card card-egg">
+              <div class="mc-head">
+                <div class="mc-icon-box egg-glow">🥚</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Inventory Item</span>
+                  <h4 class="mc-title">Egg</h4>
+                </div>
+                <span class="mc-badge">Egg Hunt</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricEggs">0 🥚</div>
+              <div class="mc-sub-info">Special egg tokens for incubator</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Egg Coins</label>
+                  <input type="number" id="inpInspEggs" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 10. CRAD (SCRATCH CARDS) -->
+            <div class="metric-card card-card">
+              <div class="mc-head">
+                <div class="mc-icon-box card-glow">🎴</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Inventory Item</span>
+                  <h4 class="mc-title">Card (Scratch)</h4>
+                </div>
+                <span class="mc-badge">Scratch</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricCards">0 🎴</div>
+              <div class="mc-sub-info">Lucky scratch tickets in inventory</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Scratch Cards</label>
+                  <input type="number" id="inpInspCards" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 11. TICKET -->
+            <div class="metric-card card-ticket">
+              <div class="mc-head">
+                <div class="mc-icon-box ticket-glow">🎟️</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Inventory Item</span>
+                  <h4 class="mc-title">Ticket</h4>
+                </div>
+                <span class="mc-badge">Wheel & Chest</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricTickets">0 🎟️</div>
+              <div class="mc-sub-info">Chest & Lucky Draw tickets</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Chest Tickets</label>
+                  <input type="number" id="inpInspTickets" class="mc-input" step="1" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 12. DIAMOND -->
+            <div class="metric-card card-diamond">
+              <div class="mc-head">
+                <div class="mc-icon-box diamond-glow">💎</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Premium Currency</span>
+                  <h4 class="mc-title">Diamond</h4>
+                </div>
+                <span class="mc-badge">Premium</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricDiamonds">0 💎</div>
+              <div class="mc-sub-info">Mega redemption & exchange token</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Diamonds</label>
+                  <input type="number" id="inpInspDiamonds" class="mc-input" step="5" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 13. COIN -->
+            <div class="metric-card card-coin">
+              <div class="mc-head">
+                <div class="mc-icon-box coin-glow">🪙</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Main Currency</span>
+                  <h4 class="mc-title">Coin</h4>
+                </div>
+                <span class="mc-badge">Gold</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricCoins">0 🪙</div>
+              <div class="mc-sub-info">Primary game currency from taps & tasks</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field" style="grid-column: span 2;">
+                  <label>Coins (Gold)</label>
+                  <input type="number" id="inpInspCoins" class="mc-input" step="100" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- 14. BLUE COIN -->
+            <div class="metric-card card-blue-coin">
+              <div class="mc-head">
+                <div class="mc-icon-box blue-coin-glow">🔷</div>
+                <div class="mc-title-group">
+                  <span class="mc-cat">Quantum Special</span>
+                  <h4 class="mc-title">Blue Coin</h4>
+                </div>
+                <span class="mc-badge" id="badgeBlueTaps">0 Surge Taps</span>
+              </div>
+              <div class="mc-display-val" id="dispMetricBlueCoins">0 🔷</div>
+              <div class="mc-sub-info" id="dispMetricBlueTapsLeft">Blue Taps Surge: 0 taps left</div>
+              <div class="mc-edit-row">
+                <div class="mc-input-field">
+                  <label>Blue Coins</label>
+                  <input type="number" id="inpInspBlueCoins" class="mc-input" step="5" min="0" placeholder="0">
+                </div>
+                <div class="mc-input-field">
+                  <label>Active Blue Taps</label>
+                  <input type="number" id="inpInspBlueTaps" class="mc-input" step="10" min="0" placeholder="0">
+                </div>
+              </div>
+            </div>
+      
+          </div>
+      
+          <!-- BOTTOM FLOATING / STICKY SAVE BAR -->
+          <div class="inspector-bottom-save-bar">
+            <div class="ibsb-left">
+              <span class="ibsb-icon">⚡</span>
+              <div>
+                <div class="ibsb-title">Sync Profile Changes</div>
+                <div class="ibsb-sub" id="ibsbSubText">Apply all updated values to this player in Firebase Realtime Database</div>
+              </div>
+            </div>
+            <div class="ibsb-right">
+              <button class="btn-secondary" onclick="setUserViewMode('list')">◀ Back to List</button>
+              <button class="btn-primary ibsb-save-btn" onclick="saveCurrentProfileStatsToFirebase()">
+                <span>💾</span>
+                <span>Save Changes to Firebase</span>
+              </button>
+            </div>
+          </div>
+      
+        </div>
+      
       </section>
       
 

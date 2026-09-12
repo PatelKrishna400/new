@@ -89,22 +89,49 @@ function listenToFirebase() {
         const goalObj = data.goal || {};
         const goalStateObj = data.goalState || {};
         const tasksObj = data.tasksState || {};
+        const xpStateObj = data.xpState || {};
+        const reactorObj = data.reactor || {};
+        const genObj = data.energyGenerator || {};
+        const dailyStats = data.dailyStats || {};
 
         const dailyDone = tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : 0;
-        const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (pl.websiteTasksCompleted || 0);
+        const monthlyDone = tasksObj.claimedMonthly ? Object.keys(tasksObj.claimedMonthly).filter(k => tasksObj.claimedMonthly[k]).length : (
+          tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : 0
+        );
+        const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (Number(pl.websiteTasksCompleted) || 0);
         const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : 0;
 
         const goalLevel = goalObj.level !== undefined ? goalObj.level : (goalStateObj.currentLevel || 0);
 
+        const currentEnergy = reactorObj.currentEnergy !== undefined ? Number(reactorObj.currentEnergy) : (Number(pl.currentEnergy) || 0);
+        const maxEnergy = reactorObj.maxEnergy !== undefined ? Number(reactorObj.maxEnergy) : (Number(pl.maxEnergy) || 1000);
+        const tapPower = reactorObj.tapPower !== undefined ? Number(reactorObj.tapPower) : (Number(pl.tapPower) || 1);
+        const countTaps = reactorObj.energyTaps !== undefined ? Number(reactorObj.energyTaps) : (Number(pl.energyTaps) || (Number(dailyStats.taps) || 0));
+
+        const xp = pl.xp !== undefined ? Number(pl.xp) : (Number(xpStateObj.currentXP) || 0);
+        const xpToNextLevel = pl.xpToNextLevel !== undefined ? Number(pl.xpToNextLevel) : ((Number(pl.level || 0) + 1) * 1000);
+
+        const coins = Number(pl.coins || 0);
+        const diamonds = Number(pl.diamonds || 0);
+        const blueCoins = (pl.blueCoins !== undefined) ? Number(pl.blueCoins) : diamonds;
+        const blueTapsLeft = Number(pl.blueTapsLeft || 0);
+        const chestKeys = Number(pl.chestKeys || 0);
+        const scratchCards = Number(pl.scratchCards || 0);
+        const chestTickets = Number(pl.chestTickets || 0);
+        const eggs = Number(pl.eggs || 0);
+
+        // Deterministic profile code if not explicitly saved
+        const cleanUid = uid.replace(/[^a-zA-Z0-9]/g, '');
+        const profileCode = pl.profileCode || ('ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : uid.toUpperCase()));
+
         const adsCount = (pl.adsWatchedCount !== undefined) ? Number(pl.adsWatchedCount) : (
           (Number(pl.watchedAds) || 0) +
           (Number(pl.adsButtonCount) || 0) +
-          (data.xpState ? (Number(data.xpState.watchedAds) || 0) : 0) +
-          (data.goalState ? ((Number(data.goalState.levelAdsWatched) || 0) + (Number(data.goalState.megaWatchedAds) || 0)) : 0) +
-          (data.dailyStats ? (Number(data.dailyStats.adsWatched) || 0) : 0)
+          (xpStateObj ? (Number(xpStateObj.watchedAds) || 0) : 0) +
+          (goalStateObj ? ((Number(goalStateObj.levelAdsWatched) || 0) + (Number(goalStateObj.megaWatchedAds) || 0)) : 0) +
+          (dailyStats ? (Number(dailyStats.adsWatched) || 0) : 0)
         );
 
-        const dailyStats = data.dailyStats || {};
         totalSpins += (Number(dailyStats.spins) || Number(dailyStats.wheelSpins) || 0);
         totalChests += (Number(dailyStats.chests) || Number(dailyStats.chestsOpened) || 0);
         totalScratches += (Number(dailyStats.scratches) || Number(dailyStats.scratchCards) || 0);
@@ -112,21 +139,44 @@ function listenToFirebase() {
 
         list.push({
           uid,
+          profileCode,
           username: pl.username || pl.name || 'User_' + uid.substring(0, 6),
+          handle: pl.handle || 'user_' + uid.substring(0, 6),
+          telegram: pl.telegram || (pl.handle ? ('@' + pl.handle.replace(/^@/, '')) : ''),
+          mobile: pl.mobile || pl.phone || '',
           level: pl.level || 0,
+          xp: xp,
+          xpToNextLevel: xpToNextLevel,
           goalLevel: goalLevel,
-          coins: pl.coins || 0,
-          diamonds: pl.diamonds || 0,
-          chestKeys: pl.chestKeys || 0,
-          scratchCards: pl.scratchCards || 0,
-          chestTickets: pl.chestTickets || 0,
-          eggs: pl.eggs || 0,
+          currentEnergy: currentEnergy,
+          maxEnergy: maxEnergy,
+          tapPower: tapPower,
+          countTaps: countTaps,
+          dailyTaps: Number(dailyStats.taps || 0),
+          monthlyDone: monthlyDone,
+          tgDone: tgDone,
+          webDone: webDone,
+          coins: coins,
+          diamonds: diamonds,
+          blueCoins: blueCoins,
+          blueTapsLeft: blueTapsLeft,
+          chestKeys: chestKeys,
+          scratchCards: scratchCards,
+          chestTickets: chestTickets,
+          eggs: eggs,
           dailyTasksDone: dailyDone,
           webTasksDone: webDone,
           adsButtonCount: adsCount,
           adsWatched: adsCount,
-          tasksCount: dailyDone + webDone + tgDone,
-          lastActive: pl.lastActive || new Date().toISOString()
+          tasksCount: monthlyDone + webDone + tgDone,
+          lastActive: pl.lastActive || new Date().toISOString(),
+          tasksState: tasksObj,
+          goal: goalObj,
+          goalState: goalStateObj,
+          xpState: xpStateObj,
+          reactor: reactorObj,
+          energyGenerator: genObj,
+          raw: data
         });
       });
     }

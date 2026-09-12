@@ -33,6 +33,9 @@ const gameState = {
   player: {
     name: 'Alex Vance',
     handle: 'alex_blue',
+    profileCode: '',
+    telegram: '',
+    mobile: '',
     tier: 'BRONZE',
     level: 0,
     maxLevel: 100,

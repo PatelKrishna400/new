@@ -145,6 +145,54 @@
 
     </section>
 
+    <!-- Cloud Account Security & Profile Code Login Card -->
+    <section class="profile-security-card" style="background: linear-gradient(135deg, rgba(8, 20, 48, 0.95) 0%, rgba(4, 12, 32, 0.98) 100%); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 16px 18px; margin-top: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 10px; border-radius: 9999px;">
+          <span>🔐</span>
+          <span>ACCOUNT SECURITY & CLOUD LOGIN</span>
+        </div>
+        <span style="font-size: 10px; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 9999px;">Firebase Protected</span>
+      </div>
+
+      <!-- Credentials Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(3, 8, 24, 0.7); border: 1px solid rgba(25, 55, 120, 0.5); border-radius: 14px; padding: 12px;">
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Login Code</div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: #38bdf8;" id="profileCodeVal">ET-000000</span>
+            <button onclick="copyPlayerProfileCode()" style="background: none; border: none; cursor: pointer; font-size: 12px;" title="Copy Profile Code">📋</button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Username</div>
+          <div style="font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px;" id="profileUsernameVal">Alex Vance</div>
+        </div>
+
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Telegram Link</div>
+          <div style="font-size: 12px; font-weight: 700; color: #60a5fa; font-family: 'JetBrains Mono', monospace; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="profileTelegramVal">@alex_blue</div>
+        </div>
+
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Mobile Number</div>
+          <div style="font-size: 12px; font-weight: 700; color: #34d399; font-family: 'JetBrains Mono', monospace; margin-top: 2px;" id="profileMobileVal">Not linked</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button onclick="openAccountSecurityModal()" class="feature-btn" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <span>🛡️</span>
+          <span>Link / Edit Security</span>
+        </button>
+        <button onclick="openLoginWithCodeModal()" class="feature-btn" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; border-radius: 12px; background: rgba(14, 28, 64, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
+          <span>🔑</span>
+          <span>Login with Code</span>
+        </button>
+      </div>
+    </section>
+
     <!-- Referral Promo Code & Invite Squad Card -->
     <section class="fren-squad-card">
       <div class="squad-badge-pill">
