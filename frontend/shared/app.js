@@ -13,7 +13,12 @@
 
 // Navigation Switcher (Full Mobile View Pages)
 function switchPage(pageName) {
+  window.switchPage = switchPage;
   gameState.currentTab = pageName;
+
+  // Ensure any open home action popups are closed
+  const homeBackdrop = document.getElementById('homePopupBackdrop');
+  if (homeBackdrop) homeBackdrop.classList.remove('open');
 
   // Bottom Nav active pill sync
   const allRewardSubPages = [

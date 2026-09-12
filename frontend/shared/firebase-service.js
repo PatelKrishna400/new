@@ -663,7 +663,12 @@ class FirebaseSyncService {
     rewardsRef.on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        window.cloudMegaRewards = Array.isArray(data) ? data : Object.values(data);
+        const list = Array.isArray(data) ? data : Object.keys(data).map(k => ({ id: k, ...data[k] }));
+        window.cloudMegaRewards = list.map(item => ({
+          ...item,
+          diamonds: item.diamonds !== undefined ? Number(item.diamonds) : (Number(item.diamondCost) || 100),
+          diamondCost: item.diamondCost !== undefined ? Number(item.diamondCost) : (Number(item.diamonds) || 100)
+        }));
         try {
           localStorage.setItem('ENERGY_TAP_MEGA_REWARDS_CACHE_V1', JSON.stringify(window.cloudMegaRewards));
         } catch (e) {}
@@ -679,6 +684,21 @@ class FirebaseSyncService {
     }, (err) => {
       console.warn('Could not fetch cloud mega rewards, using local cache:', err);
       this.loadCachedMegaRewards();
+    });
+  }
+
+  listenToAdsConfig() {
+    if (!this.database) return;
+    this.database.ref('/ads_config').on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        window.cloudAdsConfig = val;
+        // Update direct ad button label if present
+        const directBtn = document.getElementById('directAdBtnText');
+        if (directBtn && val.directRewardCoins) {
+          directBtn.textContent = `🔗 VISIT SPONSOR & GET +${val.directRewardCoins} 🪙`;
+        }
+      }
     });
   }
 
@@ -786,26 +806,34 @@ class FirebaseSyncService {
     if (!item) return Promise.reject(new Error('Invalid reward item'));
 
     const reqId = 'req_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
+    const dCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 0;
+    const playerName = (gameState.player && (gameState.player.name || gameState.player.username)) || 'Player';
+    const playerHandle = (gameState.player && gameState.player.handle) 
+      ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
+      : (gameState.player && gameState.player.telegram ? gameState.player.telegram : '@alex_blue');
+    const shipDetails = (deliveryInfo && (deliveryInfo.address || deliveryInfo.contact)) || 'In-App Direct';
+
     const payload = {
       id: reqId,
       userId: this.userId || this.getOrCreateLocalUid(),
-      userName: (gameState.player && gameState.player.name) || 'Alex Vance',
-      userTgHandle: (gameState.player && gameState.player.handle) 
-        ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
-        : '@alex_blue',
+      userName: playerName,
+      username: playerName,
+      userTgHandle: playerHandle,
+      telegramHandle: playerHandle,
       rewardId: item.id || 'reward_unknown',
       rewardTitle: item.title || 'Mega Reward',
       itemTitle: item.title || 'Mega Reward',
       category: item.category || 'gift-card',
       categoryName: item.categoryName || item.category || 'Mega Reward',
       categoryIcon: item.categoryIcon || '🎁',
-      diamondsCost: Number(item.diamonds) || 0,
-      diamondCost: Number(item.diamonds) || 0,
+      diamondsCost: dCost,
+      diamondCost: dCost,
       cashValue: item.cashValue || '$0',
-      deliveryInfo: deliveryInfo.contact || deliveryInfo.address || 'Direct Telegram Message',
-      contactInfo: deliveryInfo.contact || '',
-      deliveryAddress: deliveryInfo.address || '',
-      userNotes: deliveryInfo.notes || '',
+      shippingDetails: shipDetails,
+      deliveryInfo: (deliveryInfo && deliveryInfo.contact) || shipDetails,
+      contactInfo: (deliveryInfo && deliveryInfo.contact) || '',
+      deliveryAddress: (deliveryInfo && deliveryInfo.address) || '',
+      userNotes: (deliveryInfo && deliveryInfo.notes) || '',
       status: 'pending', // 'pending' | 'approved' | 'delivered' | 'rejected'
       createdAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
       updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()

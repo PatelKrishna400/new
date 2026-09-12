@@ -31,19 +31,26 @@ function renderRequestsTable() {
   let html = '';
   filtered.forEach(r => {
     const pillClass = (r.status === 'approved') ? 'pill-approved' : (r.status === 'delivered') ? 'pill-delivered' : (r.status === 'rejected') ? 'pill-rejected' : 'pill-pending';
+    const userDisplay = r.username || r.userName || 'Anonymous';
+    const tgDisplay = r.telegramHandle || r.userTgHandle || r.telegramId || 'N/A';
+    const itemDisplay = r.rewardTitle || r.itemTitle || 'Reward';
+    const diamondCost = Number(r.diamondCost || r.diamondsCost || 0);
+    const shipDisplay = r.shippingDetails || r.deliveryInfo || r.deliveryAddress || 'In-App Direct';
+    const dateDisplay = r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'Recent';
+
     html += `
       <tr>
         <td style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #38bdf8;">#${(r.id || 'REQ').substring(0, 8)}</td>
         <td>
-          <div style="font-weight: 800; color: #fff;">${r.username || 'Anonymous'}</div>
-          <div style="font-size: 11px; color: #64748b;">${r.telegramHandle || r.telegramId || 'N/A'}</div>
+          <div style="font-weight: 800; color: #fff;">${userDisplay}</div>
+          <div style="font-size: 11px; color: #64748b;">${tgDisplay}</div>
         </td>
         <td>
-          <div style="font-weight: 800; color: #22d3ee;">${r.rewardTitle || 'Reward'}</div>
+          <div style="font-weight: 800; color: #22d3ee;">${itemDisplay}</div>
         </td>
-        <td style="font-weight: 800; color: #fbbf24;">${Number(r.diamondCost || 0).toLocaleString()} 💎</td>
-        <td style="font-size: 11px; color: #94a3b8;">${r.shippingDetails || 'In-App Direct'}</td>
-        <td style="font-size: 11px; color: #64748b;">${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'Recent'}</td>
+        <td style="font-weight: 800; color: #fbbf24;">${diamondCost.toLocaleString()} 💎</td>
+        <td style="font-size: 11px; color: #94a3b8;">${shipDisplay}</td>
+        <td style="font-size: 11px; color: #64748b;">${dateDisplay}</td>
         <td><span class="status-pill ${pillClass}">${(r.status || 'pending').toUpperCase()}</span></td>
         <td>
           <button onclick="openRequestManageModal('${r.id}')" class="btn-primary" style="padding: 5px 12px; font-size: 11px;">Manage</button>
@@ -69,10 +76,10 @@ function openRequestManageModal(id) {
   if (!req) return;
   managingRequestId = id;
 
-  document.getElementById('modalReqUser').textContent = req.username || 'User';
-  document.getElementById('modalReqItem').textContent = req.rewardTitle || 'Reward';
-  document.getElementById('modalReqDiamonds').textContent = `${Number(req.diamondCost || 0).toLocaleString()} Diamonds 💎`;
-  document.getElementById('modalReqShipping').textContent = req.shippingDetails || 'No address';
+  document.getElementById('modalReqUser').textContent = req.username || req.userName || 'User';
+  document.getElementById('modalReqItem').textContent = req.rewardTitle || req.itemTitle || 'Reward';
+  document.getElementById('modalReqDiamonds').textContent = `${Number(req.diamondCost || req.diamondsCost || 0).toLocaleString()} Diamonds 💎`;
+  document.getElementById('modalReqShipping').textContent = req.shippingDetails || req.deliveryInfo || req.deliveryAddress || 'No address';
   document.getElementById('modalReqStatus').value = (req.status || 'pending').toLowerCase();
   document.getElementById('modalReqNotes').value = req.adminNotes || '';
 

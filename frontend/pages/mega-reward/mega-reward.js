@@ -277,12 +277,14 @@ function renderCategoryProducts(pageIdOrCatId) {
     } catch (e) {}
   }
 
-  // Filter for this category
+  // Filter for this category with robust normalization
   const filtered = allRewards.filter(r => {
     if (!r) return false;
-    const rCat = (r.category || '').toLowerCase().replace(/_/g, '-');
-    const cId = cat.id.toLowerCase().replace(/_/g, '-');
-    return rCat === cId || rCat === cat.altId.toLowerCase();
+    const rCat = (r.category || '').toLowerCase().replace(/[_\s]/g, '-');
+    const cId = cat.id.toLowerCase().replace(/[_\s]/g, '-');
+    const alt = (cat.altId || '').toLowerCase().replace(/[_\s]/g, '-');
+    const pId = (cat.pageId || '').toLowerCase().replace(/[_\s]/g, '-');
+    return rCat === cId || rCat === alt || rCat === pId;
   });
 
   const playerDiamonds = (gameState.player && gameState.player.diamonds) ? gameState.player.diamonds : 0;
@@ -302,7 +304,7 @@ function renderCategoryProducts(pageIdOrCatId) {
 
   filtered.forEach(item => {
     const isOutOfStock = (item.stock !== undefined && item.stock <= 0);
-    const diamondCost = Number(item.diamonds) || 100;
+    const diamondCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 100;
     const canAfford = playerDiamonds >= diamondCost;
     const hasImage = item.imageUrl && item.imageUrl.length > 5;
 
@@ -385,7 +387,7 @@ function openRewardRedemptionModal(rewardId) {
   if (!reward) return;
 
   const playerDiamonds = (gameState.player && gameState.player.diamonds) ? gameState.player.diamonds : 0;
-  const cost = Number(reward.diamonds) || 0;
+  const cost = Number(reward.diamonds !== undefined ? reward.diamonds : reward.diamondCost) || 0;
 
   if (playerDiamonds < cost) {
     showFloatingToast(`⚠️ You need ${(cost - playerDiamonds).toLocaleString()} more 💎 to redeem "${reward.title}"`);
@@ -430,7 +432,7 @@ function handleRedemptionSubmit(event) {
   event.preventDefault();
   if (!activeRedeemReward) return;
 
-  const cost = Number(activeRedeemReward.diamonds) || 0;
+  const cost = Number(activeRedeemReward.diamonds !== undefined ? activeRedeemReward.diamonds : activeRedeemReward.diamondCost) || 0;
   const playerDiamonds = (gameState.player && gameState.player.diamonds) ? gameState.player.diamonds : 0;
 
   if (playerDiamonds < cost) {

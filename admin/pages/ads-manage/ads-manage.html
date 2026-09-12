@@ -13,48 +13,67 @@
     <div class="metric-box">
       <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
       <div class="metric-meta">
-        <span class="metric-label">Total Ads Watched</span>
+        <span class="metric-label">Reward Ads Watched</span>
         <span class="metric-value" id="adsTotalWatched">0</span>
+        <span style="font-size: 10.5px; color: #fbbf24; margin-top: 2px;">CPM $0.20 / 1k click</span>
+      </div>
+    </div>
+
+    <div class="metric-box">
+      <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🔗</div>
+      <div class="metric-meta">
+        <span class="metric-label">Shop Direct Link Clicks</span>
+        <span class="metric-value" id="adsTotalDirectClicks">0</span>
+        <span style="font-size: 10.5px; color: #22d3ee; margin-top: 2px;">CPM $0.60 / 1k click</span>
       </div>
     </div>
 
     <div class="metric-box">
       <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">💰</div>
       <div class="metric-meta">
-        <span class="metric-label">Estimated Revenue</span>
+        <span class="metric-label">Total Est. Revenue</span>
         <span class="metric-value" id="adsEstRevenue">$0.00</span>
-      </div>
-    </div>
-
-    <div class="metric-box">
-      <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">⚡</div>
-      <div class="metric-meta">
-        <span class="metric-label">Active Ad Zone</span>
-        <span class="metric-value" style="font-size: 15px;" id="adsActiveZone">11677609</span>
+        <span style="font-size: 10px; color: #94a3b8; margin-top: 2px;" id="adsRevenueBreakdown">Reward: $0.00 • Direct: $0.00</span>
       </div>
     </div>
 
     <div class="metric-box">
       <div class="metric-icon-box" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">👥</div>
       <div class="metric-meta">
-        <span class="metric-label">Ad Viewers Count</span>
+        <span class="metric-label">Unique Ad Viewers</span>
         <span class="metric-value" id="adsUniqueViewers">0</span>
+        <span style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Active monetized players</span>
       </div>
     </div>
   </div>
 
   <!-- Ad Configuration Form -->
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
-    <h3 style="font-size: 15px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 10px;">Monetag Provider Settings</h3>
+    <h3 style="font-size: 15px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 10px;">Monetag & Direct Link Provider Settings</h3>
     
     <div class="ads-form-row-2col">
       <div class="form-group">
-        <label class="form-label">Monetag Zone ID</label>
+        <label class="form-label">Monetag Rewarded Zone ID (Fixed CPM: $0.20 / 1,000)</label>
         <input type="text" id="adZoneId" value="11677609" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #fbbf24; font-weight: 800;">
       </div>
       <div class="form-group">
-        <label class="form-label">SDK Tag URL</label>
+        <label class="form-label">Rewarded SDK Tag URL</label>
         <input type="url" id="adSdkUrl" value="https://libtl.com/sdk.js" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+      </div>
+    </div>
+
+    <!-- Direct Link Ads Settings -->
+    <div class="ads-form-row-2col" style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 10px; padding: 12px;">
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label class="form-label" style="color: #22d3ee;">Direct Link Ad URL (Used in Shop Sponsor)</label>
+          <span style="font-size: 10.5px; font-weight: 800; color: #34d399; font-family: 'JetBrains Mono', monospace;">CPM: $0.60 / 1,000 Clicks</span>
+        </div>
+        <input type="url" id="adDirectLinkUrl" value="https://otieuche.com/4/8893420" placeholder="https://..." class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #22d3ee; font-weight: 700;">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="color: #22d3ee;">Direct Link Ad Reward Coins 🪙</label>
+        <input type="number" id="adDirectRewardCoins" value="250" class="form-input" style="color: #fbbf24; font-weight: 800;">
       </div>
     </div>
 
@@ -79,7 +98,7 @@
 
     <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
       <input type="checkbox" id="adActiveToggle" checked style="width: 18px; height: 18px; cursor: pointer;">
-      <label for="adActiveToggle" style="font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;">Enable Rewarded Ads in Mini App</label>
+      <label for="adActiveToggle" style="font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;">Enable Rewarded & Direct Link Ads in Mini App</label>
     </div>
   </div>
 
@@ -92,13 +111,14 @@
           <tr>
             <th>Rank</th>
             <th>Player Username</th>
-            <th>Ads Watched</th>
+            <th>Reward Ads</th>
+            <th>Shop Direct Clicks</th>
             <th>Coins Earned</th>
             <th>Diamonds Earned</th>
           </tr>
         </thead>
         <tbody id="adViewersTableBody">
-          <tr><td colspan="5" style="text-align: center; color: #64748b;">Loading ad metrics from players...</td></tr>
+          <tr><td colspan="6" style="text-align: center; color: #64748b;">Loading ad metrics from players...</td></tr>
         </tbody>
       </table>
     </div>

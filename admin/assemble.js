@@ -160,10 +160,6 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
             <span class="pulse-dot"></span>
             <span>Live DB Connected</span>
           </div>
-          <a href="../frontend/index.html" target="_blank" class="header-user-app-btn" title="Open User Mini-App in new tab">
-            <span>🎮 Launch User App</span>
-            <span class="ext-icon">↗</span>
-          </a>
         </div>
       </div>
     </header>

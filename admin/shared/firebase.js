@@ -242,6 +242,35 @@ function listenToFirebase() {
       dispatchAdminEvent('monthlyCompetitionUpdated');
     }
   });
+
+  // 7. Ads Configuration (/ads_config)
+  db.ref('/ads_config').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val) {
+      window.adminState.adsConfig = val;
+      dispatchAdminEvent('adsConfigUpdated');
+    }
+  });
+
+  // 8. Direct Link Ads Clicks (/ads_direct_clicks)
+  db.ref('/ads_direct_clicks').on('value', snapshot => {
+    const val = snapshot.val();
+    const list = [];
+    if (val) {
+      Object.keys(val).forEach(k => list.push({ id: k, ...val[k] }));
+    }
+    window.adminState.directClicks = list;
+    dispatchAdminEvent('directClicksUpdated');
+  });
+
+  // 9. Ads Analytics (/ads_analytics)
+  db.ref('/ads_analytics').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val) {
+      window.adminState.adsAnalytics = val;
+      dispatchAdminEvent('adsAnalyticsUpdated');
+    }
+  });
 }
 
 function dispatchAdminEvent(eventName) {

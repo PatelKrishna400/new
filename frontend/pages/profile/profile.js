@@ -480,6 +480,26 @@ window.buyFuelWithDiamonds = function(fuelType, diamondCost, rewardCells) {
   }
   gameState.energyGenerator.fuelCells[fuelType] = (gameState.energyGenerator.fuelCells[fuelType] || 0) + cells;
 
+  // Create diamond request in Firebase /reward_requests so admin sees order in Request Page
+  if (window.firebaseSync && typeof window.firebaseSync.submitRewardRequest === 'function') {
+    const fuelItem = {
+      id: `fuel_${fuelType}_${Date.now()}`,
+      title: `${fuelType.toUpperCase()} Fuel Pack (+${cells} Cells)`,
+      diamonds: cost,
+      diamondCost: cost,
+      cashValue: `$${(cost * 0.05).toFixed(2)}`,
+      category: 'fuel-pack',
+      categoryName: 'Fuel Cell Depot',
+      categoryIcon: '🔋'
+    };
+    const delivery = {
+      contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
+      address: `Instant In-Game Fuel: +${cells} ${fuelType.toUpperCase()} Cells`,
+      notes: `Player paid ${cost} diamonds for fuel in Shop.`
+    };
+    window.firebaseSync.submitRewardRequest(fuelItem, delivery).catch(console.warn);
+  }
+
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();
   }
@@ -487,6 +507,59 @@ window.buyFuelWithDiamonds = function(fuelType, diamondCost, rewardCells) {
 
   updateShopUI();
   if (typeof updateEnergyUI === 'function') updateEnergyUI();
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof saveGame === 'function') saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// Direct Link Ad Click Handler (Shop Sponsor Bonus - CPM $0.60 / 1000 clicks)
+window.clickDirectLinkAd = function() {
+  let directUrl = 'https://otieuche.com/4/8893420';
+  let rewardCoins = 250;
+
+  if (window.cloudAdsConfig) {
+    if (window.cloudAdsConfig.directLinkUrl) directUrl = window.cloudAdsConfig.directLinkUrl;
+    if (window.cloudAdsConfig.directRewardCoins) rewardCoins = Number(window.cloudAdsConfig.directRewardCoins) || 250;
+  }
+
+  // Open direct sponsor ad link in new window/tab
+  try {
+    window.open(directUrl, '_blank', 'noopener,noreferrer');
+  } catch (e) {
+    location.href = directUrl;
+  }
+
+  // Award player coins & increment direct ad clicks count
+  gameState.player.directLinkAdsCount = (gameState.player.directLinkAdsCount || 0) + 1;
+  gameState.player.coins = (gameState.player.coins || 0) + rewardCoins;
+
+  // Log click to Firebase for Admin Ads Manager
+  if (window.firebaseSync && window.firebaseSync.database) {
+    const db = window.firebaseSync.database;
+    const uid = window.firebaseSync.userId || (gameState.player && gameState.player.promoCode) || 'guest_' + Date.now();
+    const username = (gameState.player && (gameState.player.name || gameState.player.username || gameState.player.handle)) || 'Player';
+    const clickId = 'direct_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
+    db.ref(`ads_direct_clicks/${clickId}`).set({
+      id: clickId,
+      userId: uid,
+      username: username,
+      timestamp: Date.now(),
+      rewardCoins: rewardCoins
+    }).catch(console.warn);
+
+    db.ref('ads_analytics/directClicks').transaction(curr => (curr || 0) + 1).catch(console.warn);
+  }
+
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  }
+  showShopToast(`🎉 Sponsor Link Visited! +${rewardCoins} Coins Earned!`, '🪙');
+
+  updateShopUI();
+  updateProfileUI();
   if (typeof updateUI === 'function') updateUI();
   if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -1532,6 +1605,26 @@ window.buyTapPowerWithBlueCoins = function(amount) {
   const currentPower = gameState.reactor.tapPower || 1;
   gameState.reactor.tapPower = currentPower + amount;
 
+  // Create request in Firebase /reward_requests so admin sees order
+  if (window.firebaseSync && typeof window.firebaseSync.submitRewardRequest === 'function') {
+    const item = {
+      id: `tappower_${Date.now()}`,
+      title: `Tap Power Boost (+${amount} Power)`,
+      diamonds: amount,
+      diamondCost: amount,
+      cashValue: `$${(amount * 0.05).toFixed(2)}`,
+      category: 'tap-power',
+      categoryName: 'Reactor Upgrades',
+      categoryIcon: '⚡'
+    };
+    const delivery = {
+      contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
+      address: `In-Game Tap Power (+${amount})`,
+      notes: `Player upgraded tap power with ${amount} diamonds in Shop.`
+    };
+    window.firebaseSync.submitRewardRequest(item, delivery).catch(console.warn);
+  }
+
   // Audio feedback
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();
@@ -1582,6 +1675,26 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
     gameState.player.diamonds = Math.max(0, currentBlue - cost);
     if (gameState.player.blueCoins !== undefined) {
       gameState.player.blueCoins = gameState.player.diamonds;
+    }
+
+    // Create request in Firebase /reward_requests so admin sees order
+    if (window.firebaseSync && typeof window.firebaseSync.submitRewardRequest === 'function') {
+      const item = {
+        id: `quantumtaps_${Date.now()}`,
+        title: `${label || 'Quantum Blue Taps'} (${count} Taps)`,
+        diamonds: cost,
+        diamondCost: cost,
+        cashValue: `$${(cost * 0.05).toFixed(2)}`,
+        category: 'quantum-taps',
+        categoryName: 'Quantum Boost',
+        categoryIcon: '💎'
+      };
+      const delivery = {
+        contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
+        address: `In-Game Quantum Taps (+${count} Taps)`,
+        notes: `Player activated ${count} blue taps using ${cost} diamonds.`
+      };
+      window.firebaseSync.submitRewardRequest(item, delivery).catch(console.warn);
     }
   }
 

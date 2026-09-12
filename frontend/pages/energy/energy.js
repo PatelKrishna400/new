@@ -433,7 +433,7 @@ function updateEnergyUI() {
   if (DOM.orangeCellCount) DOM.orangeCellCount.textContent = `${gameState.energyGenerator.fuelCells.orange || 0} Cells`;
   if (DOM.redCellCount) DOM.redCellCount.textContent = `${gameState.energyGenerator.fuelCells.red || 0} Cells`;
 
-  // Standard Fuel Cells (Direct Action Button: Use when > 0, Buy in Shop when 0)
+  // Standard Fuel Cells (Direct Action Button: Use when > 0, Disabled when 0)
   const standardFuels = [
     { type: 'green', btnId: 'btnUseGreenFuel', textId: 'btnGreenText', defaultColor: 'green-btn', label: '⚡ Use Fuel (+5m)' },
     { type: 'darkgreen', btnId: 'btnUseDarkGreenFuel', textId: 'btnDarkGreenText', defaultColor: 'darkgreen-btn', label: '⚡ Use Fuel (+1m)' },
@@ -447,17 +447,11 @@ function updateEnergyUI() {
     const btn = document.getElementById(item.btnId);
     const span = document.getElementById(item.textId) || (btn ? btn.querySelector('span') : null);
 
-    // If fuel is 0: automatically show Buy button and route to Shop
-    if (count <= 0) {
-      window.fuelModes[item.type] = 'buy';
-      if (btn) {
-        btn.className = 'fuel-action-btn buy-mode-btn';
-        if (span) span.innerHTML = '<span>🛒 Buy in Shop</span>';
-      }
-    } else {
-      // Fuel is available (> 0): show Use Fuel button
-      window.fuelModes[item.type] = 'use';
-      if (btn) {
+    if (btn) {
+      if (count <= 0) {
+        btn.className = `fuel-action-btn ${item.defaultColor} disabled-btn`;
+        if (span) span.innerHTML = `<span>⚡ Use Fuel (0)</span>`;
+      } else {
         btn.className = `fuel-action-btn ${item.defaultColor}`;
         if (span) span.innerHTML = `<span>⚡ Use Fuel (${count})</span>`;
       }
@@ -486,25 +480,19 @@ function updateEnergyUI() {
   const btnPinkAction = document.getElementById('btnPinkAction');
   const btnPinkText = document.getElementById('btnPinkText');
 
-  if (pinkCount <= 0) {
-    window.fuelModes.pink = 'buy';
-    if (btnPinkAction) {
-      btnPinkAction.className = 'fuel-action-btn buy-mode-btn';
-      if (btnPinkText) btnPinkText.innerHTML = '<span>🛒 Buy in Shop</span>';
-    }
-  } else {
-    window.fuelModes.pink = 'use';
-    if (btnPinkAction && btnPinkText) {
-      if (pink.activeRemainingSeconds > 0) {
-        btnPinkAction.className = 'fuel-action-btn pink-btn boost-running-btn';
-        btnPinkText.textContent = `⚡ 2x Active (${formatSecondsMMSS(pink.activeRemainingSeconds)})`;
-      } else if (pink.cooldownRemainingSeconds > 0) {
-        btnPinkAction.className = 'fuel-action-btn pink-btn disabled-btn';
-        btnPinkText.textContent = `⏳ Cooldown (${formatCooldownDisplay(pink.cooldownRemainingSeconds)})`;
-      } else {
-        btnPinkAction.className = 'fuel-action-btn pink-btn';
-        btnPinkText.textContent = `⚡ Use 2x Boost (${pinkCount})`;
-      }
+  if (btnPinkAction && btnPinkText) {
+    if (pink.activeRemainingSeconds > 0) {
+      btnPinkAction.className = 'fuel-action-btn pink-btn boost-running-btn';
+      btnPinkText.textContent = `⚡ 2x Active (${formatSecondsMMSS(pink.activeRemainingSeconds)})`;
+    } else if (pink.cooldownRemainingSeconds > 0) {
+      btnPinkAction.className = 'fuel-action-btn pink-btn disabled-btn';
+      btnPinkText.textContent = `⏳ Cooldown (${formatCooldownDisplay(pink.cooldownRemainingSeconds)})`;
+    } else if (pinkCount <= 0) {
+      btnPinkAction.className = 'fuel-action-btn pink-btn disabled-btn';
+      btnPinkText.textContent = `⚡ Use 2x Boost (0)`;
+    } else {
+      btnPinkAction.className = 'fuel-action-btn pink-btn';
+      btnPinkText.textContent = `⚡ Use 2x Boost (${pinkCount})`;
     }
   }
 
@@ -530,25 +518,19 @@ function updateEnergyUI() {
   const btnPurpleAction = document.getElementById('btnPurpleAction');
   const btnPurpleText = document.getElementById('btnPurpleText');
 
-  if (purpleCount <= 0) {
-    window.fuelModes.purple = 'buy';
-    if (btnPurpleAction) {
-      btnPurpleAction.className = 'fuel-action-btn buy-mode-btn';
-      if (btnPurpleText) btnPurpleText.innerHTML = '<span>🛒 Buy in Shop</span>';
-    }
-  } else {
-    window.fuelModes.purple = 'use';
-    if (btnPurpleAction && btnPurpleText) {
-      if (purple.activeRemainingSeconds > 0) {
-        btnPurpleAction.className = 'fuel-action-btn purple-btn boost-running-btn';
-        btnPurpleText.textContent = `🔥 5x Active (${formatSecondsMMSS(purple.activeRemainingSeconds)})`;
-      } else if (purple.cooldownRemainingSeconds > 0) {
-        btnPurpleAction.className = 'fuel-action-btn purple-btn disabled-btn';
-        btnPurpleText.textContent = `⏳ Cooldown (${formatCooldownDisplay(purple.cooldownRemainingSeconds)})`;
-      } else {
-        btnPurpleAction.className = 'fuel-action-btn purple-btn';
-        btnPurpleText.textContent = `🔥 Use 5x Boost (${purpleCount})`;
-      }
+  if (btnPurpleAction && btnPurpleText) {
+    if (purple.activeRemainingSeconds > 0) {
+      btnPurpleAction.className = 'fuel-action-btn purple-btn boost-running-btn';
+      btnPurpleText.textContent = `🔥 5x Active (${formatSecondsMMSS(purple.activeRemainingSeconds)})`;
+    } else if (purple.cooldownRemainingSeconds > 0) {
+      btnPurpleAction.className = 'fuel-action-btn purple-btn disabled-btn';
+      btnPurpleText.textContent = `⏳ Cooldown (${formatCooldownDisplay(purple.cooldownRemainingSeconds)})`;
+    } else if (purpleCount <= 0) {
+      btnPurpleAction.className = 'fuel-action-btn purple-btn disabled-btn';
+      btnPurpleText.textContent = `🔥 Use 5x Boost (0)`;
+    } else {
+      btnPurpleAction.className = 'fuel-action-btn purple-btn';
+      btnPurpleText.textContent = `🔥 Use 5x Boost (${purpleCount})`;
     }
   }
 
@@ -569,41 +551,20 @@ function getFuelDisplayName(fuelType) {
   }
 }
 
-// Toggle between 'use' and 'buy' mode
-window.setFuelMode = function(fuelType, mode) {
-  const count = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[fuelType]) || 0;
-
-  // If 0 cells and user clicks 'use', throw open Shop to buy!
-  if (count <= 0 && mode === 'use') {
-    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
-      sfx.playErrorSound();
-    }
-    openShopForFuel(fuelType);
-    return;
-  }
-
-  if (!window.fuelModes) window.fuelModes = {};
-  window.fuelModes[fuelType] = mode;
-
-  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(1.1);
-  }
-
-  updateEnergyUI();
-};
-
 // Master Execution Handler for Fuel Action Button
 window.executeFuelButtonAction = function(fuelType) {
   const count = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[fuelType]) || 0;
-  const currentMode = (window.fuelModes && window.fuelModes[fuelType]) || (count > 0 ? 'use' : 'buy');
 
-  // If fuel count is 0 or mode is 'buy': throw open the Shop tab!
-  if (count <= 0 || currentMode === 'buy') {
-    openShopForFuel(fuelType);
+  if (count <= 0) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
+      sfx.playErrorSound();
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`No ${getFuelDisplayName(fuelType)} cells available!`);
+    }
     return;
   }
 
-  // If fuel count > 0 and mode is 'use': execute fuel usage
   if (fuelType === 'pink') {
     handlePinkAction();
   } else if (fuelType === 'purple') {
@@ -613,33 +574,16 @@ window.executeFuelButtonAction = function(fuelType) {
   }
 };
 
-// Throw open Shop Tab for Fuel Cells
 window.openShopForFuel = function(fuelType) {
-  if (typeof sfx !== 'undefined' && typeof sfx.playBuySound === 'function') {
-    sfx.playBuySound();
-  }
-
-  // Switch to Profile Page and activate Shop tab
-  if (typeof switchPage === 'function') {
-    switchPage('profile');
-  }
-
+  if (typeof switchPage === 'function') switchPage('profile');
   setTimeout(() => {
-    if (typeof switchProfileSubtab === 'function') {
-      switchProfileSubtab('shop');
-    }
+    if (typeof switchProfileSubtab === 'function') switchProfileSubtab('shop');
     const fuelSec = document.getElementById('shopFuelSection');
-    if (fuelSec) {
-      fuelSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      fuelSec.classList.add('highlight-pulse');
-      setTimeout(() => fuelSec.classList.remove('highlight-pulse'), 1600);
-    }
-  }, 80);
-
-  if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🛒 Opening Shop: Buy ${getFuelDisplayName(fuelType)} cells!`);
-  }
+    if (fuelSec) fuelSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
 };
+
+window.setFuelMode = function() {};
 
 // Global Exports
 window.startEnergyEngine = startEnergyEngine;
@@ -649,15 +593,11 @@ window.useDarkGreenFuel = useDarkGreenFuel;
 window.useYellowFuel = useYellowFuel;
 window.useOrangeFuel = useOrangeFuel;
 window.useRedFuel = useRedFuel;
-window.watchAdForFuel = watchAdForFuel;
 window.handlePinkAction = handlePinkAction;
 window.handlePurpleAction = handlePurpleAction;
-window.reduceCooldownWithAd = reduceCooldownWithAd;
-window.watchAdForBoostFuel = watchAdForBoostFuel;
 window.triggerGaugePulse = triggerGaugePulse;
 window.updateEnergyUI = updateEnergyUI;
 window.advanceEnergyGenerator = advanceEnergyGenerator;
-window.setFuelMode = setFuelMode;
-window.executeFuelButtonAction = executeFuelButtonAction;
-window.openShopForFuel = openShopForFuel;
+window.setFuelMode = window.setFuelMode;
+window.executeFuelButtonAction = window.executeFuelButtonAction;
 window.processEnergyGeneratorOfflineCatchup = processEnergyGeneratorOfflineCatchup;
