@@ -4,61 +4,69 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": true,
+        ".write": "auth != null",
         ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
       }
     },
     "leaderboard": {
       ".read": true,
       "$uid": {
-        ".write": true,
+        ".write": "auth != null",
         ".validate": "newData.hasChildren(['name', 'level', 'coins'])"
       }
     },
     "mega_rewards": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "reward_requests": {
       ".read": true,
-      ".write": true,
+      ".write": "auth != null",
       "$reqId": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null"
+      }
+    },
+    "ads_direct_clicks": {
+      ".read": true,
+      ".write": "auth != null",
+      "$clickId": {
+        ".read": true,
+        ".write": "auth != null"
       }
     },
     "suggestions": {
       ".read": true,
-      ".write": true,
+      ".write": "auth != null",
       "$sugId": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null"
       }
     },
     "website_tasks_config": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "telegram_tasks_config": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "monthly_competition": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "season": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "ads_config": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     },
     "whitelist": {
       ".read": true,
       "$uid": {
-        ".write": true
+        ".write": "auth != null"
       }
     },
     ".info": {

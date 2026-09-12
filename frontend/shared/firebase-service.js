@@ -28,8 +28,10 @@ class FirebaseSyncService {
     this.userId = null;
     this.isInitialized = false;
     this.isOnline = false;
+    this.isAuthenticated = false;
+    this.authPromise = null;
     this.saveTimeout = null;
-    this.syncStatus = 'connecting'; // 'connecting' | 'synced' | 'saving' | 'offline'
+    this.syncStatus = 'connecting'; // 'connecting' | 'synced' | 'saving' | 'offline' | 'auth_required'
 
     this.init();
   }
@@ -57,14 +59,15 @@ class FirebaseSyncService {
         this.database = firebase.database();
         this.auth = firebase.auth();
 
-        // Sign in anonymously for seamless user session
-        this.auth.signInAnonymously()
-          .then((userCredential) => {
-            this.userId = userCredential.user.uid;
+        // Listen for Authentication state changes (Authentication required for all user data store)
+        this.auth.onAuthStateChanged((user) => {
+          if (user) {
+            this.userId = user.uid;
+            this.isAuthenticated = true;
             this.isInitialized = true;
             this.isOnline = true;
             this.setSyncStatus('synced');
-            console.log('🔥 Firebase connected successfully! Player UID:', this.userId);
+            console.log('🔥 Firebase Auth verified! Authenticated Player UID:', this.userId);
             
             // Initial cloud sync: load from Firebase, then attach real-time presence
             this.loadFromCloud();
@@ -76,22 +79,15 @@ class FirebaseSyncService {
             this.listenToSeason();
             this.listenToMonthlyCompetition();
             this.listenToAdsConfig();
-          })
-          .catch((error) => {
-            console.warn('Firebase Auth failed, falling back to local UID:', error);
-            this.userId = this.getOrCreateLocalUid();
-            this.isInitialized = true;
-            this.isOnline = true;
-            this.setSyncStatus('synced');
-            this.loadFromCloud();
-            this.listenToMegaRewards();
-            this.listenToWebsiteTasks();
-            this.listenToTelegramTasks();
-            this.listenToUser();
-            this.listenToSeason();
-            this.listenToMonthlyCompetition();
-            this.listenToAdsConfig();
-          });
+          } else {
+            this.isAuthenticated = false;
+            console.log('Firebase Auth required: authenticating player session...');
+            this.ensureAuthenticated().catch((error) => {
+              console.warn('Firebase Auth failed. Authentication is required to store user data:', error);
+              this.setSyncStatus('auth_required');
+            });
+          }
+        });
       } else {
         console.warn('Firebase SDK not loaded, using LocalStorage only.');
         this.setSyncStatus('offline');
@@ -100,6 +96,46 @@ class FirebaseSyncService {
       console.error('Firebase Initialization error:', err);
       this.setSyncStatus('offline');
     }
+  }
+
+  // ==========================================================================
+  // AUTHENTICATION GUARD: REQUIRED FOR STORING ALL USER DATA IN FIREBASE
+  // ==========================================================================
+  ensureAuthenticated() {
+    if (this.auth && this.auth.currentUser) {
+      this.userId = this.auth.currentUser.uid;
+      this.isAuthenticated = true;
+      return Promise.resolve(this.auth.currentUser);
+    }
+
+    if (!this.auth) {
+      return Promise.reject(new Error('Firebase Auth is not available. Authentication required to store user data.'));
+    }
+
+    if (this.authPromise) {
+      return this.authPromise;
+    }
+
+    this.setSyncStatus('connecting');
+    this.authPromise = this.auth.signInAnonymously()
+      .then((userCredential) => {
+        this.userId = userCredential.user.uid;
+        this.isAuthenticated = true;
+        this.isOnline = true;
+        this.setSyncStatus('synced');
+        this.authPromise = null;
+        console.log('✅ Firebase Authentication successful for player store:', this.userId);
+        return userCredential.user;
+      })
+      .catch((err) => {
+        this.authPromise = null;
+        this.isAuthenticated = false;
+        this.setSyncStatus('auth_required');
+        console.warn('⚠️ Firebase Authentication required before storing user data:', err);
+        throw err;
+      });
+
+    return this.authPromise;
   }
 
   getOrCreateLocalUid() {
@@ -116,14 +152,17 @@ class FirebaseSyncService {
     const statusEls = document.querySelectorAll('.firebase-cloud-status-badge');
     statusEls.forEach(statusEl => {
       if (status === 'synced') {
-        statusEl.innerHTML = `<span class="cloud-dot online">●</span> Cloud Synced`;
+        statusEl.innerHTML = `<span class="cloud-dot online">●</span> 🔐 Auth Synced`;
         statusEl.className = 'firebase-cloud-status-badge synced';
       } else if (status === 'saving') {
-        statusEl.innerHTML = `<span class="cloud-dot syncing">●</span> Syncing...`;
+        statusEl.innerHTML = `<span class="cloud-dot syncing">●</span> 🔐 Saving...`;
         statusEl.className = 'firebase-cloud-status-badge saving';
       } else if (status === 'connecting') {
-        statusEl.innerHTML = `<span class="cloud-dot connecting">●</span> Connecting...`;
+        statusEl.innerHTML = `<span class="cloud-dot connecting">●</span> 🔐 Authenticating...`;
         statusEl.className = 'firebase-cloud-status-badge connecting';
+      } else if (status === 'auth_required') {
+        statusEl.innerHTML = `<span class="cloud-dot offline">●</span> ⚠️ Auth Required`;
+        statusEl.className = 'firebase-cloud-status-badge offline';
       } else {
         statusEl.innerHTML = `<span class="cloud-dot offline">●</span> Offline Mode`;
         statusEl.className = 'firebase-cloud-status-badge offline';
@@ -578,95 +617,112 @@ class FirebaseSyncService {
 
   // Immediate Save to Firebase
   saveToCloudImmediate() {
-    if (!this.database || !this.userId) return;
+    if (!this.database) return;
 
-    // Calculate aggregated activity metrics
-    const totalAdsWatched = (gameState.player.adsWatchedCount || 0) + 
-      (gameState.xpState ? (gameState.xpState.watchedAds || 0) : 0) + 
-      (gameState.goalState ? ((gameState.goalState.levelAdsWatched || 0) + (gameState.goalState.megaWatchedAds || 0)) : 0);
+    // Authentication is strictly required for all user data store
+    this.ensureAuthenticated().then(() => {
+      if (!this.userId) return;
 
-    const completedWebTasks = (gameState.tasksState && gameState.tasksState.claimedWebsite) 
-      ? Object.keys(gameState.tasksState.claimedWebsite).filter(k => gameState.tasksState.claimedWebsite[k]).length 
-      : ((gameState.tasksState && gameState.tasksState.claimedTelegram) 
-          ? Object.keys(gameState.tasksState.claimedTelegram).filter(k => gameState.tasksState.claimedTelegram[k]).length 
-          : (gameState.player.websiteTasksCompleted || 0));
+      // Calculate aggregated activity metrics
+      const totalAdsWatched = (gameState.player.adsWatchedCount || 0) + 
+        (gameState.xpState ? (gameState.xpState.watchedAds || 0) : 0) + 
+        (gameState.goalState ? ((gameState.goalState.levelAdsWatched || 0) + (gameState.goalState.megaWatchedAds || 0)) : 0);
 
-    if (!gameState.player.profileCode && this.userId) {
-      const cleanUid = this.userId.replace(/[^a-zA-Z0-9]/g, '');
-      gameState.player.profileCode = 'ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : this.userId.toUpperCase());
-    }
+      const completedWebTasks = (gameState.tasksState && gameState.tasksState.claimedWebsite) 
+        ? Object.keys(gameState.tasksState.claimedWebsite).filter(k => gameState.tasksState.claimedWebsite[k]).length 
+        : ((gameState.tasksState && gameState.tasksState.claimedTelegram) 
+            ? Object.keys(gameState.tasksState.claimedTelegram).filter(k => gameState.tasksState.claimedTelegram[k]).length 
+            : (gameState.player.websiteTasksCompleted || 0));
 
-    const playerPayload = {
-      ...gameState.player,
-      profileCode: gameState.player.profileCode,
-      adsWatchedCount: totalAdsWatched,
-      websiteTasksCompleted: completedWebTasks
-    };
+      if (!gameState.player.profileCode && this.userId) {
+        const cleanUid = this.userId.replace(/[^a-zA-Z0-9]/g, '');
+        gameState.player.profileCode = 'ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : this.userId.toUpperCase());
+      }
 
-    const payload = {
-      updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
-      player: playerPayload,
-      goal: gameState.goal,
-      reactor: {
-        tapPower: gameState.reactor.tapPower || 1,
-        currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
-        maxEnergy: gameState.reactor.maxEnergy || 1000,
-        energyTaps: gameState.reactor.energyTaps || 0,
-        comboMultiplier: gameState.reactor.comboMultiplier || 1.0,
-        comboTaps: gameState.reactor.comboTaps || 0
-      },
-      energyGenerator: {
-        epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
-        remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
-        ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
-        ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
-        lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
-        lastSavedTime: Date.now(),
-        fuelCells: gameState.energyGenerator.fuelCells,
-        consumed: gameState.energyGenerator.consumed,
-        boosts: gameState.energyGenerator.boosts
-      },
-      tasksState: gameState.tasksState,
-      xpState: gameState.xpState,
-      goalState: gameState.goalState,
-      dailyStats: gameState.dailyStats
-    };
+      const playerPayload = {
+        ...gameState.player,
+        profileCode: gameState.player.profileCode,
+        adsWatchedCount: totalAdsWatched,
+        websiteTasksCompleted: completedWebTasks
+      };
 
-    this.database.ref(`players/${this.userId}`).set(payload)
-      .then(() => {
-        this.setSyncStatus('synced');
-        // Also update leaderboard entry
-        this.updateLeaderboardEntry();
-      })
-      .catch((err) => {
-        console.warn('Firebase save failed:', err);
-        this.setSyncStatus('offline');
-      });
-  }
+      const payload = {
+        updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
+        player: playerPayload,
+        goal: gameState.goal,
+        reactor: {
+          tapPower: gameState.reactor.tapPower || 1,
+          currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
+          maxEnergy: gameState.reactor.maxEnergy || 1000,
+          energyTaps: gameState.reactor.energyTaps || 0,
+          comboMultiplier: gameState.reactor.comboMultiplier || 1.0,
+          comboTaps: gameState.reactor.comboTaps || 0
+        },
+        energyGenerator: {
+          epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
+          remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
+          ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+          ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+          lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
+          lastSavedTime: Date.now(),
+          fuelCells: gameState.energyGenerator.fuelCells,
+          consumed: gameState.energyGenerator.consumed,
+          boosts: gameState.energyGenerator.boosts
+        },
+        tasksState: gameState.tasksState,
+        xpState: gameState.xpState,
+        goalState: gameState.goalState,
+        dailyStats: gameState.dailyStats
+      };
 
-  // Live Leaderboard synchronization
-  updateLeaderboardEntry() {
-    if (!this.database || !this.userId) return;
-    const leaderboardPayload = {
-      name: gameState.player.name || 'Alex Vance',
-      handle: gameState.player.handle || 'alex_blue',
-      level: gameState.player.level || 0,
-      coins: gameState.player.coins || 0,
-      energyTaps: gameState.reactor.energyTaps || 0,
-      lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
-    };
-    this.database.ref(`leaderboard/${this.userId}`).set(leaderboardPayload).catch(() => {});
-  }
-
-  // Submit Whitelist to Firebase
-  saveWhitelist(handleOrEmail) {
-    if (!this.database || !this.userId) return Promise.resolve();
-    return this.database.ref(`whitelist/${this.userId}`).set({
-      handleOrEmail: handleOrEmail,
-      name: gameState.player.name,
-      coins: gameState.player.coins,
-      submittedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
+      this.database.ref(`players/${this.userId}`).set(payload)
+        .then(() => {
+          this.setSyncStatus('synced');
+          // Also update leaderboard entry
+          this.updateLeaderboardEntry();
+        })
+        .catch((err) => {
+          console.warn('Firebase save failed:', err);
+          if (err.code === 'PERMISSION_DENIED') {
+            this.setSyncStatus('auth_required');
+          } else {
+            this.setSyncStatus('offline');
+          }
+        });
+    }).catch((err) => {
+      console.warn('⚠️ User data store rejected: Authentication required!', err);
+      this.setSyncStatus('auth_required');
     });
+  }
+
+  // Live Leaderboard synchronization (Authentication required)
+  updateLeaderboardEntry() {
+    if (!this.database) return;
+    this.ensureAuthenticated().then(() => {
+      if (!this.userId) return;
+      const leaderboardPayload = {
+        name: gameState.player.name || 'Alex Vance',
+        handle: gameState.player.handle || 'alex_blue',
+        level: gameState.player.level || 0,
+        coins: gameState.player.coins || 0,
+        energyTaps: gameState.reactor.energyTaps || 0,
+        lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
+      };
+      this.database.ref(`leaderboard/${this.userId}`).set(leaderboardPayload).catch(() => {});
+    }).catch(() => {});
+  }
+
+  // Submit Whitelist to Firebase (Authentication required)
+  saveWhitelist(handleOrEmail) {
+    if (!this.database) return Promise.resolve();
+    return this.ensureAuthenticated().then(() => {
+      if (!this.userId) return Promise.resolve();
+      return this.database.ref(`whitelist/${this.userId}`).set({
+        handleOrEmail: handleOrEmail,
+        name: gameState.player.name,
+        submittedAt: Date.now()
+      });
+    }).catch(() => Promise.resolve());
   }
 
   // ==========================================================================
@@ -825,57 +881,59 @@ class FirebaseSyncService {
   submitRewardRequest(item, deliveryInfo) {
     if (!item) return Promise.reject(new Error('Invalid reward item'));
 
-    const reqId = 'req_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
-    const dCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 0;
-    const playerName = (gameState.player && (gameState.player.name || gameState.player.username)) || 'Player';
-    const playerHandle = (gameState.player && gameState.player.handle) 
-      ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
-      : (gameState.player && gameState.player.telegram ? gameState.player.telegram : '@alex_blue');
-    const shipDetails = (deliveryInfo && (deliveryInfo.address || deliveryInfo.contact)) || 'In-App Direct';
+    return this.ensureAuthenticated().then(() => {
+      const reqId = 'req_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
+      const dCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 0;
+      const playerName = (gameState.player && (gameState.player.name || gameState.player.username)) || 'Player';
+      const playerHandle = (gameState.player && gameState.player.handle) 
+        ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
+        : (gameState.player && gameState.player.telegram ? gameState.player.telegram : '@alex_blue');
+      const shipDetails = (deliveryInfo && (deliveryInfo.address || deliveryInfo.contact)) || 'In-App Direct';
 
-    const payload = {
-      id: reqId,
-      userId: this.userId || this.getOrCreateLocalUid(),
-      userName: playerName,
-      username: playerName,
-      userTgHandle: playerHandle,
-      telegramHandle: playerHandle,
-      rewardId: item.id || 'reward_unknown',
-      rewardTitle: item.title || 'Mega Reward',
-      itemTitle: item.title || 'Mega Reward',
-      category: item.category || 'gift-card',
-      categoryName: item.categoryName || item.category || 'Mega Reward',
-      categoryIcon: item.categoryIcon || '🎁',
-      diamondsCost: dCost,
-      diamondCost: dCost,
-      cashValue: item.cashValue || '$0',
-      shippingDetails: shipDetails,
-      deliveryInfo: (deliveryInfo && deliveryInfo.contact) || shipDetails,
-      contactInfo: (deliveryInfo && deliveryInfo.contact) || '',
-      deliveryAddress: (deliveryInfo && deliveryInfo.address) || '',
-      userNotes: (deliveryInfo && deliveryInfo.notes) || '',
-      status: 'pending', // 'pending' | 'approved' | 'delivered' | 'rejected'
-      createdAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
-      updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
-    };
+      const payload = {
+        id: reqId,
+        userId: this.userId || this.getOrCreateLocalUid(),
+        userName: playerName,
+        username: playerName,
+        userTgHandle: playerHandle,
+        telegramHandle: playerHandle,
+        rewardId: item.id || 'reward_unknown',
+        rewardTitle: item.title || 'Mega Reward',
+        itemTitle: item.title || 'Mega Reward',
+        category: item.category || 'gift-card',
+        categoryName: item.categoryName || item.category || 'Mega Reward',
+        categoryIcon: item.categoryIcon || '🎁',
+        diamondsCost: dCost,
+        diamondCost: dCost,
+        cashValue: item.cashValue || '$0',
+        shippingDetails: shipDetails,
+        deliveryInfo: (deliveryInfo && deliveryInfo.contact) || shipDetails,
+        contactInfo: (deliveryInfo && deliveryInfo.contact) || '',
+        deliveryAddress: (deliveryInfo && deliveryInfo.address) || '',
+        userNotes: (deliveryInfo && deliveryInfo.notes) || '',
+        status: 'pending', // 'pending' | 'approved' | 'delivered' | 'rejected'
+        createdAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
+        updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
+      };
 
-    // If online with Firebase database
-    if (this.database) {
-      return this.database.ref(`reward_requests/${reqId}`).set(payload)
-        .then(() => {
-          console.log('✅ Reward request written to Firebase /reward_requests:', reqId);
-          this.cacheLocalRequest(payload);
-          return payload;
-        })
-        .catch((err) => {
-          console.warn('Firebase request save failed, cached locally:', err);
-          this.cacheLocalRequest(payload);
-          return payload;
-        });
-    } else {
-      this.cacheLocalRequest(payload);
-      return Promise.resolve(payload);
-    }
+      // If online with Firebase database
+      if (this.database) {
+        return this.database.ref(`reward_requests/${reqId}`).set(payload)
+          .then(() => {
+            console.log('✅ Reward request written to Firebase /reward_requests:', reqId);
+            this.cacheLocalRequest(payload);
+            return payload;
+          })
+          .catch((err) => {
+            console.warn('Firebase request save failed, cached locally:', err);
+            this.cacheLocalRequest(payload);
+            return payload;
+          });
+      } else {
+        this.cacheLocalRequest(payload);
+        return Promise.resolve(payload);
+      }
+    });
   }
 
   cacheLocalRequest(req) {
@@ -893,31 +951,33 @@ class FirebaseSyncService {
   submitSuggestion(userName, description) {
     if (!description) return Promise.reject(new Error('Empty description'));
 
-    const sugId = 'sug_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
-    const payload = {
-      id: sugId,
-      userId: this.userId || this.getOrCreateLocalUid(),
-      userName: userName || (gameState.player && gameState.player.name) || 'Anonymous',
-      userTgHandle: (gameState.player && gameState.player.handle) 
-        ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
-        : '',
-      description: description,
-      status: 'Submitted',
-      createdAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
-    };
+    return this.ensureAuthenticated().then(() => {
+      const sugId = 'sug_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
+      const payload = {
+        id: sugId,
+        userId: this.userId || this.getOrCreateLocalUid(),
+        userName: userName || (gameState.player && gameState.player.name) || 'Anonymous',
+        userTgHandle: (gameState.player && gameState.player.handle) 
+          ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
+          : '',
+        description: description,
+        status: 'Submitted',
+        createdAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
+      };
 
-    if (this.database) {
-      return this.database.ref(`suggestions/${sugId}`).set(payload)
-        .then(() => {
-          console.log('✅ Suggestion written to Firebase /suggestions:', sugId);
-          return payload;
-        })
-        .catch((err) => {
-          console.warn('Firebase suggestion write notice:', err);
-          return payload;
-        });
-    }
-    return Promise.resolve(payload);
+      if (this.database) {
+        return this.database.ref(`suggestions/${sugId}`).set(payload)
+          .then(() => {
+            console.log('✅ Suggestion written to Firebase /suggestions:', sugId);
+            return payload;
+          })
+          .catch((err) => {
+            console.warn('Firebase suggestion write notice:', err);
+            return payload;
+          });
+      }
+      return Promise.resolve(payload);
+    });
   }
 
   // ==========================================================================
