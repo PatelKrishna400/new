@@ -107,6 +107,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto 10px auto;
+  justify-content: center;
+  align-items: center;
   background: rgba(6, 16, 38, 0.85);
   border: 1px solid rgba(25, 55, 120, 0.5);
   border-radius: var(--radius-pill);

@@ -227,42 +227,32 @@ html, body {
   width: 100%;
   height: 100%;
   height: 100dvh;
-  max-width: 480px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 0;
+  margin: 0 auto;
   z-index: 2;
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overscroll-behavior: none;
 }
 
-@media (min-width: 481px) {
-  .app-viewport {
-    height: 96vh;
-    max-height: 890px;
-    padding: 12px;
-  }
-}
-
 .mobile-container {
   position: relative;
   width: 100%;
+  max-width: 480px;
   height: 100%;
   height: 100dvh;
-  max-width: var(--mobile-width);
+  margin: 0 auto;
   background: linear-gradient(180deg, #050b1d 0%, #030815 50%, #020610 100%);
-  border: 1.5px solid rgba(26, 54, 110, 0.5);
-  border-radius: var(--radius-xxl);
-  box-shadow: 
-    0 0 0 1px rgba(0, 140, 255, 0.08),
-    0 25px 60px -15px rgba(0, 0, 0, 0.9),
-    0 0 35px rgba(14, 165, 233, 0.12);
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
   max-height: 100dvh;
   overflow: hidden !important;
   overscroll-behavior-y: contain;
@@ -287,9 +277,9 @@ html, body {
     max-width: 100vw;
     width: 100vw;
     height: 100dvh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 }
 
@@ -684,14 +674,17 @@ div[id^="page"].active {
   left: 0;
   right: 0;
   height: calc(64px + max(0px, env(safe-area-inset-bottom)));
-  margin: 0 14px max(8px, env(safe-area-inset-bottom)) 14px;
+  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
+  width: calc(100% - 24px);
+  max-width: 420px;
   background: linear-gradient(180deg, rgba(14, 28, 64, 0.98) 0%, rgba(6, 14, 34, 0.99) 100%);
   border: 1.5px solid rgba(56, 189, 248, 0.4);
   border-radius: 32px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 12px max(0px, env(safe-area-inset-bottom)) 12px;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 
@@ -1972,6 +1965,11 @@ div[id^="page"].active {
 .bottom-nav {
   border: 1.5px solid rgba(251, 191, 36, 0.55) !important;
   background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%) !important;
+  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto !important;
+  width: calc(100% - 24px) !important;
+  max-width: 420px !important;
+  justify-content: center !important;
+  gap: 14px !important;
   box-shadow: 
     inset 0 1.5px 0 rgba(255, 230, 160, 0.35),
     inset 0 -3px 0 rgba(0, 0, 0, 0.6),

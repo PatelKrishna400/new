@@ -31,6 +31,11 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto 6px auto;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(180deg, rgba(14, 28, 64, 0.98) 0%, rgba(6, 14, 34, 0.99) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -42,7 +47,6 @@
     inset 0 -3px 0 rgba(0, 0, 0, 0.6),
     0 4px 0 rgba(2, 6, 23, 0.9),
     0 10px 24px rgba(0, 0, 0, 0.6);
-  margin-bottom: 4px;
   flex-shrink: 0;
 }
 
