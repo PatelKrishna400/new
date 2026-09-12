@@ -403,6 +403,7 @@ function checkDailyStatsDate() {
 
   const compEndTime = (gameState.monthlyCompetition && gameState.monthlyCompetition.endTime) || null;
   const isExpiredByFirebase = compEndTime ? (now >= compEndTime) : false;
+  const elapsed = now - (gameState.dailyStats.resetTimestamp || now);
   const isExpiredByLocal = elapsed >= MONTHLY_RESET_CYCLE_MS;
 
   // Auto-reset when 30-day competition cycle has elapsed
@@ -668,6 +669,7 @@ const DOM = {
   pageXP: document.getElementById('pageXP'),
   pageWallet: document.getElementById('pageWallet'),
   pageGoal: document.getElementById('pageGoal'),
+  pageAdRewards: document.getElementById('pageAdRewards'),
   
   // Goal Page Elements (Levels 1 - 100 System & Mega Reward)
   goalSeasonTimer: document.getElementById('goalSeasonTimer'),
