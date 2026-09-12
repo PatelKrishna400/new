@@ -156,10 +156,26 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
       </div>
       <div class="header-right">
         <div class="header-actions">
+          <!-- Live DB Pill -->
           <div class="header-cloud-pill">
             <span class="pulse-dot"></span>
             <span>Live DB Connected</span>
           </div>
+
+          <!-- Logged In Admin Profile Badge (2-5 Admin Access) -->
+          <div class="admin-user-badge" id="currentAdminBadge" style="display: none;">
+            <div class="admin-avatar" id="headerAdminAvatar">A</div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-weight: 700; color: #fff;" id="headerAdminName">Admin</span>
+              <span style="font-size: 10px; color: #38bdf8;" id="headerAdminRole">Super Admin</span>
+            </div>
+          </div>
+
+          <!-- Admin Sign Out Button -->
+          <button class="admin-logout-btn" id="adminLogoutBtn" onclick="logoutAdmin()" title="Secure Logout from Admin Panel" style="display: none;">
+            <span>🚪</span>
+            <span>Sign Out</span>
+          </button>
         </div>
       </div>
     </header>
@@ -296,6 +312,93 @@ const footerContent = `
     </div>
   </div>
 
+  <!-- ============================================================
+       MODAL: ADD NEW ADMIN USER (STRICT LIMIT: MAX 5 ADMINS)
+       ============================================================ -->
+  <div class="modal-overlay" id="addAdminModal" onclick="closeAddAdminModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 420px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; color: #38bdf8;">Add Admin User</h3>
+          <span style="font-size: 11.5px; color: #94a3b8;">Restricted Access: 2 to 5 Admins Maximum</span>
+        </div>
+        <button onclick="closeAddAdminModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <div class="form-group">
+          <label class="form-label">Username (alphanumeric)</label>
+          <input type="text" id="newAdminUsername" class="form-input" placeholder="e.g. admin3 or ops_lead" style="color: #38bdf8;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name / Display Tag</label>
+          <input type="text" id="newAdminName" class="form-input" placeholder="e.g. Security Officer">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="newAdminRole" class="form-input">
+            <option value="Operations Admin">Operations Admin</option>
+            <option value="Community Moderator">Community Moderator</option>
+            <option value="Finance & Rewards Admin">Finance & Rewards Admin</option>
+            <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password (min 6 chars)</label>
+          <input type="password" id="newAdminPassword" class="form-input" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button onclick="saveNewAdminUser()" class="btn-primary" style="flex: 1;">Create Admin</button>
+        <button onclick="closeAddAdminModal()" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN LOGIN GATEWAY (STRICT AUTH FOR 2 - 5 ADMIN USERS)
+       ============================================================ -->
+  <div class="admin-login-gate" id="adminLoginGate" style="display: flex;">
+    <div class="admin-login-card">
+      <div class="admin-gate-header">
+        <div class="admin-gate-icon">⚡</div>
+        <h2 class="admin-gate-title">Admin Portal Access</h2>
+        <p class="admin-gate-subtitle">Authorized Game Master & Operations Console</p>
+        <div class="admin-gate-badge">
+          <span>🔒 Strictly Restricted to 2 – 5 Admin Users</span>
+        </div>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
+        <div class="form-group">
+          <label class="form-label" for="loginAdminUser" style="color: #cbd5e1;">Admin Username</label>
+          <input type="text" id="loginAdminUser" class="form-input" placeholder="admin" required autocomplete="username" style="background: rgba(4, 10, 26, 0.85); border-color: rgba(56, 189, 248, 0.35);">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginAdminPass" style="color: #cbd5e1;">Admin Password</label>
+          <input type="password" id="loginAdminPass" class="form-input" placeholder="••••••••" required autocomplete="current-password" style="background: rgba(4, 10, 26, 0.85); border-color: rgba(56, 189, 248, 0.35);">
+        </div>
+
+        <div id="loginErrorMessage" style="display: none; padding: 8px 12px; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; font-size: 12px; text-align: center;">
+        </div>
+
+        <button type="submit" id="adminLoginSubmitBtn" class="btn-primary" style="margin-top: 4px; padding: 12px; font-size: 14px; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>🔓</span>
+          <span>Authenticate & Enter</span>
+        </button>
+      </form>
+
+      <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; text-align: center; font-size: 11.5px; color: #64748b;">
+        Default Credentials: <code style="color: #38bdf8;">admin</code> / <code style="color: #38bdf8;">password123</code>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase Cloud SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -375,6 +478,143 @@ const footerContent = `
 
   <!-- Modular Page-Wise Scripts -->
 ${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
+
+  <!-- Admin Session Authentication & Access Control (2 - 5 Users Only) -->
+  <script>
+    const ADMIN_SESSION_KEY = 'ENERGY_TAP_ADMIN_AUTH_USER';
+
+    function getCurrentAdminSession() {
+      try {
+        const raw = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+    window.getCurrentAdminSession = getCurrentAdminSession;
+
+    function checkAdminAuthGate() {
+      const session = getCurrentAdminSession();
+      const gate = document.getElementById('adminLoginGate');
+      const badge = document.getElementById('currentAdminBadge');
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+      const nameEl = document.getElementById('headerAdminName');
+      const roleEl = document.getElementById('headerAdminRole');
+      const avatarEl = document.getElementById('headerAdminAvatar');
+
+      if (session && session.username) {
+        // Authenticated
+        if (gate) gate.style.display = 'none';
+        if (badge) badge.style.display = 'flex';
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+
+        if (nameEl) nameEl.textContent = session.name || session.username;
+        if (roleEl) roleEl.textContent = session.role || 'Admin';
+        if (avatarEl) avatarEl.textContent = (session.username || 'A')[0].toUpperCase();
+      } else {
+        // Unauthenticated -> Lock interface behind gate
+        if (gate) gate.style.display = 'flex';
+        if (badge) badge.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+    window.checkAdminAuthGate = checkAdminAuthGate;
+
+    function handleAdminLogin(event) {
+      if (event) event.preventDefault();
+      const userInput = document.getElementById('loginAdminUser');
+      const passInput = document.getElementById('loginAdminPass');
+      const errBox = document.getElementById('loginErrorMessage');
+      const submitBtn = document.getElementById('adminLoginSubmitBtn');
+
+      const userVal = userInput ? userInput.value.trim().toLowerCase() : '';
+      const passVal = passInput ? passInput.value.trim() : '';
+
+      if (!userVal || !passVal) {
+        showLoginError('Please enter both username and password.');
+        return;
+      }
+
+      if (errBox) errBox.style.display = 'none';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span><span>Verifying Access...</span>';
+      }
+
+      const admins = (window.adminState && window.adminState.adminUsers && window.adminState.adminUsers.length > 0)
+        ? window.adminState.adminUsers
+        : [
+            { username: 'admin', password: 'password123', role: 'Super Admin', name: 'Master Admin' },
+            { username: 'admin2', password: 'password123', role: 'Operations Admin', name: 'Secondary Admin' }
+          ];
+
+      // Verify credentials against the allowed 2-5 admin accounts
+      const match = admins.find(a => a.username.toLowerCase() === userVal && a.password === passVal);
+
+      setTimeout(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>🔓</span><span>Authenticate & Enter</span>';
+        }
+
+        if (match) {
+          const authObj = {
+            username: match.username,
+            name: match.name || match.username,
+            role: match.role || 'Admin',
+            loginTime: Date.now()
+          };
+          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(authObj));
+          localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(authObj));
+          checkAdminAuthGate();
+        } else {
+          showLoginError('Invalid admin credentials. Access is restricted to 2 - 5 authorized admins only.');
+        }
+      }, 350);
+    }
+    window.handleAdminLogin = handleAdminLogin;
+
+    function showLoginError(msg) {
+      const errBox = document.getElementById('loginErrorMessage');
+      if (errBox) {
+        errBox.textContent = msg;
+        errBox.style.display = 'block';
+      } else {
+        alert(msg);
+      }
+    }
+
+    function logoutAdmin() {
+      if (confirm('Are you sure you want to log out from the Admin Portal?')) {
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+        checkAdminAuthGate();
+        const userInput = document.getElementById('loginAdminUser');
+        const passInput = document.getElementById('loginAdminPass');
+        if (userInput) userInput.value = '';
+        if (passInput) passInput.value = '';
+      }
+    }
+    window.logoutAdmin = logoutAdmin;
+
+    // Listen for admin changes in Firebase and re-verify session
+    window.addEventListener('adminUsersUpdated', () => {
+      const session = getCurrentAdminSession();
+      if (session && window.adminState && window.adminState.adminUsers) {
+        const stillExists = window.adminState.adminUsers.some(a => a.username.toLowerCase() === session.username.toLowerCase());
+        if (!stillExists) {
+          alert('Your admin account has been removed. You will now be signed out.');
+          sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          localStorage.removeItem(ADMIN_SESSION_KEY);
+          checkAdminAuthGate();
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuthGate();
+    });
+  </script>
 
   <!-- Auto-Init Firebase -->
   <script>

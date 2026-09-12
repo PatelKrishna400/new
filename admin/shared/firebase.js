@@ -271,6 +271,25 @@ function listenToFirebase() {
       dispatchAdminEvent('adsAnalyticsUpdated');
     }
   });
+  // 10. Admin Users (/admin_users) - Strictly 2 to 5 authorized admins
+  db.ref('/admin_users').on('value', snapshot => {
+    const val = snapshot.val();
+    let list = [];
+    if (val && typeof val === 'object') {
+      list = Object.keys(val).map(k => ({ username: k, ...val[k] }));
+    }
+    // Auto seed default 2 admin users if none exist
+    if (list.length === 0) {
+      const defaultAdmins = {
+        admin: { username: 'admin', password: 'password123', role: 'Super Admin', name: 'Master Admin', createdAt: Date.now() },
+        admin2: { username: 'admin2', password: 'password123', role: 'Operations Admin', name: 'Secondary Admin', createdAt: Date.now() }
+      };
+      db.ref('/admin_users').set(defaultAdmins);
+      list = Object.keys(defaultAdmins).map(k => ({ username: k, ...defaultAdmins[k] }));
+    }
+    window.adminState.adminUsers = list;
+    dispatchAdminEvent('adminUsersUpdated');
+  });
 }
 
 function dispatchAdminEvent(eventName) {
@@ -294,3 +313,4 @@ function updateGlobalMetrics() {
 
 window.getDb = () => db;
 window.initFirebase = initFirebase;
+

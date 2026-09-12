@@ -69,6 +69,10 @@
         ".write": "auth != null"
       }
     },
+    "admin_users": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     ".info": {
       ".read": true
     }
