@@ -94,7 +94,9 @@ function hatchEggCell(index) {
   // Check 1 Egg Coin cost
   const eggsAvailable = gameState.player.eggs !== undefined ? gameState.player.eggs : 0;
   if (eggsAvailable <= 0) {
-    claimFreeEggByAd();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🥚 You need 1 Egg Coin to hatch! Tap the reactor orb or complete daily goals!');
+    }
     return;
   }
 
@@ -156,6 +158,9 @@ function hatchEggCell(index) {
 
       updateUI();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
 
       // Restart and reshuffle all 16 eggs after small celebration delay
       setTimeout(() => {
@@ -179,6 +184,9 @@ function hatchEggCell(index) {
 
     updateUI();
     saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
   }, 380);
 }
 
@@ -252,30 +260,14 @@ function renderEggPageContent() {
   gridEl.innerHTML = html;
 }
 
-// Watch ad to get 1 Free Egg Coin
-function claimFreeEggByAd() {
-  sfx.playTapSound(1);
-  const doReward = () => {
-    gameState.player.eggs = (gameState.player.eggs || 0) + 1;
-    updateUI();
-    saveGame();
-    renderEggPageContent();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🥚 +1 Free Egg Coin Received!');
-    }
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('egg', 'Cyber Hatchery Pass', '+1 Free Egg Coin', doReward);
-  } else {
-    doReward();
-  }
-}
-
-
 window.renderEggPageContent = renderEggPageContent;
 window.hatchEggCell = hatchEggCell;
 window.shuffleEggs16 = shuffleEggs16;
-window.claimFreeEggByAd = claimFreeEggByAd;
+
+function promptEggCoinsInfo() {
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('🥚 Egg Coins can be earned by tapping the Reactor Orb, spinning the wheel, or claiming mystery chests!');
+  }
+}
+window.promptEggCoinsInfo = promptEggCoinsInfo;
+

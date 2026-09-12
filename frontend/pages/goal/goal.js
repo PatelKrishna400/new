@@ -36,11 +36,11 @@ function getGoalLevelRewardQty(lvl) {
 
 // Helper: Get Tier Label
 function getGoalTierLabel(lvl) {
-  if (lvl <= 10) return '⭐ TIER 1: +1 CARD • +1 KEY • +1 TICKET';
-  if (lvl <= 25) return '⭐⭐ TIER 2: +2 CARDS • +2 KEYS • +2 TICKETS';
-  if (lvl <= 50) return '⭐⭐⭐ TIER 3: +3 CARDS • +3 KEYS • +3 TICKETS';
-  if (lvl <= 75) return '⭐⭐⭐⭐ TIER 4: +4 CARDS • +4 KEYS • +4 TICKETS';
-  return '👑 MASTER TIER: +5 CARDS • +5 KEYS • +5 TICKETS';
+  if (lvl <= 10) return '⭐ TIER 1: +1 CARD • +1 DANDIYA • +1 FLOWER';
+  if (lvl <= 25) return '⭐⭐ TIER 2: +2 CARDS • +2 DANDIYAS • +2 FLOWERS';
+  if (lvl <= 50) return '⭐⭐⭐ TIER 3: +3 CARDS • +3 DANDIYAS • +3 FLOWERS';
+  if (lvl <= 75) return '⭐⭐⭐⭐ TIER 4: +4 CARDS • +4 DANDIYAS • +4 FLOWERS';
+  return '👑 MASTER TIER: +5 CARDS • +5 DANDIYAS • +5 FLOWERS';
 }
 
 // Subtab Switcher (Goals 1-100 vs Mega Reward)
@@ -120,7 +120,7 @@ window.renderGoalsList = function() {
       const isItemsComplete = prog.cards >= req.cards && prog.keys >= req.keys && prog.tickets >= req.tickets;
       progressSnippet = `
         <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
-          Progress: 🎟️ ${prog.cards}/${req.cards} • 🔑 ${prog.keys}/${req.keys} • 🎫 ${prog.tickets}/${req.tickets} ${isItemsComplete ? '• 🎬 1 Ad to Claim' : ''}
+          Progress: 🃏 ${prog.cards}/${req.cards} • 🥢 ${prog.keys}/${req.keys} • 🌸 ${prog.tickets}/${req.tickets} ${isItemsComplete ? '• 🎬 1 Ad to Claim' : ''}
         </div>
       `;
     }
@@ -137,16 +137,16 @@ window.renderGoalsList = function() {
               <span class="level-title-text">Goal Level ${g}</span>
               <span class="level-tier-tag" style="color: #38bdf8; font-weight: 800;">(+${rewardQty} All)</span>
             </div>
-            <span class="level-xp-req" style="color: #94a3b8; font-size: 10px;">Req: 🎟️ ${req.cards} • 🔑 ${req.keys} • 🎫 ${req.tickets}</span>
+            <span class="level-xp-req" style="color: #94a3b8; font-size: 10px;">Req: 🃏 ${req.cards} • 🥢 ${req.keys} • 🌸 ${req.tickets}</span>
             ${progressSnippet}
           </div>
         </div>
 
         <div class="level-right-rewards">
           <div style="display: flex; gap: 4px;">
-            <span class="lvl-reward-pill pill-ticket">🎟️ +${rewardQty}</span>
-            <span class="lvl-reward-pill pill-key">🔑 +${rewardQty}</span>
-            <span class="lvl-reward-pill pill-fuel">🎫 +${rewardQty}</span>
+            <span class="lvl-reward-pill pill-ticket">🃏 +${rewardQty}</span>
+            <span class="lvl-reward-pill pill-key">🥢 +${rewardQty}</span>
+            <span class="lvl-reward-pill pill-fuel">🌸 +${rewardQty}</span>
           </div>
           ${statusHtml}
         </div>
@@ -170,7 +170,7 @@ window.handleGoalLevelAction = function(lvl) {
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`Tap the Energy Reactor to collect all 3 items first!`);
     } else {
-      alert(`Collect all 3 items (Cards: ${prog.cards}/${req.cards}, Keys: ${prog.keys}/${req.keys}, Tickets: ${prog.tickets}/${req.tickets}) by tapping the reactor!`);
+      alert(`Collect all 3 items (Cards: ${prog.cards}/${req.cards}, Dandiyas: ${prog.keys}/${req.keys}, Flowers: ${prog.tickets}/${req.tickets}) by tapping the reactor!`);
     }
     return;
   }
@@ -196,7 +196,7 @@ function executeClaimGoalLevel(targetLvl) {
   if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
   gameState.goalState.claimedGoals[targetLvl] = true;
 
-  // Award loot (Cards, Keys, Tickets + Bonus Coins & XP)
+  // Award loot (Cards, Dandiyas, Flowers + Bonus Coins & XP)
   gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewardQty;
   gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewardQty;
   gameState.player.coins = (gameState.player.coins || 0) + (targetLvl * 25);
@@ -212,7 +212,7 @@ function executeClaimGoalLevel(targetLvl) {
         <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Goal Level ${targetLvl} Claimed!</h3>
         <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You collected all items, watched 1 ad, and unlocked your loot:</p>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 12px 18px; width: 100%; display: flex; flex-direction: column; gap: 6px;">
-          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewardQty} 🎟️ Cards • +${rewardQty} 🔑 Keys • +${rewardQty} 🎫 Tickets</div>
+          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewardQty} 🃏 Cards • +${rewardQty} 🥢 Dandiyas • +${rewardQty} 🌸 Flowers</div>
           <div style="font-size: 12px; color: #94a3b8;">+${targetLvl * 25} Coins • +${targetLvl * 10} XP</div>
         </div>
         <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">Advance to Level ${Math.min(100, targetLvl + 1)} ✨</button>
@@ -230,10 +230,13 @@ function executeClaimGoalLevel(targetLvl) {
 
   updateUI();
   saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
 }
 
 // ==========================================================================
-// GOAL LEVEL 100 MEGA REWARD ACTION HANDLER (1,000 Ads -> 100 Keys, 75 Cards, 150 Tickets, 1,000 Coins)
+// GOAL LEVEL 100 MEGA REWARD ACTION HANDLER (1,000 Ads -> 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins)
 // ==========================================================================
 window.handleGoalMegaRewardAction = function() {
   const curLevel = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
@@ -256,6 +259,9 @@ window.handleGoalMegaRewardAction = function() {
       gameState.goalState.megaWatchedAds = Math.min(1000, (gameState.goalState.megaWatchedAds || 0) + 1);
       updateUI();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
       if (typeof showFloatingToast === 'function') {
         showFloatingToast(`🎬 Ad Watched! Progress: ${gameState.goalState.megaWatchedAds}/1,000 Ads`);
       }
@@ -264,7 +270,7 @@ window.handleGoalMegaRewardAction = function() {
     if (typeof showRewardedAd === 'function') {
       showRewardedAd(doGoalAd);
     } else if (typeof startAdSimulation === 'function') {
-      startAdSimulation('goal_mega', 'Goal Mega Prize Ad Watcher', '+1 Ad Progress Towards 100 Keys, 75 Cards, 150 Tickets & 1K Coins', doGoalAd);
+      startAdSimulation('goal_mega', 'Goal Mega Prize Ad Watcher', '+1 Ad Progress Towards 100 Dandiyas, 75 Cards, 150 Flowers & 1K Coins', doGoalAd);
     } else {
       doGoalAd();
     }
@@ -272,13 +278,16 @@ window.handleGoalMegaRewardAction = function() {
     // Claim Mega Reward!
     const doClaimMegaGoal = () => {
       gameState.goalState.megaRewardClaimed = true;
-      // Win 100 Keys, 75 Cards, 150 Tickets, 1,000 Coins
+      // Win 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 100;
-      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 75 + 150; // Cards + Tickets
+      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 75 + 150; // Cards + Flowers
       gameState.player.coins = (gameState.player.coins || 0) + 1000;
       sfx.playLevelUpSound();
       updateUI();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
     };
 
     if (typeof showRewardedAd === 'function') {
@@ -287,9 +296,9 @@ window.handleGoalMegaRewardAction = function() {
       doClaimMegaGoal();
     }
 
-    // Win 100 Keys, 75 Cards, 150 Tickets, 1,000 Coins
+    // Win 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 100;
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 75 + 150; // Cards + Tickets
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 75 + 150; // Cards + Flowers
     gameState.player.coins = (gameState.player.coins || 0) + 1000;
 
     sfx.playLevelUpSound();
@@ -302,9 +311,9 @@ window.handleGoalMegaRewardAction = function() {
           <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Grand Goal Jackpot!</h3>
           <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You reached Level 100, completed 1,000 ads, and claimed the ultimate reward bundle:</p>
           <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 14px 18px; width: 100%; display: flex; flex-direction: column; gap: 8px;">
-            <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">🔑 +100 Mystery Keys</div>
-            <div style="font-size: 15px; font-weight: 800; color: #ec4899;">🎟️ +75 Scratch Cards</div>
-            <div style="font-size: 15px; font-weight: 800; color: #06b6d4;">🎫 +150 Spin Tickets</div>
+            <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">🥢 +100 Dandiyas</div>
+            <div style="font-size: 15px; font-weight: 800; color: #ec4899;">🃏 +75 Cards</div>
+            <div style="font-size: 15px; font-weight: 800; color: #06b6d4;">🌸 +150 Flowers</div>
             <div style="font-size: 15px; font-weight: 800; color: #fbbf24;">🪙 +1,000 Bonus Coins</div>
           </div>
           <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">AWESOME! ✨</button>
@@ -379,6 +388,8 @@ window.testAddGoalTickets = function(count = 10) {
   updateUI();
   saveGame();
 };
+window.testAddGoalDandiyas = window.testAddGoalKeys;
+window.testAddGoalFlowers = window.testAddGoalTickets;
 
 window.testFillGoalItems = function() {
   const curLevel = gameState.goalState.currentLevel || 1;
@@ -416,9 +427,10 @@ function updateGoalViewUI() {
 
   const curLevel = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
 
-  // Season Countdown
+  // Season Countdown & Expiration check
+  if (typeof checkSeasonExpiration === 'function') checkSeasonExpiration();
   const now = Date.now();
-  const seasonEnd = (gameState.goalState && gameState.goalState.seasonEndMs) || (now + 12 * 86400 * 1000);
+  const seasonEnd = (gameState.goalState && gameState.goalState.seasonEndMs) || (now + 30 * 86400 * 1000);
   const diffMs = Math.max(0, seasonEnd - now);
   const diffSecs = Math.floor(diffMs / 1000);
   const days = Math.floor(diffSecs / 86400);
@@ -487,11 +499,11 @@ function updateGoalViewUI() {
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     } else if (!isClaimed) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn claim-ready';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `🎉 CLAIM MEGA REWARD (100 KEYS, 75 CARDS, 150 TICKETS, 1000 COINS) 👑`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `🎉 CLAIM MEGA REWARD (100 DANDIYAS, 75 CARDS, 150 FLOWERS, 1000 COINS) 👑`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     } else {
       DOM.goalMegaActionBtn.className = 'mega-action-btn claimed';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `✓ MEGA REWARD CLAIMED (100 KEYS, 75 CARDS, 150 TICKETS, 1000 COINS)`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `✓ MEGA REWARD CLAIMED (100 DANDIYAS, 75 CARDS, 150 FLOWERS, 1000 COINS)`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     }
   }

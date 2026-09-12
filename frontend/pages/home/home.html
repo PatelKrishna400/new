@@ -33,17 +33,17 @@
               <div class="goal-stats-row">
                 <span class="stat-card-title">Goal</span>
                 <div class="goal-item">
-                  <span class="item-emoji">🎟️</span>
+                  <span class="item-emoji">🃏</span>
                   <span class="item-count" id="goalCards">0/20</span>
                 </div>
                 <span class="goal-bullet">•</span>
                 <div class="goal-item">
-                  <span class="item-emoji">🔑</span>
+                  <span class="item-emoji">🥢</span>
                   <span class="item-count" id="goalKeys">0/50</span>
                 </div>
                 <span class="goal-bullet">•</span>
                 <div class="goal-item">
-                  <span class="item-emoji">🎫</span>
+                  <span class="item-emoji">🌸</span>
                   <span class="item-count" id="goalTickets">0/35</span>
                 </div>
               </div>
@@ -61,10 +61,8 @@
         <section class="reactor-card" id="reactorSection">
           <div class="reactor-header">
             <div class="reactor-pill-cyan">
-              <svg class="pill-lightning" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-              <span>ENERGY TAP REACTOR</span>
+              <span class="diya-icon-spin" style="margin-right: 2px;">🪔</span>
+              <span>NAVRATRI REACTOR</span>
             </div>
 
             <div class="reactor-pill-dark" id="comboPill">
@@ -77,19 +75,235 @@
           </div>
 
           <div class="orb-stage" id="orbStage">
-            <div class="orb-aura aura-1"></div>
-            <div class="orb-aura aura-2"></div>
-            <div class="orb-particle-layer" id="orbParticleLayer"></div>
+            <!-- Left Side Action Circles (3 Circles: Garba *2, Dandiya Bot, Maa Shakti) -->
+            <div class="orb-side-column orb-side-left">
+              <!-- Circle 1: Garba *2 -->
+              <button class="home-action-circle circle-gold" id="btnCircle2x" onclick="openHomeActionPopup('ads_2x')" title="2X Garba Multiplier Boost">
+                <div class="circle-badge" id="circle2xBadge">*2 GARBA</div>
+                <div class="circle-icon">⚡</div>
+                <span class="circle-label">GARBA *2</span>
+              </button>
 
-            <button class="reactor-orb" id="reactorOrb" aria-label="Tap to generate energy">
-              <div class="orb-inner-gloss"></div>
-              <div class="orb-electric-ring"></div>
-              <div class="orb-core">
-                <svg class="orb-lightning-bolt" viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
-                  <path d="M13 2L3 14h9l-1.5 8 10.5-12h-9l1.5-8z"/>
-                </svg>
+              <!-- Circle 2: Dandiya Auto Click -->
+              <button class="home-action-circle circle-emerald" id="btnCircleAutoClick" onclick="openHomeActionPopup('auto_click')" title="Dandiya Auto-Clicker Bot">
+                <div class="circle-badge" id="circleAutoBadge">DANDIYA</div>
+                <div class="circle-icon">🤖</div>
+                <span class="circle-label">DANDIYA</span>
+              </button>
+
+              <!-- Circle 3: Maa Shakti Profile -->
+              <button class="home-action-circle circle-purple" id="btnCircleProfile" onclick="openHomeActionPopup('profile')" title="Maa Shakti Player Profile">
+                <div class="circle-badge" id="circleProfileBadge">LV.0</div>
+                <div class="circle-icon">🪔</div>
+                <span class="circle-label">SHAKTI</span>
+              </button>
+            </div>
+
+            <!-- Central Sacred Navratri Garbi Orb Wrapper -->
+            <div class="orb-center-wrapper">
+              <!-- Rotating Rangoli Mandala Rings -->
+              <div class="orb-mandala-ring"></div>
+              <div class="orb-mandala-ring-inner"></div>
+
+              <div class="orb-aura aura-1"></div>
+              <div class="orb-aura aura-2"></div>
+              <div class="orb-particle-layer" id="orbParticleLayer"></div>
+
+              <button class="reactor-orb" id="reactorOrb" aria-label="Tap Dandiya to generate energy">
+                <div class="orb-inner-gloss"></div>
+                <div class="orb-electric-ring"></div>
+                <div class="orb-core">
+                  <!-- Royal Navratri Crossed Dandiya Sticks 3D Artwork -->
+                  <svg class="orb-dandiya-art" viewBox="0 0 140 140" fill="none">
+                    <defs>
+                      <!-- 3D Cylindrical Shading for Dandiya Sticks (Dark edge -> Highlight core -> Dark edge) -->
+                      <linearGradient id="dandiya3dGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#92400e"/>
+                        <stop offset="18%" stop-color="#d97706"/>
+                        <stop offset="42%" stop-color="#fffbeb"/>
+                        <stop offset="55%" stop-color="#fde047"/>
+                        <stop offset="82%" stop-color="#d97706"/>
+                        <stop offset="100%" stop-color="#78350f"/>
+                      </linearGradient>
+                      <linearGradient id="dandiya3dRed" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#881337"/>
+                        <stop offset="20%" stop-color="#be123c"/>
+                        <stop offset="44%" stop-color="#ffe4e6"/>
+                        <stop offset="58%" stop-color="#f43f5e"/>
+                        <stop offset="82%" stop-color="#9f1239"/>
+                        <stop offset="100%" stop-color="#4c0519"/>
+                      </linearGradient>
+                      <linearGradient id="dandiya3dGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#064e3b"/>
+                        <stop offset="20%" stop-color="#059669"/>
+                        <stop offset="44%" stop-color="#d1fae5"/>
+                        <stop offset="58%" stop-color="#10b981"/>
+                        <stop offset="82%" stop-color="#047857"/>
+                        <stop offset="100%" stop-color="#022c22"/>
+                      </linearGradient>
+                      <linearGradient id="dandiya3dBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0c4a6e"/>
+                        <stop offset="20%" stop-color="#0284c7"/>
+                        <stop offset="44%" stop-color="#e0f2fe"/>
+                        <stop offset="58%" stop-color="#38bdf8"/>
+                        <stop offset="82%" stop-color="#0369a1"/>
+                        <stop offset="100%" stop-color="#082f49"/>
+                      </linearGradient>
+                      <radialGradient id="dandiya3dCap" cx="40%" cy="30%" r="65%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="35%" stop-color="#fde047"/>
+                        <stop offset="70%" stop-color="#d97706"/>
+                        <stop offset="100%" stop-color="#78350f"/>
+                      </radialGradient>
+                      <radialGradient id="dandiyaBell3d" cx="35%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="30%" stop-color="#fef08a"/>
+                        <stop offset="65%" stop-color="#f59e0b"/>
+                        <stop offset="100%" stop-color="#92400e"/>
+                      </radialGradient>
+                      <radialGradient id="dandiyaClashBurst" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="25%" stop-color="#fef08a"/>
+                        <stop offset="50%" stop-color="#f59e0b"/>
+                        <stop offset="75%" stop-color="#e11d48"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                      </radialGradient>
+                      <filter id="dandiyaGlow3d" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.85"/>
+                      </filter>
+                      <filter id="starFlareGlow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#fde047" flood-opacity="0.95"/>
+                        <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#f59e0b" flood-opacity="0.7"/>
+                      </filter>
+                    </defs>
+
+                    <!-- 3D Radiating Clash Flare Aura -->
+                    <circle cx="70" cy="70" r="38" fill="url(#dandiyaClashBurst)" opacity="0.9" />
+
+                    <!-- Radiating Golden Energy Clash Sparks -->
+                    <g stroke="#fde047" stroke-width="2" stroke-linecap="round" opacity="0.95">
+                      <line x1="70" y1="44" x2="70" y2="28" />
+                      <line x1="70" y1="96" x2="70" y2="112" />
+                      <line x1="44" y1="70" x2="28" y2="70" />
+                      <line x1="96" y1="70" x2="112" y2="70" />
+                      <line x1="52" y1="52" x2="38" y2="38" stroke="#ffffff" stroke-width="2.5" />
+                      <line x1="88" y1="52" x2="102" y2="38" stroke="#ffffff" stroke-width="2.5" />
+                      <line x1="52" y1="88" x2="38" y2="102" stroke="#ffffff" stroke-width="2.5" />
+                      <line x1="88" y1="88" x2="102" y2="102" stroke="#ffffff" stroke-width="2.5" />
+                    </g>
+
+                    <!-- DANDIYA STICK 1: 3D Lathe-Turned Rod (Diagonal Top-Left to Bottom-Right, 42deg) -->
+                    <g transform="rotate(42 70 70)" filter="url(#dandiyaGlow3d)">
+                      <!-- Top Dome Brass Cap (3D Spherical Top) -->
+                      <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
+                      <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
+                      <!-- Raised Brass Collar Ring -->
+                      <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
+                      <!-- Upper Red Section (Cylindrical Lighting) -->
+                      <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dRed)"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Emerald Green Body Section with 3D Beveled Mirror -->
+                      <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dGreen)"/>
+                      <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Center Hand Grip Section (Royal Blue with Gold Stud) -->
+                      <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dBlue)"/>
+                      <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Lower Red Section with 3D Beveled Mirror -->
+                      <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dRed)"/>
+                      <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                      <!-- Bottom Brass Grip Ferrule -->
+                      <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
+                      <!-- Bottom Pommel Sphere -->
+                      <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
+                      <!-- 3D Ghunghroo Spheres & Silk Tassel -->
+                      <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                      <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                      <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#e11d48"/>
+                    </g>
+
+                    <!-- DANDIYA STICK 2: 3D Lathe-Turned Rod (Diagonal Top-Right to Bottom-Left, -42deg) -->
+                    <g transform="rotate(-42 70 70)" filter="url(#dandiyaGlow3d)">
+                      <!-- Top Dome Brass Cap (3D Spherical Top) -->
+                      <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
+                      <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
+                      <!-- Raised Brass Collar Ring -->
+                      <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
+                      <!-- Upper Emerald Green Section (Cylindrical Lighting) -->
+                      <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dGreen)"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Red Body Section with 3D Beveled Mirror -->
+                      <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dRed)"/>
+                      <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Center Hand Grip Section (Royal Kumkum with Gold Stud) -->
+                      <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dRed)"/>
+                      <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
+                      <!-- Raised 3D Gold Ferrule Ring -->
+                      <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                      <!-- Lower Royal Blue Section with 3D Beveled Mirror -->
+                      <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dBlue)"/>
+                      <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                      <!-- Bottom Brass Grip Ferrule -->
+                      <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
+                      <!-- Bottom Pommel Sphere -->
+                      <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
+                      <!-- 3D Ghunghroo Spheres & Silk Tassel -->
+                      <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                      <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                      <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#10b981"/>
+                    </g>
+
+                    <!-- Central 3D Clash Star Flare (Explosive Dandiya Impact Center) -->
+                    <g filter="url(#starFlareGlow)">
+                      <polygon points="70,55 73,66 84,70 73,74 70,85 67,74 56,70 67,66" fill="#ffffff"/>
+                      <polygon points="70,61 72,67 78,70 72,73 70,79 68,73 62,70 68,67" fill="#fde047"/>
+                      <circle cx="70" cy="70" r="4" fill="#ffffff"/>
+                    </g>
+                  </svg>
+                </div>
+              </button>
+
+              <!-- Flanking Auspicious Glowing Diyas -->
+              <div class="orb-diya-lamp orb-diya-left" title="Auspicious Diya">
+                <div class="diya-flame"></div>
+                <div class="diya-base"></div>
               </div>
-            </button>
+              <div class="orb-diya-lamp orb-diya-right" title="Auspicious Diya">
+                <div class="diya-flame"></div>
+                <div class="diya-base"></div>
+              </div>
+            </div>
+
+            <!-- Right Side Action Circles (3 Circles: Lakshmi Coin, Blue Gem, Utsav Gift) -->
+            <div class="orb-side-column orb-side-right">
+              <!-- Circle 4: Lakshmi Golden Coin Booster -->
+              <button class="home-action-circle circle-amber" id="btnCircleCoin" onclick="openHomeActionPopup('coin')" title="Lakshmi Coin Booster">
+                <div class="circle-badge">+LAKSHMI</div>
+                <div class="circle-icon">🪙</div>
+                <span class="circle-label">COIN</span>
+              </button>
+
+              <!-- Circle 5: Shakti Blue Gem Booster -->
+              <button class="home-action-circle circle-cyan" id="btnCircleBlue" onclick="openHomeActionPopup('blue')" title="Shakti Blue Gem Vault">
+                <div class="circle-badge">+SHAKTI</div>
+                <div class="circle-icon">💎</div>
+                <span class="circle-label">BLUE GEM</span>
+              </button>
+
+              <!-- Circle 6: Utsav Mahotsav Gift -->
+              <button class="home-action-circle circle-rose" id="btnCircleBonus" onclick="openHomeActionPopup('bonus')" title="Navratri Utsav Mahotsav Gift">
+                <div class="circle-badge">UTSAV</div>
+                <div class="circle-icon">🎁</div>
+                <span class="circle-label">MAHOTSAV</span>
+              </button>
+            </div>
           </div>
 
           <div class="reactor-footer">
@@ -104,5 +318,16 @@
             </div>
           </div>
         </section>
+
+        <!-- Home Action Pop-up Modal Backdrop & Dialog -->
+        <div class="home-popup-backdrop" id="homePopupBackdrop" onclick="closeHomeActionPopup(event)">
+          <div class="home-popup-card" id="homePopupCard" onclick="event.stopPropagation()">
+            <div class="home-popup-drag-handle"></div>
+            <button class="home-popup-close-btn" id="homePopupCloseBtn" onclick="closeHomeActionPopup()" aria-label="Close popup">&times;</button>
+            
+            <div class="home-popup-header" id="homePopupHeader"></div>
+            <div class="home-popup-body" id="homePopupBody"></div>
+          </div>
+        </div>
 
       </div>

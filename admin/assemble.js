@@ -68,14 +68,20 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
 </head>
 <body>
 
-  <!-- Permanent Left Vertical Menu Bar (Never Hides) -->
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
+
+  <!-- Left Vertical Menu Bar (Sleek, Responsive & Styled Scrollbar) -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-icon">⚡</div>
-      <div>
-        <div class="brand-title">ENERGY TAP</div>
-        <div class="brand-subtitle">ADMIN DASHBOARD</div>
+      <div class="sidebar-brand-left">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <div class="brand-title">ENERGY TAP</div>
+          <div class="brand-subtitle">ADMIN DASHBOARD</div>
+        </div>
       </div>
+      <button class="sidebar-close-btn" onclick="toggleAdminSidebar(false)" aria-label="Close Menu">✕</button>
     </div>
 
     <nav class="sidebar-nav">
@@ -109,7 +115,7 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
         <span>Task Manage</span>
       </button>
 
-      <div class="nav-section-label" style="margin-top: 12px;">Management & System</div>
+      <div class="nav-section-label" style="margin-top: 8px;">Management & System</div>
 
       <button class="nav-item" data-page="firebase-manage" onclick="switchAdminPage('firebase-manage', 'Firebase Database Manager')">
         <span class="nav-icon">🔥</span>
@@ -139,13 +145,26 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
     </div>
   </aside>
 
-  <!-- Main Content Workspace (Always beside the permanent menu bar) -->
+  <!-- Main Content Workspace -->
   <main class="main-content">
     <header class="top-header">
       <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleAdminSidebar()" aria-label="Open Navigation Menu">
+          <span>☰</span>
+        </button>
         <h1 class="page-title" id="activeHeaderTitle">Dashboard Overview</h1>
       </div>
       <div class="header-right">
+        <div class="header-actions">
+          <div class="header-cloud-pill">
+            <span class="pulse-dot"></span>
+            <span>Live DB Connected</span>
+          </div>
+          <a href="../frontend/index.html" target="_blank" class="header-user-app-btn" title="Open User Mini-App in new tab">
+            <span>🎮 Launch User App</span>
+            <span class="ext-icon">↗</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -198,9 +217,13 @@ const footerContent = `
           <label class="form-label">Scratch Cards 🎴</label>
           <input type="number" id="editModalCards" class="form-input" style="color: #ec4899; font-weight: 800;">
         </div>
-        <div class="form-group" style="grid-column: 1 / -1;">
+        <div class="form-group">
           <label class="form-label">Tickets 🎟️</label>
           <input type="number" id="editModalTickets" class="form-input" style="color: #f59e0b; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Egg Coins 🥚</label>
+          <input type="number" id="editModalEggs" class="form-input" style="color: #10b981; font-weight: 800;">
         </div>
       </div>
 
@@ -210,8 +233,13 @@ const footerContent = `
           <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
         </div>
         <div style="display: flex; gap: 10px;">
+          <button onclick="restartUserSeasonInFirebase()" class="btn-secondary" style="flex: 1; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+            🌟 Restart Season (Level 0 & New Claims)
+          </button>
+        </div>
+        <div style="display: flex; gap: 10px;">
           <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
-            🔄 Restart to 0 (Clean Data)
+            🔄 Full Reset to 0 (Clean All Data)
           </button>
           <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); padding: 8px 12px;" title="Permanently Remove Player">
             🗑️ Remove
@@ -282,6 +310,24 @@ const footerContent = `
 
   <!-- Global Router Logic -->
   <script>
+    function toggleAdminSidebar(forceState) {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const nextState = typeof forceState === 'boolean' ? forceState : !isOpen;
+      if (nextState) {
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    window.toggleAdminSidebar = toggleAdminSidebar;
+
     function switchAdminPage(pageKey, pageTitle) {
       if (window.adminState) window.adminState.activePage = pageKey;
 
@@ -319,6 +365,11 @@ const footerContent = `
         if (typeof window.renderWebsiteTasksUI === 'function') {
           window.renderWebsiteTasksUI();
         }
+      }
+
+      // Auto close sidebar drawer on mobile
+      if (window.innerWidth <= 992) {
+        toggleAdminSidebar(false);
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });

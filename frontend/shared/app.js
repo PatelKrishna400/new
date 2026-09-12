@@ -104,9 +104,11 @@ function switchPage(pageName) {
     if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
   } else if (pageName === 'chest') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+    if (typeof updateChestUI === 'function') updateChestUI();
   } else if (pageName === 'scratch') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
     if (typeof initScratchPage === 'function') initScratchPage();
+    if (typeof updateScratchUI === 'function') updateScratchUI();
     else if (typeof renderScratchGrid === 'function') renderScratchGrid();
   } else if (pageName === 'egg') {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
@@ -140,11 +142,40 @@ window.switchPage = switchPage;
 // Day 1: 2 Green Fuel Cells
 // Day 2: 1 Yellow Fuel Cell
 // Day 3: 1 Winning Key
-// Day 4: 1 Spin Ticket
-// Day 5: 1 Scratch Card
-// Day 6: 1 Orange Fuel Cell
-// Day 7: 5 Green, 2 Yellow, 1 Orange Fuel Cells
+// Day 4: 25 Energy
+// Day 5: 1 Cyber Dragon Egg
+// Day 6: 1 Fortune Scratch Card
+// Day 7: 50 Coins Jackpot
 // ==========================================================================
+function renderStreakView() {
+  const currentStreak = gameState.player.streakDays || 0;
+  const streakHeader = document.getElementById('streakDaysCount');
+  if (streakHeader) streakHeader.textContent = currentStreak;
+
+  const claimBtn = document.getElementById('btnClaimStreak');
+  const now = Date.now();
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  const lastClaim = gameState.player.lastStreakClaimTime || 0;
+  const timeSinceClaim = now - lastClaim;
+  const canClaim = timeSinceClaim >= ONE_DAY_MS || lastClaim === 0;
+
+  if (claimBtn) {
+    if (canClaim) {
+      claimBtn.disabled = false;
+      claimBtn.innerHTML = '<span>⚡ CLAIM DAILY STREAK</span>';
+      claimBtn.classList.remove('claimed');
+    } else {
+      claimBtn.disabled = true;
+      const hoursLeft = Math.ceil((ONE_DAY_MS - timeSinceClaim) / (60 * 60 * 1000));
+      claimBtn.innerHTML = `<span>⏳ NEXT CLAIM IN ${hoursLeft}H</span>`;
+      claimBtn.classList.add('claimed');
+    }
+  }
+}
+
+function startStreakTimer() {
+  renderStreakView();
+}
 
 // Legacy modal fallback helper
 function closeTabModal() {
@@ -183,6 +214,12 @@ function toggleSound() {
 
 // Master UI Update Coordinator
 function updateUI() {
+  // Sync Header Balance Badges
+  const coinEl = document.getElementById('coinCounter') || document.getElementById('headerCoinBalance');
+  if (coinEl) coinEl.textContent = formatNumber(gameState.player.coins);
+  const blueCoinEl = document.getElementById('blueCoinCounter') || document.getElementById('headerBlueBalance');
+  if (blueCoinEl) blueCoinEl.textContent = formatNumber(gameState.player.diamonds || gameState.player.blueCoins || 0);
+
   // Sync Home Page
   if (typeof updateHomeUI === 'function') updateHomeUI();
   
@@ -201,8 +238,11 @@ function updateUI() {
   // Sync Goal & Grand Chest
   if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
 
-  // Sync Mystery Chest
+  // Sync Mini-Games Pages
+  if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
   if (typeof updateChestUI === 'function') updateChestUI();
+  if (typeof updateScratchUI === 'function') updateScratchUI();
+  if (typeof renderEggPageContent === 'function') renderEggPageContent();
 }
 
 window.updateUI = updateUI;

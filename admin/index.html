@@ -23,14 +23,20 @@
 </head>
 <body>
 
-  <!-- Permanent Left Vertical Menu Bar (Never Hides) -->
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
+
+  <!-- Left Vertical Menu Bar (Sleek, Responsive & Styled Scrollbar) -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-icon">⚡</div>
-      <div>
-        <div class="brand-title">ENERGY TAP</div>
-        <div class="brand-subtitle">ADMIN DASHBOARD</div>
+      <div class="sidebar-brand-left">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <div class="brand-title">ENERGY TAP</div>
+          <div class="brand-subtitle">ADMIN DASHBOARD</div>
+        </div>
       </div>
+      <button class="sidebar-close-btn" onclick="toggleAdminSidebar(false)" aria-label="Close Menu">✕</button>
     </div>
 
     <nav class="sidebar-nav">
@@ -64,7 +70,7 @@
         <span>Task Manage</span>
       </button>
 
-      <div class="nav-section-label" style="margin-top: 12px;">Management & System</div>
+      <div class="nav-section-label" style="margin-top: 8px;">Management & System</div>
 
       <button class="nav-item" data-page="firebase-manage" onclick="switchAdminPage('firebase-manage', 'Firebase Database Manager')">
         <span class="nav-icon">🔥</span>
@@ -94,13 +100,26 @@
     </div>
   </aside>
 
-  <!-- Main Content Workspace (Always beside the permanent menu bar) -->
+  <!-- Main Content Workspace -->
   <main class="main-content">
     <header class="top-header">
       <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleAdminSidebar()" aria-label="Open Navigation Menu">
+          <span>☰</span>
+        </button>
         <h1 class="page-title" id="activeHeaderTitle">Dashboard Overview</h1>
       </div>
       <div class="header-right">
+        <div class="header-actions">
+          <div class="header-cloud-pill">
+            <span class="pulse-dot"></span>
+            <span>Live DB Connected</span>
+          </div>
+          <a href="../frontend/index.html" target="_blank" class="header-user-app-btn" title="Open User Mini-App in new tab">
+            <span>🎮 Launch User App</span>
+            <span class="ext-icon">↗</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -146,6 +165,44 @@
             </div>
           </div>
         </div>
+      
+        <!-- Mini-Games Live Activity Row -->
+        <div style="margin-top: 14px;">
+          <h3 style="font-size: 14px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
+          <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
+              <div class="metric-meta">
+                <span class="metric-label">Lucky Wheel Spins</span>
+                <span class="metric-value" id="dashTotalSpins">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🗝️</div>
+              <div class="metric-meta">
+                <span class="metric-label">Vault Chests Opened</span>
+                <span class="metric-value" id="dashTotalChests">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">🎴</div>
+              <div class="metric-meta">
+                <span class="metric-label">Scratch Cards Played</span>
+                <span class="metric-value" id="dashTotalScratches">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🥚</div>
+              <div class="metric-meta">
+                <span class="metric-label">Eggs Hatched</span>
+                <span class="metric-value" id="dashTotalEggs">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       
 
@@ -174,11 +231,12 @@
                   <th>Keys</th>
                   <th>Card</th>
                   <th>Ticket</th>
+                  <th>Egg</th>
                   <th style="text-align: center;">Actions</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody">
-                <tr><td colspan="10" style="text-align: center; color: #64748b; padding: 24px;">Syncing with Firebase...</td></tr>
+                <tr><td colspan="11" style="text-align: center; color: #64748b; padding: 24px;">Syncing with Firebase...</td></tr>
               </tbody>
             </table>
           </div>
@@ -314,7 +372,7 @@
             <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
           </button>
           <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
-            <span>📅 Daily Quotas</span>
+            <span>📅 Monthly (30-Day) Quotas</span>
           </button>
         </div>
       
@@ -367,13 +425,52 @@
         </div>
       
         <!-- ============================================================
-             SUBTAB 3: DAILY TASK TARGETS REFERENCE
+             SUBTAB 3: MONTHLY (30-DAY) COMPETITION & QUOTAS CONTROLLER
              ============================================================ -->
         <div id="subtabContentDaily" class="task-subtab-content" style="display: none;">
+          <!-- 30-Day Competition Cloud Controller -->
+          <div class="card-panel" style="margin-bottom: 20px; border-left: 4px solid #38bdf8;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                  <span>🏆 30-Day Monthly Task Competition Cycle</span>
+                  <span style="font-size: 10px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; padding: 2px 8px; border-radius: 999px;">● FIREBASE BACKEND (/monthly_competition)</span>
+                </h3>
+                <p style="font-size: 12px; color: #94a3b8;">Controls the live 30-day competition cycle running in Firebase backend. When reset, all connected players' monthly tasks and stats restart.</p>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="restartMonthlyCompetitionInFirebase()" class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">🔄 Start New 30-Day Cycle (Reset All)</button>
+                <button type="button" onclick="extendMonthlyCompetition(7)" class="btn-secondary">+7 Days</button>
+                <button type="button" onclick="extendMonthlyCompetition(30)" class="btn-secondary">+30 Days</button>
+              </div>
+            </div>
+      
+            <!-- Live Cycle Info Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Cycle / Season</span>
+                <strong style="color: #38bdf8; font-size: 18px; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCycleNum">Cycle #1</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Cycle Duration</span>
+                <strong style="color: #34d399; font-size: 18px; font-family: 'JetBrains Mono', monospace;">30 Days Fixed</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Time Remaining</span>
+                <strong style="color: #facc15; font-size: 18px; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCountdown">29d 23h 59m 59s</strong>
+              </div>
+              <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px;">Competition End Date</span>
+                <strong style="color: #c084fc; font-size: 14px; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyEndDate">Loading...</strong>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Monthly Tasks Quotas Reference -->
           <div class="card-panel">
             <div style="border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px; margin-bottom: 16px;">
-              <h3 style="font-size: 16px; font-weight: 800; color: #fff;">📅 Daily In-Game Task Quotas Reference</h3>
-              <p style="font-size: 12px; color: #94a3b8;">Daily game requirements that reset every 24 hours (UTC midnight) for all players.</p>
+              <h3 style="font-size: 16px; font-weight: 800; color: #fff;">📅 Monthly (30-Day) In-Game Task Quotas Reference</h3>
+              <p style="font-size: 12px; color: #94a3b8;">Game requirements running in 30-day competition cycles in Firebase for each individual player.</p>
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; font-size: 13px;">
               <div style="background: rgba(4, 10, 26, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(25, 55, 120, 0.4);">
@@ -791,6 +888,20 @@
             <button onclick="reconnectFirebase()" class="btn-primary">🔄 Reconnect to Firebase</button>
           </div>
         </div>
+      
+        <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+          <h2 style="font-size: 18px; font-weight: 800; color: #fff;">Global Season & Competition Controls</h2>
+          <p style="font-size: 13px; color: #94a3b8;">Trigger a global season reset across all connected players via Firebase (<code style="color: #38bdf8;">/season</code>). All players will start fresh from Level 0 and have level-wise reward claims restored!</p>
+      
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button onclick="triggerGlobalSeasonReset()" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #38bdf8;">
+              🚀 Trigger Global Season Restart (30 Days)
+            </button>
+            <button onclick="triggerMonthlyCompetitionReset()" class="btn-secondary" style="color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
+              🏆 Reset 30-Day Task Competition (/monthly_competition)
+            </button>
+          </div>
+        </div>
       </section>
       
     </div>
@@ -831,9 +942,13 @@
           <label class="form-label">Scratch Cards 🎴</label>
           <input type="number" id="editModalCards" class="form-input" style="color: #ec4899; font-weight: 800;">
         </div>
-        <div class="form-group" style="grid-column: 1 / -1;">
+        <div class="form-group">
           <label class="form-label">Tickets 🎟️</label>
           <input type="number" id="editModalTickets" class="form-input" style="color: #f59e0b; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Egg Coins 🥚</label>
+          <input type="number" id="editModalEggs" class="form-input" style="color: #10b981; font-weight: 800;">
         </div>
       </div>
 
@@ -843,8 +958,13 @@
           <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
         </div>
         <div style="display: flex; gap: 10px;">
+          <button onclick="restartUserSeasonInFirebase()" class="btn-secondary" style="flex: 1; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+            🌟 Restart Season (Level 0 & New Claims)
+          </button>
+        </div>
+        <div style="display: flex; gap: 10px;">
           <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
-            🔄 Restart to 0 (Clean Data)
+            🔄 Full Reset to 0 (Clean All Data)
           </button>
           <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); padding: 8px 12px;" title="Permanently Remove Player">
             🗑️ Remove
@@ -915,6 +1035,24 @@
 
   <!-- Global Router Logic -->
   <script>
+    function toggleAdminSidebar(forceState) {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const nextState = typeof forceState === 'boolean' ? forceState : !isOpen;
+      if (nextState) {
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    window.toggleAdminSidebar = toggleAdminSidebar;
+
     function switchAdminPage(pageKey, pageTitle) {
       if (window.adminState) window.adminState.activePage = pageKey;
 
@@ -952,6 +1090,11 @@
         if (typeof window.renderWebsiteTasksUI === 'function') {
           window.renderWebsiteTasksUI();
         }
+      }
+
+      // Auto close sidebar drawer on mobile
+      if (window.innerWidth <= 992) {
+        toggleAdminSidebar(false);
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });

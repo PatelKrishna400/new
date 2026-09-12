@@ -163,107 +163,238 @@
 .fuel-title { font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: -0.2px; }
 .fuel-header-right { font-size: 11px; font-weight: 600; color: #94a3b8; }
 
-.fuel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 2px; }
-.fuel-card {
-  background: rgba(8, 19, 44, 0.72);
-  border-radius: var(--radius-lg);
-  padding: 12px;
+.fuel-grid {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 9px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.fuel-card {
+  background: rgba(8, 19, 44, 0.85);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 .fuel-card:hover { transform: translateY(-2px); }
 
-.green-fuel-card { border: 1px solid rgba(16, 185, 129, 0.45); }
-.green-fuel-card:hover { border-color: rgba(16, 185, 129, 0.8); box-shadow: 0 0 16px rgba(16, 185, 129, 0.2); }
-.darkgreen-fuel-card { border: 1px solid rgba(5, 150, 105, 0.45); }
-.darkgreen-fuel-card:hover { border-color: rgba(5, 150, 105, 0.85); box-shadow: 0 0 16px rgba(5, 150, 105, 0.25); }
-.yellow-fuel-card { border: 1px solid rgba(245, 158, 11, 0.45); }
-.yellow-fuel-card:hover { border-color: rgba(245, 158, 11, 0.8); box-shadow: 0 0 16px rgba(245, 158, 11, 0.2); }
-.orange-fuel-card { border: 1px solid rgba(249, 115, 22, 0.45); }
-.orange-fuel-card:hover { border-color: rgba(249, 115, 22, 0.8); box-shadow: 0 0 16px rgba(249, 115, 22, 0.2); }
-.red-fuel-card { border: 1px solid rgba(239, 68, 68, 0.45); }
-.red-fuel-card:hover { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 16px rgba(239, 68, 68, 0.2); }
-
-.pink-fuel-card { border: 1px solid rgba(236, 72, 153, 0.45); }
-.pink-fuel-card:hover { border-color: rgba(236, 72, 153, 0.85); box-shadow: 0 0 16px rgba(236, 72, 153, 0.25); }
-.purple-fuel-card { border: 1px solid rgba(168, 85, 247, 0.45); }
-.purple-fuel-card:hover { border-color: rgba(168, 85, 247, 0.85); box-shadow: 0 0 16px rgba(168, 85, 247, 0.25); }
-
-.fuel-card-top { display: flex; align-items: center; justify-content: space-between; }
-.fuel-icon-box { width: 38px; height: 38px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-.green-icon-box { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); }
-.darkgreen-icon-box { background: rgba(5, 150, 105, 0.12); border: 1px solid rgba(5, 150, 105, 0.35); }
-.yellow-icon-box { background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); }
-.orange-icon-box { background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(249, 115, 22, 0.35); }
-.red-icon-box { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); }
-.pink-icon-box { background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.35); }
-.purple-icon-box { background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); }
-
-.fuel-cell-badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: var(--radius-pill); letter-spacing: 0.2px; }
-.green-badge-pill { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
-.darkgreen-badge-pill { background: rgba(5, 150, 105, 0.18); color: #10b981; border: 1px solid rgba(5, 150, 105, 0.45); }
-.yellow-badge-pill { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
-.orange-badge-pill { background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.4); }
-.red-badge-pill { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
-.pink-badge-pill { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
-.purple-badge-pill { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
-
-.fuel-card-body { display: flex; flex-direction: column; gap: 2px; }
-.fuel-name { font-size: 14px; font-weight: 800; color: #ffffff; letter-spacing: -0.2px; }
-.fuel-timer-bonus { font-size: 11px; font-weight: 800; color: #38bdf8; letter-spacing: 0.2px; }
-.fuel-meta-desc { font-size: 10px; font-weight: 600; color: #64748b; margin-top: 1px; }
-
-.fuel-card-actions-col {
+.fuel-card-top-row {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   width: 100%;
 }
 
+.darkgreen-fuel-card {
+  border: 2px solid #059669 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(5, 150, 105, 0.25) !important;
+}
+.darkgreen-fuel-card:hover { border-color: #10b981 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(5, 150, 105, 0.4) !important; }
+
+.green-fuel-card {
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(16, 185, 129, 0.25) !important;
+}
+.green-fuel-card:hover { border-color: #34d399 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.4) !important; }
+
+.yellow-fuel-card {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(245, 158, 11, 0.25) !important;
+}
+.yellow-fuel-card:hover { border-color: #fbbf24 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(245, 158, 11, 0.4) !important; }
+
+.orange-fuel-card {
+  border: 2px solid #f97316 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(249, 115, 22, 0.25) !important;
+}
+.orange-fuel-card:hover { border-color: #fb923c !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(249, 115, 22, 0.4) !important; }
+
+.red-fuel-card {
+  border: 2px solid #ef4444 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(239, 68, 68, 0.25) !important;
+}
+.red-fuel-card:hover { border-color: #f87171 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(239, 68, 68, 0.4) !important; }
+
+.pink-fuel-card {
+  border: 2px solid #ec4899 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(236, 72, 153, 0.25) !important;
+}
+.pink-fuel-card:hover { border-color: #f472b6 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(236, 72, 153, 0.4) !important; }
+
+.purple-fuel-card {
+  border: 2px solid #a855f7 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(168, 85, 247, 0.25) !important;
+}
+.purple-fuel-card:hover { border-color: #c084fc !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(168, 85, 247, 0.4) !important; }
+
+.fuel-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 3D Cylindrical Fuel Pods */
+.fuel-icon-box {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.6),
+    0 3px 0 rgba(0, 0, 0, 0.5),
+    0 6px 14px rgba(0, 0, 0, 0.4);
+}
+.green-icon-box { background: radial-gradient(circle at 35% 30%, #065f46 0%, #022c22 70%, #01140e 100%); border: 1.5px solid #6ee7b7; }
+.darkgreen-icon-box { background: radial-gradient(circle at 35% 30%, #044e37 0%, #02221b 70%, #01110d 100%); border: 1.5px solid #34d399; }
+.yellow-icon-box { background: radial-gradient(circle at 35% 30%, #78350f 0%, #2e1404 70%, #0e0601 100%); border: 1.5px solid #fde047; }
+.orange-icon-box { background: radial-gradient(circle at 35% 30%, #7c2d12 0%, #301006 70%, #0f0502 100%); border: 1.5px solid #fdba74; }
+.red-icon-box { background: radial-gradient(circle at 35% 30%, #7f1d1d 0%, #330808 70%, #120303 100%); border: 1.5px solid #f87171; }
+.pink-icon-box { background: radial-gradient(circle at 35% 30%, #831843 0%, #350819 70%, #130309 100%); border: 1.5px solid #f472b6; }
+.purple-icon-box { background: radial-gradient(circle at 35% 30%, #581c87 0%, #24083a 70%, #0c0215 100%); border: 1.5px solid #d8b4fe; }
+
+.fuel-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fuel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fuel-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+  margin: 0;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.fuel-cell-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2.5px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.green-badge-pill { background: linear-gradient(180deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.5) 100%); color: #6ee7b7; border: 1px solid #10b981; }
+.darkgreen-badge-pill { background: linear-gradient(180deg, rgba(5, 150, 105, 0.3) 0%, rgba(4, 120, 87, 0.5) 100%); color: #34d399; border: 1px solid #059669; }
+.yellow-badge-pill { background: linear-gradient(180deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.5) 100%); color: #fde047; border: 1px solid #f59e0b; }
+.orange-badge-pill { background: linear-gradient(180deg, rgba(249, 115, 22, 0.3) 0%, rgba(194, 65, 12, 0.5) 100%); color: #fdba74; border: 1px solid #f97316; }
+.red-badge-pill { background: linear-gradient(180deg, rgba(239, 68, 68, 0.3) 0%, rgba(185, 28, 28, 0.5) 100%); color: #fca5a5; border: 1px solid #ef4444; }
+.pink-badge-pill { background: linear-gradient(180deg, rgba(236, 72, 153, 0.3) 0%, rgba(190, 24, 93, 0.5) 100%); color: #fbcfe8; border: 1px solid #ec4899; }
+.purple-badge-pill { background: linear-gradient(180deg, rgba(168, 85, 247, 0.3) 0%, rgba(126, 34, 206, 0.5) 100%); color: #e9d5ff; border: 1px solid #a855f7; }
+
+.fuel-timer-bonus {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.fuel-card-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  flex-shrink: 0;
+  min-width: 124px;
+}
+
+.fuel-toggle-group {
+  display: none !important;
+}
+
+/* 3D Tactile Fuel Action Push-Button */
 .fuel-action-btn {
   width: 100%;
-  border: none;
-  border-radius: 16px;
-  padding: 10px 8px;
+  border-radius: 12px;
+  padding: 9px 12px;
   font-family: var(--font-primary);
-  font-size: 11.5px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
   cursor: pointer;
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
   white-space: nowrap;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
+    0 3px 0 var(--btn-shadow-color, #065f46),
+    0 6px 14px rgba(0, 0, 0, 0.5);
 }
-.fuel-action-btn:active { transform: scale(0.96); }
 
-.green-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35); }
-.green-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(16, 185, 129, 0.6); }
+.fuel-action-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1.5px);
+}
 
-.darkgreen-btn { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); }
-.darkgreen-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(5, 150, 105, 0.6); }
+.fuel-action-btn:active {
+  transform: translateY(2.5px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 0 var(--btn-shadow-color, #065f46),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
 
-.yellow-btn { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35); }
-.yellow-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(245, 158, 11, 0.6); }
+.green-btn { --btn-shadow-color: #065f46; background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%); color: #ffffff; border-color: #a7f3d0; }
+.darkgreen-btn { --btn-shadow-color: #044e37; background: linear-gradient(180deg, #10b981 0%, #059669 50%, #047857 100%); color: #ffffff; border-color: #6ee7b7; }
+.yellow-btn { --btn-shadow-color: #92400e; background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%); color: #030712; border-color: #fef08a; }
+.orange-btn { --btn-shadow-color: #7c2d12; background: linear-gradient(180deg, #fdba74 0%, #f97316 50%, #ea580c 100%); color: #ffffff; border-color: #fed7aa; }
+.red-btn { --btn-shadow-color: #7f1d1d; background: linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%); color: #ffffff; border-color: #fca5a5; }
+.pink-btn { --btn-shadow-color: #831843; background: linear-gradient(180deg, #f472b6 0%, #ec4899 50%, #db2777 100%); color: #ffffff; border-color: #fbcfe8; }
+.purple-btn { --btn-shadow-color: #581c87; background: linear-gradient(180deg, #c084fc 0%, #a855f7 50%, #7e22ce 100%); color: #ffffff; border-color: #e9d5ff; }
 
-.orange-btn { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35); }
-.orange-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(249, 115, 22, 0.6); }
-
-.red-btn { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35); }
-.red-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.6); }
-
-.pink-btn { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35); }
-.pink-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(236, 72, 153, 0.6); }
-
-.purple-btn { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.35); }
-.purple-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(168, 85, 247, 0.6); }
+/* 3D Buy in Shop Mode Button */
+.buy-mode-btn {
+  --btn-shadow-color: #92400e;
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%) !important;
+  color: #030712 !important;
+  border-color: #fef08a !important;
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
+    0 3px 0 #92400e,
+    0 6px 14px rgba(245, 158, 11, 0.4) !important;
+}
+.buy-mode-btn:hover {
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 4px 0 #92400e,
+    0 8px 18px rgba(245, 158, 11, 0.6) !important;
+}
 
 .ad-blue-btn { background: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%); color: #ffffff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35); }
 .ad-blue-btn:hover { filter: brightness(1.1); box-shadow: 0 0 14px rgba(56, 189, 248, 0.6); }
@@ -387,3 +518,69 @@
   0% { transform: scale(1); filter: brightness(1); }
   100% { transform: scale(1.02); filter: brightness(1.2); }
 }
+
+/* 3-Way Fuel Purchase Grid */
+.fuel-three-ways-buy {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.fuel-buy-method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 20, 42, 0.85);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--font-primary, sans-serif);
+}
+
+.fuel-buy-method-btn:hover {
+  transform: translateY(-2px);
+}
+
+.fuel-buy-method-btn.ad-btn:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.18);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.fuel-buy-method-btn.coin-btn:hover {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.18);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+
+.fuel-buy-method-btn.dia-btn:hover {
+  border-color: #06b6d4;
+  background: rgba(6, 182, 212, 0.18);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+.fuel-buy-method-btn .method-icon {
+  font-size: 13px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.fuel-buy-method-btn .method-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.fuel-buy-method-btn .method-gain {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #34d399;
+  white-space: nowrap;
+}
+

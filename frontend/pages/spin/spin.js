@@ -29,20 +29,19 @@ const SPIN_PRIZES = [
 // Initialize 24 circular LED Chaser Bulbs around the perimeter
 function initSpinChaserBulbs() {
   const ring = document.getElementById('spinChaserRing');
-  if (!ring || ring.children.length > 0) return;
+  if (!ring) return;
+  ring.innerHTML = ''; // Fresh render ensures exact placement
 
   const totalBulbs = 24;
-  const center = (ring.offsetWidth > 0 ? ring.offsetWidth / 2 : 124);
-  const radius = center - 1; // Fit tightly on perimeter
-
   for (let i = 0; i < totalBulbs; i++) {
     const bulb = document.createElement('div');
     bulb.className = `chaser-bulb ${i % 2 === 0 ? '' : 'alt'}`;
     const angle = (i / totalBulbs) * 2 * Math.PI - (Math.PI / 2);
-    const x = center + radius * Math.cos(angle);
-    const y = center + radius * Math.sin(angle);
-    bulb.style.left = `${x}px`;
-    bulb.style.top = `${y}px`;
+    // Percentage positioning from center 50% with radius 49.5%
+    const leftPercent = 50 + 49.5 * Math.cos(angle);
+    const topPercent = 50 + 49.5 * Math.sin(angle);
+    bulb.style.left = `${leftPercent.toFixed(2)}%`;
+    bulb.style.top = `${topPercent.toFixed(2)}%`;
     bulb.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
     ring.appendChild(bulb);
   }
@@ -76,14 +75,19 @@ function playWheelTickSound() {
   } catch (e) {}
 }
 
-// Unified Spin / Ad click handler
+// Unified Spin click handler (No Ads)
 function handleSpinButtonClick() {
   if (gameState.rewardState && gameState.rewardState.isSpinning) return;
   const tickets = (gameState.player && gameState.player.chestTickets) || 0;
   if (tickets > 0) {
     spinLuckyWheel();
   } else {
-    watchAdForSpinTicket();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎟️ You need 1 Spin Ticket! Complete goals or tap the reactor orb to earn tickets!');
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+      sfx.playTapSound(1);
+    }
   }
 }
 
@@ -120,55 +124,14 @@ function updateSpinTicketUI() {
     if (btnText) btnText.textContent = `SPIN THE WHEEL (${tickets} 🎫)`;
     if (centerHubLabel) centerHubLabel.textContent = 'SPIN';
   } else {
-    // 0 tickets: dynamically transform to watch ad button
+    // 0 tickets: no ad mode, friendly prompt
     if (btn) {
       btn.disabled = false;
-      btn.className = 'spin-action-main-btn ad-mode';
+      btn.className = 'spin-action-main-btn no-ticket-mode';
     }
-    if (btnIcon) btnIcon.textContent = '🎬';
-    if (btnText) btnText.textContent = 'WATCH AD TO SPIN (FREE)';
-    if (centerHubLabel) centerHubLabel.textContent = '+AD';
-  }
-}
-
-// Watch Ad to gain +1 Spin Ticket
-function watchAdForSpinTicket() {
-  if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('selection');
-  sfx.playTapSound(2);
-
-  const doReward = () => {
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
-    sfx.playLevelUpSound();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎉 You received +1 Lucky Spin Ticket! 🎫');
-    }
-
-    const resultBox = document.getElementById('spinResultBox');
-    const resultTag = document.getElementById('spinResultTag');
-    const winIcon = document.getElementById('spinWinIcon');
-    const winTitle = document.getElementById('spinWinTitle');
-    const winDesc = document.getElementById('spinWinDesc');
-
-    if (resultBox) resultBox.className = 'spin-result-display';
-    if (resultTag) {
-      resultTag.className = 'spin-result-badge';
-      resultTag.textContent = '🎫 TICKET READY';
-    }
-    if (winIcon) winIcon.textContent = '🎡';
-    if (winTitle) winTitle.textContent = '+1 Ticket Added!';
-    if (winDesc) winDesc.textContent = 'Tap SPIN THE WHEEL to spin now!';
-
-    updateSpinTicketUI();
-    updateUI();
-    saveGame();
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('spin_ticket_ad', '+1 Spin Ticket', 'Watch an ad to unlock +1 Lucky Spin Ticket', doReward);
-  } else {
-    doReward();
+    if (btnIcon) btnIcon.textContent = '🎟️';
+    if (btnText) btnText.textContent = 'NEED 1 TICKET TO SPIN (0 🎫)';
+    if (centerHubLabel) centerHubLabel.textContent = '0 🎫';
   }
 }
 
@@ -321,7 +284,7 @@ function spinLuckyWheel() {
       }
       if (winIcon) winIcon.textContent = '❌';
       if (winTitle) winTitle.textContent = 'Missed This Time!';
-      if (winDesc) winDesc.textContent = 'Better luck next spin! Watch an ad or spin again.';
+      if (winDesc) winDesc.textContent = 'Better luck next spin! Tap the reactor orb or complete goals for more tickets!';
     } else {
       sfx.playLevelUpSound();
       triggerSpinConfetti();
@@ -330,32 +293,29 @@ function spinLuckyWheel() {
         if (resultBox) resultBox.className = 'spin-result-display jackpot-active';
         if (resultTag) {
           resultTag.className = 'spin-result-badge jackpot';
-          resultTag.textContent = '👑 MEGA JACKPOT!';
+          resultTag.textContent = '👑 GRAND JACKPOT!';
         }
-        if (winIcon) winIcon.textContent = '🪙';
-        if (winTitle) winTitle.textContent = 'JACKPOT: 10 COINS!';
-        if (winDesc) winDesc.textContent = 'Ultra Rare 2% drop credited directly to your balance!';
-        if (typeof showFloatingToast === 'function') {
-          showFloatingToast('👑 ULTRA LUCKY: You struck the 2% 10 COINS JACKPOT! 🪙');
-        }
+        if (winIcon) winIcon.textContent = prize.icon;
+        if (winTitle) winTitle.textContent = `JACKPOT: +${prize.label.toUpperCase()}!`;
+        if (winDesc) winDesc.textContent = `Massive score! ${prize.label} credited straight to your balance!`;
       } else {
         if (resultBox) resultBox.className = 'spin-result-display winner-active';
         if (resultTag) {
           resultTag.className = 'spin-result-badge winner';
-          resultTag.textContent = '🎉 YOU WON!';
+          resultTag.textContent = '🎉 WINNER!';
         }
         if (winIcon) winIcon.textContent = prize.icon;
-        if (winTitle) winTitle.textContent = prize.label.toUpperCase();
-        if (winDesc) winDesc.textContent = 'Prize credited directly to your balance!';
-        if (typeof showFloatingToast === 'function') {
-          showFloatingToast(`🎉 Lucky Spin: Won ${prize.label}!`);
-        }
+        if (winTitle) winTitle.textContent = `+${prize.label.toUpperCase()}`;
+        if (winDesc) winDesc.textContent = `${prize.label} successfully added to your inventory!`;
       }
     }
 
     updateSpinTicketUI();
     updateUI();
     saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
   }, 4000);
 }
 
@@ -368,6 +328,5 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global exports
 window.initSpinChaserBulbs = initSpinChaserBulbs;
 window.updateSpinTicketUI = updateSpinTicketUI;
-window.watchAdForSpinTicket = watchAdForSpinTicket;
 window.spinLuckyWheel = spinLuckyWheel;
 window.handleSpinButtonClick = handleSpinButtonClick;

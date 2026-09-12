@@ -12,7 +12,7 @@
 
 if (!gameState.rewardState) {
   gameState.rewardState = {
-    activeSubtab: 'vault', // 'vault' | 'spin' | 'chest' | 'scratch'
+    activeSubtab: 'all', // 'all'
     spinRotation: 0,
     isSpinning: false,
     isUnboxingChest: false,
@@ -22,63 +22,69 @@ if (!gameState.rewardState) {
   };
 }
 
-// 4 Subtabs Switcher
+// 6 Subtabs Switcher (All, Vault, Spin, Chest, Scratch, Egg)
 function switchRewardSubtab(tabName) {
+  if (!gameState.rewardState) gameState.rewardState = {};
   gameState.rewardState.activeSubtab = tabName;
 
-  // Subtab Button Active Classes
-  const tabs = ['vault', 'spin', 'chest', 'scratch'];
+  const tabs = ['all', 'vault', 'spin', 'chest', 'scratch', 'egg'];
   tabs.forEach(t => {
     const btn = document.getElementById(`rewardSubtab${t.charAt(0).toUpperCase() + t.slice(1)}`);
-    const card = document.getElementById(`rewardTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
     if (btn) {
       if (t === tabName) btn.classList.add('active');
       else btn.classList.remove('active');
     }
-    if (card) {
-      if (t === tabName) card.classList.add('active');
-      else card.classList.remove('active');
-    }
   });
+
+  const allCards = ['rewardTabSpin', 'rewardTabChest', 'rewardTabScratch', 'rewardTabEgg'];
+  if (tabName === 'all') {
+    allCards.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    });
+  } else {
+    const cardMap = {
+      spin: 'rewardTabSpin',
+      chest: 'rewardTabChest',
+      scratch: 'rewardTabScratch',
+      egg: 'rewardTabEgg'
+    };
+    const targetId = cardMap[tabName];
+    allCards.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (id === targetId) {
+          el.style.display = 'flex';
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
+
+    if (targetId) {
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        targetEl.classList.add('pulse-highlight');
+        setTimeout(() => targetEl.classList.remove('pulse-highlight'), 1200);
+      }
+    }
+  }
 
   sfx.playTapSound(1);
   updateRewardViewUI();
 }
 
 // ==========================================================================
-// MASTER REWARD UI SYNCHRONIZATION
-// ==========================================================================
 function updateRewardViewUI() {
-  const curSubtab = (gameState.rewardState && gameState.rewardState.activeSubtab) || 'vault';
-  const tabs = ['vault', 'spin', 'chest', 'scratch'];
-  tabs.forEach(t => {
-    const btn = document.getElementById(`rewardSubtab${t.charAt(0).toUpperCase() + t.slice(1)}`);
-    const card = document.getElementById(`rewardTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
-    if (btn) {
-      if (t === curSubtab) btn.classList.add('active');
-      else btn.classList.remove('active');
-    }
-    if (card) {
-      if (t === curSubtab) card.classList.add('active');
-      else card.classList.remove('active');
-    }
+  const allCards = ['rewardTabSpin', 'rewardTabChest', 'rewardTabScratch', 'rewardTabEgg'];
+  allCards.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
   });
 
   const coinBal = document.getElementById('rewardCoinsBal');
   if (coinBal) coinBal.textContent = formatNumber(gameState.player.coins);
-
-  // Tab 1: Vault / Streak
-  const rectCoins = document.getElementById('rewardRectCoins');
-  if (rectCoins) rectCoins.textContent = formatNumber(gameState.player.coins);
-
-  const rectEnergy = document.getElementById('rewardRectEnergy');
-  if (rectEnergy) {
-    const curEnergy = gameState.reactor.currentEnergy || 0;
-    rectEnergy.textContent = Math.floor(curEnergy).toString();
-  }
-
-  const rectStreak = document.getElementById('rewardRectStreak');
-  if (rectStreak) rectStreak.textContent = `${gameState.player.streakDays || 0} Days 🔥`;
 
   // Tab 2: Spinner -> Ticket Balance
   const ticketCount = gameState.player.chestTickets || 0;
@@ -116,7 +122,7 @@ function updateRewardViewUI() {
 
   // Tab 5: Hatching Egg -> Egg Count
   const eggs = gameState.player.eggs !== undefined ? gameState.player.eggs : 0;
-  const eggCountEl = document.getElementById('rewardEggCount');
+  const eggCountEl = document.getElementById('rewardEggCount') || document.getElementById('rewardEggCoins');
   if (eggCountEl) {
     eggCountEl.textContent = `${eggs} Egg${eggs === 1 ? '' : 's'}`;
   }

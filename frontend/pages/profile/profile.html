@@ -1,180 +1,855 @@
 <div class="page-view" id="pageProfile">
+  
+  <!-- Profile, Shop & Blue Subtab Switcher -->
+  <div class="profile-tabs-header">
+    <button class="profile-subtab-btn active" id="subtabProfile" onclick="switchProfileSubtab('profile')">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span class="subtab-text">Profile</span>
+    </button>
+
+    <button class="profile-subtab-btn" id="subtabShop" onclick="switchProfileSubtab('shop')">
+      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1"/>
+        <circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+      <span class="subtab-text">Shop</span>
+    </button>
+  </div>
+
+  <!-- ==================== TAB 1: PROFILE PANE ==================== -->
+  <div class="profile-tab-pane active" id="paneProfile">
+    <!-- Main Top Profile Card -->
+    <section class="profile-card">
+      
+      <!-- Big Avatar Container with Camera Badge -->
+      <div class="profile-avatar-container">
+        <div class="profile-avatar-large" id="profileLargeAvatar">
+          <!-- Stylized Realistic Portrait Alex Vance -->
+          <svg viewBox="0 0 120 120" class="profile-avatar-svg" id="profileAvatarSvg">
+            <defs>
+              <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="60%" stop-color="#1d4ed8" />
+                <stop offset="100%" stop-color="#0284c7" />
+              </linearGradient>
+              <linearGradient id="pFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fcddec" />
+                <stop offset="100%" stop-color="#d1d5db" />
+              </linearGradient>
+            </defs>
+            <rect width="120" height="120" rx="30" fill="#081432"/>
+            <circle cx="60" cy="50" r="28" fill="url(#pFaceGrad)"/>
+            <!-- Sleek Hair -->
+            <path d="M 32 46 C 32 24, 88 24, 88 46 C 82 34, 72 30, 60 30 C 48 30, 38 34, 32 46 Z" fill="#0f172a"/>
+            <path d="M 33 46 Q 30 60 36 66 Q 38 52 40 46 Z" fill="#0f172a"/>
+            <path d="M 87 46 Q 90 60 84 66 Q 82 52 80 46 Z" fill="#0f172a"/>
+            <!-- Eyes & Brows -->
+            <ellipse cx="49" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+            <ellipse cx="71" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+            <circle cx="50" cy="48" r="1" fill="#ffffff"/>
+            <circle cx="72" cy="48" r="1" fill="#ffffff"/>
+            <path d="M 45 42 Q 50 40 54 43" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+            <path d="M 66 43 Q 70 40 75 42" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+            <!-- Nose & Lips -->
+            <path d="M 60 50 L 59 58 L 63 58" stroke="#cbd5e1" stroke-width="1.6" fill="none"/>
+            <path d="M 54 65 Q 60 69 66 65" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <!-- Jacket / Torso -->
+            <path d="M 22 110 C 25 80, 42 76, 60 76 C 78 76, 95 80, 98 110 Z" fill="#1e293b" id="avatarJacketPath"/>
+            <path d="M 46 76 L 60 96 L 74 76" fill="#2563eb" id="avatarInnerShirtPath"/>
+          </svg>
+        </div>
         
-        <!-- Main Top Profile Card -->
-        <section class="profile-card">
-          
-          <!-- Big Avatar Container with Camera Badge -->
-          <div class="profile-avatar-container">
-            <div class="profile-avatar-large" id="profileLargeAvatar">
-              <!-- Stylized Realistic Portrait Alex Vance -->
-              <svg viewBox="0 0 120 120" class="profile-avatar-svg">
-                <defs>
-                  <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#3b82f6" />
-                    <stop offset="60%" stop-color="#1d4ed8" />
-                    <stop offset="100%" stop-color="#0284c7" />
-                  </linearGradient>
-                  <linearGradient id="pFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#fcddec" />
-                    <stop offset="100%" stop-color="#d1d5db" />
-                  </linearGradient>
-                </defs>
-                <rect width="120" height="120" rx="30" fill="#081432"/>
-                <circle cx="60" cy="50" r="28" fill="url(#pFaceGrad)"/>
-                <!-- Sleek Hair -->
-                <path d="M 32 46 C 32 24, 88 24, 88 46 C 82 34, 72 30, 60 30 C 48 30, 38 34, 32 46 Z" fill="#0f172a"/>
-                <path d="M 33 46 Q 30 60 36 66 Q 38 52 40 46 Z" fill="#0f172a"/>
-                <path d="M 87 46 Q 90 60 84 66 Q 82 52 80 46 Z" fill="#0f172a"/>
-                <!-- Eyes & Brows -->
-                <ellipse cx="49" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
-                <ellipse cx="71" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
-                <circle cx="50" cy="48" r="1" fill="#ffffff"/>
-                <circle cx="72" cy="48" r="1" fill="#ffffff"/>
-                <path d="M 45 42 Q 50 40 54 43" stroke="#0f172a" stroke-width="1.8" fill="none"/>
-                <path d="M 66 43 Q 70 40 75 42" stroke="#0f172a" stroke-width="1.8" fill="none"/>
-                <!-- Nose & Lips -->
-                <path d="M 60 50 L 59 58 L 63 58" stroke="#cbd5e1" stroke-width="1.6" fill="none"/>
-                <path d="M 54 65 Q 60 69 66 65" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                <!-- Jacket / Torso -->
-                <path d="M 22 110 C 25 80, 42 76, 60 76 C 78 76, 95 80, 98 110 Z" fill="#1e293b"/>
-                <path d="M 46 76 L 60 96 L 74 76" fill="#2563eb"/>
-              </svg>
-            </div>
-            
-            <!-- Camera Edit Button -->
-            <button class="avatar-camera-btn" id="btnChangeAvatar" onclick="openEditProfileModal()" title="Change photo">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </button>
+        <!-- Camera Edit Button -->
+        <button class="avatar-camera-btn" id="btnChangeAvatar" onclick="openEditProfileModal()" title="Change photo">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Name & Pencil Edit Button Row -->
+      <div class="profile-name-row">
+        <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
+        <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Handle -->
+      <div class="profile-handle" id="profileHandle">
+        <span class="handle-at">@</span> alex_blue
+      </div>
+
+      <!-- Profile Stats Info Box -->
+      <div class="profile-stats-box">
+        
+        <div class="profile-stat-row">
+          <div class="stat-left">
+            <span class="stat-icon">🪙</span>
+            <span class="stat-label">Coin Balance:</span>
           </div>
-
-          <!-- Name & Pencil Edit Button Row -->
-          <div class="profile-name-row">
-            <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
-            <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-              </svg>
-            </button>
+          <div class="stat-right">
+            <span class="coin-dot">🟡</span>
+            <span class="stat-val" id="profileCoinBalance">0</span>
           </div>
+        </div>
 
-          <!-- Handle -->
-          <div class="profile-handle" id="profileHandle">
-            <span class="handle-at">@</span> alex_blue
+        <div class="profile-stat-row">
+          <div class="stat-left">
+            <span class="stat-icon">💎</span>
+            <span class="stat-label">Diamond Balance:</span>
           </div>
-
-          <!-- Profile Stats Info Box -->
-          <div class="profile-stats-box">
-            
-            <div class="profile-stat-row">
-              <div class="stat-left">
-                <span class="stat-icon">🪙</span>
-                <span class="stat-label">Coin Balance:</span>
-              </div>
-              <div class="stat-right">
-                <span class="coin-dot">🟡</span>
-                <span class="stat-val" id="profileCoinBalance">0</span>
-              </div>
-            </div>
-
-            <div class="profile-stat-row">
-              <div class="stat-left">
-                <span class="stat-icon">🔥</span>
-                <span class="stat-label">Streak:</span>
-              </div>
-              <div class="stat-right">
-                <span class="stat-val streak-highlight" id="profileStreakVal">0 Days</span>
-              </div>
-            </div>
-
-            <div class="profile-stat-row">
-              <div class="stat-left">
-                <span class="stat-icon">⚡</span>
-                <span class="stat-label">Energy Pool:</span>
-              </div>
-              <div class="stat-right">
-                <span class="stat-val energy-highlight" id="profileEnergyPool">0</span>
-              </div>
-            </div>
-
+          <div class="stat-right">
+            <span class="stat-val diamond-highlight" id="profileDiamondBalance">0</span>
           </div>
+        </div>
 
-        </section>
-
-        <!-- Referral Promo Code & Invite Squad Card -->
-        <section class="fren-squad-card">
-          <div class="squad-badge-pill">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span>PROMO CODE & SQUAD INVITE</span>
+        <div class="profile-stat-row">
+          <div class="stat-left">
+            <span class="stat-icon">🔥</span>
+            <span class="stat-label">Streak:</span>
           </div>
-
-          <h3 class="squad-title">Invite & Earn +10 Coins Bonus</h3>
-          <p class="squad-desc">Share your unique promo code with friends. When they use your code, you both earn bonus coins!</p>
-
-           <!-- Promo Code Section -->
-           <div class="promo-code-section">
-             <!-- Generated Promo Code Box -->
-             <div class="promo-code-display-box">
-               <div class="promo-code-info">
-                 <span class="promo-label">YOUR PROMO CODE:</span>
-                 <span class="promo-code-val" id="myPromoCodeText">alexvance_7842</span>
-               </div>
-               <button class="promo-copy-btn" id="btnCopyPromoCode" onclick="copyMyPromoCode()">
-                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3">
-                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                 </svg>
-                 <span>Copy Code</span>
-               </button>
-             </div>
-
-             <!-- Enter Friend's Promo Code Box -->
-             <div class="friend-code-redeem-box">
-               <input type="text" id="inputFriendPromoCode" placeholder="Enter Friend's Code (e.g. friend_1234)" class="friend-code-input">
-               <button class="friend-code-btn" onclick="redeemFriendPromoCode()">
-                 <span>Redeem (+10 🪙)</span>
-               </button>
-             </div>
-             <div class="promo-feedback-msg" id="promoFeedbackMsg"></div>
-           </div>
-
-          <button class="squad-invite-btn" onclick="openInviteModal()">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-            <span>Share via Telegram</span>
-          </button>
-        </section>
-
-        <!-- Suggest Box Tab (Directly Below Invitations Tab) -->
-        <section class="suggest-box-banner-card" id="profileSuggestBoxTab" onclick="switchPage('suggestBox')">
-          <div class="suggest-banner-glow"></div>
-          <div class="suggest-banner-left">
-            <div class="suggest-icon-pill">
-              <span class="suggest-emoji">💡</span>
-            </div>
-            <div class="suggest-banner-info">
-              <div class="suggest-banner-badge">
-                <span>FEEDBACK & IDEAS</span>
-              </div>
-              <h3 class="suggest-banner-title">Suggest Box</h3>
-              <p class="suggest-banner-desc">Share feedback, report a bug, or request a feature!</p>
-            </div>
+          <div class="stat-right">
+            <span class="stat-val streak-highlight" id="profileStreakVal">0 Days</span>
           </div>
-          <div class="suggest-banner-arrow">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
+        </div>
+
+        <div class="profile-stat-row">
+          <div class="stat-left">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-label">Energy Pool:</span>
           </div>
-        </section>
+          <div class="stat-right">
+            <span class="stat-val energy-highlight" id="profileEnergyPool">0</span>
+          </div>
+        </div>
+
+        <div class="profile-stat-row">
+          <div class="stat-left">
+            <span class="stat-icon">🚀</span>
+            <span class="stat-label">Tap Power:</span>
+          </div>
+          <div class="stat-right">
+            <span class="stat-val power-highlight" id="profileTapPowerVal">+1</span>
+          </div>
+        </div>
 
       </div>
 
+    </section>
+
+    <!-- Referral Promo Code & Invite Squad Card -->
+    <section class="fren-squad-card">
+      <div class="squad-badge-pill">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span>PROMO CODE & SQUAD INVITE</span>
+      </div>
+
+      <h3 class="squad-title">Invite & Earn +10 Coins Bonus</h3>
+      <p class="squad-desc">Share your unique promo code with friends. When they use your code, you both earn bonus coins!</p>
+
+      <!-- Promo Code Section -->
+      <div class="promo-code-section">
+        <!-- Generated Promo Code Box -->
+        <div class="promo-code-display-box">
+          <div class="promo-code-info">
+            <span class="promo-label">YOUR PROMO CODE:</span>
+            <span class="promo-code-val" id="myPromoCodeText">alexvance_7842</span>
+          </div>
+          <button class="promo-copy-btn" id="btnCopyPromoCode" onclick="copyMyPromoCode()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span>Copy Code</span>
+          </button>
+        </div>
+
+        <!-- Enter Friend's Promo Code Box -->
+        <div class="friend-code-redeem-box">
+          <input type="text" id="inputFriendPromoCode" placeholder="Enter Friend's Code (e.g. friend_1234)" class="friend-code-input">
+          <button class="friend-code-btn" onclick="redeemFriendPromoCode()">
+            <span>Redeem (+10 🪙)</span>
+          </button>
+        </div>
+        <div class="promo-feedback-msg" id="promoFeedbackMsg"></div>
+      </div>
+
+      <button class="squad-invite-btn" onclick="openInviteModal()">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+        <span>Share via Telegram</span>
+      </button>
+    </section>
+
+    <!-- Suggest Box Tab (Directly Below Invitations Tab) -->
+    <section class="suggest-box-banner-card" id="profileSuggestBoxTab" onclick="switchPage('suggestBox')">
+      <div class="suggest-banner-glow"></div>
+      <div class="suggest-banner-left">
+        <div class="suggest-icon-pill">
+          <span class="suggest-emoji">💡</span>
+        </div>
+        <div class="suggest-banner-info">
+          <div class="suggest-banner-badge">
+            <span>FEEDBACK & IDEAS</span>
+          </div>
+          <h3 class="suggest-banner-title">Suggest Box</h3>
+          <p class="suggest-banner-desc">Share feedback, report a bug, or request a feature!</p>
+        </div>
+      </div>
+      <div class="suggest-banner-arrow">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== TAB 2: SHOP PANE ==================== -->
+  <div class="profile-tab-pane" id="paneShop">
+    
+    <!-- Shop Top Balance Strip -->
+    <section class="shop-balance-card">
+      <div class="shop-balance-glow"></div>
+      <div class="shop-balance-info">
+        <span class="shop-balance-label">REACTOR STORE VAULT</span>
+        <div class="shop-balance-pills">
+          <div class="shop-curr-pill coin-pill-glow">
+            <span class="curr-icon">🪙</span>
+            <span class="curr-amount" id="shopCoinVal">0</span>
+          </div>
+          <div class="shop-curr-pill diamond-pill-glow">
+            <span class="curr-icon">💎</span>
+            <span class="curr-amount" id="shopDiamondVal">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="shop-level-perk">
+        <span class="perk-badge">VIP SHOP</span>
+        <span class="perk-text">Instant Delivery</span>
+      </div>
+    </section>
+
+    <!-- Daily Free Mystery Supply Box -->
+    <section class="shop-freebie-card" id="shopFreebieCard">
+      <div class="freebie-glow-ring"></div>
+      <div class="freebie-content">
+        <div class="freebie-icon-wrap">
+          <span class="freebie-box-icon">📦</span>
+          <span class="freebie-sparkle">✨</span>
+        </div>
+        <div class="freebie-info">
+          <div class="freebie-badge">DAILY FREE SUPPLY DROP</div>
+          <h3 class="freebie-title">Free Quantum Care Package</h3>
+          <p class="freebie-desc">+25 Coins, +1 Spin Ticket & +100 Energy Boost!</p>
+        </div>
+      </div>
+      <button class="shop-action-btn freebie-claim-btn" id="btnClaimShopFreebie" onclick="claimDailyShopFreebie()">
+        <span class="btn-text" id="freebieBtnText">🎁 CLAIM FREE SUPPLY</span>
+      </button>
+    </section>
+
+    <!-- Free Ad Watch Viral Reel Gift Card -->
+    <section class="shop-freebie-card shop-reel-gift-card" id="shopReelGiftCard">
+      <div class="freebie-glow-ring reel-glow-ring"></div>
+      <div class="freebie-content">
+        <div class="freebie-icon-wrap reel-icon-wrap">
+          <span class="freebie-box-icon">🎬</span>
+          <span class="freebie-sparkle">🔥</span>
+        </div>
+        <div class="freebie-info">
+          <div class="freebie-badge reel-badge">FREE ONE AD • VIRAL REEL GIFT</div>
+          <h3 class="freebie-title">Free Cyber Reel Gift Drop</h3>
+          <p class="freebie-desc">Watch 1 quick ad to unlock an exclusive Reel gift! Download to your device & post on social media for +50 🪙 & 1 💎!</p>
+        </div>
+      </div>
+      <button class="shop-action-btn reel-claim-btn" id="btnClaimReelGift" onclick="startReelGiftAdFlow()">
+        <span class="btn-text" id="reelGiftBtnText">🎬 WATCH AD & UNLOCK REEL GIFT</span>
+      </button>
+    </section>
+
+    <!-- Section: Reactor Power Upgrades -->
+    <section class="shop-section">
+      <div class="shop-section-header">
+        <div class="section-title-wrap">
+          <span class="section-icon">⚡</span>
+          <h3 class="section-title">Reactor Power Upgrades</h3>
+        </div>
+        <span class="section-tag">PERMANENT STATS</span>
+      </div>
+
+      <div class="shop-items-grid">
+        
+        <!-- Upgrade 1: Tap Power -->
+        <div class="shop-item-card upgrade-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box cyan-box">
+              <span class="item-emoji">⚡</span>
+            </div>
+            <div class="item-badge-pill" id="shopTapPowerLvl">Lv.1</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Tap Power Overclock</h4>
+            <p class="item-desc">Increases energy generated per tap permanently</p>
+            <div class="item-stat-gain">
+              <span>Effect:</span>
+              <strong class="highlight-gain" id="shopTapPowerGain">+1 EP / tap</strong>
+            </div>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val" id="shopTapPowerPrice">50</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyReactorUpgrade('tapPower')">
+              <span>Upgrade</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Upgrade 2: Max Energy -->
+        <div class="shop-item-card upgrade-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box blue-box">
+              <span class="item-emoji">🔋</span>
+            </div>
+            <div class="item-badge-pill" id="shopMaxEnergyLvl">1,000 EP</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Energy Core Expansion</h4>
+            <p class="item-desc">Expands the reactor's total energy storage capacity</p>
+            <div class="item-stat-gain">
+              <span>Effect:</span>
+              <strong class="highlight-gain">+250 Max Energy</strong>
+            </div>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val" id="shopMaxEnergyPrice">100</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyReactorUpgrade('maxEnergy')">
+              <span>Expand</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Upgrade 3: Instant 100% Recharge -->
+        <div class="shop-item-card upgrade-card full-width-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box gold-box">
+              <span class="item-emoji">⚡</span>
+            </div>
+            <div class="item-badge-pill instant-pill">INSTANT REFILL</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Quantum 100% Supercharge</h4>
+            <p class="item-desc">Instantly recharges your energy gauge to maximum capacity!</p>
+            <div class="item-stat-gain">
+              <span>Effect:</span>
+              <strong class="highlight-gain" style="color: #fbbf24;">100% Tank Refilled</strong>
+            </div>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val">35</span>
+            </div>
+            <button class="shop-buy-btn gold-buy-btn" onclick="buyReactorUpgrade('refill')">
+              <span>⚡ Supercharge</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: Energy Fuel Cell Depot -->
+    <section class="shop-section" id="shopFuelSection">
+      <div class="shop-section-header">
+        <div class="section-title-wrap">
+          <span class="section-icon">🔋</span>
+          <h3 class="section-title">Fuel Cell Depot</h3>
+        </div>
+        <span class="section-tag">ENERGY GENERATORS</span>
+      </div>
+
+      <div class="shop-items-grid">
+        <!-- 1. Dark Green Fuel Cell (First) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-darkgreen">
+          <div class="shop-item-top">
+            <div class="item-icon-box darkgreen-box"><span class="item-emoji">🌱</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_darkgreen">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #34d399;">Dark Green Fuel</h4>
+            <p class="item-desc">+1 Minute generator timer boost</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('darkgreen', 1, 1)" title="Watch 1 Ad for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">1 Ad</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('darkgreen', 100, 5)" title="100 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">100</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('darkgreen', 10, 10)" title="10 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">10</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Green Fuel Cell (Second) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-green">
+          <div class="shop-item-top">
+            <div class="item-icon-box green-box"><span class="item-emoji">🌿</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_green">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #10b981;">Green Fuel Cell</h4>
+            <p class="item-desc">+5 Minutes generator timer boost</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('green', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">2 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('green', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">200</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('green', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">20</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Yellow Fuel Cell (Third) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-yellow">
+          <div class="shop-item-top">
+            <div class="item-icon-box yellow-box"><span class="item-emoji">⚡</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_yellow">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #f59e0b;">Yellow Fuel Cell</h4>
+            <p class="item-desc">+15 Minutes generator timer boost</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('yellow', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">2 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('yellow', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">200</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('yellow', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">20</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Orange Fuel Cell (Fourth) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-orange">
+          <div class="shop-item-top">
+            <div class="item-icon-box orange-box"><span class="item-emoji">🔥</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_orange">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #f97316;">Orange Fuel Cell</h4>
+            <p class="item-desc">+30 Minutes generator timer boost</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('orange', 3, 1)" title="Watch 3 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">3 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('orange', 300, 5)" title="300 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">300</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('orange', 30, 10)" title="30 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">30</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Red Fuel Cell (Fifth) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-red">
+          <div class="shop-item-top">
+            <div class="item-icon-box red-box"><span class="item-emoji">💎</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_red">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #ef4444;">Red Fuel Cell</h4>
+            <p class="item-desc">+0.01 EP/Sec rate permanent boost</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('red', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">5 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('red', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">500</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('red', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">50</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Pink Boost Fuel (Sixth) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-pink">
+          <div class="shop-item-top">
+            <div class="item-icon-box pink-box"><span class="item-emoji">⚡</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_pink">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #ec4899;">Pink Boost Fuel</h4>
+            <p class="item-desc">2x speed generator boost for 10 min</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('pink', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">5 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('pink', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">500</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('pink', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">50</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Purple Boost Fuel (Seventh) -->
+        <div class="shop-item-card fuel-shop-card fuel-border-purple">
+          <div class="shop-item-top">
+            <div class="item-icon-box purple-box"><span class="item-emoji">🔮</span></div>
+            <div class="item-badge-pill" id="shopOwnedFuel_purple">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #a855f7;">Purple Boost Fuel</h4>
+            <p class="item-desc">5x speed generator boost for 10 min</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy">
+              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('purple', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                <span class="method-icon">🎬</span>
+                <span class="method-label">5 Ads</span>
+                <span class="method-gain">+1 Cell</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('purple', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">500</span>
+                <span class="method-gain">+5 Cells</span>
+              </button>
+              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('purple', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                <span class="method-icon">💎</span>
+                <span class="method-label">50</span>
+                <span class="method-gain">+10 Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Game Passes & Tickets -->
+    <section class="shop-section">
+      <div class="shop-section-header">
+        <div class="section-title-wrap">
+          <span class="section-icon">🎟️</span>
+          <h3 class="section-title">Game Passes & Lucky Tickets</h3>
+        </div>
+        <span class="section-tag">INSTANT PASSES</span>
+      </div>
+
+      <div class="shop-items-grid">
+
+        <!-- Item 1: Spin Wheel Ticket -->
+        <div class="shop-item-card ticket-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box purple-box">
+              <span class="item-emoji">🎡</span>
+            </div>
+            <div class="item-inventory-pill">
+              <span id="shopOwnedTickets">0</span> Owned
+            </div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Lucky Spin Ticket</h4>
+            <p class="item-desc">1 Spin on the 8-Prize Lucky Wheel</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val">25</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyPassItem('spinTicket')">
+              <span>Buy 1x</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 2: Mystery Chest Key -->
+        <div class="shop-item-card ticket-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box gold-box">
+              <span class="item-emoji">🔑</span>
+            </div>
+            <div class="item-inventory-pill">
+              <span id="shopOwnedKeys">0</span> Owned
+            </div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Mystery Chest Key</h4>
+            <p class="item-desc">Unlock 1 Cyber Mystery Chest for rare drops</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val">50</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyPassItem('chestKey')">
+              <span>Buy 1x</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 3: Scratch Card -->
+        <div class="shop-item-card ticket-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box pink-box">
+              <span class="item-emoji">🎟️</span>
+            </div>
+            <div class="item-inventory-pill">
+              <span id="shopOwnedScratch">0</span> Owned
+            </div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Fortune Scratch Card</h4>
+            <p class="item-desc">Play 1 3x3 Match-3 fortune scratch game</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val">35</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyPassItem('scratchCard')">
+              <span>Buy 1x</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 4: Cyber Dragon Egg -->
+        <div class="shop-item-card ticket-card">
+          <div class="shop-item-top">
+            <div class="item-icon-box green-box">
+              <span class="item-emoji">🥚</span>
+            </div>
+            <div class="item-inventory-pill">
+              <span id="shopOwnedEggs">0</span> Owned
+            </div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name">Cyber Dragon Egg</h4>
+            <p class="item-desc">Pick 1 lucky egg in the 16-Egg Hatchery</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="item-price">
+              <span class="price-icon">🪙</span>
+              <span class="price-val">75</span>
+            </div>
+            <button class="shop-buy-btn" onclick="buyPassItem('egg')">
+              <span>Buy 1x</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Shop Floating Purchase Toast -->
+    <div class="shop-toast" id="shopToast">
+      <span class="shop-toast-icon" id="shopToastIcon">✨</span>
+      <span class="shop-toast-msg" id="shopToastMsg">Item Purchased!</span>
+    </div>
+
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: REEL GIFT STUDIO & SOCIAL MEDIA SHARING
+       ========================================================================== -->
+  <div class="reel-studio-backdrop" id="reelStudioBackdrop" style="display: none;">
+    <div class="reel-studio-modal" id="reelStudioModal">
+      <!-- Modal Header -->
+      <div class="reel-studio-header">
+        <div class="reel-header-left">
+          <div class="reel-header-icon-box">🎬</div>
+          <div class="reel-header-titles">
+            <span class="reel-studio-badge">VIRAL SOCIAL REEL GIFT</span>
+            <h3 class="reel-studio-title">Cyber Reel Studio</h3>
+          </div>
+        </div>
+        <button class="reel-modal-close-btn" onclick="closeReelStudioModal()">✕</button>
+      </div>
+
+      <!-- 9:16 Smartphone Vertical Reel Frame -->
+      <div class="reel-phone-wrapper">
+        <div class="reel-phone-screen" id="reelPhoneScreen">
+          <!-- Animated Cyber Canvas Background -->
+          <canvas id="reelCanvas" class="reel-live-canvas" width="360" height="540"></canvas>
+          
+          <!-- Live Reel Overlay UI -->
+          <div class="reel-overlay-content">
+            <!-- Top Audio / Tag Pill -->
+            <div class="reel-top-pill">
+              <span class="reel-equalizer-bars">
+                <span></span><span></span><span></span><span></span>
+              </span>
+              <span class="reel-audio-title">Energy Tap • Official Game Reel</span>
+            </div>
+
+            <!-- Center Reel Reactor Emblem -->
+            <div class="reel-center-emblem">
+              <div class="reel-reactor-rings">
+                <div class="reel-ring r1"></div>
+                <div class="reel-ring r2"></div>
+              </div>
+              <div class="reel-orb-core">⚡</div>
+            </div>
+
+            <!-- Bottom Player Info & Social Tags -->
+            <div class="reel-bottom-meta">
+              <div class="reel-player-row">
+                <div class="reel-player-avatar" id="reelPreviewAvatar">⚡</div>
+                <div class="reel-player-text">
+                  <span class="reel-player-name" id="reelPreviewName">Alex Vance</span>
+                  <span class="reel-player-stats" id="reelPreviewStats">Lv.1 • Tap Power +1 • 1,000 EP</span>
+                </div>
+              </div>
+
+              <!-- Promo Code Callout -->
+              <div class="reel-promo-callout">
+                <span class="promo-tag-lbl">🎁 USE MY CODE FOR +10 🪙:</span>
+                <span class="promo-tag-code" id="reelPreviewPromoCode">alexvance_7842</span>
+              </div>
+
+              <div class="reel-social-hashtags">
+                #EnergyTap #ViralReel #PlayToEarn #TelegramGaming
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reel Action Controls -->
+      <div class="reel-modal-actions">
+        <!-- Download Button -->
+        <button class="reel-action-btn download-reel-btn" id="btnDownloadReelMedia" onclick="downloadReelGiftMedia()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>📥 DOWNLOAD REEL GIFT (HD)</span>
+        </button>
+
+        <!-- Social Media Posting Section -->
+        <div class="reel-social-share-box">
+          <span class="social-share-lbl">POST ON SOCIAL MEDIA:</span>
+          <div class="social-share-btn-grid">
+            
+            <button class="social-btn instagram-btn" onclick="shareReelToSocial('instagram')" title="Share to Instagram Reels">
+              <span class="social-icon">📸</span>
+              <span class="social-name">Instagram</span>
+            </button>
+
+            <button class="social-btn tiktok-btn" onclick="shareReelToSocial('tiktok')" title="Share to TikTok">
+              <span class="social-icon">🎵</span>
+              <span class="social-name">TikTok</span>
+            </button>
+
+            <button class="social-btn telegram-btn" onclick="shareReelToSocial('telegram')" title="Share to Telegram">
+              <span class="social-icon">✈️</span>
+              <span class="social-name">Telegram</span>
+            </button>
+
+            <button class="social-btn whatsapp-btn" onclick="shareReelToSocial('whatsapp')" title="Share to WhatsApp">
+              <span class="social-icon">💬</span>
+              <span class="social-name">WhatsApp</span>
+            </button>
+
+            <button class="social-btn twitter-btn" onclick="shareReelToSocial('x')" title="Share to X / Twitter">
+              <span class="social-icon">🐦</span>
+              <span class="social-name">X (Twitter)</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Claim Social Bonus Button -->
+        <button class="reel-action-btn claim-bonus-btn" id="btnClaimSocialBonus" onclick="claimSocialMediaBonus()">
+          <span>🎁 I POSTED! CLAIM +50 🪙 & 1 💎 BONUS</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

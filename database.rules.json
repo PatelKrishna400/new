@@ -35,6 +35,26 @@
         ".write": true
       }
     },
+    "website_tasks_config": {
+      ".read": true,
+      ".write": true
+    },
+    "telegram_tasks_config": {
+      ".read": true,
+      ".write": true
+    },
+    "monthly_competition": {
+      ".read": true,
+      ".write": true
+    },
+    "season": {
+      ".read": true,
+      ".write": true
+    },
+    "ads_config": {
+      ".read": true,
+      ".write": true
+    },
     "whitelist": {
       ".read": true,
       "$uid": {

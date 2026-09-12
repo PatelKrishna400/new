@@ -73,6 +73,9 @@ class FirebaseSyncService {
             this.listenToWebsiteTasks();
             this.listenToTelegramTasks();
             this.listenToUser();
+            this.listenToSeason();
+            this.listenToMonthlyCompetition();
+            this.listenToAdsConfig();
           })
           .catch((error) => {
             console.warn('Firebase Auth failed, falling back to local UID:', error);
@@ -85,6 +88,9 @@ class FirebaseSyncService {
             this.listenToWebsiteTasks();
             this.listenToTelegramTasks();
             this.listenToUser();
+            this.listenToSeason();
+            this.listenToMonthlyCompetition();
+            this.listenToAdsConfig();
           });
       } else {
         console.warn('Firebase SDK not loaded, using LocalStorage only.');
@@ -221,6 +227,7 @@ class FirebaseSyncService {
             gameState.player.chestKeys = 0;
             gameState.player.scratchCards = 0;
             gameState.player.chestTickets = 0;
+            gameState.player.eggs = 0;
             gameState.player.adsWatchedCount = 0;
             gameState.player.websiteTasksCompleted = 0;
           }
@@ -250,6 +257,7 @@ class FirebaseSyncService {
           gameState.player.chestKeys = 0;
           gameState.player.scratchCards = 0;
           gameState.player.chestTickets = 0;
+          gameState.player.eggs = 0;
           gameState.player.adsWatchedCount = 0;
           gameState.player.websiteTasksCompleted = 0;
         }
@@ -296,6 +304,10 @@ class FirebaseSyncService {
           gameState.player.chestTickets = cloudData.player.chestTickets || 0;
           hasChanged = true;
         }
+        if (gameState.player.eggs !== cloudData.player.eggs) {
+          gameState.player.eggs = cloudData.player.eggs || 0;
+          hasChanged = true;
+        }
         if (cloudData.player.xp !== undefined && gameState.player.xp !== cloudData.player.xp) {
           gameState.player.xp = cloudData.player.xp || 0;
           hasChanged = true;
@@ -317,6 +329,31 @@ class FirebaseSyncService {
           gameState.goalState.currentLevel = cloudData.goalState.currentLevel || 0;
           gameState.goalState.claimedGoals = cloudData.goalState.claimedGoals || {};
           hasChanged = true;
+        } else if (JSON.stringify(gameState.goalState.claimedGoals || {}) !== JSON.stringify(cloudData.goalState.claimedGoals || {})) {
+          gameState.goalState.claimedGoals = cloudData.goalState.claimedGoals || {};
+          hasChanged = true;
+        }
+        if (cloudData.goalState.seasonEndMs && gameState.goalState.seasonEndMs !== cloudData.goalState.seasonEndMs) {
+          gameState.goalState.seasonEndMs = cloudData.goalState.seasonEndMs;
+          hasChanged = true;
+        }
+      }
+
+      if (cloudData.xpState && typeof gameState !== 'undefined' && gameState.xpState) {
+        if (JSON.stringify(gameState.xpState.claimedLevels || {}) !== JSON.stringify(cloudData.xpState.claimedLevels || {})) {
+          gameState.xpState.claimedLevels = cloudData.xpState.claimedLevels || {};
+          hasChanged = true;
+        }
+        if (cloudData.xpState.seasonEndMs && gameState.xpState.seasonEndMs !== cloudData.xpState.seasonEndMs) {
+          gameState.xpState.seasonEndMs = cloudData.xpState.seasonEndMs;
+          hasChanged = true;
+        }
+      }
+
+      if (cloudData.tasksState && typeof gameState !== 'undefined' && gameState.tasksState) {
+        if (JSON.stringify(gameState.tasksState.claimedDaily || {}) !== JSON.stringify(cloudData.tasksState.claimedDaily || {})) {
+          gameState.tasksState.claimedDaily = cloudData.tasksState.claimedDaily || {};
+          hasChanged = true;
         }
       }
 
@@ -327,6 +364,184 @@ class FirebaseSyncService {
         if (typeof renderLevelsList === 'function') renderLevelsList();
         if (typeof renderGoalsList === 'function') renderGoalsList();
         if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
+      }
+    });
+  }
+
+  // Real-time listener for Global Season Resets from Admin (/season)
+  listenToSeason() {
+    if (!this.database) return;
+
+    const seasonRef = this.database.ref('/season');
+    seasonRef.on('value', (snapshot) => {
+      const seasonData = snapshot.val();
+      if (!seasonData) return;
+
+      const adminSeasonTimestamp = seasonData.forceRestartTimestamp || seasonData.seasonStartTime || 0;
+      const localLastProcessed = Number(localStorage.getItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET') || 0);
+
+      // If admin triggered a new season reset after our last processed reset
+      if (adminSeasonTimestamp > localLastProcessed) {
+        localStorage.setItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET', adminSeasonTimestamp);
+        console.log('🔄 Global Admin Season Reset received from Firebase! Restoring levels & claims for user:', this.userId);
+
+        const now = Date.now();
+        const duration = (seasonData.seasonDurationDays ? seasonData.seasonDurationDays * 86400 * 1000 : 30 * 86400 * 1000);
+
+        // Reset user XP level claim data and restart level progression
+        if (gameState.xpState) {
+          gameState.xpState.claimedLevels = {};
+          gameState.xpState.watchedAds = 0;
+          gameState.xpState.megaRewardClaimed = false;
+          gameState.xpState.seasonEndMs = now + duration;
+        }
+        if (gameState.player) {
+          gameState.player.level = 0;
+          gameState.player.xp = 0;
+          gameState.player.xpToNextLevel = 1000;
+        }
+
+        // Reset user Goal level claim data and progress
+        if (gameState.goalState) {
+          gameState.goalState.claimedGoals = {};
+          gameState.goalState.currentLevel = 0;
+          gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+          gameState.goalState.levelAdsWatched = 0;
+          gameState.goalState.megaWatchedAds = 0;
+          gameState.goalState.megaRewardClaimed = false;
+          gameState.goalState.grandChestClaimed = false;
+          gameState.goalState.seasonEndMs = now + duration;
+        }
+        if (gameState.goal) {
+          gameState.goal.level = 0;
+          gameState.goal.currentCoins = 0;
+          gameState.goal.currentKeys = 0;
+          gameState.goal.currentTickets = 0;
+        }
+
+        // Reset monthly tasks
+        if (gameState.tasksState) {
+          gameState.tasksState.claimedDaily = {};
+        }
+        if (gameState.dailyStats) {
+          gameState.dailyStats.resetTimestamp = now;
+        }
+
+        if (typeof saveGame === 'function') saveGame();
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof renderTasksList === 'function') renderTasksList();
+        if (typeof renderLevelsList === 'function') renderLevelsList();
+        if (typeof renderGoalsList === 'function') renderGoalsList();
+
+        // Immediately persist this user's newly restored state to their individual Firebase node
+        this.saveToCloudImmediate();
+
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast('🌟 New Season Started! Level rewards restored & ready to claim anew!');
+        }
+      }
+    });
+  }
+
+  // Real-time listener for Global 30-Day Monthly Task Competition (/monthly_competition)
+  listenToMonthlyCompetition() {
+    if (!this.database) return;
+
+    const compRef = this.database.ref('/monthly_competition');
+    compRef.on('value', (snapshot) => {
+      let compData = snapshot.val();
+      const now = Date.now();
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+      if (!compData || typeof compData !== 'object' || !compData.endTime) {
+        // Initialize 30-day competition in Firebase backend if not yet set
+        compData = {
+          title: '30-Day Monthly Task Competition',
+          cycleDays: 30,
+          cycleNumber: 1,
+          startTime: now,
+          endTime: now + thirtyDaysMs,
+          forceResetTimestamp: now,
+          lastUpdated: now
+        };
+        compRef.set(compData).catch(() => {});
+      }
+
+      // Check if competition cycle naturally expired in Firebase backend
+      if (now >= compData.endTime) {
+        console.log('⏳ 30-day competition cycle reached its end! Advancing to next cycle in Firebase backend.');
+        compData = {
+          title: '30-Day Monthly Task Competition',
+          cycleDays: 30,
+          cycleNumber: (compData.cycleNumber || 1) + 1,
+          startTime: now,
+          endTime: now + thirtyDaysMs,
+          forceResetTimestamp: now,
+          lastUpdated: now
+        };
+        compRef.set(compData).catch(() => {});
+      }
+
+      // Save into gameState
+      if (typeof gameState !== 'undefined') {
+        gameState.monthlyCompetition = compData;
+      }
+      try {
+        localStorage.setItem('ENERGY_TAP_MONTHLY_COMPETITION', JSON.stringify(compData));
+      } catch(e) {}
+
+      const adminResetTimestamp = compData.forceResetTimestamp || compData.startTime || 0;
+      const localLastProcessed = Number(localStorage.getItem('ENERGY_TAP_LAST_MONTHLY_COMP_RESET') || 0);
+
+      // Trigger reset if new cycle or admin force-reset was triggered
+      if (adminResetTimestamp > localLastProcessed) {
+        localStorage.setItem('ENERGY_TAP_LAST_MONTHLY_COMP_RESET', adminResetTimestamp);
+        console.log('🔄 Firebase Monthly Task Competition Reset applied for player:', this.userId);
+
+        if (typeof gameState !== 'undefined') {
+          if (!gameState.tasksState) {
+            gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {} };
+          }
+          gameState.tasksState.claimedDaily = {};
+          if (gameState.tasksState.claimedMonthly) {
+            gameState.tasksState.claimedMonthly = {};
+          }
+
+          if (!gameState.dailyStats) {
+            gameState.dailyStats = {};
+          }
+          gameState.dailyStats.spins = 0;
+          gameState.dailyStats.chests = 0;
+          gameState.dailyStats.scratches = 0;
+          gameState.dailyStats.eggs = 0;
+          gameState.dailyStats.taps = 0;
+          gameState.dailyStats.fuel_green = 0;
+          gameState.dailyStats.fuel_yellow = 0;
+          gameState.dailyStats.fuel_orange = 0;
+          gameState.dailyStats.fuel_red = 0;
+          gameState.dailyStats.fuel_pink = 0;
+          gameState.dailyStats.fuel_purple = 0;
+          gameState.dailyStats.fuel_darkgreen = 0;
+          gameState.dailyStats.date = new Date().toDateString();
+          gameState.dailyStats.resetTimestamp = compData.startTime;
+
+          if (typeof saveGame === 'function') saveGame();
+          if (typeof updateUI === 'function') updateUI();
+          if (typeof renderTasksList === 'function') renderTasksList();
+          if (typeof updateMonthlyCompetitionTimer === 'function') updateMonthlyCompetitionTimer();
+
+          // Sync reset state directly to player's Firebase record
+          this.saveToCloudImmediate();
+
+          if (typeof showFloatingToast === 'function') {
+            showFloatingToast(`🏆 New 30-Day Monthly Quest Competition Cycle #${compData.cycleNumber || 1} Started!`);
+          }
+        }
+      } else {
+        // Ensure UI countdown timer has latest Firebase end time
+        if (typeof updateMonthlyCompetitionTimer === 'function') {
+          updateMonthlyCompetitionTimer();
+        }
       }
     });
   }

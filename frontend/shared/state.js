@@ -119,7 +119,7 @@ const gameState = {
     watchedAds: 0,
     claimedLevels: {},
     megaRewardClaimed: false,
-    seasonEndMs: Date.now() + (12 * 24 * 3600 + 22 * 60 + 42) * 1000
+    seasonEndMs: Date.now() + 30 * 24 * 3600 * 1000
   },
   goalState: {
     currentSubtab: 'mega', // 'mega' | 'goals'
@@ -133,7 +133,7 @@ const gameState = {
     claimedGoals: {},
     megaWatchedAds: 0, // 0 to 1000 ads
     megaRewardClaimed: false,
-    seasonEndMs: Date.now() + (12 * 24 * 3600 + 22 * 60 + 42) * 1000
+    seasonEndMs: Date.now() + 30 * 24 * 3600 * 1000
   },
   settings: {
     soundEnabled: true,
@@ -363,8 +363,9 @@ function resetAllDataToZero() {
 
 window.resetAllDataToZero = resetAllDataToZero;
 
-// Hidden 24-hour daily task auto-restart & stats reset
-const DAILY_RESET_CYCLE_MS = 24 * 60 * 60 * 1000;
+// 30-Day Monthly Task Competition Cycle & Stats Reset
+const MONTHLY_RESET_CYCLE_MS = 30 * 24 * 60 * 60 * 1000;
+const DAILY_RESET_CYCLE_MS = MONTHLY_RESET_CYCLE_MS; // Backwards compatibility alias
 
 function checkDailyStatsDate() {
   const now = Date.now();
@@ -400,11 +401,12 @@ function checkDailyStatsDate() {
   if (gameState.dailyStats.fuel_purple === undefined) gameState.dailyStats.fuel_purple = 0;
   if (gameState.dailyStats.fuel_darkgreen === undefined) gameState.dailyStats.fuel_darkgreen = 0;
 
-  const elapsed = now - (gameState.dailyStats.resetTimestamp || 0);
-  const dayChanged = (gameState.dailyStats.date !== today);
+  const compEndTime = (gameState.monthlyCompetition && gameState.monthlyCompetition.endTime) || null;
+  const isExpiredByFirebase = compEndTime ? (now >= compEndTime) : false;
+  const isExpiredByLocal = elapsed >= MONTHLY_RESET_CYCLE_MS;
 
-  // Auto-reset when 24 hours have elapsed or calendar date changes
-  if (elapsed >= DAILY_RESET_CYCLE_MS || dayChanged) {
+  // Auto-reset when 30-day competition cycle has elapsed
+  if (isExpiredByFirebase || isExpiredByLocal) {
     gameState.dailyStats.spins = 0;
     gameState.dailyStats.chests = 0;
     gameState.dailyStats.scratches = 0;
@@ -420,22 +422,91 @@ function checkDailyStatsDate() {
     gameState.dailyStats.date = today;
     gameState.dailyStats.resetTimestamp = now;
 
-    // Reset all claimed daily tasks so user can restart and redo them
+    // Reset all claimed monthly tasks so user can restart and redo them
     if (!gameState.tasksState) {
-      gameState.tasksState = { claimedDaily: {}, claimedTelegram: {} };
+      gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {} };
     }
     gameState.tasksState.claimedDaily = {};
+    if (gameState.tasksState.claimedMonthly) {
+      gameState.tasksState.claimedMonthly = {};
+    }
 
     saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
     if (typeof renderTasksList === 'function') {
       renderTasksList();
     }
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔄 Daily quests reset! New 24-hour cycle started.');
+      showFloatingToast('🔄 30-Day Monthly Quests reset! New competition cycle started.');
     }
   }
+
+  // Also check season expiration for XP Level rewards & Goal Level rewards
+  checkSeasonExpiration();
 }
 window.checkDailyStatsDate = checkDailyStatsDate;
+
+// Season Expiration & Level Reward Restoration Logic (Per-User Individual Execution)
+function checkSeasonExpiration() {
+  const now = Date.now();
+  let needSave = false;
+
+  // XP Page Season Check: Run for individual player
+  if (gameState.xpState) {
+    if (!gameState.xpState.seasonEndMs || now >= gameState.xpState.seasonEndMs) {
+      // Re-fix and restore claimed levels so user can climb levels and claim new rewards
+      gameState.xpState.claimedLevels = {};
+      gameState.xpState.watchedAds = 0;
+      gameState.xpState.megaRewardClaimed = false;
+      gameState.xpState.seasonEndMs = now + (30 * 24 * 60 * 60 * 1000);
+
+      // Restore player level to 0 and reset XP so the user starts fresh and climbs new levels level-wise!
+      if (gameState.player) {
+        gameState.player.level = 0;
+        gameState.player.xp = 0;
+        gameState.player.xpToNextLevel = 1000;
+      }
+      needSave = true;
+      console.log('🔄 XP Season restarted: Level rewards restored and new 30-day season initialized for user!');
+    }
+  }
+
+  // Goal Page Season Check: Run for individual player
+  if (gameState.goalState) {
+    if (!gameState.goalState.seasonEndMs || now >= gameState.goalState.seasonEndMs) {
+      // Re-fix and restore claimed goals and level progress so user can progress level-wise anew
+      gameState.goalState.claimedGoals = {};
+      gameState.goalState.currentLevel = 0;
+      gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+      gameState.goalState.levelAdsWatched = 0;
+      gameState.goalState.megaWatchedAds = 0;
+      gameState.goalState.megaRewardClaimed = false;
+      gameState.goalState.grandChestClaimed = false;
+      gameState.goalState.seasonEndMs = now + (30 * 24 * 60 * 60 * 1000);
+      if (gameState.goal) {
+        gameState.goal.level = 0;
+        gameState.goal.currentCoins = 0;
+        gameState.goal.currentKeys = 0;
+        gameState.goal.currentTickets = 0;
+      }
+      needSave = true;
+      console.log('🔄 Goal Season restarted: Goal levels and claim data restored for new 30-day season for user!');
+    }
+  }
+
+  if (needSave) {
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof renderLevelsList === 'function') renderLevelsList();
+    if (typeof renderGoalsList === 'function') renderGoalsList();
+  }
+}
+window.checkSeasonExpiration = checkSeasonExpiration;
 
 function saveGame() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -584,8 +655,10 @@ function initAmbientParticles() {
 const DOM = {
   playerLevelBadge: document.getElementById('playerLevelBadge'),
   playerUsername: document.getElementById('playerUsername'),
-  coinCounter: document.getElementById('coinCounter'),
+  coinCounter: document.getElementById('coinCounter') || document.getElementById('headerCoinBalance'),
   coinPill: document.getElementById('coinPill'),
+  blueCoinCounter: document.getElementById('blueCoinCounter') || document.getElementById('headerBlueBalance'),
+  blueCoinPill: document.getElementById('blueCoinPill'),
   streakBtn: document.getElementById('streakBtn'),
   
   pageHome: document.getElementById('pageHome'),

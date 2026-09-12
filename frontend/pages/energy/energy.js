@@ -183,51 +183,58 @@ function ensureBoostsState() {
   if (gameState.energyGenerator.fuelCells.purple === undefined) gameState.energyGenerator.fuelCells.purple = 0;
 }
 
-// Master Fuel Action Handler for Green, Dark Green, Yellow, Orange, Red
+// Master Fuel Action Handler for Green, Dark Green, Yellow, Orange, Red (Zero Ads)
 function handleFuelAction(fuelType) {
   const currentCount = (gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[fuelType]) || 0;
 
   if (currentCount > 0) {
     gameState.energyGenerator.fuelCells[fuelType]--;
-    gameState.energyGenerator.consumed[fuelType] = (gameState.energyGenerator.consumed[fuelType] || 0) + 1;
-
-    // Track daily task fuel consumption
-    if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
-    if (gameState.dailyStats) {
-      const statKey = 'fuel_' + fuelType;
-      gameState.dailyStats[statKey] = (gameState.dailyStats[statKey] || 0) + 1;
-    }
-
-    if (fuelType === 'green') {
-      gameState.energyGenerator.remainingSeconds += (5 * 60); // +5 Minutes
-    } else if (fuelType === 'darkgreen') {
-      gameState.energyGenerator.remainingSeconds += 60; // +1 Minute
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🌿 Dark Green Fuel consumed: +1 Min Generator Timer added!');
-      }
-    } else if (fuelType === 'yellow') {
-      gameState.energyGenerator.remainingSeconds += (15 * 60); // +15 Minutes
-    } else if (fuelType === 'orange') {
-      gameState.energyGenerator.remainingSeconds += (30 * 60); // +30 Minutes
-    } else if (fuelType === 'red') {
-      // Red Fuel only increases energy rate by +0.01 EP/sec (Timer addition removed)
-      if (gameState.energyGenerator.ratePerSec === undefined) {
-        gameState.energyGenerator.ratePerSec = gameState.energyGenerator.ratePerMin || 0.01;
-      }
-      gameState.energyGenerator.ratePerSec = +(gameState.energyGenerator.ratePerSec + 0.01).toFixed(2);
-      gameState.energyGenerator.ratePerMin = gameState.energyGenerator.ratePerSec;
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🔥 Red Fuel consumed: +0.01 EP/Sec Rate increased! (Current: +${gameState.energyGenerator.ratePerSec}/s)`);
-      }
-    }
-
-    sfx.playLevelUpSound();
-    triggerGaugePulse();
-    updateUI();
-    saveGame();
-  } else {
-    watchAdForFuel(fuelType);
   }
+
+  gameState.energyGenerator.consumed[fuelType] = (gameState.energyGenerator.consumed[fuelType] || 0) + 1;
+
+  // Track daily task fuel consumption
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) {
+    const statKey = 'fuel_' + fuelType;
+    gameState.dailyStats[statKey] = (gameState.dailyStats[statKey] || 0) + 1;
+  }
+
+  if (fuelType === 'green') {
+    gameState.energyGenerator.remainingSeconds += (5 * 60); // +5 Minutes
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Green Fuel activated: +5 Min Generator Timer added!');
+    }
+  } else if (fuelType === 'darkgreen') {
+    gameState.energyGenerator.remainingSeconds += 60; // +1 Minute
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🌿 Dark Green Fuel activated: +1 Min Generator Timer added!');
+    }
+  } else if (fuelType === 'yellow') {
+    gameState.energyGenerator.remainingSeconds += (15 * 60); // +15 Minutes
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Yellow Fuel activated: +15 Min Generator Timer added!');
+    }
+  } else if (fuelType === 'orange') {
+    gameState.energyGenerator.remainingSeconds += (30 * 60); // +30 Minutes
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Orange Fuel activated: +30 Min Generator Timer added!');
+    }
+  } else if (fuelType === 'red') {
+    if (gameState.energyGenerator.ratePerSec === undefined) {
+      gameState.energyGenerator.ratePerSec = gameState.energyGenerator.ratePerMin || 0.01;
+    }
+    gameState.energyGenerator.ratePerSec = +(gameState.energyGenerator.ratePerSec + 0.01).toFixed(2);
+    gameState.energyGenerator.ratePerMin = gameState.energyGenerator.ratePerSec;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔥 Red Fuel activated: +0.01 EP/Sec Rate increased! (Current: +${gameState.energyGenerator.ratePerSec}/s)`);
+    }
+  }
+
+  sfx.playLevelUpSound();
+  triggerGaugePulse();
+  updateUI();
+  saveGame();
 }
 
 function useGreenFuel() { handleFuelAction('green'); }
@@ -236,43 +243,8 @@ function useYellowFuel() { handleFuelAction('yellow'); }
 function useOrangeFuel() { handleFuelAction('orange'); }
 function useRedFuel() { handleFuelAction('red'); }
 
-// Sponsored Ad Watcher for Standard Fuels
-function watchAdForFuel(fuelType) {
-  sfx.playTapSound(2);
-
-  let fuelTitle = 'Green Fuel Cell';
-  let fuelBonus = '+5 Min Generator Timer';
-
-  if (fuelType === 'darkgreen') {
-    fuelTitle = 'Dark Green Fuel Cell';
-    fuelBonus = '+1 Min Generator Timer';
-  } else if (fuelType === 'yellow') {
-    fuelTitle = 'Yellow Fuel Cell';
-    fuelBonus = '+15 Min Generator Timer';
-  } else if (fuelType === 'orange') {
-    fuelTitle = 'Orange Fuel Cell';
-    fuelBonus = '+30 Min Generator Timer';
-  } else if (fuelType === 'red') {
-    fuelTitle = 'Red Fuel Cell';
-    fuelBonus = '+0.01 EP/Sec Rate Boost';
-  }
-
-  const doReward = () => {
-    gameState.energyGenerator.fuelCells[fuelType] = (gameState.energyGenerator.fuelCells[fuelType] || 0) + 1;
-    handleFuelAction(fuelType);
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation(fuelType, `+1 ${fuelTitle}`, fuelBonus, doReward);
-  } else {
-    doReward();
-  }
-}
-
 // ==========================================================================
-// PINK BOOST FUEL (*2 Boost for 10 min, 1h Cooldown, 30m CD Reduce via Ad, 3 Ads = 1 Cell)
+// PINK BOOST FUEL (*2 Boost for 10 min, 1h Cooldown - Zero Ads)
 // ==========================================================================
 function handlePinkAction() {
   ensureBoostsState();
@@ -283,7 +255,7 @@ function handlePinkAction() {
   if (pink.cooldownRemainingSeconds > 0) {
     sfx.playTapSound(1);
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Pink Boost on cooldown! Watch an ad to reduce 30 min.`);
+      showFloatingToast(`⏳ Pink Boost on cooldown (${formatCooldownDisplay(pink.cooldownRemainingSeconds)})`);
     }
     return;
   }
@@ -297,35 +269,31 @@ function handlePinkAction() {
     return;
   }
 
-  // If user has fuel cell -> Activate!
   if (count > 0) {
     gameState.energyGenerator.fuelCells.pink--;
-    gameState.energyGenerator.consumed.pink = (gameState.energyGenerator.consumed.pink || 0) + 1;
-
-    // Track daily task fuel consumption
-    if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
-    if (gameState.dailyStats) {
-      gameState.dailyStats.fuel_pink = (gameState.dailyStats.fuel_pink || 0) + 1;
-    }
-
-    pink.activeRemainingSeconds = 10 * 60; // 10 minutes active
-    pink.cooldownRemainingSeconds = 60 * 60; // 1 hour cooldown
-
-    sfx.playLevelUpSound();
-    triggerGaugePulse();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('⚡ 2x Boost Activated for 10 Minutes!');
-    }
-    updateUI();
-    saveGame();
-  } else {
-    // 0 cells -> Watch ad toward earning a cell
-    watchAdForBoostFuel('pink');
   }
+  gameState.energyGenerator.consumed.pink = (gameState.energyGenerator.consumed.pink || 0) + 1;
+
+  // Track daily task fuel consumption
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) {
+    gameState.dailyStats.fuel_pink = (gameState.dailyStats.fuel_pink || 0) + 1;
+  }
+
+  pink.activeRemainingSeconds = 10 * 60; // 10 minutes active
+  pink.cooldownRemainingSeconds = 60 * 60; // 1 hour cooldown
+
+  sfx.playLevelUpSound();
+  triggerGaugePulse();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('⚡ 2x Boost Activated for 10 Minutes!');
+  }
+  updateUI();
+  saveGame();
 }
 
 // ==========================================================================
-// PURPLE BOOST FUEL (*5 Boost for 10 min, 5h Cooldown, 30m CD Reduce via Ad, 5 Ads = 1 Cell)
+// PURPLE BOOST FUEL (*5 Boost for 10 min, 5h Cooldown - Zero Ads)
 // ==========================================================================
 function handlePurpleAction() {
   ensureBoostsState();
@@ -336,7 +304,7 @@ function handlePurpleAction() {
   if (purple.cooldownRemainingSeconds > 0) {
     sfx.playTapSound(1);
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Purple Boost on cooldown! Watch an ad to reduce 30 min.`);
+      showFloatingToast(`⏳ Purple Boost on cooldown (${formatCooldownDisplay(purple.cooldownRemainingSeconds)})`);
     }
     return;
   }
@@ -350,110 +318,27 @@ function handlePurpleAction() {
     return;
   }
 
-  // If user has fuel cell -> Activate!
   if (count > 0) {
     gameState.energyGenerator.fuelCells.purple--;
-    gameState.energyGenerator.consumed.purple = (gameState.energyGenerator.consumed.purple || 0) + 1;
-
-    // Track daily task fuel consumption
-    if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
-    if (gameState.dailyStats) {
-      gameState.dailyStats.fuel_purple = (gameState.dailyStats.fuel_purple || 0) + 1;
-    }
-
-    purple.activeRemainingSeconds = 10 * 60; // 10 minutes active
-    purple.cooldownRemainingSeconds = 5 * 3600; // 5 hours cooldown
-
-    sfx.playLevelUpSound();
-    triggerGaugePulse();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔥 5x Speed Boost Activated for 10 Minutes!');
-    }
-    updateUI();
-    saveGame();
-  } else {
-    // 0 cells -> Watch ad toward earning a cell
-    watchAdForBoostFuel('purple');
   }
-}
+  gameState.energyGenerator.consumed.purple = (gameState.energyGenerator.consumed.purple || 0) + 1;
 
-// Cooldown Reduction: Watch ad to reduce cooldown by 30 min (1800s)
-function reduceCooldownWithAd(fuelType) {
-  ensureBoostsState();
-  const boost = gameState.energyGenerator.boosts[fuelType];
-  if (!boost || boost.cooldownRemainingSeconds <= 0) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('Cooldown is already completed!');
-    }
-    return;
+  // Track daily task fuel consumption
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) {
+    gameState.dailyStats.fuel_purple = (gameState.dailyStats.fuel_purple || 0) + 1;
   }
 
-  const fuelName = fuelType === 'pink' ? 'Pink Fuel (*2)' : 'Purple Fuel (*5)';
-  const doReduce = () => {
-    boost.cooldownRemainingSeconds = Math.max(0, boost.cooldownRemainingSeconds - (30 * 60));
-    sfx.playLevelUpSound();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Cooldown reduced by 30 minutes!`);
-    }
-    updateUI();
-    saveGame();
-  };
+  purple.activeRemainingSeconds = 10 * 60; // 10 minutes active
+  purple.cooldownRemainingSeconds = 5 * 3600; // 5 hours cooldown
 
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReduce);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation(
-      `${fuelType}_cd_reduce`,
-      `Reduce ${fuelName} Cooldown`,
-      'Watch an ad to reduce cooldown timer by 30 minutes',
-      doReduce
-    );
-  } else {
-    doReduce();
+  sfx.playLevelUpSound();
+  triggerGaugePulse();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('🔥 5x Speed Boost Activated for 10 Minutes!');
   }
-}
-
-// Watch Ads to earn Pink (3 ads) or Purple (5 ads) Fuel
-function watchAdForBoostFuel(fuelType) {
-  ensureBoostsState();
-  const boost = gameState.energyGenerator.boosts[fuelType];
-  const targetAds = fuelType === 'pink' ? 3 : 5;
-  const currentAds = boost.adsWatched || 0;
-  const fuelName = fuelType === 'pink' ? 'Pink Fuel Cell' : 'Purple Fuel Cell';
-
-  const doBoostAdReward = () => {
-    boost.adsWatched = (boost.adsWatched || 0) + 1;
-
-    if (boost.adsWatched >= targetAds) {
-      boost.adsWatched = 0;
-      gameState.energyGenerator.fuelCells[fuelType] = (gameState.energyGenerator.fuelCells[fuelType] || 0) + 1;
-      sfx.playLevelUpSound();
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎉 You unlocked +1 ${fuelName}!`);
-      }
-    } else {
-      sfx.playTapSound(2);
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎬 Ad ${boost.adsWatched}/${targetAds} complete!`);
-      }
-    }
-
-    updateUI();
-    saveGame();
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doBoostAdReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation(
-      `${fuelType}_boost_fuel`,
-      `+1 ${fuelName}`,
-      `Watch ad (${currentAds + 1}/${targetAds}) to win +1 ${fuelName}`,
-      doBoostAdReward
-    );
-  } else {
-    doBoostAdReward();
-  }
+  updateUI();
+  saveGame();
 }
 
 // Time Format Helpers
@@ -527,6 +412,20 @@ function updateEnergyUI() {
   }
 
   // Standard Cell Count Badges
+  // Track current toggle mode per fuel type: 'use' or 'buy'
+  if (!window.fuelModes) {
+    window.fuelModes = {
+      green: 'use',
+      darkgreen: 'use',
+      yellow: 'use',
+      orange: 'use',
+      red: 'use',
+      pink: 'use',
+      purple: 'use'
+    };
+  }
+
+  // Update Fuel Cell Badges
   if (DOM.greenCellCount) DOM.greenCellCount.textContent = `${gameState.energyGenerator.fuelCells.green || 0} Cells`;
   const elDarkGreen = DOM.darkgreenCellCount || document.getElementById('darkgreenCellCount');
   if (elDarkGreen) elDarkGreen.textContent = `${gameState.energyGenerator.fuelCells.darkgreen || 0} Cells`;
@@ -534,73 +433,39 @@ function updateEnergyUI() {
   if (DOM.orangeCellCount) DOM.orangeCellCount.textContent = `${gameState.energyGenerator.fuelCells.orange || 0} Cells`;
   if (DOM.redCellCount) DOM.redCellCount.textContent = `${gameState.energyGenerator.fuelCells.red || 0} Cells`;
 
-  // Standard Fuel Buttons
-  if (DOM.btnUseGreenFuel) {
-    const greenCount = gameState.energyGenerator.fuelCells.green || 0;
-    const span = DOM.btnUseGreenFuel.querySelector('span');
-    if (greenCount > 0) {
-      DOM.btnUseGreenFuel.className = 'fuel-action-btn green-btn';
-      if (span) span.textContent = 'Use (5 Min)';
-    } else {
-      DOM.btnUseGreenFuel.className = 'fuel-action-btn ad-blue-btn';
-      if (span) span.textContent = 'Watch Ad (+1 Fuel)';
-    }
-  }
+  // Standard Fuel Cells (Direct Action Button: Use when > 0, Buy in Shop when 0)
+  const standardFuels = [
+    { type: 'green', btnId: 'btnUseGreenFuel', textId: 'btnGreenText', defaultColor: 'green-btn', label: '⚡ Use Fuel (+5m)' },
+    { type: 'darkgreen', btnId: 'btnUseDarkGreenFuel', textId: 'btnDarkGreenText', defaultColor: 'darkgreen-btn', label: '⚡ Use Fuel (+1m)' },
+    { type: 'yellow', btnId: 'btnYellowAd', textId: 'btnYellowText', defaultColor: 'yellow-btn', label: '⚡ Use Fuel (+15m)' },
+    { type: 'orange', btnId: 'btnOrangeAd', textId: 'btnOrangeText', defaultColor: 'orange-btn', label: '⚡ Use Fuel (+30m)' },
+    { type: 'red', btnId: 'btnRedAd', textId: 'btnRedText', defaultColor: 'red-btn', label: '⚡ Use Fuel (+0.01/s)' }
+  ];
 
-  const btnDarkGreen = DOM.btnUseDarkGreenFuel || document.getElementById('btnUseDarkGreenFuel');
-  if (btnDarkGreen) {
-    const darkgreenCount = gameState.energyGenerator.fuelCells.darkgreen || 0;
-    const span = btnDarkGreen.querySelector('span');
-    if (darkgreenCount > 0) {
-      btnDarkGreen.className = 'fuel-action-btn darkgreen-btn';
-      if (span) span.textContent = 'Use (1 Min)';
-    } else {
-      btnDarkGreen.className = 'fuel-action-btn ad-blue-btn darkgreen-btn';
-      if (span) span.textContent = 'Watch Ad (+1 Fuel)';
-    }
-  }
+  standardFuels.forEach(item => {
+    const count = (gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[item.type]) || 0;
+    const btn = document.getElementById(item.btnId);
+    const span = document.getElementById(item.textId) || (btn ? btn.querySelector('span') : null);
 
-  const btnYellow = document.getElementById('btnYellowAd');
-  if (btnYellow) {
-    const yellowCount = gameState.energyGenerator.fuelCells.yellow || 0;
-    const span = btnYellow.querySelector('span');
-    if (yellowCount > 0) {
-      btnYellow.className = 'fuel-action-btn yellow-btn';
-      if (span) span.textContent = 'Use (15 Min)';
+    // If fuel is 0: automatically show Buy button and route to Shop
+    if (count <= 0) {
+      window.fuelModes[item.type] = 'buy';
+      if (btn) {
+        btn.className = 'fuel-action-btn buy-mode-btn';
+        if (span) span.innerHTML = '<span>🛒 Buy in Shop</span>';
+      }
     } else {
-      btnYellow.className = 'fuel-action-btn ad-blue-btn';
-      if (span) span.textContent = 'Watch Ad (+1 Fuel)';
+      // Fuel is available (> 0): show Use Fuel button
+      window.fuelModes[item.type] = 'use';
+      if (btn) {
+        btn.className = `fuel-action-btn ${item.defaultColor}`;
+        if (span) span.innerHTML = `<span>⚡ Use Fuel (${count})</span>`;
+      }
     }
-  }
-
-  const btnOrange = document.getElementById('btnOrangeAd');
-  if (btnOrange) {
-    const orangeCount = gameState.energyGenerator.fuelCells.orange || 0;
-    const span = btnOrange.querySelector('span');
-    if (orangeCount > 0) {
-      btnOrange.className = 'fuel-action-btn orange-btn';
-      if (span) span.textContent = 'Use (30 Min)';
-    } else {
-      btnOrange.className = 'fuel-action-btn ad-blue-btn';
-      if (span) span.textContent = 'Watch Ad (+1 Fuel)';
-    }
-  }
-
-  const btnRed = document.getElementById('btnRedAd');
-  if (btnRed) {
-    const redCount = gameState.energyGenerator.fuelCells.red || 0;
-    const span = btnRed.querySelector('span');
-    if (redCount > 0) {
-      btnRed.className = 'fuel-action-btn red-btn';
-      if (span) span.textContent = 'Use (60 Min)';
-    } else {
-      btnRed.className = 'fuel-action-btn ad-blue-btn';
-      if (span) span.textContent = 'Watch Ad (+1 Fuel)';
-    }
-  }
+  });
 
   // ========================================================================
-  // PINK BOOST FUEL UI SYNCHRONIZATION
+  // PINK BOOST FUEL UI (Direct Action Button)
   // ========================================================================
   const pink = gameState.energyGenerator.boosts.pink;
   const pinkCount = gameState.energyGenerator.fuelCells.pink || 0;
@@ -614,45 +479,37 @@ function updateEnergyUI() {
     } else if (pink.cooldownRemainingSeconds > 0) {
       pinkStatusInfo.innerHTML = `<span class="boost-cd-badge">⏳ Cooldown: <strong>${formatCooldownDisplay(pink.cooldownRemainingSeconds)}</strong></span>`;
     } else {
-      pinkStatusInfo.innerHTML = `<span class="boost-ready-badge">✨ Ready • 1h Cooldown</span>`;
+      pinkStatusInfo.innerHTML = `<span class="boost-ready-badge">✨ Ready • 10m Boost</span>`;
     }
   }
 
   const btnPinkAction = document.getElementById('btnPinkAction');
   const btnPinkText = document.getElementById('btnPinkText');
-  const btnPinkReduceCd = document.getElementById('btnPinkReduceCd');
-  const pinkAdCountText = document.getElementById('pinkAdCountText');
-  const btnPinkAdFarming = document.getElementById('btnPinkAdFarming');
 
-  if (pinkAdCountText) pinkAdCountText.textContent = `${pink.adsWatched || 0}/3`;
-
-  if (btnPinkAction && btnPinkText) {
-    if (pink.activeRemainingSeconds > 0) {
-      btnPinkAction.className = 'fuel-action-btn pink-btn boost-running-btn';
-      btnPinkText.textContent = `⚡ 2x Active (${formatSecondsMMSS(pink.activeRemainingSeconds)})`;
-    } else if (pink.cooldownRemainingSeconds > 0) {
-      btnPinkAction.className = 'fuel-action-btn pink-btn disabled-btn';
-      btnPinkText.textContent = `⏳ On Cooldown (${formatCooldownDisplay(pink.cooldownRemainingSeconds)})`;
-    } else if (pinkCount > 0) {
-      btnPinkAction.className = 'fuel-action-btn pink-btn';
-      btnPinkText.textContent = '⚡ Use 2x Boost';
-    } else {
-      btnPinkAction.className = 'fuel-action-btn ad-blue-btn';
-      btnPinkText.textContent = `🎬 Watch Ad (${pink.adsWatched || 0}/3)`;
+  if (pinkCount <= 0) {
+    window.fuelModes.pink = 'buy';
+    if (btnPinkAction) {
+      btnPinkAction.className = 'fuel-action-btn buy-mode-btn';
+      if (btnPinkText) btnPinkText.innerHTML = '<span>🛒 Buy in Shop</span>';
+    }
+  } else {
+    window.fuelModes.pink = 'use';
+    if (btnPinkAction && btnPinkText) {
+      if (pink.activeRemainingSeconds > 0) {
+        btnPinkAction.className = 'fuel-action-btn pink-btn boost-running-btn';
+        btnPinkText.textContent = `⚡ 2x Active (${formatSecondsMMSS(pink.activeRemainingSeconds)})`;
+      } else if (pink.cooldownRemainingSeconds > 0) {
+        btnPinkAction.className = 'fuel-action-btn pink-btn disabled-btn';
+        btnPinkText.textContent = `⏳ Cooldown (${formatCooldownDisplay(pink.cooldownRemainingSeconds)})`;
+      } else {
+        btnPinkAction.className = 'fuel-action-btn pink-btn';
+        btnPinkText.textContent = `⚡ Use 2x Boost (${pinkCount})`;
+      }
     }
   }
 
-  if (btnPinkReduceCd) {
-    btnPinkReduceCd.style.display = pink.cooldownRemainingSeconds > 0 ? 'flex' : 'none';
-  }
-
-  if (btnPinkAdFarming) {
-    // Show farming button when on cooldown or active so user can always progress toward cells
-    btnPinkAdFarming.style.display = (pink.cooldownRemainingSeconds > 0 || pink.activeRemainingSeconds > 0) ? 'flex' : (pinkCount === 0 ? 'none' : 'flex');
-  }
-
   // ========================================================================
-  // PURPLE BOOST FUEL UI SYNCHRONIZATION
+  // PURPLE BOOST FUEL UI (Direct Action Button)
   // ========================================================================
   const purple = gameState.energyGenerator.boosts.purple;
   const purpleCount = gameState.energyGenerator.fuelCells.purple || 0;
@@ -666,44 +523,123 @@ function updateEnergyUI() {
     } else if (purple.cooldownRemainingSeconds > 0) {
       purpleStatusInfo.innerHTML = `<span class="boost-cd-badge">⏳ Cooldown: <strong>${formatCooldownDisplay(purple.cooldownRemainingSeconds)}</strong></span>`;
     } else {
-      purpleStatusInfo.innerHTML = `<span class="boost-ready-badge">✨ Ready • 5h Cooldown</span>`;
+      purpleStatusInfo.innerHTML = `<span class="boost-ready-badge">✨ Ready • 10m Boost</span>`;
     }
   }
 
   const btnPurpleAction = document.getElementById('btnPurpleAction');
   const btnPurpleText = document.getElementById('btnPurpleText');
-  const btnPurpleReduceCd = document.getElementById('btnPurpleReduceCd');
-  const purpleAdCountText = document.getElementById('purpleAdCountText');
-  const btnPurpleAdFarming = document.getElementById('btnPurpleAdFarming');
 
-  if (purpleAdCountText) purpleAdCountText.textContent = `${purple.adsWatched || 0}/5`;
-
-  if (btnPurpleAction && btnPurpleText) {
-    if (purple.activeRemainingSeconds > 0) {
-      btnPurpleAction.className = 'fuel-action-btn purple-btn boost-running-btn';
-      btnPurpleText.textContent = `🔥 5x Active (${formatSecondsMMSS(purple.activeRemainingSeconds)})`;
-    } else if (purple.cooldownRemainingSeconds > 0) {
-      btnPurpleAction.className = 'fuel-action-btn purple-btn disabled-btn';
-      btnPurpleText.textContent = `⏳ On Cooldown (${formatCooldownDisplay(purple.cooldownRemainingSeconds)})`;
-    } else if (purpleCount > 0) {
-      btnPurpleAction.className = 'fuel-action-btn purple-btn';
-      btnPurpleText.textContent = '🔥 Use 5x Boost';
-    } else {
-      btnPurpleAction.className = 'fuel-action-btn ad-blue-btn';
-      btnPurpleText.textContent = `🎬 Watch Ad (${purple.adsWatched || 0}/5)`;
+  if (purpleCount <= 0) {
+    window.fuelModes.purple = 'buy';
+    if (btnPurpleAction) {
+      btnPurpleAction.className = 'fuel-action-btn buy-mode-btn';
+      if (btnPurpleText) btnPurpleText.innerHTML = '<span>🛒 Buy in Shop</span>';
     }
-  }
-
-  if (btnPurpleReduceCd) {
-    btnPurpleReduceCd.style.display = purple.cooldownRemainingSeconds > 0 ? 'flex' : 'none';
-  }
-
-  if (btnPurpleAdFarming) {
-    btnPurpleAdFarming.style.display = (purple.cooldownRemainingSeconds > 0 || purple.activeRemainingSeconds > 0) ? 'flex' : (purpleCount === 0 ? 'none' : 'flex');
+  } else {
+    window.fuelModes.purple = 'use';
+    if (btnPurpleAction && btnPurpleText) {
+      if (purple.activeRemainingSeconds > 0) {
+        btnPurpleAction.className = 'fuel-action-btn purple-btn boost-running-btn';
+        btnPurpleText.textContent = `🔥 5x Active (${formatSecondsMMSS(purple.activeRemainingSeconds)})`;
+      } else if (purple.cooldownRemainingSeconds > 0) {
+        btnPurpleAction.className = 'fuel-action-btn purple-btn disabled-btn';
+        btnPurpleText.textContent = `⏳ Cooldown (${formatCooldownDisplay(purple.cooldownRemainingSeconds)})`;
+      } else {
+        btnPurpleAction.className = 'fuel-action-btn purple-btn';
+        btnPurpleText.textContent = `🔥 Use 5x Boost (${purpleCount})`;
+      }
+    }
   }
 
   formatTimerDisplay();
 }
+
+// Helper to get fuel readable name
+function getFuelDisplayName(fuelType) {
+  switch (fuelType) {
+    case 'green': return 'Green Fuel (+5m)';
+    case 'darkgreen': return 'Dark Green Fuel (+1m)';
+    case 'yellow': return 'Yellow Fuel (+15m)';
+    case 'orange': return 'Orange Fuel (+30m)';
+    case 'red': return 'Red Fuel (+0.01 Rate)';
+    case 'pink': return 'Pink Boost Fuel (*2)';
+    case 'purple': return 'Purple Boost Fuel (*5)';
+    default: return 'Fuel';
+  }
+}
+
+// Toggle between 'use' and 'buy' mode
+window.setFuelMode = function(fuelType, mode) {
+  const count = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[fuelType]) || 0;
+
+  // If 0 cells and user clicks 'use', throw open Shop to buy!
+  if (count <= 0 && mode === 'use') {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
+      sfx.playErrorSound();
+    }
+    openShopForFuel(fuelType);
+    return;
+  }
+
+  if (!window.fuelModes) window.fuelModes = {};
+  window.fuelModes[fuelType] = mode;
+
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(1.1);
+  }
+
+  updateEnergyUI();
+};
+
+// Master Execution Handler for Fuel Action Button
+window.executeFuelButtonAction = function(fuelType) {
+  const count = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[fuelType]) || 0;
+  const currentMode = (window.fuelModes && window.fuelModes[fuelType]) || (count > 0 ? 'use' : 'buy');
+
+  // If fuel count is 0 or mode is 'buy': throw open the Shop tab!
+  if (count <= 0 || currentMode === 'buy') {
+    openShopForFuel(fuelType);
+    return;
+  }
+
+  // If fuel count > 0 and mode is 'use': execute fuel usage
+  if (fuelType === 'pink') {
+    handlePinkAction();
+  } else if (fuelType === 'purple') {
+    handlePurpleAction();
+  } else {
+    handleFuelAction(fuelType);
+  }
+};
+
+// Throw open Shop Tab for Fuel Cells
+window.openShopForFuel = function(fuelType) {
+  if (typeof sfx !== 'undefined' && typeof sfx.playBuySound === 'function') {
+    sfx.playBuySound();
+  }
+
+  // Switch to Profile Page and activate Shop tab
+  if (typeof switchPage === 'function') {
+    switchPage('profile');
+  }
+
+  setTimeout(() => {
+    if (typeof switchProfileSubtab === 'function') {
+      switchProfileSubtab('shop');
+    }
+    const fuelSec = document.getElementById('shopFuelSection');
+    if (fuelSec) {
+      fuelSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      fuelSec.classList.add('highlight-pulse');
+      setTimeout(() => fuelSec.classList.remove('highlight-pulse'), 1600);
+    }
+  }, 80);
+
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🛒 Opening Shop: Buy ${getFuelDisplayName(fuelType)} cells!`);
+  }
+};
 
 // Global Exports
 window.startEnergyEngine = startEnergyEngine;
@@ -721,4 +657,7 @@ window.watchAdForBoostFuel = watchAdForBoostFuel;
 window.triggerGaugePulse = triggerGaugePulse;
 window.updateEnergyUI = updateEnergyUI;
 window.advanceEnergyGenerator = advanceEnergyGenerator;
+window.setFuelMode = setFuelMode;
+window.executeFuelButtonAction = executeFuelButtonAction;
+window.openShopForFuel = openShopForFuel;
 window.processEnergyGeneratorOfflineCatchup = processEnergyGeneratorOfflineCatchup;

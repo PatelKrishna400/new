@@ -24,10 +24,21 @@ function updateDashboardMetrics() {
   const elWeb = document.getElementById('dashWebTasksCompleted');
   const elAds = document.getElementById('dashAdsButtonCount');
 
+  const gameStats = window.adminState.gameStats || {};
+  const elSpins = document.getElementById('dashTotalSpins');
+  const elChests = document.getElementById('dashTotalChests');
+  const elScratches = document.getElementById('dashTotalScratches');
+  const elEggs = document.getElementById('dashTotalEggs');
+
   if (elPlayers) elPlayers.textContent = totalPlayers.toLocaleString();
   if (elDaily) elDaily.textContent = totalDailyTasks.toLocaleString();
   if (elWeb) elWeb.textContent = totalWebTasks.toLocaleString();
   if (elAds) elAds.textContent = totalAdsButtonCount.toLocaleString();
+
+  if (elSpins) elSpins.textContent = (gameStats.totalSpins || 0).toLocaleString();
+  if (elChests) elChests.textContent = (gameStats.totalChests || 0).toLocaleString();
+  if (elScratches) elScratches.textContent = (gameStats.totalScratches || 0).toLocaleString();
+  if (elEggs) elEggs.textContent = (gameStats.totalEggs || 0).toLocaleString();
 }
 
 document.addEventListener('DOMContentLoaded', initDashboardPage);

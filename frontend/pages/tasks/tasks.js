@@ -7,7 +7,7 @@
    - 1 Scratch Card Reward for all Daily Tasks & Emoji Burst Animation
    ========================================================================== */
 
-const DAILY_TASKS = [
+const MONTHLY_TASKS = [
   {
     id: 'd1',
     number: 1,
@@ -16,7 +16,7 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Tap the central orb 2,000 times on the Home page to win 1 Scratch Card',
-    notes: 'Tap the glowing central reactor orb on the Home screen to accumulate energy taps. Each tap powers up your reactor core and advances toward completing this quest.',
+    notes: 'Tap the glowing central reactor orb on the Home screen to accumulate energy taps during the 30-day competition cycle. Each tap powers up your reactor core and advances toward completing this quest.',
     tip: 'Tip: Tap with multiple fingers simultaneously to hit 2,000 taps rapidly!',
     type: 'tap',
     target: 2000,
@@ -26,7 +26,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-cyan',
     liquidTheme: 'liquid-cyan',
     tagClass: 'tag-cyan',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd2',
@@ -36,7 +36,7 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Reach 5,000 total taps on the central orb to win 1 Scratch Card',
-    notes: 'Generate 5,000 total taps on the Home screen reactor. Continuous tapping fills your reactor pressure gauge and unlocks bonus energy.',
+    notes: 'Generate 5,000 total taps on the Home screen reactor during the month. Continuous tapping fills your reactor pressure gauge and unlocks bonus energy.',
     tip: 'Tip: Keep energy regeneration high to sustain long tapping sessions.',
     type: 'tap',
     target: 5000,
@@ -46,7 +46,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-blue',
     liquidTheme: 'liquid-blue',
     tagClass: 'tag-blue',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd3',
@@ -56,7 +56,7 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Harvest 10,000 taps on the central orb to win 1 Scratch Card',
-    notes: 'Master your reactor tapping power by completing 10,000 taps today. Achieving this major daily quest proves your dedication to the empire.',
+    notes: 'Master your reactor tapping power by completing 10,000 taps in the 30-day competition cycle. Achieving this major monthly quest proves your dedication to the empire.',
     tip: 'Tip: Unlock higher reactor tiers to maximize the value of every single tap.',
     type: 'tap',
     target: 10000,
@@ -66,7 +66,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-green',
     liquidTheme: 'liquid-green',
     tagClass: 'tag-green',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_green',
@@ -76,7 +76,7 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Consume 2,000 Green Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Navigate to the Energy Generator page and use 2,000 Green Fuel cells to power your passive energy turbines and keep them spinning continuously.',
+    notes: 'Navigate to the Energy Generator page and use 2,000 Green Fuel cells to power your passive energy turbines and keep them spinning continuously this month.',
     tip: 'Tip: Claim Green Fuel from ad stations or wheel spins to keep your generator loaded.',
     type: 'fuel_green',
     target: 2000,
@@ -86,7 +86,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-green',
     liquidTheme: 'liquid-green',
     tagClass: 'tag-green',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_yellow_1',
@@ -96,7 +96,7 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Consume 1,000 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 1,000 high-density Yellow Fuel cells in the Energy Generator to accelerate your passive energy income.',
+    notes: 'Consume 1,000 high-density Yellow Fuel cells in the Energy Generator to accelerate your passive energy income during the 30-day cycle.',
     tip: 'Tip: Yellow fuel delivers strong output boosts for high-performance reactors.',
     type: 'fuel_yellow',
     target: 1000,
@@ -106,7 +106,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-yellow',
     liquidTheme: 'liquid-yellow',
     tagClass: 'tag-yellow',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_yellow_2',
@@ -116,8 +116,8 @@ const DAILY_TASKS = [
     rewardType: 'scratch_card',
     rewardVal: 1,
     desc: 'Consume 2,000 Yellow Fuel cells in the Energy Generator to win 1 Scratch Card',
-    notes: 'Consume 2,000 Yellow Fuel cells in the Energy Generator today. Sustained fuel injection ensures uninterrupted reactor power.',
-    tip: 'Tip: Keep all fuel chambers loaded to maximize your daily progression.',
+    notes: 'Consume 2,000 Yellow Fuel cells in the Energy Generator during the 30-day competition. Sustained fuel injection ensures uninterrupted reactor power.',
+    tip: 'Tip: Keep all fuel chambers loaded to maximize your progression.',
     type: 'fuel_yellow',
     target: 2000,
     iconType: 'pump',
@@ -126,7 +126,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-yellow',
     liquidTheme: 'liquid-yellow',
     tagClass: 'tag-yellow',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_orange',
@@ -146,7 +146,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-orange',
     liquidTheme: 'liquid-orange',
     tagClass: 'tag-orange',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_red',
@@ -166,7 +166,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-red',
     liquidTheme: 'liquid-red',
     tagClass: 'tag-red',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_pink',
@@ -186,7 +186,7 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-pink',
     liquidTheme: 'liquid-pink',
     tagClass: 'tag-pink',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_fuel_purple',
@@ -206,17 +206,17 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-purple',
     liquidTheme: 'liquid-purple',
     tagClass: 'tag-purple',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_spin_250',
     number: 11,
-    title: '11. Spin 250 per day',
+    title: '11. Spin 250 in 30 days',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Spin the Lucky Wheel 250 times in a day to win 1 Scratch Card',
-    notes: 'Spin the Lucky Prize Wheel 250 times today. Every spin gives you a chance to win keys, tickets, fuel cells, and huge jackpot coin prizes.',
+    desc: 'Spin the Lucky Wheel 250 times in 30 days to win 1 Scratch Card',
+    notes: 'Spin the Lucky Prize Wheel 250 times in this 30-day competition cycle. Every spin gives you a chance to win keys, tickets, fuel cells, and huge jackpot coin prizes.',
     tip: 'Tip: If tickets run low, watch a quick ad to claim free tickets instantly.',
     type: 'spin',
     target: 250,
@@ -226,17 +226,17 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-purple',
     liquidTheme: 'liquid-purple',
     tagClass: 'tag-purple',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_chest_250',
     number: 12,
-    title: '12. Chest play 250 per day',
+    title: '12. Chest play 250 in 30 days',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Unlock and open 250 Mystery Chests in a day to win 1 Scratch Card',
-    notes: 'Unlock 250 Mystery Chests using Winning Keys today. Pick any chest to reveal hidden rewards and rare fuel.',
+    desc: 'Unlock and open 250 Mystery Chests in 30 days to win 1 Scratch Card',
+    notes: 'Unlock 250 Mystery Chests using Winning Keys during this 30-day competition. Pick any chest to reveal hidden rewards and rare fuel.',
     tip: 'Tip: Earn keys from Telegram tasks or claim free keys via video ads.',
     type: 'chest',
     target: 250,
@@ -246,17 +246,17 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-yellow',
     liquidTheme: 'liquid-yellow',
     tagClass: 'tag-yellow',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_scratch_200',
     number: 13,
-    title: '13. Card scratch 200 per day',
+    title: '13. Card scratch 200 in 30 days',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Play and scratch 200 Scratch Cards in a day to win 1 Scratch Card',
-    notes: 'Scratch away the metallic gray foil on 200 holographic cards today to reveal instant prizes!',
+    desc: 'Play and scratch 200 Scratch Cards in 30 days to win 1 Scratch Card',
+    notes: 'Scratch away the metallic gray foil on 200 holographic cards during the 30-day competition cycle to reveal instant prizes!',
     tip: 'Tip: Rub or tap the card foil to reveal hidden reward items.',
     type: 'scratch',
     target: 200,
@@ -266,17 +266,17 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-pink',
     liquidTheme: 'liquid-pink',
     tagClass: 'tag-pink',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   },
   {
     id: 'd_egg_300',
     number: 14,
-    title: '14. Egg coin use in egg game 300 per day',
+    title: '14. Egg coin use in egg game 300 in 30 days',
     rewardText: '1 Scratch Card',
     rewardType: 'scratch_card',
     rewardVal: 1,
-    desc: 'Use 300 Egg Coins in Cyber Egg Hatchery in a day to win 1 Scratch Card',
-    notes: 'Hatch Cyber Eggs using 300 Egg Coins in the 16-Egg Hatchery today. Collect 3 matching items to win big!',
+    desc: 'Use 300 Egg Coins in Cyber Egg Hatchery in 30 days to win 1 Scratch Card',
+    notes: 'Hatch Cyber Eggs using 300 Egg Coins in the 16-Egg Hatchery during this 30-day competition cycle. Collect 3 matching items to win big!',
     tip: 'Tip: Claim free egg coins by watching video ads or earning them in chests.',
     type: 'egg',
     target: 300,
@@ -286,9 +286,12 @@ const DAILY_TASKS = [
     accentClass: 'task-tab-accent-green',
     liquidTheme: 'liquid-green',
     tagClass: 'tag-green',
-    tagText: 'DAILY QUEST'
+    tagText: 'MONTHLY QUEST'
   }
 ];
+
+// Backwards compatibility alias
+const DAILY_TASKS = MONTHLY_TASKS;
 
 const TELEGRAM_TASKS = [
   {
@@ -611,13 +614,16 @@ function renderTasksList() {
     webBadge.textContent = activeWebsiteTasks.length;
   }
 
+  // Update 30-day competition cycle timer display
+  updateMonthlyCompetitionTimer();
+
   if (gameState.taskSubtab === 'daily') {
     if (activeDailyTasks.length === 0) {
       container.innerHTML = `
         <div class="tasks-empty-complete-card">
           <div class="empty-trophy-icon">🏆</div>
-          <h4 class="empty-title">All Daily Tasks Complete!</h4>
-          <p class="empty-desc">You claimed all Scratch Cards for today! Check back tomorrow for fresh daily quests.</p>
+          <h4 class="empty-title">All Monthly Tasks Complete!</h4>
+          <p class="empty-desc">You claimed all Scratch Cards for this 30-day competition cycle! New cycle will start when timer resets.</p>
         </div>
       `;
       return;
@@ -1311,6 +1317,8 @@ function claimDailyTaskReward(taskId, event) {
 
     // 3. Award 1 Scratch Card
     gameState.tasksState.claimedDaily[taskId] = true;
+    if (!gameState.tasksState.claimedMonthly) gameState.tasksState.claimedMonthly = {};
+    gameState.tasksState.claimedMonthly[taskId] = true;
     gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
     gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
     if (gameState.goalState && gameState.goalState.levelProgress) {
@@ -1321,11 +1329,14 @@ function claimDailyTaskReward(taskId, event) {
       showFloatingToast('🎴 +1 Scratch Card Claimed!');
     }
 
-    // 4. Remove from DOM after smooth collapse
+    // 4. Remove from DOM after smooth collapse & sync to Firebase immediately
     setTimeout(() => {
       updateUI();
       renderTasksList();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
     }, 420);
   };
 
@@ -1342,8 +1353,16 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     event.stopPropagation();
   }
 
+  const allTelegramTasks = getTelegramTasksList();
+  const task = allTelegramTasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  // Open the Telegram link
+  if (url) {
+    window.open(url, '_blank');
+  }
+
   const card = document.getElementById(`tgCard-${taskId}`);
-  
   spawnTaskEmojiBurst(card);
   sfx.playLevelUpSound();
 
@@ -1351,26 +1370,30 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     card.classList.add('task-claimed-exit');
   }
 
-  if (url) window.open(url, '_blank');
-
+  // Award Keys
+  const keysCount = rewardKeys || 1;
   gameState.tasksState.claimedTelegram[taskId] = true;
-  gameState.player.websiteTasksCompleted = (gameState.player.websiteTasksCompleted || 0) + 1;
-  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewardKeys;
-  gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + rewardKeys);
+  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + keysCount;
+  if (gameState.goalState && gameState.goalState.levelProgress) {
+    gameState.goalState.levelProgress.keys = (gameState.goalState.levelProgress.keys || 0) + keysCount;
+  }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🔑 +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'} Claimed!`);
+    showFloatingToast(`🔑 +${keysCount} Key Claimed!`);
   }
 
   setTimeout(() => {
     updateUI();
     renderTasksList();
     saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
   }, 420);
 }
 
-// Pre-render tasks list on DOM ready for instant fast loading
-if (typeof document !== 'undefined') {
+// Auto-initialize when Tasks Page renders
+if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof renderTasksList === 'function') renderTasksList();
@@ -1382,11 +1405,52 @@ if (typeof document !== 'undefined') {
   }
 }
 
-// Hidden 24-hour background ticker to automatically restart all daily tasks
+// 30-Day Monthly Tasks Competition Countdown Timer (Firebase Backend Synced)
+function updateMonthlyCompetitionTimer() {
+  const timerEl = document.getElementById('monthlyCompetitionTimer');
+  if (!timerEl) return;
+
+  const now = Date.now();
+  let remainingMs = 0;
+
+  // 1. Check if Firebase Cloud backend competition cycle timestamp is loaded
+  if (gameState.monthlyCompetition && gameState.monthlyCompetition.endTime) {
+    remainingMs = Math.max(0, gameState.monthlyCompetition.endTime - now);
+  } else {
+    // 2. Check cached localStorage from Firebase
+    try {
+      const cached = JSON.parse(localStorage.getItem('ENERGY_TAP_MONTHLY_COMPETITION') || 'null');
+      if (cached && cached.endTime) {
+        remainingMs = Math.max(0, cached.endTime - now);
+      }
+    } catch (e) {}
+
+    // 3. Fallback to local 30-day cycle
+    if (!remainingMs) {
+      const cycleMs = (typeof MONTHLY_RESET_CYCLE_MS !== 'undefined') ? MONTHLY_RESET_CYCLE_MS : (30 * 24 * 60 * 60 * 1000);
+      const resetTimestamp = (gameState.dailyStats && gameState.dailyStats.resetTimestamp) || now;
+      const elapsed = Math.max(0, now - resetTimestamp);
+      remainingMs = Math.max(0, cycleMs - elapsed);
+    }
+  }
+
+  const totalSecs = Math.floor(remainingMs / 1000);
+  const days = Math.floor(totalSecs / 86400);
+  const hours = Math.floor((totalSecs % 86400) / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  timerEl.textContent = `${days}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+}
+
+window.updateMonthlyCompetitionTimer = updateMonthlyCompetitionTimer;
+
+// Background ticker to update 30-day competition timer and check cycle resets
 if (typeof window !== 'undefined' && !window._dailyTasksHiddenTicker) {
   window._dailyTasksHiddenTicker = setInterval(() => {
     if (typeof checkDailyStatsDate === 'function') {
       checkDailyStatsDate();
     }
-  }, 10000);
+    updateMonthlyCompetitionTimer();
+  }, 1000);
 }

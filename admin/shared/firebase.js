@@ -78,6 +78,10 @@ function listenToFirebase() {
   db.ref('/players').on('value', snapshot => {
     const val = snapshot.val();
     const list = [];
+    let totalSpins = 0;
+    let totalChests = 0;
+    let totalScratches = 0;
+    let totalEggs = 0;
     if (val) {
       Object.keys(val).forEach(uid => {
         const data = val[uid] || {};
@@ -100,6 +104,12 @@ function listenToFirebase() {
           (data.dailyStats ? (Number(data.dailyStats.adsWatched) || 0) : 0)
         );
 
+        const dailyStats = data.dailyStats || {};
+        totalSpins += (Number(dailyStats.spins) || Number(dailyStats.wheelSpins) || 0);
+        totalChests += (Number(dailyStats.chests) || Number(dailyStats.chestsOpened) || 0);
+        totalScratches += (Number(dailyStats.scratches) || Number(dailyStats.scratchCards) || 0);
+        totalEggs += (Number(dailyStats.eggs) || Number(dailyStats.eggCoins) || 0);
+
         list.push({
           uid,
           username: pl.username || pl.name || 'User_' + uid.substring(0, 6),
@@ -110,6 +120,7 @@ function listenToFirebase() {
           chestKeys: pl.chestKeys || 0,
           scratchCards: pl.scratchCards || 0,
           chestTickets: pl.chestTickets || 0,
+          eggs: pl.eggs || 0,
           dailyTasksDone: dailyDone,
           webTasksDone: webDone,
           adsButtonCount: adsCount,
@@ -120,6 +131,12 @@ function listenToFirebase() {
       });
     }
     window.adminState.users = list;
+    window.adminState.gameStats = {
+      totalSpins,
+      totalChests,
+      totalScratches,
+      totalEggs
+    };
     dispatchAdminEvent('usersUpdated');
   });
 
@@ -164,6 +181,15 @@ function listenToFirebase() {
     if (val && Array.isArray(val) && val.length > 0) {
       window.adminState.telegramTasks = val;
       dispatchAdminEvent('telegramTasksUpdated');
+    }
+  });
+
+  // 6. Monthly Competition Config (/monthly_competition)
+  db.ref('/monthly_competition').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val) {
+      window.adminState.monthlyCompetition = val;
+      dispatchAdminEvent('monthlyCompetitionUpdated');
     }
   });
 }

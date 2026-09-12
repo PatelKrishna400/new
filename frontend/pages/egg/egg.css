@@ -1,6 +1,91 @@
 /* ==========================================================================
    PAGE VIEW 13: CYBER EGG HATCHERY MINI-GAME STYLES (16 EGGS SET - MATCH 3)
    ========================================================================== */
+#pageEgg {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+#pageEgg.active {
+  display: flex !important;
+}
+
+/* Header Title Pill */
+.egg-header-title-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #a7f3d0;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.15);
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.egg-sparkle-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  animation: pulseSparkle 2s infinite ease-in-out;
+}
+
+/* Header Egg Coin Pill */
+.egg-coin-header-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+  transition: all 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.egg-coin-header-pill:active {
+  transform: scale(0.96);
+  border-color: #10b981;
+}
+
+.egg-pill-icon {
+  font-size: 13px;
+}
+
+.egg-pill-val {
+  font-size: 12px;
+  font-weight: 800;
+  color: #a7f3d0;
+  font-family: var(--font-primary);
+}
+
+.egg-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .egg-incubator-card {
   background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.22) 0%, rgba(3, 15, 30, 0.95) 75%);
   border: 1.5px solid rgba(16, 185, 129, 0.45);

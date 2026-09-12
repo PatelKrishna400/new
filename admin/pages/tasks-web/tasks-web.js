@@ -492,6 +492,103 @@ function resetDefaultWebsiteTasks() {
   saveWebsiteTasksToFirebase();
 }
 
+// ==========================================================================
+// 30-DAY MONTHLY COMPETITION FIREBASE CONTROLLER
+// ==========================================================================
+function renderMonthlyCompetitionUI() {
+  const cycleEl = document.getElementById('adminMonthlyCycleNum');
+  const countdownEl = document.getElementById('adminMonthlyCountdown');
+  const endDateEl = document.getElementById('adminMonthlyEndDate');
+
+  const comp = window.adminState.monthlyCompetition || {
+    cycleNumber: 1,
+    startTime: Date.now(),
+    endTime: Date.now() + 30 * 86400 * 1000
+  };
+
+  if (cycleEl) cycleEl.textContent = `Cycle #${comp.cycleNumber || 1}`;
+
+  const now = Date.now();
+  const remainingMs = Math.max(0, (comp.endTime || (now + 30 * 86400 * 1000)) - now);
+  const totalSecs = Math.floor(remainingMs / 1000);
+  const days = Math.floor(totalSecs / 86400);
+  const hours = Math.floor((totalSecs % 86400) / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  if (countdownEl) {
+    countdownEl.textContent = `${days}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+  }
+
+  if (endDateEl) {
+    const endD = new Date(comp.endTime || (now + 30 * 86400 * 1000));
+    endDateEl.textContent = endD.toLocaleString();
+  }
+}
+
+function restartMonthlyCompetitionInFirebase() {
+  if (!confirm('⚠️ Are you sure you want to START A NEW 30-DAY COMPETITION CYCLE?\n\nThis will trigger a full reset of all active players monthly quest claims and competition stats in Firebase backend!')) {
+    return;
+  }
+
+  const now = Date.now();
+  const currentCycle = (window.adminState.monthlyCompetition && window.adminState.monthlyCompetition.cycleNumber) || 1;
+  const newCycle = currentCycle + 1;
+  const newEndTime = now + (30 * 24 * 60 * 60 * 1000);
+
+  const newCompData = {
+    title: '30-Day Monthly Task Competition',
+    cycleDays: 30,
+    cycleNumber: newCycle,
+    startTime: now,
+    endTime: newEndTime,
+    forceResetTimestamp: now,
+    lastUpdated: now
+  };
+
+  db.ref('/monthly_competition').set(newCompData)
+    .then(() => {
+      window.adminState.monthlyCompetition = newCompData;
+      renderMonthlyCompetitionUI();
+      alert(`✅ New 30-Day Competition Cycle #${newCycle} successfully started in Firebase backend!\nAll connected players will automatically receive the reset.`);
+    })
+    .catch(err => {
+      alert('Firebase error: ' + err.message);
+    });
+}
+
+function extendMonthlyCompetition(days) {
+  const comp = window.adminState.monthlyCompetition || {
+    cycleNumber: 1,
+    startTime: Date.now(),
+    endTime: Date.now() + 30 * 86400 * 1000
+  };
+
+  const extensionMs = days * 86400 * 1000;
+  const currentEnd = comp.endTime > Date.now() ? comp.endTime : Date.now();
+  const updatedEnd = currentEnd + extensionMs;
+
+  db.ref('/monthly_competition').update({
+    endTime: updatedEnd,
+    lastUpdated: Date.now()
+  }).then(() => {
+    if (window.adminState.monthlyCompetition) {
+      window.adminState.monthlyCompetition.endTime = updatedEnd;
+    }
+    renderMonthlyCompetitionUI();
+    alert(`✅ Competition extended by +${days} days in Firebase! New end date: ${new Date(updatedEnd).toLocaleDateString()}`);
+  }).catch(err => {
+    alert('Firebase error: ' + err.message);
+  });
+}
+
+window.addEventListener('monthlyCompetitionUpdated', renderMonthlyCompetitionUI);
+
+// Live ticker for admin countdown
+setInterval(() => {
+  renderMonthlyCompetitionUI();
+}, 1000);
+
 // Global Exports
 window.switchAdminTaskSubtab = switchAdminTaskSubtab;
 
@@ -512,3 +609,7 @@ window.genPin = genPin;
 window.genNewWebPin = genNewWebPin;
 window.saveWebsiteTasksToFirebase = saveWebsiteTasksToFirebase;
 window.resetDefaultWebsiteTasks = resetDefaultWebsiteTasks;
+
+window.renderMonthlyCompetitionUI = renderMonthlyCompetitionUI;
+window.restartMonthlyCompetitionInFirebase = restartMonthlyCompetitionInFirebase;
+window.extendMonthlyCompetition = extendMonthlyCompetition;

@@ -15,6 +15,7 @@ const SINGLE_SCRATCH_REWARDS = [
   { label: "50 Energy", type: "energy", amount: 50, icon: "⚡", tier: "SUPER CHARGE", tierColor: "#22d3ee", weight: 6 },
   { label: "2 Keys", type: "keys", amount: 2, icon: "🔑", tier: "VAULT UNLOCK", tierColor: "#f59e0b", weight: 6 },
   { label: "1 Cyber Egg", type: "egg", amount: 1, icon: "🥚", tier: "HATCHERY BOUNTY", tierColor: "#10b981", weight: 4 },
+  { label: "20 Diamonds", type: "diamonds", amount: 20, icon: "💎", tier: "💎 DIAMOND JACKPOT", tierColor: "#38bdf8", weight: 5 },
 ];
 
 if (typeof CHEST_AND_CARD_REWARDS === "undefined") {
@@ -67,7 +68,9 @@ function dealNewSingleCard(consumeCard = false) {
 
   if (consumeCard) {
     if (cards <= 0) {
-      buyScratchCardWithAd();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎴 You need 1 Scratch Card! Tap the reactor orb or complete goals to earn cards!');
+      }
       return;
     }
     if (gameState.player.scratchCards !== undefined) {
@@ -117,8 +120,12 @@ function dealNewSingleCard(consumeCard = false) {
     statusEl.innerHTML = '🪙 Rub or scratch the gray film to reveal your reward!';
   }
 
+  updateScratchUI();
   updateUI();
   saveGame();
+  if (consumeCard && window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
 }
 
 // Render Secret Reward underneath canvas
@@ -448,6 +455,7 @@ function completeSingleCardReveal() {
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + reward.amount;
       if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + reward.amount);
     }
+    else if (reward.type === 'diamonds') gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
     else if (reward.type === 'egg') gameState.player.eggs = (gameState.player.eggs || 0) + reward.amount;
     else if (reward.type === 'tickets') gameState.player.chestTickets = (gameState.player.chestTickets || 0) + reward.amount;
 
@@ -463,8 +471,12 @@ function completeSingleCardReveal() {
     }
   }
 
+  updateScratchUI();
   updateUI();
   saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
 }
 
 // Quick reveal button
@@ -492,31 +504,6 @@ function scratchTile(index, event) {
   quickScratchSingleCard();
 }
 
-// Watch Ad to get 1 Free Scratch Card
-function buyScratchCardWithAd() {
-  sfx.playTapSound(1);
-  const doReward = () => {
-    if (gameState.player.scratchCards !== undefined) {
-      gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
-    } else {
-      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
-    }
-    updateUI();
-    saveGame();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎴 +1 Free Scratch Card Received!');
-    }
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('scratch', 'Scratch Card Pass', '+1 Free Scratch Card', doReward);
-  } else {
-    doReward();
-  }
-}
-
 // Initialize on page entry (Single Luxury Card Full Page View)
 function initScratchPage() {
   singleCardState.activeMode = 'single';
@@ -529,13 +516,29 @@ function initScratchPage() {
   }
 }
 
+function updateScratchUI() {
+  const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
+  const pillVal = document.getElementById('scratchCardsVal');
+  if (pillVal) pillVal.textContent = cards.toString();
+
+  const nextBtnText = document.getElementById('btnNewCardText');
+  if (nextBtnText) {
+    if (cards > 0) {
+      nextBtnText.textContent = `NEXT TICKET (${cards} 🎴)`;
+    } else {
+      nextBtnText.textContent = `NEED 1 CARD (0 🎴)`;
+    }
+  }
+}
+
 // Export functions to window
 window.switchScratchMode = switchScratchMode;
 window.dealNewSingleCard = dealNewSingleCard;
 window.quickScratchSingleCard = quickScratchSingleCard;
 window.resetScratchCard = resetScratchCard;
 window.scratchTile = scratchTile;
-window.buyScratchCardWithAd = buyScratchCardWithAd;
 window.renderScratchGrid = renderScratchGrid;
 window.initScratchPage = initScratchPage;
+window.updateScratchUI = updateScratchUI;
 window.singleCardState = singleCardState;
+

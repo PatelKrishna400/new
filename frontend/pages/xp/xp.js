@@ -165,6 +165,9 @@ function executeClaimLevelReward(lvl) {
   renderLevelsList();
   updateUI();
   saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
 
   if (typeof showFloatingToast === 'function') {
     showFloatingToast(`🎉 Level ${lvl} Claimed! (${rewardDesc})`);
@@ -185,6 +188,9 @@ window.handleMegaRewardAction = function() {
       switchPage('xp');
       updateUI();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
       if (typeof showFloatingToast === 'function') {
         showFloatingToast(`🎬 Ad Watched! Progress: ${gameState.xpState.watchedAds}/1,000 Ads`);
       }
@@ -205,6 +211,9 @@ window.handleMegaRewardAction = function() {
       sfx.playLevelUpSound();
       updateUI();
       saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
       if (typeof showFloatingToast === 'function') {
         showFloatingToast('🎉 10,000 Coins Mega Reward Claimed!');
       }
@@ -253,9 +262,10 @@ window.testFillAllAds = function() {
 function updateXpViewUI() {
   if (!DOM.pageXP) return;
 
-  // Season Countdown
+  // Season Countdown & Expiration check
+  if (typeof checkSeasonExpiration === 'function') checkSeasonExpiration();
   const now = Date.now();
-  const diffMs = Math.max(0, gameState.xpState.seasonEndMs - now);
+  const diffMs = Math.max(0, (gameState.xpState.seasonEndMs || (now + 30 * 86400 * 1000)) - now);
   const diffSecs = Math.floor(diffMs / 1000);
   const days = Math.floor(diffSecs / 86400);
   const hours = Math.floor((diffSecs % 86400) / 3600);

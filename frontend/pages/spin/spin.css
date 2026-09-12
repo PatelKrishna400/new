@@ -2,36 +2,42 @@
    PAGE VIEW 10: SPIN WHEEL MINI-GAME STYLES (pages/spin/spin.css)
    Ultra-Decorative Cyber-Casino Aesthetic with Animated LED Chaser
    ========================================================================== */
-#pageSpin, #pageChest, #pageScratch, #pageMegaReward {
+#pageSpin {
   display: none;
   flex-direction: column;
-  gap: 8px;
-  overflow-y: auto;
-  padding-bottom: 74px;
+  gap: 12px;
+  width: 100%;
 }
 
-#pageSpin.active, #pageChest.active, #pageScratch.active, #pageMegaReward.active {
-  display: flex;
+#pageSpin.active {
+  display: flex !important;
 }
 
 /* Header Title Pill */
 .spin-header-title-pill {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
-  border: 1.5px solid rgba(251, 191, 36, 0.4);
-  padding: 5px 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.45);
+  padding: 6px 12px;
   border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.6px;
   color: #fef08a;
   box-shadow: 0 0 14px rgba(251, 191, 36, 0.15);
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
 }
 
 .spin-sparkle-icon {
   font-size: 13px;
+  flex-shrink: 0;
   animation: pulseSparkle 2s infinite ease-in-out;
 }
 
@@ -47,11 +53,12 @@
   gap: 6px;
   background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%);
   border: 1.5px solid rgba(56, 189, 248, 0.45);
-  padding: 4px 10px;
+  padding: 5px 11px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .spin-ticket-header-pill:active {
@@ -88,16 +95,23 @@
    SPIN ARENA CARD & WHEEL STYLES
    ========================================================================== */
 .spin-arena-card {
-  background: radial-gradient(circle at 50% 25%, rgba(251, 191, 36, 0.12) 0%, rgba(6, 182, 212, 0.1) 40%, rgba(3, 8, 22, 0.96) 80%);
-  border: 1.8px solid rgba(251, 191, 36, 0.4);
+  background: radial-gradient(circle at 50% 25%, rgba(251, 191, 36, 0.14) 0%, rgba(6, 182, 212, 0.1) 40%, rgba(3, 8, 22, 0.96) 80%);
+  border: 1.8px solid rgba(251, 191, 36, 0.45);
   border-radius: var(--radius-xl);
-  padding: 12px 14px;
+  padding: 14px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.12);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.65),
+    0 6px 0 rgba(2, 6, 23, 0.9),
+    0 18px 48px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(251, 191, 36, 0.15);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Ambient Neon Halo Glow */
@@ -123,13 +137,13 @@
 /* Mechanical Flapper Pointer Arrow */
 .spin-pointer-arrow {
   position: absolute;
-  top: 6px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
-  filter: drop-shadow(0 4px 14px rgba(251, 191, 36, 0.95));
+  filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.95));
   pointer-events: none;
-  transform-origin: 50% 14px;
+  transform-origin: 50% 12px;
   transition: transform 0.08s ease;
 }
 
@@ -144,17 +158,19 @@
   100% { transform: translateX(-50%) rotate(0deg); }
 }
 
-/* Spin Wheel Frame (216px x 216px) */
+/* Responsive Spin Wheel Frame */
 .spin-wheel-frame {
-  width: 216px;
-  height: 216px;
+  width: 232px;
+  height: 232px;
+  max-width: 68vw;
+  max-height: 68vw;
+  aspect-ratio: 1 / 1;
   position: relative;
-  margin: 6px 0 8px 0;
+  margin: 12px 0 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 
 /* Outer LED Chaser Ring */
 .spin-chaser-ring {
@@ -289,11 +305,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  background: linear-gradient(180deg, rgba(16, 28, 62, 0.92) 0%, rgba(6, 14, 34, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
   border-radius: var(--radius-lg);
   padding: 10px 16px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 0 14px rgba(6, 182, 212, 0.1);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.6),
+    0 4px 0 rgba(2, 6, 23, 0.9),
+    0 8px 20px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
 }
@@ -579,42 +599,69 @@
 
 /* Spin Mode (when tickets > 0) */
 .spin-action-main-btn.spin-mode {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%);
   color: #030712;
-  border: 1.8px solid #fde047;
-  box-shadow: 0 0 26px rgba(245, 158, 11, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+  border: 1.8px solid #fef08a;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
+    0 5px 0 #92400e,
+    0 12px 28px rgba(245, 158, 11, 0.55);
 }
 
 .spin-action-main-btn.spin-mode:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 32px rgba(245, 158, 11, 0.85);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
+    0 6px 0 #92400e,
+    0 16px 36px rgba(245, 158, 11, 0.7);
 }
 
 .spin-action-main-btn.spin-mode:active {
-  transform: scale(0.97);
+  transform: translateY(3.5px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.45),
+    0 1.5px 0 #92400e,
+    0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* Ad Mode (when tickets === 0) */
 .spin-action-main-btn.ad-mode {
-  background: linear-gradient(135deg, #8b5cf6 0%, #0284c7 50%, #06b6d4 100%);
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #1d4ed8 100%);
   color: #ffffff;
-  border: 1.8px solid #38bdf8;
-  box-shadow: 0 0 26px rgba(6, 182, 212, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+  border: 1.8px solid #7dd3fc;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
+    0 5px 0 #075985,
+    0 12px 28px rgba(37, 99, 235, 0.55);
 }
 
 .spin-action-main-btn.ad-mode:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 34px rgba(6, 182, 212, 0.85);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
+    0 6px 0 #075985,
+    0 16px 36px rgba(56, 189, 248, 0.7);
 }
 
 .spin-action-main-btn.ad-mode:active {
-  transform: scale(0.97);
+  transform: translateY(3.5px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.45),
+    0 1.5px 0 #075985,
+    0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .spin-action-main-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.65;
   cursor: not-allowed;
   transform: none !important;
+  box-shadow: none !important;
 }
 
 .spin-btn-shine {

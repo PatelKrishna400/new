@@ -10,6 +10,7 @@ const CHEST_AND_CARD_REWARDS = [
   { label: '10 Energy', type: 'energy', amount: 10, icon: '⚡' },
   { label: '1 Cyber Egg', type: 'egg', amount: 1, icon: '🥚' },
   { label: '10 Coins', type: 'coins', amount: 10, icon: '🪙' },
+  { label: '5 Diamonds', type: 'diamonds', amount: 5, icon: '💎' },
   { label: '1 Spin Ticket', type: 'tickets', amount: 1, icon: '🎟️' }
 ];
 
@@ -82,13 +83,13 @@ function updateChestUI() {
     if (btnText) btnText.textContent = `UNLOCK RANDOM CHEST (${keys} KEY${keys === 1 ? '' : 'S'})`;
   } else {
     btn.disabled = false;
-    btn.className = 'chest-action-main-btn ad-mode';
-    if (btnIcon) btnIcon.textContent = '🎬';
-    if (btnText) btnText.textContent = 'WATCH AD FOR +1 KEY (FREE)';
+    btn.className = 'chest-action-main-btn no-key-mode';
+    if (btnIcon) btnIcon.textContent = '🔑';
+    if (btnText) btnText.textContent = 'NEED 1 KEY TO UNLOCK (0 🔑)';
   }
 }
 
-// Unified Action Button Handler
+// Unified Action Button Handler (No Ads)
 function handleChestActionButtonClick() {
   if (chestRoundState.isProcessing) return;
 
@@ -101,7 +102,12 @@ function handleChestActionButtonClick() {
   if (keys > 0) {
     unlockMysteryChest();
   } else {
-    buyChestKeyWithAd();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Mystery Key! Tap the reactor orb or complete goals to find keys!');
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+      sfx.playTapSound(1);
+    }
   }
 }
 
@@ -134,6 +140,14 @@ function awardChestPrize(reward) {
     if (gameState.goal) {
       gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets || 10, (gameState.goal.currentTickets || 0) + reward.amount);
     }
+  } else if (reward.type === 'diamonds') {
+    gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
+  }
+
+  if (typeof saveGame === 'function') saveGame();
+  if (typeof updateUI === 'function') updateUI();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
   }
 }
 
@@ -256,9 +270,6 @@ function unlockMysteryChestBox(boxNum) {
         otherBottom.innerHTML = `
           <div class="chest-nonchoice-slot">
             <span class="chest-reward-reveal-text">${otherReward.label}</span>
-            <button class="chest-box-ad-btn" onclick="event.stopPropagation(); claimNonChoiceChestWithAd(${i})">
-              🎬 Watch Ad to Win
-            </button>
           </div>
         `;
       }
@@ -272,7 +283,7 @@ function unlockMysteryChestBox(boxNum) {
     }
     if (icon) icon.textContent = chosenReward.icon;
     if (title) title.textContent = `WON: ${chosenReward.label.toUpperCase()}!`;
-    if (desc) desc.textContent = `Prize credited directly to your balance! Decrypt remaining chests or reset below.`;
+    if (desc) desc.textContent = `Prize credited directly to your balance! Tap Reset Chests below for the next round.`;
 
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`🎉 Vault Unlocked: Won ${chosenReward.label}!`);
@@ -289,64 +300,6 @@ function unlockMysteryChest() {
   if (chestRoundState.isActiveRound || chestRoundState.isProcessing) return;
   const randBox = Math.floor(Math.random() * 3) + 1;
   unlockMysteryChestBox(randBox);
-}
-
-function claimNonChoiceChestWithAd(boxNum) {
-  if (!chestRoundState.isActiveRound || chestRoundState.claimed[boxNum] || chestRoundState.isProcessing) return;
-
-  const reward = chestRoundState.rewards[boxNum];
-  if (!reward) return;
-
-  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(1);
-  }
-
-  const doClaim = () => {
-    awardChestPrize(reward);
-    chestRoundState.claimed[boxNum] = true;
-    triggerChestConfetti();
-
-    const boxEl = document.getElementById(`chestBox${boxNum}`);
-    if (boxEl) boxEl.classList.add('winner-box');
-
-    const bottomEl = document.getElementById(`chestBottom${boxNum}`);
-    if (bottomEl) {
-      bottomEl.innerHTML = `<span class="chest-box-tag won">✓ WON: ${reward.label}</span>`;
-    }
-
-    const badge = document.getElementById('chestLootBadge');
-    const title = document.getElementById('chestLootTitle');
-    const desc = document.getElementById('chestLootDesc');
-    const icon = document.getElementById('chestWinIcon');
-
-    if (icon) icon.textContent = reward.icon;
-    if (title) title.textContent = `CLAIMED: ${reward.label.toUpperCase()}!`;
-
-    // Check if all 3 chests are now claimed
-    if (chestRoundState.claimed[1] && chestRoundState.claimed[2] && chestRoundState.claimed[3]) {
-      if (badge) badge.textContent = '👑 ALL CHESTS CLAIMED!';
-      if (desc) desc.textContent = `🏆 All 3 secret vault treasures collected! Tap Reset Chests below for the next round.`;
-    } else {
-      if (badge) badge.textContent = '🎉 EXTRA REWARD CLAIMED!';
-      if (desc) desc.textContent = `✨ Bonus prize credited! You can watch an ad for the remaining chest or reset below.`;
-    }
-
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎉 +${reward.label} Claimed!`);
-    }
-
-    updateChestUI();
-    if (typeof updateUI === 'function') updateUI();
-    if (typeof saveGame === 'function') saveGame();
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doClaim);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('chest', 'Chest Reward Ad', reward.label, doClaim);
-  } else {
-    doClaim();
-  }
 }
 
 function resetThreeChests() {
@@ -398,41 +351,6 @@ function resetThreeChests() {
   updateChestUI();
 }
 
-function buyChestKeyWithAd() {
-  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(1);
-  }
-
-  const doReward = () => {
-    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔑 +1 Free Mystery Key Received!');
-    }
-
-    const badge = document.getElementById('chestLootBadge');
-    const title = document.getElementById('chestLootTitle');
-    const desc = document.getElementById('chestLootDesc');
-    const icon = document.getElementById('chestWinIcon');
-
-    if (badge) badge.textContent = '🔑 KEY READY';
-    if (icon) icon.textContent = '🔑';
-    if (title) title.textContent = '+1 Key Added!';
-    if (desc) desc.textContent = 'Tap UNLOCK RANDOM CHEST or pick any vault chest above!';
-
-    updateChestUI();
-    if (typeof updateUI === 'function') updateUI();
-    if (typeof saveGame === 'function') saveGame();
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('chest', 'Mystery Key Pass', '+1 Free Mystery Key', doReward);
-  } else {
-    doReward();
-  }
-}
-
 // Auto-sync on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   updateChestUI();
@@ -442,9 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.onChestBoxClicked = onChestBoxClicked;
 window.unlockMysteryChest = unlockMysteryChest;
 window.unlockMysteryChestBox = unlockMysteryChestBox;
-window.claimNonChoiceChestWithAd = claimNonChoiceChestWithAd;
 window.resetThreeChests = resetThreeChests;
-window.buyChestKeyWithAd = buyChestKeyWithAd;
 window.awardChestPrize = awardChestPrize;
 window.updateChestUI = updateChestUI;
 window.handleChestActionButtonClick = handleChestActionButtonClick;

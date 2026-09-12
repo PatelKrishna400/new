@@ -512,6 +512,15 @@
   background: transparent !important;
 }
 
+.goals-scroll-list::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.goals-scroll-list::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: none !important;
+}
+
 .goal-row-card {
   background: rgba(6, 17, 43, 0.75);
   border: 1px solid rgba(25, 55, 120, 0.4);
@@ -703,6 +712,15 @@
   width: 0 !important;
   height: 0 !important;
   background: transparent !important;
+}
+
+.sheet-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.sheet-content::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: none !important;
 }
 
 .feature-card {

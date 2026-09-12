@@ -98,6 +98,16 @@
   <div class="ambient-glow glow-bottom"></div>
   <div class="particles-container" id="ambientParticles"></div>
 
+  <!-- Floating Navratri Marigold Petals Container -->
+  <div class="navratri-petals-container" id="navratriPetals">
+    <div class="marigold-petal" style="left: 8%; animation-duration: 9.5s; animation-delay: 0s;"></div>
+    <div class="marigold-petal" style="left: 26%; animation-duration: 12.5s; animation-delay: 3s;"></div>
+    <div class="marigold-petal" style="left: 48%; animation-duration: 8.8s; animation-delay: 1.5s;"></div>
+    <div class="marigold-petal" style="left: 68%; animation-duration: 11.2s; animation-delay: 4s;"></div>
+    <div class="marigold-petal" style="left: 85%; animation-duration: 10s; animation-delay: 2s;"></div>
+    <div class="marigold-petal" style="left: 93%; animation-duration: 13s; animation-delay: 5.5s;"></div>
+  </div>
+
   <!-- Main Mobile Shell Container -->
   <div class="app-viewport">
     <main class="mobile-container" id="app">
@@ -153,16 +163,28 @@
         </div>
 
         <div class="header-actions">
-          <!-- Coin Badge -->
-          <div class="metric-pill coin-pill" id="coinPill">
+          <!-- Golden Coin Badge -->
+          <div class="metric-pill coin-pill" id="coinPill" title="Golden Coin Balance">
             <div class="coin-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
                 <circle cx="12" cy="12" r="9" fill="#f59e0b" stroke="#fbbf24" stroke-width="1.5"/>
                 <circle cx="12" cy="12" r="6.5" stroke="#d97706" stroke-width="1" stroke-dasharray="2 1"/>
-                <text x="12" y="15.5" font-size="10" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" fill="#78350f" text-anchor="middle">1</text>
+                <path d="M9.5 9h5M12 9v6M10 15h4" stroke="#78350f" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
             </div>
-            <span class="pill-value" id="coinCounter">0</span>
+            <span class="pill-value" id="headerCoinBalance">0</span>
+          </div>
+
+          <!-- Blue Gem Coin Badge -->
+          <div class="metric-pill blue-coin-pill" id="blueCoinPill" title="Blue Gem Coins">
+            <div class="coin-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <polygon points="12 2 21 8.5 17.5 21 6.5 21 3 8.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+                <polygon points="12 5 18 9.5 15.5 18 8.5 18 6 9.5" fill="#38bdf8" stroke="#bae6fd" stroke-width="1"/>
+                <circle cx="12" cy="12" r="2.5" fill="#f0f9ff"/>
+              </svg>
+            </div>
+            <span class="pill-value" id="headerBlueBalance">0</span>
           </div>
 
           <!-- Streak / Fire Button -->
@@ -172,6 +194,186 @@
               <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
             </svg>
           </button>
+        </div>
+
+        <!-- Authentic Navratri Temple Door Toran Garland (Bandhanwar) -->
+        <div class="navratri-toran" aria-hidden="true">
+          <svg class="toran-door-svg" viewBox="0 0 440 42" preserveAspectRatio="none">
+            <defs>
+              <!-- Auspicious Gradients -->
+              <linearGradient id="toranBandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#b45309"/>
+                <stop offset="15%" stop-color="#f59e0b"/>
+                <stop offset="35%" stop-color="#fde047"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="65%" stop-color="#fde047"/>
+                <stop offset="85%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </linearGradient>
+              <radialGradient id="toranGendaYellow" cx="38%" cy="38%" r="62%">
+                <stop offset="0%" stop-color="#fffbeb"/>
+                <stop offset="35%" stop-color="#fde047"/>
+                <stop offset="70%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </radialGradient>
+              <radialGradient id="toranGendaOrange" cx="38%" cy="38%" r="62%">
+                <stop offset="0%" stop-color="#fff7ed"/>
+                <stop offset="35%" stop-color="#fb923c"/>
+                <stop offset="70%" stop-color="#ea580c"/>
+                <stop offset="100%" stop-color="#9a3412"/>
+              </radialGradient>
+              <radialGradient id="toranGendaRed" cx="38%" cy="38%" r="62%">
+                <stop offset="0%" stop-color="#fff1f2"/>
+                <stop offset="35%" stop-color="#fb7185"/>
+                <stop offset="70%" stop-color="#e11d48"/>
+                <stop offset="100%" stop-color="#881337"/>
+              </radialGradient>
+              <linearGradient id="toranLeafGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#22c55e"/>
+                <stop offset="55%" stop-color="#15803d"/>
+                <stop offset="100%" stop-color="#052e16"/>
+              </linearGradient>
+              <linearGradient id="toranBellGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fffbeb"/>
+                <stop offset="40%" stop-color="#fbbf24"/>
+                <stop offset="80%" stop-color="#d97706"/>
+                <stop offset="100%" stop-color="#78350f"/>
+              </linearGradient>
+              <radialGradient id="toranRosetteGrad" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="40%" stop-color="#fde047"/>
+                <stop offset="75%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </radialGradient>
+              <!-- Mango Leaf Template -->
+              <g id="mangoLeaf">
+                <path d="M 0 0 C -3.8 6, -3.2 14, 0 20 C 3.2 14, 3.8 6, 0 0 Z" fill="url(#toranLeafGrad)" filter="drop-shadow(0 1px 1.5px rgba(0,0,0,0.6))"/>
+                <line x1="0" y1="1" x2="0" y2="18" stroke="#86efac" stroke-width="0.75" opacity="0.85"/>
+              </g>
+              <!-- Brass Bell Template -->
+              <g id="brassBell">
+                <path d="M -4.5 3 C -4.5 0, 4.5 0, 4.5 3 L 5.5 7.5 C 5.5 9, -5.5 9, -5.5 7.5 Z" fill="url(#toranBellGrad)" filter="drop-shadow(0 1.5px 2.5px rgba(245,158,11,0.6))"/>
+                <circle cx="0" cy="9.8" r="1.4" fill="#fef08a"/>
+              </g>
+            </defs>
+
+            <!-- 1. Top Gota-Patti Embroidered Door Pelmet Ribbon -->
+            <rect x="0" y="0" width="440" height="4.5" fill="url(#toranBandGrad)"/>
+            <line x1="0" y1="4.5" x2="440" y2="4.5" stroke="#fde047" stroke-width="0.8"/>
+            <!-- Diamond Mirror (Abhla) Studs Along Door Frame -->
+            <g fill="#ffffff" stroke="#92400e" stroke-width="0.5" opacity="0.95">
+              <polygon points="14,2.2 16.5,0.6 19,2.2 16.5,3.8"/>
+              <polygon points="40,2.2 42.5,0.6 45,2.2 42.5,3.8"/>
+              <polygon points="66,2.2 68.5,0.6 71,2.2 68.5,3.8"/>
+              <polygon points="92,2.2 94.5,0.6 97,2.2 94.5,3.8"/>
+              <polygon points="118,2.2 120.5,0.6 123,2.2 120.5,3.8"/>
+              <polygon points="144,2.2 146.5,0.6 149,2.2 146.5,3.8"/>
+              <polygon points="170,2.2 172.5,0.6 175,2.2 172.5,3.8"/>
+              <polygon points="196,2.2 198.5,0.6 201,2.2 198.5,3.8"/>
+              <polygon points="220,2.2 222.5,0.6 225,2.2 222.5,3.8"/>
+              <polygon points="244,2.2 246.5,0.6 249,2.2 246.5,3.8"/>
+              <polygon points="270,2.2 272.5,0.6 275,2.2 272.5,3.8"/>
+              <polygon points="296,2.2 298.5,0.6 301,2.2 298.5,3.8"/>
+              <polygon points="322,2.2 324.5,0.6 327,2.2 324.5,3.8"/>
+              <polygon points="348,2.2 350.5,0.6 353,2.2 350.5,3.8"/>
+              <polygon points="374,2.2 376.5,0.6 379,2.2 376.5,3.8"/>
+              <polygon points="400,2.2 402.5,0.6 405,2.2 402.5,3.8"/>
+              <polygon points="426,2.2 428.5,0.6 431,2.2 428.5,3.8"/>
+            </g>
+
+            <!-- 2. Scalloped Garland Swags (4 Traditional Arches) -->
+            <!-- Golden connecting cords -->
+            <path d="M 14 4 Q 66 22 118 4" stroke="#f59e0b" stroke-width="1.8" fill="none" stroke-dasharray="2 1.5"/>
+            <path d="M 118 4 Q 169 22 220 4" stroke="#f59e0b" stroke-width="1.8" fill="none" stroke-dasharray="2 1.5"/>
+            <path d="M 220 4 Q 271 22 322 4" stroke="#f59e0b" stroke-width="1.8" fill="none" stroke-dasharray="2 1.5"/>
+            <path d="M 322 4 Q 374 22 426 4" stroke="#f59e0b" stroke-width="1.8" fill="none" stroke-dasharray="2 1.5"/>
+
+            <!-- Hanging Mango / Ashoka Leaves (Pointing Down along curves) -->
+            <!-- Arch 1 Leaves -->
+            <use href="#mangoLeaf" x="38" y="7" transform="rotate(-8 38 7)"/>
+            <use href="#mangoLeaf" x="52" y="12"/>
+            <use href="#mangoLeaf" x="80" y="12"/>
+            <use href="#mangoLeaf" x="96" y="7" transform="rotate(8 96 7)"/>
+            <!-- Arch 2 Leaves -->
+            <use href="#mangoLeaf" x="142" y="7" transform="rotate(-8 142 7)"/>
+            <use href="#mangoLeaf" x="156" y="12"/>
+            <use href="#mangoLeaf" x="182" y="12"/>
+            <use href="#mangoLeaf" x="198" y="7" transform="rotate(8 198 7)"/>
+            <!-- Arch 3 Leaves -->
+            <use href="#mangoLeaf" x="244" y="7" transform="rotate(-8 244 7)"/>
+            <use href="#mangoLeaf" x="258" y="12"/>
+            <use href="#mangoLeaf" x="284" y="12"/>
+            <use href="#mangoLeaf" x="300" y="7" transform="rotate(8 300 7)"/>
+            <!-- Arch 4 Leaves -->
+            <use href="#mangoLeaf" x="346" y="7" transform="rotate(-8 346 7)"/>
+            <use href="#mangoLeaf" x="360" y="12"/>
+            <use href="#mangoLeaf" x="388" y="12"/>
+            <use href="#mangoLeaf" x="404" y="7" transform="rotate(8 404 7)"/>
+
+            <!-- Fluffy Multi-Tone Marigold (Genda Phool) Flowers along arches -->
+            <!-- Arch 1 Marigolds -->
+            <circle cx="28" cy="9" r="5.2" fill="url(#toranGendaYellow)"/>
+            <circle cx="48" cy="15" r="5.4" fill="url(#toranGendaOrange)"/>
+            <circle cx="66" cy="18" r="6" fill="url(#toranGendaRed)"/>
+            <circle cx="86" cy="15" r="5.4" fill="url(#toranGendaYellow)"/>
+            <circle cx="106" cy="9" r="5.2" fill="url(#toranGendaOrange)"/>
+            <!-- Arch 2 Marigolds -->
+            <circle cx="132" cy="9" r="5.2" fill="url(#toranGendaRed)"/>
+            <circle cx="152" cy="15" r="5.4" fill="url(#toranGendaYellow)"/>
+            <circle cx="169" cy="18" r="6" fill="url(#toranGendaOrange)"/>
+            <circle cx="188" cy="15" r="5.4" fill="url(#toranGendaRed)"/>
+            <circle cx="208" cy="9" r="5.2" fill="url(#toranGendaYellow)"/>
+            <!-- Arch 3 Marigolds -->
+            <circle cx="234" cy="9" r="5.2" fill="url(#toranGendaOrange)"/>
+            <circle cx="254" cy="15" r="5.4" fill="url(#toranGendaRed)"/>
+            <circle cx="271" cy="18" r="6" fill="url(#toranGendaYellow)"/>
+            <circle cx="290" cy="15" r="5.4" fill="url(#toranGendaOrange)"/>
+            <circle cx="310" cy="9" r="5.2" fill="url(#toranGendaRed)"/>
+            <!-- Arch 4 Marigolds -->
+            <circle cx="336" cy="9" r="5.2" fill="url(#toranGendaYellow)"/>
+            <circle cx="356" cy="15" r="5.4" fill="url(#toranGendaOrange)"/>
+            <circle cx="374" cy="18" r="6" fill="url(#toranGendaRed)"/>
+            <circle cx="394" cy="15" r="5.4" fill="url(#toranGendaYellow)"/>
+            <circle cx="414" cy="9" r="5.2" fill="url(#toranGendaOrange)"/>
+
+            <!-- Auspicious Suspended Golden Temple Bells (Ghunghroo) At Swag Centers -->
+            <line x1="66" y1="21" x2="66" y2="25" stroke="#f59e0b" stroke-width="1.2"/>
+            <use href="#brassBell" x="66" y="25"/>
+            <line x1="169" y1="21" x2="169" y2="25" stroke="#f59e0b" stroke-width="1.2"/>
+            <use href="#brassBell" x="169" y="25"/>
+            <line x1="271" y1="21" x2="271" y2="25" stroke="#f59e0b" stroke-width="1.2"/>
+            <use href="#brassBell" x="271" y="25"/>
+            <line x1="374" y1="21" x2="374" y2="25" stroke="#f59e0b" stroke-width="1.2"/>
+            <use href="#brassBell" x="374" y="25"/>
+
+            <!-- Junction Medallion Rosettes with Pearl Centers -->
+            <circle cx="14" cy="4" r="5" fill="url(#toranRosetteGrad)"/>
+            <circle cx="14" cy="4" r="2.2" fill="#ffffff"/>
+            <circle cx="118" cy="4" r="5" fill="url(#toranRosetteGrad)"/>
+            <circle cx="118" cy="4" r="2.2" fill="#ffffff"/>
+            <circle cx="220" cy="4" r="5.5" fill="url(#toranRosetteGrad)"/>
+            <circle cx="220" cy="4" r="2.5" fill="#ffffff"/>
+            <circle cx="322" cy="4" r="5" fill="url(#toranRosetteGrad)"/>
+            <circle cx="322" cy="4" r="2.2" fill="#ffffff"/>
+            <circle cx="426" cy="4" r="5" fill="url(#toranRosetteGrad)"/>
+            <circle cx="426" cy="4" r="2.2" fill="#ffffff"/>
+
+            <!-- 3. Left Door-Post Entrance Cascading Latkan (Hanging Tassel) -->
+            <line x1="14" y1="6" x2="14" y2="34" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="1.5 1"/>
+            <use href="#mangoLeaf" x="14" y="6" transform="scale(0.7) translate(-10 0)"/>
+            <circle cx="14" cy="13" r="4.5" fill="url(#toranGendaYellow)"/>
+            <circle cx="14" cy="20" r="4.5" fill="url(#toranGendaRed)"/>
+            <circle cx="14" cy="27" r="4.5" fill="url(#toranGendaOrange)"/>
+            <use href="#brassBell" x="14" y="30"/>
+
+            <!-- 4. Right Door-Post Entrance Cascading Latkan (Hanging Tassel) -->
+            <line x1="426" y1="6" x2="426" y2="34" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="1.5 1"/>
+            <use href="#mangoLeaf" x="426" y="6" transform="scale(0.7) translate(-10 0)"/>
+            <circle cx="426" cy="13" r="4.5" fill="url(#toranGendaRed)"/>
+            <circle cx="426" cy="20" r="4.5" fill="url(#toranGendaYellow)"/>
+            <circle cx="426" cy="27" r="4.5" fill="url(#toranGendaOrange)"/>
+            <use href="#brassBell" x="426" y="30"/>
+          </svg>
         </div>
       </header>
 
@@ -214,17 +416,17 @@
                     <div class="goal-stats-row">
                       <span class="stat-card-title">Goal</span>
                       <div class="goal-item">
-                        <span class="item-emoji">🎟️</span>
+                        <span class="item-emoji">🃏</span>
                         <span class="item-count" id="goalCards">0/20</span>
                       </div>
                       <span class="goal-bullet">•</span>
                       <div class="goal-item">
-                        <span class="item-emoji">🔑</span>
+                        <span class="item-emoji">🥢</span>
                         <span class="item-count" id="goalKeys">0/50</span>
                       </div>
                       <span class="goal-bullet">•</span>
                       <div class="goal-item">
-                        <span class="item-emoji">🎫</span>
+                        <span class="item-emoji">🌸</span>
                         <span class="item-count" id="goalTickets">0/35</span>
                       </div>
                     </div>
@@ -242,10 +444,8 @@
               <section class="reactor-card" id="reactorSection">
                 <div class="reactor-header">
                   <div class="reactor-pill-cyan">
-                    <svg class="pill-lightning" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                    </svg>
-                    <span>ENERGY TAP REACTOR</span>
+                    <span class="diya-icon-spin" style="margin-right: 2px;">🪔</span>
+                    <span>NAVRATRI REACTOR</span>
                   </div>
       
                   <div class="reactor-pill-dark" id="comboPill">
@@ -258,19 +458,235 @@
                 </div>
       
                 <div class="orb-stage" id="orbStage">
-                  <div class="orb-aura aura-1"></div>
-                  <div class="orb-aura aura-2"></div>
-                  <div class="orb-particle-layer" id="orbParticleLayer"></div>
+                  <!-- Left Side Action Circles (3 Circles: Garba *2, Dandiya Bot, Maa Shakti) -->
+                  <div class="orb-side-column orb-side-left">
+                    <!-- Circle 1: Garba *2 -->
+                    <button class="home-action-circle circle-gold" id="btnCircle2x" onclick="openHomeActionPopup('ads_2x')" title="2X Garba Multiplier Boost">
+                      <div class="circle-badge" id="circle2xBadge">*2 GARBA</div>
+                      <div class="circle-icon">⚡</div>
+                      <span class="circle-label">GARBA *2</span>
+                    </button>
       
-                  <button class="reactor-orb" id="reactorOrb" aria-label="Tap to generate energy">
-                    <div class="orb-inner-gloss"></div>
-                    <div class="orb-electric-ring"></div>
-                    <div class="orb-core">
-                      <svg class="orb-lightning-bolt" viewBox="0 0 24 24" width="80" height="80" fill="currentColor">
-                        <path d="M13 2L3 14h9l-1.5 8 10.5-12h-9l1.5-8z"/>
-                      </svg>
+                    <!-- Circle 2: Dandiya Auto Click -->
+                    <button class="home-action-circle circle-emerald" id="btnCircleAutoClick" onclick="openHomeActionPopup('auto_click')" title="Dandiya Auto-Clicker Bot">
+                      <div class="circle-badge" id="circleAutoBadge">DANDIYA</div>
+                      <div class="circle-icon">🤖</div>
+                      <span class="circle-label">DANDIYA</span>
+                    </button>
+      
+                    <!-- Circle 3: Maa Shakti Profile -->
+                    <button class="home-action-circle circle-purple" id="btnCircleProfile" onclick="openHomeActionPopup('profile')" title="Maa Shakti Player Profile">
+                      <div class="circle-badge" id="circleProfileBadge">LV.0</div>
+                      <div class="circle-icon">🪔</div>
+                      <span class="circle-label">SHAKTI</span>
+                    </button>
+                  </div>
+      
+                  <!-- Central Sacred Navratri Garbi Orb Wrapper -->
+                  <div class="orb-center-wrapper">
+                    <!-- Rotating Rangoli Mandala Rings -->
+                    <div class="orb-mandala-ring"></div>
+                    <div class="orb-mandala-ring-inner"></div>
+      
+                    <div class="orb-aura aura-1"></div>
+                    <div class="orb-aura aura-2"></div>
+                    <div class="orb-particle-layer" id="orbParticleLayer"></div>
+      
+                    <button class="reactor-orb" id="reactorOrb" aria-label="Tap Dandiya to generate energy">
+                      <div class="orb-inner-gloss"></div>
+                      <div class="orb-electric-ring"></div>
+                      <div class="orb-core">
+                        <!-- Royal Navratri Crossed Dandiya Sticks 3D Artwork -->
+                        <svg class="orb-dandiya-art" viewBox="0 0 140 140" fill="none">
+                          <defs>
+                            <!-- 3D Cylindrical Shading for Dandiya Sticks (Dark edge -> Highlight core -> Dark edge) -->
+                            <linearGradient id="dandiya3dGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stop-color="#92400e"/>
+                              <stop offset="18%" stop-color="#d97706"/>
+                              <stop offset="42%" stop-color="#fffbeb"/>
+                              <stop offset="55%" stop-color="#fde047"/>
+                              <stop offset="82%" stop-color="#d97706"/>
+                              <stop offset="100%" stop-color="#78350f"/>
+                            </linearGradient>
+                            <linearGradient id="dandiya3dRed" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stop-color="#881337"/>
+                              <stop offset="20%" stop-color="#be123c"/>
+                              <stop offset="44%" stop-color="#ffe4e6"/>
+                              <stop offset="58%" stop-color="#f43f5e"/>
+                              <stop offset="82%" stop-color="#9f1239"/>
+                              <stop offset="100%" stop-color="#4c0519"/>
+                            </linearGradient>
+                            <linearGradient id="dandiya3dGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stop-color="#064e3b"/>
+                              <stop offset="20%" stop-color="#059669"/>
+                              <stop offset="44%" stop-color="#d1fae5"/>
+                              <stop offset="58%" stop-color="#10b981"/>
+                              <stop offset="82%" stop-color="#047857"/>
+                              <stop offset="100%" stop-color="#022c22"/>
+                            </linearGradient>
+                            <linearGradient id="dandiya3dBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stop-color="#0c4a6e"/>
+                              <stop offset="20%" stop-color="#0284c7"/>
+                              <stop offset="44%" stop-color="#e0f2fe"/>
+                              <stop offset="58%" stop-color="#38bdf8"/>
+                              <stop offset="82%" stop-color="#0369a1"/>
+                              <stop offset="100%" stop-color="#082f49"/>
+                            </linearGradient>
+                            <radialGradient id="dandiya3dCap" cx="40%" cy="30%" r="65%">
+                              <stop offset="0%" stop-color="#ffffff"/>
+                              <stop offset="35%" stop-color="#fde047"/>
+                              <stop offset="70%" stop-color="#d97706"/>
+                              <stop offset="100%" stop-color="#78350f"/>
+                            </radialGradient>
+                            <radialGradient id="dandiyaBell3d" cx="35%" cy="30%" r="70%">
+                              <stop offset="0%" stop-color="#ffffff"/>
+                              <stop offset="30%" stop-color="#fef08a"/>
+                              <stop offset="65%" stop-color="#f59e0b"/>
+                              <stop offset="100%" stop-color="#92400e"/>
+                            </radialGradient>
+                            <radialGradient id="dandiyaClashBurst" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%" stop-color="#ffffff"/>
+                              <stop offset="25%" stop-color="#fef08a"/>
+                              <stop offset="50%" stop-color="#f59e0b"/>
+                              <stop offset="75%" stop-color="#e11d48"/>
+                              <stop offset="100%" stop-color="transparent"/>
+                            </radialGradient>
+                            <filter id="dandiyaGlow3d" x="-20%" y="-20%" width="140%" height="140%">
+                              <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.85"/>
+                            </filter>
+                            <filter id="starFlareGlow" x="-30%" y="-30%" width="160%" height="160%">
+                              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#fde047" flood-opacity="0.95"/>
+                              <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#f59e0b" flood-opacity="0.7"/>
+                            </filter>
+                          </defs>
+      
+                          <!-- 3D Radiating Clash Flare Aura -->
+                          <circle cx="70" cy="70" r="38" fill="url(#dandiyaClashBurst)" opacity="0.9" />
+      
+                          <!-- Radiating Golden Energy Clash Sparks -->
+                          <g stroke="#fde047" stroke-width="2" stroke-linecap="round" opacity="0.95">
+                            <line x1="70" y1="44" x2="70" y2="28" />
+                            <line x1="70" y1="96" x2="70" y2="112" />
+                            <line x1="44" y1="70" x2="28" y2="70" />
+                            <line x1="96" y1="70" x2="112" y2="70" />
+                            <line x1="52" y1="52" x2="38" y2="38" stroke="#ffffff" stroke-width="2.5" />
+                            <line x1="88" y1="52" x2="102" y2="38" stroke="#ffffff" stroke-width="2.5" />
+                            <line x1="52" y1="88" x2="38" y2="102" stroke="#ffffff" stroke-width="2.5" />
+                            <line x1="88" y1="88" x2="102" y2="102" stroke="#ffffff" stroke-width="2.5" />
+                          </g>
+      
+                          <!-- DANDIYA STICK 1: 3D Lathe-Turned Rod (Diagonal Top-Left to Bottom-Right, 42deg) -->
+                          <g transform="rotate(42 70 70)" filter="url(#dandiyaGlow3d)">
+                            <!-- Top Dome Brass Cap (3D Spherical Top) -->
+                            <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
+                            <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
+                            <!-- Raised Brass Collar Ring -->
+                            <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
+                            <!-- Upper Red Section (Cylindrical Lighting) -->
+                            <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dRed)"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Emerald Green Body Section with 3D Beveled Mirror -->
+                            <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dGreen)"/>
+                            <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Center Hand Grip Section (Royal Blue with Gold Stud) -->
+                            <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dBlue)"/>
+                            <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Lower Red Section with 3D Beveled Mirror -->
+                            <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dRed)"/>
+                            <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                            <!-- Bottom Brass Grip Ferrule -->
+                            <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
+                            <!-- Bottom Pommel Sphere -->
+                            <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
+                            <!-- 3D Ghunghroo Spheres & Silk Tassel -->
+                            <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                            <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                            <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#e11d48"/>
+                          </g>
+      
+                          <!-- DANDIYA STICK 2: 3D Lathe-Turned Rod (Diagonal Top-Right to Bottom-Left, -42deg) -->
+                          <g transform="rotate(-42 70 70)" filter="url(#dandiyaGlow3d)">
+                            <!-- Top Dome Brass Cap (3D Spherical Top) -->
+                            <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
+                            <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
+                            <!-- Raised Brass Collar Ring -->
+                            <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
+                            <!-- Upper Emerald Green Section (Cylindrical Lighting) -->
+                            <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dGreen)"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Red Body Section with 3D Beveled Mirror -->
+                            <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dRed)"/>
+                            <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Center Hand Grip Section (Royal Kumkum with Gold Stud) -->
+                            <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dRed)"/>
+                            <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
+                            <!-- Raised 3D Gold Ferrule Ring -->
+                            <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
+                            <!-- Lower Royal Blue Section with 3D Beveled Mirror -->
+                            <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dBlue)"/>
+                            <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
+                            <!-- Bottom Brass Grip Ferrule -->
+                            <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
+                            <!-- Bottom Pommel Sphere -->
+                            <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
+                            <!-- 3D Ghunghroo Spheres & Silk Tassel -->
+                            <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                            <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
+                            <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#10b981"/>
+                          </g>
+      
+                          <!-- Central 3D Clash Star Flare (Explosive Dandiya Impact Center) -->
+                          <g filter="url(#starFlareGlow)">
+                            <polygon points="70,55 73,66 84,70 73,74 70,85 67,74 56,70 67,66" fill="#ffffff"/>
+                            <polygon points="70,61 72,67 78,70 72,73 70,79 68,73 62,70 68,67" fill="#fde047"/>
+                            <circle cx="70" cy="70" r="4" fill="#ffffff"/>
+                          </g>
+                        </svg>
+                      </div>
+                    </button>
+      
+                    <!-- Flanking Auspicious Glowing Diyas -->
+                    <div class="orb-diya-lamp orb-diya-left" title="Auspicious Diya">
+                      <div class="diya-flame"></div>
+                      <div class="diya-base"></div>
                     </div>
-                  </button>
+                    <div class="orb-diya-lamp orb-diya-right" title="Auspicious Diya">
+                      <div class="diya-flame"></div>
+                      <div class="diya-base"></div>
+                    </div>
+                  </div>
+      
+                  <!-- Right Side Action Circles (3 Circles: Lakshmi Coin, Blue Gem, Utsav Gift) -->
+                  <div class="orb-side-column orb-side-right">
+                    <!-- Circle 4: Lakshmi Golden Coin Booster -->
+                    <button class="home-action-circle circle-amber" id="btnCircleCoin" onclick="openHomeActionPopup('coin')" title="Lakshmi Coin Booster">
+                      <div class="circle-badge">+LAKSHMI</div>
+                      <div class="circle-icon">🪙</div>
+                      <span class="circle-label">COIN</span>
+                    </button>
+      
+                    <!-- Circle 5: Shakti Blue Gem Booster -->
+                    <button class="home-action-circle circle-cyan" id="btnCircleBlue" onclick="openHomeActionPopup('blue')" title="Shakti Blue Gem Vault">
+                      <div class="circle-badge">+SHAKTI</div>
+                      <div class="circle-icon">💎</div>
+                      <span class="circle-label">BLUE GEM</span>
+                    </button>
+      
+                    <!-- Circle 6: Utsav Mahotsav Gift -->
+                    <button class="home-action-circle circle-rose" id="btnCircleBonus" onclick="openHomeActionPopup('bonus')" title="Navratri Utsav Mahotsav Gift">
+                      <div class="circle-badge">UTSAV</div>
+                      <div class="circle-icon">🎁</div>
+                      <span class="circle-label">MAHOTSAV</span>
+                    </button>
+                  </div>
                 </div>
       
                 <div class="reactor-footer">
@@ -285,6 +701,17 @@
                   </div>
                 </div>
               </section>
+      
+              <!-- Home Action Pop-up Modal Backdrop & Dialog -->
+              <div class="home-popup-backdrop" id="homePopupBackdrop" onclick="closeHomeActionPopup(event)">
+                <div class="home-popup-card" id="homePopupCard" onclick="event.stopPropagation()">
+                  <div class="home-popup-drag-handle"></div>
+                  <button class="home-popup-close-btn" id="homePopupCloseBtn" onclick="closeHomeActionPopup()" aria-label="Close popup">&times;</button>
+                  
+                  <div class="home-popup-header" id="homePopupHeader"></div>
+                  <div class="home-popup-body" id="homePopupBody"></div>
+                </div>
+              </div>
       
             </div>
       
@@ -349,198 +776,321 @@
       
               <section class="fuel-section-header">
                 <div class="fuel-header-left">
-                  <span class="fuel-sparkle">✨</span>
-                  <h2 class="fuel-title">Reward Fuel Cells</h2>
+                  <span class="fuel-sparkle">🪔</span>
+                  <h2 class="fuel-title">Shakti Reward Fuel Cells</h2>
                 </div>
-                <span class="fuel-header-right">Watch Ads to Unlock Fuel</span>
+                <span class="fuel-header-right">🌸 Navratri Mahotsav Boosters</span>
               </section>
       
-              <section class="fuel-grid">
-                <div class="fuel-card green-fuel-card" id="fuelCardGreen">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box green-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
-                        <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
-                        <rect x="6" y="7" width="4" height="4" rx="1"/>
-                      </svg>
-                    </div>
-                    <div class="fuel-cell-badge green-badge-pill" id="greenCellCount">0 Cells</div>
-                  </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name">Green Fuel</h3>
-                    <p class="fuel-timer-bonus">+5 Min Timer</p>
-                    <p class="fuel-meta-desc">Unlimited ad fuel</p>
-                  </div>
-                  <button class="fuel-action-btn ad-blue-btn" id="btnUseGreenFuel" onclick="handleFuelAction('green')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-                      <polyline points="17 2 12 7 7 2"/>
-                    </svg>
-                    <span id="btnGreenText">Watch Ad (+1 Fuel)</span>
-                  </button>
-                </div>
-      
+              <section class="fuel-grid fuel-vertical-stack">
+                <!-- 1. Dark Green Fuel Cell (First) -->
                 <div class="fuel-card darkgreen-fuel-card" id="fuelCardDarkGreen">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box darkgreen-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
-                        <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
-                        <rect x="6" y="7" width="4" height="4" rx="1"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box darkgreen-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #34d399;">Dark Green Fuel</h3>
+                          <span class="fuel-cell-badge darkgreen-badge-pill" id="darkgreenCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #10b981;">+1 Min Generator Timer</p>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge darkgreen-badge-pill" id="darkgreenCellCount">0 Cells</div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn darkgreen-btn" id="btnUseDarkGreenFuel" onclick="executeFuelButtonAction('darkgreen')">
+                        <span id="btnDarkGreenText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name" style="color: #34d399;">Dark Green Fuel</h3>
-                    <p class="fuel-timer-bonus" style="color: #10b981;">+1 Min Timer</p>
-                    <p class="fuel-meta-desc">Unlimited ad fuel</p>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('darkgreen', 1, 1)" title="Watch 1 Ad for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">1 Ad</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('darkgreen', 100, 5)" title="100 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">100</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('darkgreen', 10, 10)" title="10 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">10</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
                   </div>
-                  <button class="fuel-action-btn ad-blue-btn darkgreen-btn" id="btnUseDarkGreenFuel" onclick="handleFuelAction('darkgreen')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-                      <polyline points="17 2 12 7 7 2"/>
-                    </svg>
-                    <span id="btnDarkGreenText">Watch Ad (+1 Fuel)</span>
-                  </button>
                 </div>
       
+                <!-- 2. Green Fuel Cell (Second) -->
+                <div class="fuel-card green-fuel-card" id="fuelCardGreen">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box green-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name">Green Fuel</h3>
+                          <span class="fuel-cell-badge green-badge-pill" id="greenCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus">+5 Min Generator Timer</p>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn green-btn" id="btnUseGreenFuel" onclick="executeFuelButtonAction('green')">
+                        <span id="btnGreenText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('green', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">2 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('green', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">200</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('green', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">20</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- 3. Yellow Fuel Cell -->
                 <div class="fuel-card yellow-fuel-card" id="fuelCardYellow">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box yellow-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
-                        <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
-                        <rect x="6" y="7" width="4" height="4" rx="1"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box yellow-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name">Yellow Fuel</h3>
+                          <span class="fuel-cell-badge yellow-badge-pill" id="yellowCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus">+15 Min Generator Timer</p>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge yellow-badge-pill" id="yellowCellCount">0 Cells</div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn yellow-btn" id="btnYellowAd" onclick="executeFuelButtonAction('yellow')">
+                        <span id="btnYellowText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name">Yellow Fuel</h3>
-                    <p class="fuel-timer-bonus">+15 Min Timer</p>
-                    <p class="fuel-meta-desc">Ad unlock: 1h cooldown</p>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('yellow', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">2 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('yellow', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">200</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('yellow', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">20</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
                   </div>
-                  <button class="fuel-action-btn ad-blue-btn" id="btnYellowAd" onclick="handleFuelAction('yellow')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-                      <polyline points="17 2 12 7 7 2"/>
-                    </svg>
-                    <span id="btnYellowText">Watch Ad (+1 Fuel)</span>
-                  </button>
                 </div>
       
+                <!-- 4. Orange Fuel Cell -->
                 <div class="fuel-card orange-fuel-card" id="fuelCardOrange">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box orange-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
-                        <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
-                        <rect x="6" y="7" width="4" height="4" rx="1"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box orange-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name">Orange Fuel</h3>
+                          <span class="fuel-cell-badge orange-badge-pill" id="orangeCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus">+30 Min Generator Timer</p>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge orange-badge-pill" id="orangeCellCount">0 Cells</div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn orange-btn" id="btnOrangeAd" onclick="executeFuelButtonAction('orange')">
+                        <span id="btnOrangeText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name">Orange Fuel</h3>
-                    <p class="fuel-timer-bonus">+30 Min Timer</p>
-                    <p class="fuel-meta-desc">Ad unlock: 10h cooldown</p>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('orange', 3, 1)" title="Watch 3 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">3 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('orange', 300, 5)" title="300 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">300</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('orange', 30, 10)" title="30 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">30</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
                   </div>
-                  <button class="fuel-action-btn ad-blue-btn" id="btnOrangeAd" onclick="handleFuelAction('orange')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-                      <polyline points="17 2 12 7 7 2"/>
-                    </svg>
-                    <span id="btnOrangeText">Watch Ad (+1 Fuel)</span>
-                  </button>
                 </div>
       
+                <!-- 5. Red Fuel Cell -->
                 <div class="fuel-card red-fuel-card" id="fuelCardRed">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box red-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
-                        <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
-                        <rect x="6" y="7" width="4" height="4" rx="1"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box red-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name">Red Fuel</h3>
+                          <span class="fuel-cell-badge red-badge-pill" id="redCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus">+0.01 EP / Sec Rate Boost</p>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge red-badge-pill" id="redCellCount">0 Cells</div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn red-btn" id="btnRedAd" onclick="executeFuelButtonAction('red')">
+                        <span id="btnRedText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name">Red Fuel</h3>
-                    <p class="fuel-timer-bonus">+0.01 EP / Sec Rate</p>
-                    <p class="fuel-meta-desc">Ad unlock: 24h cooldown</p>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('red', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('red', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('red', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
                   </div>
-                  <button class="fuel-action-btn ad-blue-btn" id="btnRedAd" onclick="handleFuelAction('red')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-                      <polyline points="17 2 12 7 7 2"/>
-                    </svg>
-                    <span id="btnRedText">Watch Ad (+1 Fuel)</span>
-                  </button>
                 </div>
       
-                <!-- Pink Boost Fuel Card (*2 Boost for 10 min, 1h Cooldown, 3 Ads = +1 Fuel) -->
+                <!-- 6. Pink Boost Fuel Cell -->
                 <div class="fuel-card pink-fuel-card" id="fuelCardPink">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box pink-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f472b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box pink-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f472b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #f472b6;">Pink Boost Fuel</h3>
+                          <span class="fuel-cell-badge pink-badge-pill" id="pinkCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Speed Boost (10 Min)</p>
+                        <div class="boost-status-container" id="pinkStatusInfo">
+                          <span class="boost-ready-badge" id="pinkStatusBadge">Ready</span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge pink-badge-pill" id="pinkCellCount">0 Cells</div>
-                  </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name" style="color: #f472b6;">Pink Fuel</h3>
-                    <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Boost (10 Min)</p>
-                    <div class="boost-status-container" id="pinkStatusInfo">
-                      <span class="boost-ready-badge" id="pinkStatusBadge">Ready • 1h Cooldown</span>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn pink-btn" id="btnPinkAction" onclick="executeFuelButtonAction('pink')">
+                        <span id="btnPinkText">⚡ Use 2x Boost</span>
+                      </button>
                     </div>
-                    <p class="fuel-meta-desc">3 Ads = +1 Fuel Cell</p>
                   </div>
-                  <div class="fuel-card-actions-col">
-                    <button class="fuel-action-btn pink-btn" id="btnPinkAction" onclick="handlePinkAction()">
-                      <span id="btnPinkText">⚡ Use 2x Boost</span>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('pink', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
                     </button>
-                    <button class="fuel-action-btn cd-reduce-btn" id="btnPinkReduceCd" onclick="reduceCooldownWithAd('pink')" style="display: none;">
-                      <span>🎬 -30m Cooldown</span>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('pink', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
                     </button>
-                    <button class="fuel-action-btn ad-sub-btn" id="btnPinkAdFarming" onclick="watchAdForBoostFuel('pink')">
-                      <span>🎬 Watch Ad (<span id="pinkAdCountText">0/3</span>)</span>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('pink', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
                     </button>
                   </div>
                 </div>
       
-                <!-- Purple Boost Fuel Card (*5 Boost for 10 min, 5h Cooldown, 5 Ads = +1 Fuel) -->
+                <!-- 7. Purple Boost Fuel Cell -->
                 <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
-                  <div class="fuel-card-top">
-                    <div class="fuel-icon-box purple-icon-box">
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="9"/>
-                        <path d="M12 3v9l6.36 6.36"/>
-                        <circle cx="12" cy="12" r="2.5" fill="#c084fc"/>
-                      </svg>
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box purple-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="9"/>
+                          <path d="M12 3v9l6.36 6.36"/>
+                          <circle cx="12" cy="12" r="2.5" fill="#c084fc"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #c084fc;">Purple Boost Fuel</h3>
+                          <span class="fuel-cell-badge purple-badge-pill" id="purpleCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Speed Boost (10 Min)</p>
+                        <div class="boost-status-container" id="purpleStatusInfo">
+                          <span class="boost-ready-badge" id="purpleStatusBadge">Ready</span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="fuel-cell-badge purple-badge-pill" id="purpleCellCount">0 Cells</div>
-                  </div>
-                  <div class="fuel-card-body">
-                    <h3 class="fuel-name" style="color: #c084fc;">Purple Fuel</h3>
-                    <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Boost (10 Min)</p>
-                    <div class="boost-status-container" id="purpleStatusInfo">
-                      <span class="boost-ready-badge" id="purpleStatusBadge">Ready • 5h Cooldown</span>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn purple-btn" id="btnPurpleAction" onclick="executeFuelButtonAction('purple')">
+                        <span id="btnPurpleText">🔥 Use 5x Boost</span>
+                      </button>
                     </div>
-                    <p class="fuel-meta-desc">5 Ads = +1 Fuel Cell</p>
                   </div>
-                  <div class="fuel-card-actions-col">
-                    <button class="fuel-action-btn purple-btn" id="btnPurpleAction" onclick="handlePurpleAction()">
-                      <span id="btnPurpleText">🔥 Use 5x Boost</span>
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('purple', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
                     </button>
-                    <button class="fuel-action-btn cd-reduce-btn" id="btnPurpleReduceCd" onclick="reduceCooldownWithAd('purple')" style="display: none;">
-                      <span>🎬 -30m Cooldown</span>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('purple', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
                     </button>
-                    <button class="fuel-action-btn ad-sub-btn" id="btnPurpleAdFarming" onclick="watchAdForBoostFuel('purple')">
-                      <span>🎬 Watch Ad (<span id="purpleAdCountText">0/5</span>)</span>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('purple', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
                     </button>
                   </div>
                 </div>
@@ -556,8 +1106,8 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span class="subtab-text">Daily</span>
-            <span class="subtab-badge-pill" id="dailyBadgeCount">9</span>
+            <span class="subtab-text">Monthly</span>
+            <span class="subtab-badge-pill" id="dailyBadgeCount">14</span>
           </button>
       
           <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
@@ -580,6 +1130,21 @@
           </button>
         </div>
       
+        <!-- 30-Day Monthly Task Competition Cycle Live Banner -->
+        <div class="tasks-monthly-banner" id="monthlyCompetitionBanner">
+          <div class="monthly-banner-left">
+            <span class="monthly-banner-icon">⏳</span>
+            <div class="monthly-banner-text">
+              <span class="monthly-banner-title">30-DAY COMPETITION CYCLE</span>
+              <span class="monthly-banner-subtitle">Complete quests before cycle ends & rewards reset</span>
+            </div>
+          </div>
+          <div class="monthly-banner-timer-badge">
+            <span class="monthly-timer-dot"></span>
+            <span id="monthlyCompetitionTimer">29d 23h 59m 59s</span>
+          </div>
+        </div>
+      
         <div class="tasks-scroll-container" id="tasksListContainer"></div>
       
         <!-- Task Notes Pop-Up Modal (Interactive Sheet) -->
@@ -595,7 +1160,7 @@
                 </svg>
               </div>
               <div class="task-notes-meta">
-                <span class="task-notes-subtag" id="taskNotesSubtag">DAILY QUEST</span>
+                <span class="task-notes-subtag" id="taskNotesSubtag">MONTHLY QUEST</span>
                 <h3 class="task-notes-title" id="taskNotesTitle">Task Title</h3>
               </div>
               <button class="task-notes-close-btn" onclick="closeTaskNotesPopup()" aria-label="Close notes">&times;</button>
@@ -724,185 +1289,860 @@
 
       <!-- PAGE: PROFILE -->
       <div class="page-view" id="pageProfile">
+        
+        <!-- Profile, Shop & Blue Subtab Switcher -->
+        <div class="profile-tabs-header">
+          <button class="profile-subtab-btn active" id="subtabProfile" onclick="switchProfileSubtab('profile')">
+            <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="subtab-text">Profile</span>
+          </button>
+      
+          <button class="profile-subtab-btn" id="subtabShop" onclick="switchProfileSubtab('shop')">
+            <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="subtab-text">Shop</span>
+          </button>
+        </div>
+      
+        <!-- ==================== TAB 1: PROFILE PANE ==================== -->
+        <div class="profile-tab-pane active" id="paneProfile">
+          <!-- Main Top Profile Card -->
+          <section class="profile-card">
+            
+            <!-- Big Avatar Container with Camera Badge -->
+            <div class="profile-avatar-container">
+              <div class="profile-avatar-large" id="profileLargeAvatar">
+                <!-- Stylized Realistic Portrait Alex Vance -->
+                <svg viewBox="0 0 120 120" class="profile-avatar-svg" id="profileAvatarSvg">
+                  <defs>
+                    <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#3b82f6" />
+                      <stop offset="60%" stop-color="#1d4ed8" />
+                      <stop offset="100%" stop-color="#0284c7" />
+                    </linearGradient>
+                    <linearGradient id="pFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#fcddec" />
+                      <stop offset="100%" stop-color="#d1d5db" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="120" height="120" rx="30" fill="#081432"/>
+                  <circle cx="60" cy="50" r="28" fill="url(#pFaceGrad)"/>
+                  <!-- Sleek Hair -->
+                  <path d="M 32 46 C 32 24, 88 24, 88 46 C 82 34, 72 30, 60 30 C 48 30, 38 34, 32 46 Z" fill="#0f172a"/>
+                  <path d="M 33 46 Q 30 60 36 66 Q 38 52 40 46 Z" fill="#0f172a"/>
+                  <path d="M 87 46 Q 90 60 84 66 Q 82 52 80 46 Z" fill="#0f172a"/>
+                  <!-- Eyes & Brows -->
+                  <ellipse cx="49" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+                  <ellipse cx="71" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
+                  <circle cx="50" cy="48" r="1" fill="#ffffff"/>
+                  <circle cx="72" cy="48" r="1" fill="#ffffff"/>
+                  <path d="M 45 42 Q 50 40 54 43" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+                  <path d="M 66 43 Q 70 40 75 42" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+                  <!-- Nose & Lips -->
+                  <path d="M 60 50 L 59 58 L 63 58" stroke="#cbd5e1" stroke-width="1.6" fill="none"/>
+                  <path d="M 54 65 Q 60 69 66 65" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  <!-- Jacket / Torso -->
+                  <path d="M 22 110 C 25 80, 42 76, 60 76 C 78 76, 95 80, 98 110 Z" fill="#1e293b" id="avatarJacketPath"/>
+                  <path d="M 46 76 L 60 96 L 74 76" fill="#2563eb" id="avatarInnerShirtPath"/>
+                </svg>
+              </div>
               
-              <!-- Main Top Profile Card -->
-              <section class="profile-card">
-                
-                <!-- Big Avatar Container with Camera Badge -->
-                <div class="profile-avatar-container">
-                  <div class="profile-avatar-large" id="profileLargeAvatar">
-                    <!-- Stylized Realistic Portrait Alex Vance -->
-                    <svg viewBox="0 0 120 120" class="profile-avatar-svg">
-                      <defs>
-                        <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stop-color="#3b82f6" />
-                          <stop offset="60%" stop-color="#1d4ed8" />
-                          <stop offset="100%" stop-color="#0284c7" />
-                        </linearGradient>
-                        <linearGradient id="pFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stop-color="#fcddec" />
-                          <stop offset="100%" stop-color="#d1d5db" />
-                        </linearGradient>
-                      </defs>
-                      <rect width="120" height="120" rx="30" fill="#081432"/>
-                      <circle cx="60" cy="50" r="28" fill="url(#pFaceGrad)"/>
-                      <!-- Sleek Hair -->
-                      <path d="M 32 46 C 32 24, 88 24, 88 46 C 82 34, 72 30, 60 30 C 48 30, 38 34, 32 46 Z" fill="#0f172a"/>
-                      <path d="M 33 46 Q 30 60 36 66 Q 38 52 40 46 Z" fill="#0f172a"/>
-                      <path d="M 87 46 Q 90 60 84 66 Q 82 52 80 46 Z" fill="#0f172a"/>
-                      <!-- Eyes & Brows -->
-                      <ellipse cx="49" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
-                      <ellipse cx="71" cy="49" rx="3" ry="3.5" fill="#0f172a"/>
-                      <circle cx="50" cy="48" r="1" fill="#ffffff"/>
-                      <circle cx="72" cy="48" r="1" fill="#ffffff"/>
-                      <path d="M 45 42 Q 50 40 54 43" stroke="#0f172a" stroke-width="1.8" fill="none"/>
-                      <path d="M 66 43 Q 70 40 75 42" stroke="#0f172a" stroke-width="1.8" fill="none"/>
-                      <!-- Nose & Lips -->
-                      <path d="M 60 50 L 59 58 L 63 58" stroke="#cbd5e1" stroke-width="1.6" fill="none"/>
-                      <path d="M 54 65 Q 60 69 66 65" stroke="#0f172a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                      <!-- Jacket / Torso -->
-                      <path d="M 22 110 C 25 80, 42 76, 60 76 C 78 76, 95 80, 98 110 Z" fill="#1e293b"/>
-                      <path d="M 46 76 L 60 96 L 74 76" fill="#2563eb"/>
-                    </svg>
-                  </div>
-                  
-                  <!-- Camera Edit Button -->
-                  <button class="avatar-camera-btn" id="btnChangeAvatar" onclick="openEditProfileModal()" title="Change photo">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                      <circle cx="12" cy="13" r="4"/>
-                    </svg>
-                  </button>
+              <!-- Camera Edit Button -->
+              <button class="avatar-camera-btn" id="btnChangeAvatar" onclick="openEditProfileModal()" title="Change photo">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </button>
+            </div>
+      
+            <!-- Name & Pencil Edit Button Row -->
+            <div class="profile-name-row">
+              <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
+              <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                </svg>
+              </button>
+            </div>
+      
+            <!-- Handle -->
+            <div class="profile-handle" id="profileHandle">
+              <span class="handle-at">@</span> alex_blue
+            </div>
+      
+            <!-- Profile Stats Info Box -->
+            <div class="profile-stats-box">
+              
+              <div class="profile-stat-row">
+                <div class="stat-left">
+                  <span class="stat-icon">🪙</span>
+                  <span class="stat-label">Coin Balance:</span>
                 </div>
-      
-                <!-- Name & Pencil Edit Button Row -->
-                <div class="profile-name-row">
-                  <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
-                  <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                    </svg>
-                  </button>
+                <div class="stat-right">
+                  <span class="coin-dot">🟡</span>
+                  <span class="stat-val" id="profileCoinBalance">0</span>
                 </div>
+              </div>
       
-                <!-- Handle -->
-                <div class="profile-handle" id="profileHandle">
-                  <span class="handle-at">@</span> alex_blue
+              <div class="profile-stat-row">
+                <div class="stat-left">
+                  <span class="stat-icon">💎</span>
+                  <span class="stat-label">Diamond Balance:</span>
                 </div>
-      
-                <!-- Profile Stats Info Box -->
-                <div class="profile-stats-box">
-                  
-                  <div class="profile-stat-row">
-                    <div class="stat-left">
-                      <span class="stat-icon">🪙</span>
-                      <span class="stat-label">Coin Balance:</span>
-                    </div>
-                    <div class="stat-right">
-                      <span class="coin-dot">🟡</span>
-                      <span class="stat-val" id="profileCoinBalance">0</span>
-                    </div>
-                  </div>
-      
-                  <div class="profile-stat-row">
-                    <div class="stat-left">
-                      <span class="stat-icon">🔥</span>
-                      <span class="stat-label">Streak:</span>
-                    </div>
-                    <div class="stat-right">
-                      <span class="stat-val streak-highlight" id="profileStreakVal">0 Days</span>
-                    </div>
-                  </div>
-      
-                  <div class="profile-stat-row">
-                    <div class="stat-left">
-                      <span class="stat-icon">⚡</span>
-                      <span class="stat-label">Energy Pool:</span>
-                    </div>
-                    <div class="stat-right">
-                      <span class="stat-val energy-highlight" id="profileEnergyPool">0</span>
-                    </div>
-                  </div>
-      
+                <div class="stat-right">
+                  <span class="stat-val diamond-highlight" id="profileDiamondBalance">0</span>
                 </div>
+              </div>
       
-              </section>
-      
-              <!-- Referral Promo Code & Invite Squad Card -->
-              <section class="fren-squad-card">
-                <div class="squad-badge-pill">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                  <span>PROMO CODE & SQUAD INVITE</span>
+              <div class="profile-stat-row">
+                <div class="stat-left">
+                  <span class="stat-icon">🔥</span>
+                  <span class="stat-label">Streak:</span>
                 </div>
-      
-                <h3 class="squad-title">Invite & Earn +10 Coins Bonus</h3>
-                <p class="squad-desc">Share your unique promo code with friends. When they use your code, you both earn bonus coins!</p>
-      
-                 <!-- Promo Code Section -->
-                 <div class="promo-code-section">
-                   <!-- Generated Promo Code Box -->
-                   <div class="promo-code-display-box">
-                     <div class="promo-code-info">
-                       <span class="promo-label">YOUR PROMO CODE:</span>
-                       <span class="promo-code-val" id="myPromoCodeText">alexvance_7842</span>
-                     </div>
-                     <button class="promo-copy-btn" id="btnCopyPromoCode" onclick="copyMyPromoCode()">
-                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3">
-                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                       </svg>
-                       <span>Copy Code</span>
-                     </button>
-                   </div>
-      
-                   <!-- Enter Friend's Promo Code Box -->
-                   <div class="friend-code-redeem-box">
-                     <input type="text" id="inputFriendPromoCode" placeholder="Enter Friend's Code (e.g. friend_1234)" class="friend-code-input">
-                     <button class="friend-code-btn" onclick="redeemFriendPromoCode()">
-                       <span>Redeem (+10 🪙)</span>
-                     </button>
-                   </div>
-                   <div class="promo-feedback-msg" id="promoFeedbackMsg"></div>
-                 </div>
-      
-                <button class="squad-invite-btn" onclick="openInviteModal()">
-                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"/>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                  </svg>
-                  <span>Share via Telegram</span>
-                </button>
-              </section>
-      
-              <!-- Suggest Box Tab (Directly Below Invitations Tab) -->
-              <section class="suggest-box-banner-card" id="profileSuggestBoxTab" onclick="switchPage('suggestBox')">
-                <div class="suggest-banner-glow"></div>
-                <div class="suggest-banner-left">
-                  <div class="suggest-icon-pill">
-                    <span class="suggest-emoji">💡</span>
-                  </div>
-                  <div class="suggest-banner-info">
-                    <div class="suggest-banner-badge">
-                      <span>FEEDBACK & IDEAS</span>
-                    </div>
-                    <h3 class="suggest-banner-title">Suggest Box</h3>
-                    <p class="suggest-banner-desc">Share feedback, report a bug, or request a feature!</p>
-                  </div>
+                <div class="stat-right">
+                  <span class="stat-val streak-highlight" id="profileStreakVal">0 Days</span>
                 </div>
-                <div class="suggest-banner-arrow">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
+              </div>
+      
+              <div class="profile-stat-row">
+                <div class="stat-left">
+                  <span class="stat-icon">⚡</span>
+                  <span class="stat-label">Energy Pool:</span>
                 </div>
-              </section>
+                <div class="stat-right">
+                  <span class="stat-val energy-highlight" id="profileEnergyPool">0</span>
+                </div>
+              </div>
+      
+              <div class="profile-stat-row">
+                <div class="stat-left">
+                  <span class="stat-icon">🚀</span>
+                  <span class="stat-label">Tap Power:</span>
+                </div>
+                <div class="stat-right">
+                  <span class="stat-val power-highlight" id="profileTapPowerVal">+1</span>
+                </div>
+              </div>
       
             </div>
       
+          </section>
+      
+          <!-- Referral Promo Code & Invite Squad Card -->
+          <section class="fren-squad-card">
+            <div class="squad-badge-pill">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>PROMO CODE & SQUAD INVITE</span>
+            </div>
+      
+            <h3 class="squad-title">Invite & Earn +10 Coins Bonus</h3>
+            <p class="squad-desc">Share your unique promo code with friends. When they use your code, you both earn bonus coins!</p>
+      
+            <!-- Promo Code Section -->
+            <div class="promo-code-section">
+              <!-- Generated Promo Code Box -->
+              <div class="promo-code-display-box">
+                <div class="promo-code-info">
+                  <span class="promo-label">YOUR PROMO CODE:</span>
+                  <span class="promo-code-val" id="myPromoCodeText">alexvance_7842</span>
+                </div>
+                <button class="promo-copy-btn" id="btnCopyPromoCode" onclick="copyMyPromoCode()">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span>Copy Code</span>
+                </button>
+              </div>
+      
+              <!-- Enter Friend's Promo Code Box -->
+              <div class="friend-code-redeem-box">
+                <input type="text" id="inputFriendPromoCode" placeholder="Enter Friend's Code (e.g. friend_1234)" class="friend-code-input">
+                <button class="friend-code-btn" onclick="redeemFriendPromoCode()">
+                  <span>Redeem (+10 🪙)</span>
+                </button>
+              </div>
+              <div class="promo-feedback-msg" id="promoFeedbackMsg"></div>
+            </div>
+      
+            <button class="squad-invite-btn" onclick="openInviteModal()">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              <span>Share via Telegram</span>
+            </button>
+          </section>
+      
+          <!-- Suggest Box Tab (Directly Below Invitations Tab) -->
+          <section class="suggest-box-banner-card" id="profileSuggestBoxTab" onclick="switchPage('suggestBox')">
+            <div class="suggest-banner-glow"></div>
+            <div class="suggest-banner-left">
+              <div class="suggest-icon-pill">
+                <span class="suggest-emoji">💡</span>
+              </div>
+              <div class="suggest-banner-info">
+                <div class="suggest-banner-badge">
+                  <span>FEEDBACK & IDEAS</span>
+                </div>
+                <h3 class="suggest-banner-title">Suggest Box</h3>
+                <p class="suggest-banner-desc">Share feedback, report a bug, or request a feature!</p>
+              </div>
+            </div>
+            <div class="suggest-banner-arrow">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </section>
+        </div>
+      
+        <!-- ==================== TAB 2: SHOP PANE ==================== -->
+        <div class="profile-tab-pane" id="paneShop">
+          
+          <!-- Shop Top Balance Strip -->
+          <section class="shop-balance-card">
+            <div class="shop-balance-glow"></div>
+            <div class="shop-balance-info">
+              <span class="shop-balance-label">REACTOR STORE VAULT</span>
+              <div class="shop-balance-pills">
+                <div class="shop-curr-pill coin-pill-glow">
+                  <span class="curr-icon">🪙</span>
+                  <span class="curr-amount" id="shopCoinVal">0</span>
+                </div>
+                <div class="shop-curr-pill diamond-pill-glow">
+                  <span class="curr-icon">💎</span>
+                  <span class="curr-amount" id="shopDiamondVal">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="shop-level-perk">
+              <span class="perk-badge">VIP SHOP</span>
+              <span class="perk-text">Instant Delivery</span>
+            </div>
+          </section>
+      
+          <!-- Daily Free Mystery Supply Box -->
+          <section class="shop-freebie-card" id="shopFreebieCard">
+            <div class="freebie-glow-ring"></div>
+            <div class="freebie-content">
+              <div class="freebie-icon-wrap">
+                <span class="freebie-box-icon">📦</span>
+                <span class="freebie-sparkle">✨</span>
+              </div>
+              <div class="freebie-info">
+                <div class="freebie-badge">DAILY FREE SUPPLY DROP</div>
+                <h3 class="freebie-title">Free Quantum Care Package</h3>
+                <p class="freebie-desc">+25 Coins, +1 Spin Ticket & +100 Energy Boost!</p>
+              </div>
+            </div>
+            <button class="shop-action-btn freebie-claim-btn" id="btnClaimShopFreebie" onclick="claimDailyShopFreebie()">
+              <span class="btn-text" id="freebieBtnText">🎁 CLAIM FREE SUPPLY</span>
+            </button>
+          </section>
+      
+          <!-- Free Ad Watch Viral Reel Gift Card -->
+          <section class="shop-freebie-card shop-reel-gift-card" id="shopReelGiftCard">
+            <div class="freebie-glow-ring reel-glow-ring"></div>
+            <div class="freebie-content">
+              <div class="freebie-icon-wrap reel-icon-wrap">
+                <span class="freebie-box-icon">🎬</span>
+                <span class="freebie-sparkle">🔥</span>
+              </div>
+              <div class="freebie-info">
+                <div class="freebie-badge reel-badge">FREE ONE AD • VIRAL REEL GIFT</div>
+                <h3 class="freebie-title">Free Cyber Reel Gift Drop</h3>
+                <p class="freebie-desc">Watch 1 quick ad to unlock an exclusive Reel gift! Download to your device & post on social media for +50 🪙 & 1 💎!</p>
+              </div>
+            </div>
+            <button class="shop-action-btn reel-claim-btn" id="btnClaimReelGift" onclick="startReelGiftAdFlow()">
+              <span class="btn-text" id="reelGiftBtnText">🎬 WATCH AD & UNLOCK REEL GIFT</span>
+            </button>
+          </section>
+      
+          <!-- Section: Reactor Power Upgrades -->
+          <section class="shop-section">
+            <div class="shop-section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">⚡</span>
+                <h3 class="section-title">Reactor Power Upgrades</h3>
+              </div>
+              <span class="section-tag">PERMANENT STATS</span>
+            </div>
+      
+            <div class="shop-items-grid">
+              
+              <!-- Upgrade 1: Tap Power -->
+              <div class="shop-item-card upgrade-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box cyan-box">
+                    <span class="item-emoji">⚡</span>
+                  </div>
+                  <div class="item-badge-pill" id="shopTapPowerLvl">Lv.1</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Tap Power Overclock</h4>
+                  <p class="item-desc">Increases energy generated per tap permanently</p>
+                  <div class="item-stat-gain">
+                    <span>Effect:</span>
+                    <strong class="highlight-gain" id="shopTapPowerGain">+1 EP / tap</strong>
+                  </div>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val" id="shopTapPowerPrice">50</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyReactorUpgrade('tapPower')">
+                    <span>Upgrade</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Upgrade 2: Max Energy -->
+              <div class="shop-item-card upgrade-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box blue-box">
+                    <span class="item-emoji">🔋</span>
+                  </div>
+                  <div class="item-badge-pill" id="shopMaxEnergyLvl">1,000 EP</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Energy Core Expansion</h4>
+                  <p class="item-desc">Expands the reactor's total energy storage capacity</p>
+                  <div class="item-stat-gain">
+                    <span>Effect:</span>
+                    <strong class="highlight-gain">+250 Max Energy</strong>
+                  </div>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val" id="shopMaxEnergyPrice">100</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyReactorUpgrade('maxEnergy')">
+                    <span>Expand</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Upgrade 3: Instant 100% Recharge -->
+              <div class="shop-item-card upgrade-card full-width-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box gold-box">
+                    <span class="item-emoji">⚡</span>
+                  </div>
+                  <div class="item-badge-pill instant-pill">INSTANT REFILL</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Quantum 100% Supercharge</h4>
+                  <p class="item-desc">Instantly recharges your energy gauge to maximum capacity!</p>
+                  <div class="item-stat-gain">
+                    <span>Effect:</span>
+                    <strong class="highlight-gain" style="color: #fbbf24;">100% Tank Refilled</strong>
+                  </div>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val">35</span>
+                  </div>
+                  <button class="shop-buy-btn gold-buy-btn" onclick="buyReactorUpgrade('refill')">
+                    <span>⚡ Supercharge</span>
+                  </button>
+                </div>
+              </div>
+      
+            </div>
+          </section>
+      
+          <!-- Section: Energy Fuel Cell Depot -->
+          <section class="shop-section" id="shopFuelSection">
+            <div class="shop-section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">🔋</span>
+                <h3 class="section-title">Fuel Cell Depot</h3>
+              </div>
+              <span class="section-tag">ENERGY GENERATORS</span>
+            </div>
+      
+            <div class="shop-items-grid">
+              <!-- 1. Dark Green Fuel Cell (First) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-darkgreen">
+                <div class="shop-item-top">
+                  <div class="item-icon-box darkgreen-box"><span class="item-emoji">🌱</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_darkgreen">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #34d399;">Dark Green Fuel</h4>
+                  <p class="item-desc">+1 Minute generator timer boost</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('darkgreen', 1, 1)" title="Watch 1 Ad for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">1 Ad</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('darkgreen', 100, 5)" title="100 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">100</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('darkgreen', 10, 10)" title="10 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">10</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 2. Green Fuel Cell (Second) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-green">
+                <div class="shop-item-top">
+                  <div class="item-icon-box green-box"><span class="item-emoji">🌿</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_green">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #10b981;">Green Fuel Cell</h4>
+                  <p class="item-desc">+5 Minutes generator timer boost</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('green', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">2 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('green', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">200</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('green', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">20</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 3. Yellow Fuel Cell (Third) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-yellow">
+                <div class="shop-item-top">
+                  <div class="item-icon-box yellow-box"><span class="item-emoji">⚡</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_yellow">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #f59e0b;">Yellow Fuel Cell</h4>
+                  <p class="item-desc">+15 Minutes generator timer boost</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('yellow', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">2 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('yellow', 200, 5)" title="200 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">200</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('yellow', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">20</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 4. Orange Fuel Cell (Fourth) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-orange">
+                <div class="shop-item-top">
+                  <div class="item-icon-box orange-box"><span class="item-emoji">🔥</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_orange">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #f97316;">Orange Fuel Cell</h4>
+                  <p class="item-desc">+30 Minutes generator timer boost</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('orange', 3, 1)" title="Watch 3 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">3 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('orange', 300, 5)" title="300 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">300</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('orange', 30, 10)" title="30 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">30</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 5. Red Fuel Cell (Fifth) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-red">
+                <div class="shop-item-top">
+                  <div class="item-icon-box red-box"><span class="item-emoji">💎</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_red">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #ef4444;">Red Fuel Cell</h4>
+                  <p class="item-desc">+0.01 EP/Sec rate permanent boost</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('red', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('red', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('red', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 6. Pink Boost Fuel (Sixth) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-pink">
+                <div class="shop-item-top">
+                  <div class="item-icon-box pink-box"><span class="item-emoji">⚡</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_pink">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #ec4899;">Pink Boost Fuel</h4>
+                  <p class="item-desc">2x speed generator boost for 10 min</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('pink', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('pink', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('pink', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 7. Purple Boost Fuel (Seventh) -->
+              <div class="shop-item-card fuel-shop-card fuel-border-purple">
+                <div class="shop-item-top">
+                  <div class="item-icon-box purple-box"><span class="item-emoji">🔮</span></div>
+                  <div class="item-badge-pill" id="shopOwnedFuel_purple">0 Owned</div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name" style="color: #a855f7;">Purple Boost Fuel</h4>
+                  <p class="item-desc">5x speed generator boost for 10 min</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="fuel-three-ways-buy">
+                    <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('purple', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
+                      <span class="method-icon">🎬</span>
+                      <span class="method-label">5 Ads</span>
+                      <span class="method-gain">+1 Cell</span>
+                    </button>
+                    <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('purple', 500, 5)" title="500 Coins for 5 Fuel Cells">
+                      <span class="method-icon">🪙</span>
+                      <span class="method-label">500</span>
+                      <span class="method-gain">+5 Cells</span>
+                    </button>
+                    <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('purple', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
+                      <span class="method-icon">💎</span>
+                      <span class="method-label">50</span>
+                      <span class="method-gain">+10 Cells</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+      
+          <!-- Section: Game Passes & Tickets -->
+          <section class="shop-section">
+            <div class="shop-section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon">🎟️</span>
+                <h3 class="section-title">Game Passes & Lucky Tickets</h3>
+              </div>
+              <span class="section-tag">INSTANT PASSES</span>
+            </div>
+      
+            <div class="shop-items-grid">
+      
+              <!-- Item 1: Spin Wheel Ticket -->
+              <div class="shop-item-card ticket-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box purple-box">
+                    <span class="item-emoji">🎡</span>
+                  </div>
+                  <div class="item-inventory-pill">
+                    <span id="shopOwnedTickets">0</span> Owned
+                  </div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Lucky Spin Ticket</h4>
+                  <p class="item-desc">1 Spin on the 8-Prize Lucky Wheel</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val">25</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyPassItem('spinTicket')">
+                    <span>Buy 1x</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Item 2: Mystery Chest Key -->
+              <div class="shop-item-card ticket-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box gold-box">
+                    <span class="item-emoji">🔑</span>
+                  </div>
+                  <div class="item-inventory-pill">
+                    <span id="shopOwnedKeys">0</span> Owned
+                  </div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Mystery Chest Key</h4>
+                  <p class="item-desc">Unlock 1 Cyber Mystery Chest for rare drops</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val">50</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyPassItem('chestKey')">
+                    <span>Buy 1x</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Item 3: Scratch Card -->
+              <div class="shop-item-card ticket-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box pink-box">
+                    <span class="item-emoji">🎟️</span>
+                  </div>
+                  <div class="item-inventory-pill">
+                    <span id="shopOwnedScratch">0</span> Owned
+                  </div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Fortune Scratch Card</h4>
+                  <p class="item-desc">Play 1 3x3 Match-3 fortune scratch game</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val">35</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyPassItem('scratchCard')">
+                    <span>Buy 1x</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Item 4: Cyber Dragon Egg -->
+              <div class="shop-item-card ticket-card">
+                <div class="shop-item-top">
+                  <div class="item-icon-box green-box">
+                    <span class="item-emoji">🥚</span>
+                  </div>
+                  <div class="item-inventory-pill">
+                    <span id="shopOwnedEggs">0</span> Owned
+                  </div>
+                </div>
+                <div class="shop-item-details">
+                  <h4 class="item-name">Cyber Dragon Egg</h4>
+                  <p class="item-desc">Pick 1 lucky egg in the 16-Egg Hatchery</p>
+                </div>
+                <div class="shop-item-bottom">
+                  <div class="item-price">
+                    <span class="price-icon">🪙</span>
+                    <span class="price-val">75</span>
+                  </div>
+                  <button class="shop-buy-btn" onclick="buyPassItem('egg')">
+                    <span>Buy 1x</span>
+                  </button>
+                </div>
+              </div>
+      
+            </div>
+          </section>
+      
+      
+          <!-- Shop Floating Purchase Toast -->
+          <div class="shop-toast" id="shopToast">
+            <span class="shop-toast-icon" id="shopToastIcon">✨</span>
+            <span class="shop-toast-msg" id="shopToastMsg">Item Purchased!</span>
+          </div>
+      
+        </div>
+      
+        <!-- ==========================================================================
+             MODAL: REEL GIFT STUDIO & SOCIAL MEDIA SHARING
+             ========================================================================== -->
+        <div class="reel-studio-backdrop" id="reelStudioBackdrop" style="display: none;">
+          <div class="reel-studio-modal" id="reelStudioModal">
+            <!-- Modal Header -->
+            <div class="reel-studio-header">
+              <div class="reel-header-left">
+                <div class="reel-header-icon-box">🎬</div>
+                <div class="reel-header-titles">
+                  <span class="reel-studio-badge">VIRAL SOCIAL REEL GIFT</span>
+                  <h3 class="reel-studio-title">Cyber Reel Studio</h3>
+                </div>
+              </div>
+              <button class="reel-modal-close-btn" onclick="closeReelStudioModal()">✕</button>
+            </div>
+      
+            <!-- 9:16 Smartphone Vertical Reel Frame -->
+            <div class="reel-phone-wrapper">
+              <div class="reel-phone-screen" id="reelPhoneScreen">
+                <!-- Animated Cyber Canvas Background -->
+                <canvas id="reelCanvas" class="reel-live-canvas" width="360" height="540"></canvas>
+                
+                <!-- Live Reel Overlay UI -->
+                <div class="reel-overlay-content">
+                  <!-- Top Audio / Tag Pill -->
+                  <div class="reel-top-pill">
+                    <span class="reel-equalizer-bars">
+                      <span></span><span></span><span></span><span></span>
+                    </span>
+                    <span class="reel-audio-title">Energy Tap • Official Game Reel</span>
+                  </div>
+      
+                  <!-- Center Reel Reactor Emblem -->
+                  <div class="reel-center-emblem">
+                    <div class="reel-reactor-rings">
+                      <div class="reel-ring r1"></div>
+                      <div class="reel-ring r2"></div>
+                    </div>
+                    <div class="reel-orb-core">⚡</div>
+                  </div>
+      
+                  <!-- Bottom Player Info & Social Tags -->
+                  <div class="reel-bottom-meta">
+                    <div class="reel-player-row">
+                      <div class="reel-player-avatar" id="reelPreviewAvatar">⚡</div>
+                      <div class="reel-player-text">
+                        <span class="reel-player-name" id="reelPreviewName">Alex Vance</span>
+                        <span class="reel-player-stats" id="reelPreviewStats">Lv.1 • Tap Power +1 • 1,000 EP</span>
+                      </div>
+                    </div>
+      
+                    <!-- Promo Code Callout -->
+                    <div class="reel-promo-callout">
+                      <span class="promo-tag-lbl">🎁 USE MY CODE FOR +10 🪙:</span>
+                      <span class="promo-tag-code" id="reelPreviewPromoCode">alexvance_7842</span>
+                    </div>
+      
+                    <div class="reel-social-hashtags">
+                      #EnergyTap #ViralReel #PlayToEarn #TelegramGaming
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Reel Action Controls -->
+            <div class="reel-modal-actions">
+              <!-- Download Button -->
+              <button class="reel-action-btn download-reel-btn" id="btnDownloadReelMedia" onclick="downloadReelGiftMedia()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>📥 DOWNLOAD REEL GIFT (HD)</span>
+              </button>
+      
+              <!-- Social Media Posting Section -->
+              <div class="reel-social-share-box">
+                <span class="social-share-lbl">POST ON SOCIAL MEDIA:</span>
+                <div class="social-share-btn-grid">
+                  
+                  <button class="social-btn instagram-btn" onclick="shareReelToSocial('instagram')" title="Share to Instagram Reels">
+                    <span class="social-icon">📸</span>
+                    <span class="social-name">Instagram</span>
+                  </button>
+      
+                  <button class="social-btn tiktok-btn" onclick="shareReelToSocial('tiktok')" title="Share to TikTok">
+                    <span class="social-icon">🎵</span>
+                    <span class="social-name">TikTok</span>
+                  </button>
+      
+                  <button class="social-btn telegram-btn" onclick="shareReelToSocial('telegram')" title="Share to Telegram">
+                    <span class="social-icon">✈️</span>
+                    <span class="social-name">Telegram</span>
+                  </button>
+      
+                  <button class="social-btn whatsapp-btn" onclick="shareReelToSocial('whatsapp')" title="Share to WhatsApp">
+                    <span class="social-icon">💬</span>
+                    <span class="social-name">WhatsApp</span>
+                  </button>
+      
+                  <button class="social-btn twitter-btn" onclick="shareReelToSocial('x')" title="Share to X / Twitter">
+                    <span class="social-icon">🐦</span>
+                    <span class="social-name">X (Twitter)</span>
+                  </button>
+      
+                </div>
+              </div>
+      
+              <!-- Claim Social Bonus Button -->
+              <button class="reel-action-btn claim-bonus-btn" id="btnClaimSocialBonus" onclick="claimSocialMediaBonus()">
+                <span>🎁 I POSTED! CLAIM +50 🪙 & 1 💎 BONUS</span>
+              </button>
+            </div>
+      
+          </div>
+        </div>
+      
+      </div>
       
 
       <!-- PAGE: XP -->
@@ -1096,78 +2336,62 @@
                 </div>
               </div>
       
-              <!-- ==================== 1. FIRST: MEGA PRIZE ==================== -->
-              <section class="rewards-grand-rectangle-card" id="rewardTabVault" onclick="switchPage('megaReward')">
-                <div class="grand-vault-aura"></div>
-                
-                <div class="grand-vault-emblem-wrap">
-                  <div class="grand-vault-circle">
-                    <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                      <rect x="20" y="25" width="60" height="52" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="3.5" />
-                      <rect x="25" y="30" width="50" height="42" rx="6" fill="#1e293b" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1.5" />
-                      <circle cx="50" cy="51" r="14" fill="#090d16" stroke="#fbbf24" stroke-width="3" />
-                      <circle cx="50" cy="51" r="7" fill="#f59e0b" />
-                      <line x1="50" y1="37" x2="50" y2="65" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
-                      <line x1="36" y1="51" x2="64" y2="51" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
-                      <line x1="40" y1="41" x2="60" y2="61" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" />
-                      <line x1="40" y1="61" x2="60" y2="41" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" />
-                      <circle cx="50" cy="51" r="3" fill="#ffffff" />
-                    </svg>
-                  </div>
-                  <div class="grand-vault-pill-tag">✨ MEGA REWARDS ✨</div>
-                </div>
-      
-                <div class="rewards-rect-badge">
-                  <span class="sparkle-icon">👑</span>
-                  <span>20 MEGA TIERS</span>
-                </div>
-      
-                <h3 class="rewards-rect-title">Mega Rewards Vault</h3>
-      
-                <div class="rewards-stats-strip">
-                  <div class="rewards-stat-item">
-                    <span class="stat-item-label">TOTAL TIERS</span>
-                    <span class="stat-item-val gold">20 Tiers</span>
-                  </div>
-                  <div class="rewards-stat-divider"></div>
-                  <div class="rewards-stat-item">
-                    <span class="stat-item-label">STATUS</span>
-                    <span class="stat-item-val cyan">Coming Soon</span>
-                  </div>
-                  <div class="rewards-stat-divider"></div>
-                  <div class="rewards-stat-item" onclick="switchPage('streak'); event.stopPropagation();" style="cursor: pointer;">
-                    <span class="stat-item-label">STREAK</span>
-                    <span class="stat-item-val flame" id="rewardRectStreak">0 Days 🔥</span>
-                  </div>
-                </div>
-      
-                <button class="rewards-master-action-btn" onclick="switchPage('megaReward'); event.stopPropagation();">
-                  <span>👑 OPEN MEGA REWARDS (20 TIERS)</span>
-                </button>
-              </section>
-      
               <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
               <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
                 <div class="grand-vault-aura spin-aura"></div>
                 
                 <div class="grand-vault-emblem-wrap">
                   <div class="grand-vault-circle spin-circle">
+                    <!-- 3D Luxury Spin Wheel Emblem -->
                     <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                      <circle cx="50" cy="50" r="38" fill="#0f172a" stroke="#06b6d4" stroke-width="3.5" />
-                      <circle cx="50" cy="50" r="30" fill="#030816" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
-                      <line x1="50" y1="12" x2="50" y2="88" stroke="#38bdf8" stroke-width="2.5" />
-                      <line x1="12" y1="50" x2="88" y2="50" stroke="#38bdf8" stroke-width="2.5" />
-                      <line x1="23" y1="23" x2="77" y2="77" stroke="#38bdf8" stroke-width="2" />
-                      <line x1="23" y1="77" x2="77" y2="23" stroke="#38bdf8" stroke-width="2" />
-                      <circle cx="50" cy="50" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2" />
+                      <defs>
+                        <linearGradient id="wheelRim3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#fffbeb"/>
+                          <stop offset="25%" stop-color="#fde047"/>
+                          <stop offset="60%" stop-color="#f59e0b"/>
+                          <stop offset="100%" stop-color="#78350f"/>
+                        </linearGradient>
+                        <radialGradient id="wheelCenter3d" cx="35%" cy="30%" r="70%">
+                          <stop offset="0%" stop-color="#ffffff"/>
+                          <stop offset="35%" stop-color="#38bdf8"/>
+                          <stop offset="75%" stop-color="#0284c7"/>
+                          <stop offset="100%" stop-color="#0c4a6e"/>
+                        </radialGradient>
+                      </defs>
+                      <!-- Outer 3D Beveled Ring -->
+                      <circle cx="50" cy="50" r="46" fill="url(#wheelRim3d)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.6))"/>
+                      <circle cx="50" cy="50" r="41" fill="#0b1329" stroke="#1e293b" stroke-width="1.5"/>
+                      <!-- Colored 3D Wedges (8 Slices) -->
+                      <path d="M50 50 L50 9 A41 41 0 0 1 79 21 Z" fill="#0284c7"/>
+                      <path d="M50 50 L79 21 A41 41 0 0 1 91 50 Z" fill="#f59e0b"/>
+                      <path d="M50 50 L91 50 A41 41 0 0 1 79 79 Z" fill="#10b981"/>
+                      <path d="M50 50 L79 79 A41 41 0 0 1 50 91 Z" fill="#8b5cf6"/>
+                      <path d="M50 50 L50 91 A41 41 0 0 1 21 79 Z" fill="#f43f5e"/>
+                      <path d="M50 50 L21 79 A41 41 0 0 1 9 50 Z" fill="#06b6d4"/>
+                      <path d="M50 50 L9 50 A41 41 0 0 1 21 21 Z" fill="#fbbf24"/>
+                      <path d="M50 50 L21 21 A41 41 0 0 1 50 9 Z" fill="#1e293b"/>
+                      <!-- Golden Spoke Lines -->
+                      <g stroke="#fde047" stroke-width="1.5" opacity="0.8">
+                        <line x1="50" y1="9" x2="50" y2="91"/>
+                        <line x1="9" y1="50" x2="91" y2="50"/>
+                        <line x1="21" y1="21" x2="79" y2="79"/>
+                        <line x1="21" y1="79" x2="79" y2="21"/>
+                      </g>
+                      <!-- 3D Center Beveled Hub -->
+                      <circle cx="50" cy="50" r="14" fill="url(#wheelRim3d)"/>
+                      <circle cx="50" cy="50" r="10" fill="url(#wheelCenter3d)"/>
+                      <circle cx="47" cy="47" r="3.5" fill="#ffffff" opacity="0.8"/>
+                      <!-- 3D Pointer Needle at 12 o'clock -->
+                      <polygon points="50,16 44,4 56,4" fill="#fde047" stroke="#78350f" stroke-width="1" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.7))"/>
+                      <circle cx="50" cy="5" r="2.5" fill="#ef4444"/>
                     </svg>
                   </div>
-                  <div class="grand-vault-pill-tag spin-tag">🎡 LUCKY SPINNER 🎡</div>
+                  <div class="grand-vault-pill-tag spin-tag">🎡 DANDIYA SPINNER 🎡</div>
                 </div>
       
                 <div class="rewards-rect-badge spin-badge">
                   <span class="sparkle-icon">🎟️</span>
-                  <span>8-PRIZE WHEEL</span>
+                  <span>8-PRIZE FESTIVE WHEEL</span>
                 </div>
       
                 <h3 class="rewards-rect-title">Lucky Spin Wheel</h3>
@@ -1200,20 +2424,51 @@
                 
                 <div class="grand-vault-emblem-wrap">
                   <div class="grand-vault-circle chest-circle">
+                    <!-- 3D Luxury Treasure Chest Emblem -->
                     <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                      <path d="M20 40h60v35a5 5 0 0 1-5 5H25a5 5 0 0 1-5-5V40z" fill="#0f172a" stroke="#eab308" stroke-width="3" />
-                      <path d="M18 38l6-16a4 4 0 0 1 4-2h44a4 4 0 0 1 4 2l6 16z" fill="#1e293b" stroke="#facc15" stroke-width="3" />
-                      <rect x="42" y="36" width="16" height="18" rx="4" fill="#ca8a04" stroke="#ffffff" stroke-width="2" />
-                      <circle cx="50" cy="43" r="2.5" fill="#000000" />
-                      <line x1="50" y1="45.5" x2="50" y2="50" stroke="#000000" stroke-width="1.8" />
+                      <defs>
+                        <linearGradient id="chestWood3d" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#451a03"/>
+                          <stop offset="40%" stop-color="#78350f"/>
+                          <stop offset="85%" stop-color="#351004"/>
+                          <stop offset="100%" stop-color="#1c0701"/>
+                        </linearGradient>
+                        <linearGradient id="chestGold3d" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#b45309"/>
+                          <stop offset="25%" stop-color="#fde047"/>
+                          <stop offset="65%" stop-color="#f59e0b"/>
+                          <stop offset="100%" stop-color="#78350f"/>
+                        </linearGradient>
+                      </defs>
+                      <!-- 3D Chest Base -->
+                      <rect x="16" y="44" width="68" height="42" rx="7" fill="url(#chestWood3d)" stroke="#78350f" stroke-width="1.5" filter="drop-shadow(0 6px 8px rgba(0,0,0,0.7))"/>
+                      <!-- Chest Base Vertical Straps -->
+                      <rect x="26" y="44" width="8" height="42" fill="url(#chestGold3d)"/>
+                      <rect x="66" y="44" width="8" height="42" fill="url(#chestGold3d)"/>
+                      <!-- Corner Studs -->
+                      <circle cx="30" cy="50" r="1.8" fill="#fffbeb"/>
+                      <circle cx="30" cy="80" r="1.8" fill="#fffbeb"/>
+                      <circle cx="70" cy="50" r="1.8" fill="#fffbeb"/>
+                      <circle cx="70" cy="80" r="1.8" fill="#fffbeb"/>
+                      <!-- 3D Curved Vault Lid -->
+                      <path d="M14 44 C14 26, 86 26, 86 44 Z" fill="url(#chestWood3d)" stroke="#92400e" stroke-width="1.5"/>
+                      <!-- Lid Gold Bands -->
+                      <path d="M26 44 C26 29, 34 29, 34 44 Z" fill="url(#chestGold3d)"/>
+                      <path d="M66 44 C66 29, 74 29, 74 44 Z" fill="url(#chestGold3d)"/>
+                      <rect x="13" y="42" width="74" height="6" rx="2" fill="url(#chestGold3d)"/>
+                      <!-- Center Glowing Lock Hasp -->
+                      <rect x="42" y="38" width="16" height="20" rx="4" fill="url(#chestGold3d)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.6))"/>
+                      <circle cx="50" cy="46" r="3" fill="#020617"/>
+                      <path d="M48.5 46 L51.5 46 L52 52 L48 52 Z" fill="#020617"/>
+                      <circle cx="50" cy="46" r="1.5" fill="#38bdf8"/>
                     </svg>
                   </div>
-                  <div class="grand-vault-pill-tag chest-tag">🔑 MYSTERY CHEST 🔑</div>
+                  <div class="grand-vault-pill-tag chest-tag">🔑 SHAKTI CHEST 🔑</div>
                 </div>
       
                 <div class="rewards-rect-badge chest-badge">
-                  <span class="sparkle-icon">🔑</span>
-                  <span>UNBOX LOOT</span>
+                  <span class="sparkle-icon">✨</span>
+                  <span>UNBOX RARE LOOT</span>
                 </div>
       
                 <h3 class="rewards-rect-title">Mystery Loot Chest</h3>
@@ -1246,23 +2501,49 @@
                 
                 <div class="grand-vault-emblem-wrap">
                   <div class="grand-vault-circle scratch-circle">
+                    <!-- 3D Scratch Foil Card Emblem -->
                     <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                      <rect x="20" y="24" width="60" height="52" rx="8" fill="#0f172a" stroke="#ec4899" stroke-width="3" />
-                      <rect x="25" y="29" width="50" height="42" rx="5" fill="#1e293b" stroke="rgba(236, 72, 153, 0.4)" stroke-width="1.5" />
-                      <circle cx="36" cy="40" r="5" fill="#f43f5e" />
-                      <circle cx="50" cy="40" r="5" fill="#f43f5e" />
-                      <circle cx="64" cy="40" r="5" fill="#f43f5e" />
-                      <circle cx="36" cy="56" r="5" fill="#f43f5e" />
-                      <circle cx="50" cy="56" r="5" fill="#f43f5e" />
-                      <circle cx="64" cy="56" r="5" fill="#f43f5e" />
+                      <defs>
+                        <linearGradient id="scratchFoil3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#fda4af"/>
+                          <stop offset="35%" stop-color="#f43f5e"/>
+                          <stop offset="70%" stop-color="#be123c"/>
+                          <stop offset="100%" stop-color="#881337"/>
+                        </linearGradient>
+                        <linearGradient id="scratchSilver3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#ffffff"/>
+                          <stop offset="35%" stop-color="#cbd5e1"/>
+                          <stop offset="70%" stop-color="#64748b"/>
+                          <stop offset="100%" stop-color="#334155"/>
+                        </linearGradient>
+                      </defs>
+                      <!-- Angled 3D Foil Ticket -->
+                      <rect x="18" y="20" width="64" height="60" rx="8" fill="url(#scratchFoil3d)" stroke="#fda4af" stroke-width="1.5" filter="drop-shadow(0 6px 10px rgba(0,0,0,0.7))"/>
+                      <!-- Inner Scratchable Silver Coating Grid -->
+                      <rect x="23" y="25" width="54" height="50" rx="5" fill="#0f172a" stroke="#fb7185" stroke-width="1"/>
+                      <!-- 3x3 Foil Tiles -->
+                      <g fill="url(#scratchSilver3d)">
+                        <rect x="26" y="28" width="14" height="13" rx="2.5"/>
+                        <rect x="43" y="28" width="14" height="13" rx="2.5"/>
+                        <rect x="60" y="28" width="14" height="13" rx="2.5"/>
+                        <rect x="26" y="44" width="14" height="13" rx="2.5"/>
+                        <rect x="43" y="44" width="14" height="13" rx="2.5"/>
+                        <rect x="60" y="44" width="14" height="13" rx="2.5"/>
+                        <rect x="26" y="60" width="14" height="13" rx="2.5"/>
+                        <rect x="43" y="60" width="14" height="13" rx="2.5"/>
+                        <rect x="60" y="60" width="14" height="13" rx="2.5"/>
+                      </g>
+                      <!-- Peeled Golden Corner with Lucky Star -->
+                      <polygon points="68,20 82,20 82,34" fill="#fde047" stroke="#78350f" stroke-width="1"/>
+                      <polygon points="43,44 46,50 52,50.5 47.5,55 49,61 43,57.5 37,61 38.5,55 34,50.5 40,50" fill="#fde047" filter="drop-shadow(0 0 4px #fbbf24)"/>
                     </svg>
                   </div>
-                  <div class="grand-vault-pill-tag scratch-tag">🎟️ SCRATCH & WIN 🎟️</div>
+                  <div class="grand-vault-pill-tag scratch-tag">🎟️ GARBA SCRATCH 🎟️</div>
                 </div>
       
                 <div class="rewards-rect-badge scratch-badge">
                   <span class="sparkle-icon">🎴</span>
-                  <span>3x3 MATCH 3</span>
+                  <span>3x3 MATCH 3 WIN</span>
                 </div>
       
                 <h3 class="rewards-rect-title">Scratch Card Fortune</h3>
@@ -1295,17 +2576,39 @@
                 
                 <div class="grand-vault-emblem-wrap">
                   <div class="grand-vault-circle egg-circle">
+                    <!-- 3D Dragon Jewel Egg Emblem -->
                     <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                      <!-- Glowing Cyber Dragon Egg -->
-                      <ellipse cx="50" cy="54" rx="28" ry="36" fill="#042f2e" stroke="#10b981" stroke-width="3.5" />
-                      <ellipse cx="50" cy="54" rx="22" ry="30" fill="#064e3b" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
-                      <path d="M42 35 Q50 45 44 55 Q56 65 48 78" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" />
-                      <circle cx="48" cy="44" r="3.5" fill="#fde047" />
-                      <circle cx="56" cy="58" r="3" fill="#38bdf8" />
-                      <circle cx="40" cy="62" r="2.5" fill="#f43f5e" />
+                      <defs>
+                        <radialGradient id="dragonEgg3d" cx="35%" cy="30%" r="70%">
+                          <stop offset="0%" stop-color="#a7f3d0"/>
+                          <stop offset="25%" stop-color="#34d399"/>
+                          <stop offset="55%" stop-color="#059669"/>
+                          <stop offset="85%" stop-color="#064e3b"/>
+                          <stop offset="100%" stop-color="#022c22"/>
+                        </radialGradient>
+                        <radialGradient id="eggAura3d" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stop-color="#34d399"/>
+                          <stop offset="60%" stop-color="#059669"/>
+                          <stop offset="100%" stop-color="transparent"/>
+                        </radialGradient>
+                      </defs>
+                      <!-- Radiating Emerald Aura -->
+                      <circle cx="50" cy="54" r="40" fill="url(#eggAura3d)" opacity="0.35"/>
+                      <!-- 3D Spherical Egg Body -->
+                      <ellipse cx="50" cy="54" rx="28" ry="36" fill="url(#dragonEgg3d)" stroke="#6ee7b7" stroke-width="2" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.75))"/>
+                      <!-- Top-Left Specular Light Highlight -->
+                      <ellipse cx="40" cy="36" rx="9" ry="14" fill="#ffffff" opacity="0.35" transform="rotate(-25 40 36)"/>
+                      <!-- Glowing Golden Crack Fractures -->
+                      <path d="M43 32 Q51 44 44 54 Q56 64 48 76" fill="none" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" filter="drop-shadow(0 0 4px #f59e0b)"/>
+                      <path d="M44 54 L36 58" fill="none" stroke="#fde047" stroke-width="1.8" stroke-linecap="round"/>
+                      <path d="M51 44 L60 48" fill="none" stroke="#fde047" stroke-width="1.8" stroke-linecap="round"/>
+                      <!-- Embedded Glowing Gems -->
+                      <circle cx="48" cy="44" r="3" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)"/>
+                      <circle cx="55" cy="58" r="2.8" fill="#38bdf8" filter="drop-shadow(0 0 4px #38bdf8)"/>
+                      <circle cx="39" cy="62" r="2.5" fill="#fb7185" filter="drop-shadow(0 0 4px #fb7185)"/>
                     </svg>
                   </div>
-                  <div class="grand-vault-pill-tag egg-tag">🥚 16-EGG HATCHERY 🥚</div>
+                  <div class="grand-vault-pill-tag egg-tag">🥚 AMRIT HATCHERY 🥚</div>
                 </div>
       
                 <div class="rewards-rect-badge egg-badge">
@@ -1338,6 +2641,9 @@
               </section>
       
             </div>
+          </div>
+        </div>
+      </div>
       
 
       <!-- PAGE: GOAL -->
@@ -1405,7 +2711,7 @@
                       <svg viewBox="0 0 100 100" class="grand-coins-svg">
                         <circle cx="42" cy="45" r="24" fill="#042f2e" stroke="#06b6d4" stroke-width="3.5" />
                         <circle cx="42" cy="45" r="18" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 2"/>
-                        <text x="42" y="53" font-size="22" text-anchor="middle">🔑</text>
+                        <text x="42" y="53" font-size="22" text-anchor="middle">🥢</text>
                         
                         <circle cx="60" cy="58" r="22" fill="#022c22" stroke="#fbbf24" stroke-width="3" />
                         <circle cx="60" cy="58" r="16" fill="none" stroke="#fde047" stroke-width="1.8" stroke-dasharray="3 2"/>
@@ -1418,11 +2724,11 @@
                   <!-- Loot Bundle Badge -->
                   <div class="mega-coins-badge" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.4); color: #38bdf8;">
                     <span class="sparkle-icon">👑</span>
-                    <span>100 KEYS • 75 CARDS • 150 TICKETS • 1,000 COINS</span>
+                    <span>100 DANDIYAS • 75 CARDS • 150 FLOWERS • 1,000 COINS</span>
                   </div>
       
                   <h3 class="mega-card-title">Level 100 Mega Goal Prize</h3>
-                  <p class="mega-card-desc">Complete Goal Level 100, then watch 1,000 ads to claim your ultimate reward: 100 Keys, 75 Cards, 150 Tickets, and 1,000 Coins!</p>
+                  <p class="mega-card-desc">Complete Goal Level 100, then watch 1,000 ads to claim your ultimate reward: 100 Dandiyas, 75 Cards, 150 Flowers, and 1,000 Coins!</p>
       
                   <!-- Step 1 Card -->
                   <div class="mega-step-card" id="goalMegaStep1Card">
@@ -1466,7 +2772,7 @@
       
                       <div class="mega-progress-footer">
                         <span class="ads-remain-text" id="goalMegaAdsRemainText">1000 ads remaining</span>
-                        <span class="prize-tag" style="color: #38bdf8;">100 Keys • 75 Cards • 150 Tickets • 1,000 🪙</span>
+                        <span class="prize-tag" style="color: #38bdf8;">100 Dandiyas • 75 Cards • 150 Flowers • 1,000 🪙</span>
                       </div>
                     </div>
                   </div>
@@ -2132,6 +3438,25 @@
           </div>
         </div>
       
+        <!-- Quick Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">COST:</span>
+            <span class="chip-val">1 Ticket</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot cyan"></span>
+            <span class="chip-label">SLICES:</span>
+            <span class="chip-val">8 Prizes</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot amber"></span>
+            <span class="chip-label">JACKPOT:</span>
+            <span class="chip-val">10 Coins (2%)</span>
+          </div>
+        </div>
+      
         <!-- Hidden ticket count fallback for scripts -->
         <span id="spinTicketCountVal" style="display:none;">0</span>
       
@@ -2399,6 +3724,25 @@
             <span class="key-pill-icon">🔑</span>
             <span class="key-pill-val" id="chestKeysVal">0</span>
             <span class="key-add-btn">+</span>
+          </div>
+        </div>
+      
+        <!-- Mini-Game Resource Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot amber"></span>
+            <span class="chip-label">COST:</span>
+            <span class="chip-val">1 Key</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">JACKPOT:</span>
+            <span class="chip-val">10 Coins / 5 💎</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot purple"></span>
+            <span class="chip-label">REWARDS:</span>
+            <span class="chip-val">Coins, Eggs, Gems</span>
           </div>
         </div>
       
@@ -2673,6 +4017,25 @@
           </div>
         </div>
       
+        <!-- Mini-Game Resource Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot pink"></span>
+            <span class="chip-label">COST:</span>
+            <span class="chip-val">1 Card</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">JACKPOT:</span>
+            <span class="chip-val">100 Coins / 20 💎</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot cyan"></span>
+            <span class="chip-label">WIN RATE:</span>
+            <span class="chip-val">100% Instant Prize</span>
+          </div>
+        </div>
+      
         <!-- ONE CARD LUXURY SCRATCH TICKET (FULL PAGE VIEW) -->
         <section class="scratch-arena-card single-card-arena" id="scratchSingleCardArea">
           <!-- Ticket Container -->
@@ -2755,9 +4118,6 @@
                 <span id="scratchMainBtnLabel">🎴 NEW TICKET (1 CARD)</span>
               </button>
             </div>
-            <button class="scratch-ad-buy-btn" id="btnSingleAdBuy" onclick="buyScratchCardWithAd()">
-              <span>🎬 GET 1 FREE CARD (WATCH AD)</span>
-            </button>
           </div>
         </section>
       </div>
@@ -2767,25 +4127,48 @@
       <div class="page-view" id="pageEgg">
               
               <!-- Top Action Nav Row -->
-              <div class="xp-top-actions-row">
-                <button class="xp-back-btn" onclick="switchPage('reward')">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                  </svg>
-                  <span>Back</span>
-                </button>
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
       
-                <div class="xp-timer-pill">
-                  <span>🥚 16-EGG HATCHERY</span>
-                </div>
+          <div class="egg-header-title-pill">
+            <span class="egg-sparkle-icon">✨</span>
+            <span>16-EGG CYBER HATCHERY</span>
+          </div>
       
-                <div class="xp-level-badge-btn" style="pointer-events: none;">
-                  <span>🥚 <span id="eggPageEggsCount">0</span> Eggs</span>
-                </div>
-              </div>
+          <!-- Live Egg Coin Balance Header Pill -->
+          <div class="egg-coin-header-pill" id="eggCoinHeaderPill" onclick="promptEggCoinsInfo()">
+            <span class="egg-pill-icon">🥚</span>
+            <span class="egg-pill-val" id="eggPageEggsCount">0</span>
+            <span class="egg-add-btn">+</span>
+          </div>
+        </div>
       
-              <!-- Hidden egg coin balance fallback for scripts -->
-              <span id="eggAvailableCoins" style="display:none;">0 Eggs</span>
+        <!-- Mini-Game Resource Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot green"></span>
+            <span class="chip-label">COST:</span>
+            <span class="chip-val">1 Egg Coin</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">RULE:</span>
+            <span class="chip-val">Match 3 to Win</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot cyan"></span>
+            <span class="chip-label">PRIZES:</span>
+            <span class="chip-val">Keys, Tickets, Gems</span>
+          </div>
+        </div>
+      
+        <!-- Hidden egg coin balance fallback for scripts -->
+        <span id="eggAvailableCoins" style="display:none;">0 Eggs</span>
       
               <!-- Egg Hatch Arena Card (Full Page View) -->
               <section class="egg-incubator-card">
@@ -2863,9 +4246,6 @@
                   <button class="egg-action-main-btn" id="btnReshuffleEggs" onclick="shuffleEggs16(true)">
                     <span>🔄 RESHUFFLE 16 EGGS</span>
                   </button>
-                  <button class="egg-ad-free-btn" id="btnPageFreeEggAd" onclick="claimFreeEggByAd()">
-                    <span>🎬 GET 1 EGG (WATCH AD)</span>
-                  </button>
                 </div>
               </section>
       
@@ -2875,14 +4255,14 @@
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
         <button class="nav-tab-btn" data-tab="tasks" id="navTasks" aria-label="Tasks">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 11l3 3L22 4"/>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
           </svg>
         </button>
 
         <button class="nav-tab-btn" data-tab="energy" id="navEnergy" aria-label="Energy">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
           </svg>
         </button>
@@ -2896,7 +4276,7 @@
         </button>
 
         <button class="nav-tab-btn" data-tab="reward" id="navReward" aria-label="Rewards">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 12 20 22 4 22 4 12"/>
             <rect x="2" y="7" width="20" height="5" rx="1"/>
             <line x1="12" y1="22" x2="12" y2="7"/>
@@ -2906,7 +4286,7 @@
         </button>
 
         <button class="nav-tab-btn" data-tab="profile" id="navProfile" aria-label="Profile">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>

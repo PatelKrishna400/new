@@ -54,6 +54,65 @@
   /* Typography */
   --font-primary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* ==========================================================================
+     3D GRAPHICS DESIGN SYSTEM TOKENS (LIGHTING, BEVELS & EXTRUSIONS)
+     ========================================================================== */
+  /* 3D Gold Spectrum */
+  --3d-gold-light: #fef08a;
+  --3d-gold-surface: linear-gradient(180deg, #fde047 0%, #f59e0b 55%, #d97706 100%);
+  --3d-gold-border: #fcd34d;
+  --3d-gold-shadow: #92400e;
+  --3d-gold-glow: rgba(245, 158, 11, 0.55);
+
+  /* 3D Blue Gem Spectrum */
+  --3d-blue-light: #bae6fd;
+  --3d-blue-surface: linear-gradient(180deg, #38bdf8 0%, #0284c7 55%, #0369a1 100%);
+  --3d-blue-border: #7dd3fc;
+  --3d-blue-shadow: #075985;
+  --3d-blue-glow: rgba(56, 189, 248, 0.55);
+
+  /* 3D Cyan Plasma Spectrum */
+  --3d-cyan-light: #a5f3fc;
+  --3d-cyan-surface: linear-gradient(180deg, #22d3ee 0%, #06b6d4 55%, #0891b2 100%);
+  --3d-cyan-border: #67e8f9;
+  --3d-cyan-shadow: #155e75;
+  --3d-cyan-glow: rgba(6, 182, 212, 0.55);
+
+  /* 3D Emerald Energy Spectrum */
+  --3d-green-light: #a7f3d0;
+  --3d-green-surface: linear-gradient(180deg, #34d399 0%, #10b981 55%, #059669 100%);
+  --3d-green-border: #6ee7b7;
+  --3d-green-shadow: #065f46;
+  --3d-green-glow: rgba(16, 185, 129, 0.55);
+
+  /* 3D Purple Spectrum */
+  --3d-purple-light: #e9d5ff;
+  --3d-purple-surface: linear-gradient(180deg, #c084fc 0%, #a855f7 55%, #7e22ce 100%);
+  --3d-purple-border: #d8b4fe;
+  --3d-purple-shadow: #581c87;
+  --3d-purple-glow: rgba(168, 85, 247, 0.55);
+
+  /* 3D Rose/Fire Spectrum */
+  --3d-rose-light: #fecdd3;
+  --3d-rose-surface: linear-gradient(180deg, #fb7185 0%, #f43f5e 55%, #be123c 100%);
+  --3d-rose-border: #fda4af;
+  --3d-rose-shadow: #881337;
+  --3d-rose-glow: rgba(244, 63, 94, 0.55);
+
+  /* 3D Orange Flame Spectrum */
+  --3d-orange-light: #fed7aa;
+  --3d-orange-surface: linear-gradient(180deg, #fb923c 0%, #f97316 55%, #c2410c 100%);
+  --3d-orange-border: #fdba74;
+  --3d-orange-shadow: #7c2d12;
+  --3d-orange-glow: rgba(249, 115, 22, 0.55);
+
+  /* 3D Glass Surface & Shading */
+  --3d-glass-surface: linear-gradient(180deg, rgba(25, 45, 95, 0.85) 0%, rgba(10, 20, 48, 0.95) 100%);
+  --3d-card-surface: linear-gradient(180deg, rgba(16, 32, 72, 0.85) 0%, rgba(6, 15, 36, 0.95) 100%);
+  --3d-bevel-top: inset 0 1.5px 0 rgba(255, 255, 255, 0.25);
+  --3d-bevel-bottom: inset 0 -2.5px 0 rgba(0, 0, 0, 0.45);
+  --3d-depth-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 /* Reset & Box Sizing */
@@ -66,8 +125,8 @@
   -webkit-user-select: none;
 }
 
-/* Universal Invisible / Hidden Scrollbar Design System */
-* {
+/* Universal Transparent & Hidden Scrollbar Design System */
+*, html, body {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -79,10 +138,20 @@
   background: transparent !important;
 }
 
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: none !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: transparent !important;
+}
+
 ::-webkit-scrollbar-corner {
-  display: none !important;
   background: transparent !important;
 }
 
@@ -282,8 +351,13 @@ html, body {
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #3b82f6;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  border: 2px solid #60a5fa;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 3px 0 #1d4ed8,
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    0 0 14px rgba(59, 130, 246, 0.6);
   background: #0f172a;
 }
 
@@ -294,15 +368,20 @@ html, body {
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2563eb;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 60%, #1e40af 100%);
   color: #ffffff;
   font-size: 9.5px;
   font-weight: 800;
-  padding: 2px 7px;
-  border-radius: 10px;
-  border: 1.5px solid #1d4ed8;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px rgba(37, 99, 235, 0.6);
-  letter-spacing: 0.3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1.5px solid #93c5fd;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
+    0 2px 0 #172554,
+    0 4px 8px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(37, 99, 235, 0.5);
+  letter-spacing: 0.4px;
   white-space: nowrap;
 }
 
@@ -336,44 +415,145 @@ html, body {
   display: flex;
   align-items: center;
   gap: 7px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  padding: 6px 14px 6px 8px;
+  background: radial-gradient(circle at 35% 25%, #78350f 0%, #261807 55%, #0e0903 100%);
+  border: 1.5px solid #fde047;
+  padding: 5px 13px 5px 8px;
   border-radius: var(--radius-pill);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease, border-color 0.2s;
+  box-shadow: 
+    inset 0 2px 1px rgba(254, 240, 138, 0.75),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 4px 0 #92400e,
+    0 8px 18px rgba(0, 0, 0, 0.65),
+    0 0 14px rgba(245, 158, 11, 0.35);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
   flex-shrink: 0;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.coin-pill:hover { border-color: rgba(245, 158, 11, 0.7); }
-.coin-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.pill-value { font-family: var(--font-primary); font-size: 14px; font-weight: 800; color: #f8fafc; }
+.coin-pill:hover {
+  border-color: #fef08a;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 2.5px 1px rgba(254, 240, 138, 0.9),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 6px 0 #92400e,
+    0 12px 22px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(245, 158, 11, 0.55);
+}
+
+.coin-pill:active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 0 1px 0 rgba(254, 240, 138, 0.3),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 #92400e,
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.blue-coin-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: radial-gradient(circle at 35% 25%, #075985 0%, #082f49 55%, #02121d 100%);
+  border: 1.5px solid #7dd3fc;
+  padding: 5px 12px 5px 8px;
+  border-radius: var(--radius-pill);
+  box-shadow: 
+    inset 0 2px 1px rgba(186, 230, 253, 0.75),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 4px 0 #075985,
+    0 8px 18px rgba(0, 0, 0, 0.65),
+    0 0 14px rgba(56, 189, 248, 0.4);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.blue-coin-pill:hover {
+  border-color: #bae6fd;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 2.5px 1px rgba(186, 230, 253, 0.9),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 6px 0 #075985,
+    0 12px 22px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+.blue-coin-pill:active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 0 1px 0 rgba(186, 230, 253, 0.3),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 #075985,
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.coin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
+}
+.blue-coin-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
+}
+.pill-value {
+  font-family: var(--font-primary);
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+.blue-pill-val {
+  color: #38bdf8 !important;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.7), 0 1px 3px rgba(0, 0, 0, 0.85);
+}
 
 .streak-btn {
   position: relative;
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: radial-gradient(circle at 35% 25%, #7c2d12 0%, #351004 55%, #150501 100%);
+  border: 1.5px solid #fdba74;
   color: #fb923c;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    inset 0 2px 1px rgba(254, 215, 170, 0.7),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.8),
+    0 4px 0 #7c2d12,
+    0 8px 18px rgba(0, 0, 0, 0.65),
+    0 0 14px rgba(249, 115, 22, 0.4);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
   flex-shrink: 0;
 }
 
 .streak-btn:hover {
-  transform: scale(1.06);
-  border-color: #38bdf8;
-  color: #f97316;
-  box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+  transform: translateY(-2px) scale(1.06);
+  border-color: #fed7aa;
+  box-shadow: 
+    inset 0 2.5px 1px rgba(254, 215, 170, 0.85),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.8),
+    0 6px 0 #7c2d12,
+    0 12px 22px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(249, 115, 22, 0.6);
 }
 
+.streak-btn:active {
+  transform: translateY(3px) scale(0.96);
+  box-shadow: 
+    inset 0 1px 0 rgba(254, 215, 170, 0.3),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 #7c2d12,
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
 .btn-dot-indicator {
   position: absolute;
   top: 1px;
@@ -393,9 +573,9 @@ div[id^="page"] {
   flex: 1 1 auto;
   min-height: 0 !important;
   max-height: 100%;
-  padding: 0 16px 14px 16px;
+  padding: 0 16px 110px 16px !important;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
@@ -408,6 +588,22 @@ div[id^="page"]::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
+  background: transparent !important;
+}
+
+.page-view::-webkit-scrollbar-track,
+div[id^="page"]::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.page-view::-webkit-scrollbar-thumb,
+div[id^="page"]::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: none !important;
+}
+
+.page-view::-webkit-scrollbar-thumb:hover,
+div[id^="page"]::-webkit-scrollbar-thumb:hover {
   background: transparent !important;
 }
 
@@ -442,6 +638,43 @@ div[id^="page"].active {
   flex-shrink: 0;
 }
 
+/* Shared Mini-Game Info Strip */
+.mini-game-info-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 0 2px 0;
+}
+
+.info-strip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.4px;
+}
+
+.chip-dot {
+  font-size: 8px;
+  line-height: 1;
+}
+
+.chip-dot.gold { color: #f59e0b; text-shadow: 0 0 6px rgba(245, 158, 11, 0.8); }
+.chip-dot.cyan { color: #38bdf8; text-shadow: 0 0 6px rgba(56, 189, 248, 0.8); }
+.chip-dot.green { color: #10b981; text-shadow: 0 0 6px rgba(16, 185, 129, 0.8); }
+.chip-dot.purple { color: #a855f7; text-shadow: 0 0 6px rgba(168, 85, 247, 0.8); }
+.chip-dot.pink { color: #ec4899; text-shadow: 0 0 6px rgba(236, 72, 153, 0.8); }
+.chip-dot.amber { color: #f59e0b; text-shadow: 0 0 6px rgba(245, 158, 11, 0.8); }
+
 /* ==========================================================================
    PERMANENT FLOATING BOTTOM NAVIGATION (FROZEN IN PLACE ACROSS ALL PAGES)
    ========================================================================== */
@@ -452,8 +685,8 @@ div[id^="page"].active {
   right: 0;
   height: calc(64px + max(0px, env(safe-area-inset-bottom)));
   margin: 0 14px max(8px, env(safe-area-inset-bottom)) 14px;
-  background: rgba(6, 14, 34, 0.96);
-  border: 1.5px solid rgba(25, 55, 120, 0.55);
+  background: linear-gradient(180deg, rgba(14, 28, 64, 0.98) 0%, rgba(6, 14, 34, 0.99) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
   border-radius: 32px;
   display: flex;
   align-items: center;
@@ -461,7 +694,12 @@ div[id^="page"].active {
   padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.6),
+    0 6px 0 rgba(2, 6, 23, 0.9),
+    0 16px 36px rgba(0, 0, 0, 0.75),
+    0 0 24px rgba(37, 99, 235, 0.3);
   z-index: 100;
   flex-shrink: 0;
 }
@@ -469,7 +707,7 @@ div[id^="page"].active {
 .nav-tab-btn {
   position: relative;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: #64748b;
   width: 46px;
   height: 46px;
@@ -478,21 +716,30 @@ div[id^="page"].active {
   justify-content: center;
   cursor: pointer;
   border-radius: 20px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
 .nav-tab-btn:hover {
-  color: #94a3b8;
+  color: #cbd5e1;
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-tab-btn:active {
+  transform: translateY(2px);
 }
 
 .nav-tab-btn.active {
   color: #38bdf8;
-  background: rgba(6, 182, 212, 0.12);
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.28) 0%, rgba(2, 132, 199, 0.12) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.45);
   border-radius: 20px;
-  filter: drop-shadow(0 0 8px #38bdf8);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
+    0 2px 0 rgba(2, 132, 199, 0.5),
+    0 0 14px rgba(56, 189, 248, 0.45);
 }
 
 .home-center-btn {
@@ -508,7 +755,7 @@ div[id^="page"].active {
   border: none;
   box-shadow: none;
   transform: none;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   flex-shrink: 0;
 }
 
@@ -521,33 +768,93 @@ div[id^="page"].active {
   display: none;
 }
 
-/* Active State: Elevated Glowing Blue Core */
+/* Active State: Elevated 3D Glowing Blue Core */
 .home-center-btn.active {
   width: 54px;
   height: 54px;
-  background: linear-gradient(135deg, #00d2ff 0%, #0070f3 50%, #0051cc 100%);
+  background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 45%, #0369a1 80%, #075985 100%);
   color: #ffffff !important;
-  border: 2px solid #38bdf8;
+  border: 2px solid #7dd3fc;
+  border-radius: 50%;
   box-shadow: 
-    0 0 22px rgba(0, 210, 255, 0.7),
-    0 6px 16px rgba(0, 0, 0, 0.5),
-    inset 0 2px 6px rgba(255, 255, 255, 0.4);
+    inset 0 2.5px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.5),
+    0 5px 0 #075985,
+    0 10px 24px rgba(0, 0, 0, 0.65),
+    0 0 28px rgba(56, 189, 248, 0.7);
   transform: translateY(-8px);
+  cursor: pointer;
+  transition: all 0.14s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .home-center-btn.active:hover {
   transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 0 30px rgba(0, 210, 255, 0.9), 0 10px 22px rgba(0, 0, 0, 0.6);
+  box-shadow: 
+    inset 0 3px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.5),
+    0 7px 0 #075985,
+    0 14px 28px rgba(0, 0, 0, 0.75),
+    0 0 35px rgba(56, 189, 248, 0.85);
+}
+
+.home-center-btn.active:active {
+  transform: translateY(-4px);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 2px 0 #075985,
+    0 4px 10px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(56, 189, 248, 0.7);
 }
 
 .home-center-btn.active .home-btn-glow {
   display: block;
   position: absolute;
-  inset: -3px;
+  inset: -4px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 210, 255, 0.55) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, transparent 70%);
   z-index: -1;
   animation: pulseGlow 2.5s infinite;
+}
+
+/* Universal 3D Tactile Push-Button System */
+.btn-3d {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-primary);
+  font-weight: 800;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease;
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+    0 4px 0 var(--btn-shadow-color, #0284c7),
+    0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.btn-3d:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+    0 5px 0 var(--btn-shadow-color, #0284c7),
+    0 12px 24px rgba(0, 0, 0, 0.6);
+}
+
+.btn-3d:active {
+  transform: translateY(3px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
+    0 1px 0 var(--btn-shadow-color, #0284c7),
+    0 3px 8px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes pulseGlow {
@@ -578,13 +885,13 @@ div[id^="page"].active {
     font-size: 14.5px;
   }
 
-  .coin-pill {
-    padding: 4px 10px 4px 7px;
-    gap: 5px;
+  .coin-pill, .blue-coin-pill {
+    padding: 4px 8px 4px 6px;
+    gap: 4px;
   }
 
   .pill-value {
-    font-size: 13px;
+    font-size: 12.5px;
   }
 
   .streak-btn {
@@ -1594,4 +1901,351 @@ div[id^="page"].active {
 
 .ad-collect-reward-btn:not(.disabled):active {
   transform: scale(0.98);
+}
+
+/* ==========================================================================
+   NAVRATRI FESTIVAL (GARBA / DANDIYA / DIYA / RANGOLI) THEME SYSTEM
+   ========================================================================== */
+
+:root {
+  /* Navratri Auspicious Spectrum */
+  --nav-marigold: #ff7700;
+  --nav-marigold-light: #ffaa00;
+  --nav-gold: #ffbe0b;
+  --nav-gold-glow: rgba(255, 190, 11, 0.6);
+  --nav-kumkum: #e63946;
+  --nav-kumkum-glow: rgba(230, 57, 70, 0.55);
+  --nav-peacock: #00b4d8;
+  --nav-emerald: #10b981;
+  --nav-saffron: #f77f00;
+  --nav-mirror-border: rgba(255, 240, 180, 0.45);
+}
+
+/* --- Hanging Navratri Temple Door Toran Garland (Bandhanwar) --- */
+.navratri-toran {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 36px;
+  pointer-events: none;
+  z-index: 105;
+  overflow: visible;
+  display: block;
+}
+
+.toran-door-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 4px rgba(245, 158, 11, 0.45));
+  animation: toranDoorBreeze 4.2s ease-in-out infinite alternate;
+  transform-origin: 50% 0%;
+}
+
+@keyframes toranDoorBreeze {
+  0% { transform: rotate(-0.6deg) translateY(0); }
+  50% { transform: rotate(0.5deg) translateY(-0.5px); }
+  100% { transform: rotate(-0.4deg) translateY(0); }
+}
+
+/* --- Heading Navratri Badges & Strips (Removed on User Request) --- */
+.navratri-header-badge,
+.navratri-festive-strip,
+.shop-hot-badge {
+  display: none !important;
+}
+
+.diya-icon-spin {
+  display: inline-block;
+  animation: diyaFlameFlicker 1.8s ease-in-out infinite;
+}
+
+@keyframes diyaFlameFlicker {
+  0%, 100% { transform: scale(1) rotate(-1deg); filter: drop-shadow(0 0 4px #fbbf24); }
+  50% { transform: scale(1.18, 0.92) rotate(2deg); filter: drop-shadow(0 0 8px #f59e0b); }
+}
+
+/* --- Navratri Festive Makeover for Floating Bottom Navigation --- */
+.bottom-nav {
+  border: 1.5px solid rgba(251, 191, 36, 0.55) !important;
+  background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%) !important;
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 230, 160, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.6),
+    0 6px 0 rgba(10, 5, 22, 0.9),
+    0 16px 36px rgba(0, 0, 0, 0.8),
+    0 0 24px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Festive mirror-work top studs along bottom navigation */
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: -3.5px;
+  left: 24px;
+  right: 24px;
+  height: 5px;
+  background: radial-gradient(circle, #fde047 35%, #b45309 80%, transparent 85%);
+  background-size: 20px 5px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Individual Bottom Nav Tab Buttons with Dandiya & Festive Accent */
+.nav-tab-btn {
+  color: #94a3b8;
+}
+
+.nav-tab-btn .tab-festive-tag {
+  display: none !important;
+}
+
+.nav-tab-btn .tab-dandiya-sub {
+  display: none !important;
+}
+
+.nav-tab-btn.active {
+  color: #fde047 !important;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.32) 0%, rgba(225, 29, 72, 0.18) 100%) !important;
+  border: 1.5px solid rgba(251, 191, 36, 0.75) !important;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
+    0 3px 0 rgba(180, 83, 9, 0.7),
+    0 0 18px rgba(245, 158, 11, 0.6) !important;
+}
+
+/* Center Home Button Transformed into Radiant Navratri Sacred Garbi / Diya */
+.home-center-btn.active {
+  background: radial-gradient(circle at 35% 30%, #fef08a 0%, #f59e0b 38%, #e11d48 80%, #9f1239 100%) !important;
+  border: 2.5px solid #fde047 !important;
+  box-shadow: 
+    inset 0 3px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3.5px 0 rgba(0, 0, 0, 0.6),
+    0 6px 0 #9f1239,
+    0 12px 28px rgba(0, 0, 0, 0.75),
+    0 0 32px rgba(245, 158, 11, 0.85),
+    0 0 16px rgba(225, 29, 72, 0.6) !important;
+}
+
+.home-center-btn.active .home-btn-glow {
+  display: block !important;
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(253, 224, 71, 0.75);
+  animation: mandalaSpinSlow 16s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes mandalaSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* --- Floating Navratri Marigold Petals Background Particles --- */
+.navratri-petals-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.marigold-petal {
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  background: radial-gradient(ellipse at 30% 30%, #fde047 0%, #f59e0b 60%, #ea580c 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  opacity: 0.65;
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
+  animation: petalFall linear infinite;
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(105vh) rotate(380deg) translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* --- Traditional Gujarati Abhla (Mirror-Work) Card Styling --- */
+.stat-card, .reactor-card, .profile-card, .shop-category-card {
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+.stat-card::after, .reactor-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.8), rgba(225, 29, 72, 0.8), transparent);
+  pointer-events: none;
+}
+
+/* Rangoli Mandala Ring around Reactor Orb */
+.orb-mandala-ring {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 2px dashed rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), inset 0 0 15px rgba(225, 29, 72, 0.25);
+  animation: mandalaSpinSlow 24s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.orb-mandala-ring-inner {
+  position: absolute;
+  width: 215px;
+  height: 215px;
+  border-radius: 50%;
+  border: 1.5px dotted rgba(254, 240, 138, 0.65);
+  animation: mandalaSpinSlow 14s linear infinite reverse;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Flanking Diya Lamps around Tap Orb */
+.orb-diya-lamp {
+  position: absolute;
+  bottom: -4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 6;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.85)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+}
+
+.orb-diya-left { left: 14px; }
+.orb-diya-right { right: 14px; }
+
+.diya-flame {
+  width: 12px;
+  height: 18px;
+  background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #fef08a 25%, #f59e0b 60%, #dc2626 85%, transparent 100%);
+  border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+  animation: diyaFlameFlicker 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px #fde047) drop-shadow(0 0 10px #f97316);
+  transform-origin: 50% 90%;
+}
+
+.diya-base {
+  width: 26px;
+  height: 11px;
+  background: radial-gradient(ellipse at 50% 25%, #fef08a 0%, #d97706 45%, #78350f 85%, #351203 100%);
+  border-radius: 2px 2px 14px 14px;
+  border: 1.2px solid #fde047;
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.7),
+    0 3px 0 #451a03,
+    0 4px 8px rgba(0, 0, 0, 0.7);
+  margin-top: -3px;
+}
+
+/* ==========================================================================
+   MINI-GAME LUXURY RESOURCE & REWARD INFO STRIP (Spin, Chest, Egg, Scratch)
+   ========================================================================== */
+.mini-game-info-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  background: rgba(10, 18, 36, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill, 9999px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-bottom: 8px;
+}
+
+.info-strip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-strip-chip .chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.info-strip-chip .chip-dot.gold {
+  background: #fbbf24;
+  color: #fbbf24;
+  box-shadow: 0 0 8px #fbbf24;
+}
+
+.info-strip-chip .chip-dot.cyan {
+  background: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.info-strip-chip .chip-dot.green {
+  background: #10b981;
+  color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.info-strip-chip .chip-dot.purple {
+  background: #a855f7;
+  color: #a855f7;
+  box-shadow: 0 0 8px #a855f7;
+}
+
+.info-strip-chip .chip-dot.pink {
+  background: #ec4899;
+  color: #ec4899;
+  box-shadow: 0 0 8px #ec4899;
+}
+
+.info-strip-chip .chip-dot.amber {
+  background: #f59e0b;
+  color: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+
+.info-strip-chip .chip-label {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-strip-chip .chip-val {
+  color: #f1f5f9;
+  font-weight: 800;
 }

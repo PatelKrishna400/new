@@ -5,8 +5,8 @@
         <circle cx="12" cy="12" r="10"/>
         <polyline points="12 6 12 12 16 14"/>
       </svg>
-      <span class="subtab-text">Daily</span>
-      <span class="subtab-badge-pill" id="dailyBadgeCount">9</span>
+      <span class="subtab-text">Monthly</span>
+      <span class="subtab-badge-pill" id="dailyBadgeCount">14</span>
     </button>
 
     <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
@@ -29,6 +29,21 @@
     </button>
   </div>
 
+  <!-- 30-Day Monthly Task Competition Cycle Live Banner -->
+  <div class="tasks-monthly-banner" id="monthlyCompetitionBanner">
+    <div class="monthly-banner-left">
+      <span class="monthly-banner-icon">⏳</span>
+      <div class="monthly-banner-text">
+        <span class="monthly-banner-title">30-DAY COMPETITION CYCLE</span>
+        <span class="monthly-banner-subtitle">Complete quests before cycle ends & rewards reset</span>
+      </div>
+    </div>
+    <div class="monthly-banner-timer-badge">
+      <span class="monthly-timer-dot"></span>
+      <span id="monthlyCompetitionTimer">29d 23h 59m 59s</span>
+    </div>
+  </div>
+
   <div class="tasks-scroll-container" id="tasksListContainer"></div>
 
   <!-- Task Notes Pop-Up Modal (Interactive Sheet) -->
@@ -44,7 +59,7 @@
           </svg>
         </div>
         <div class="task-notes-meta">
-          <span class="task-notes-subtag" id="taskNotesSubtag">DAILY QUEST</span>
+          <span class="task-notes-subtag" id="taskNotesSubtag">MONTHLY QUEST</span>
           <h3 class="task-notes-title" id="taskNotesTitle">Task Title</h3>
         </div>
         <button class="task-notes-close-btn" onclick="closeTaskNotesPopup()" aria-label="Close notes">&times;</button>
