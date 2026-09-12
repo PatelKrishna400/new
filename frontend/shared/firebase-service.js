@@ -248,18 +248,31 @@ class FirebaseSyncService {
     userRef.on('value', (snapshot) => {
       const cloudData = snapshot.val();
       if (!cloudData || typeof cloudData !== 'object') {
-        // Player was removed from Firebase: reset local state to 0
+        // Player was removed from Firebase: reset all local state to 0
         if (typeof gameState !== 'undefined' && gameState.player) {
           gameState.player.level = 0;
           gameState.player.xp = 0;
           gameState.player.coins = 0;
           gameState.player.diamonds = 0;
+          gameState.player.blueCoins = 0;
+          gameState.player.blueTapsLeft = 0;
           gameState.player.chestKeys = 0;
           gameState.player.scratchCards = 0;
           gameState.player.chestTickets = 0;
           gameState.player.eggs = 0;
+          gameState.player.energyTaps = 0;
+          gameState.player.currentEnergy = 0;
           gameState.player.adsWatchedCount = 0;
           gameState.player.websiteTasksCompleted = 0;
+          gameState.player.directLinkAdsCount = 0;
+        }
+        if (typeof gameState !== 'undefined' && gameState.reactor) {
+          gameState.reactor.currentEnergy = 0;
+          gameState.reactor.energyTaps = 0;
+          gameState.reactor.tapPower = 1;
+        }
+        if (typeof gameState !== 'undefined' && gameState.energyGenerator) {
+          gameState.energyGenerator.fuelCells = { darkgreen: 0, green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
         }
         if (typeof gameState !== 'undefined' && gameState.goal) {
           gameState.goal.level = 0;
@@ -274,6 +287,13 @@ class FirebaseSyncService {
         }
         if (typeof saveGame === 'function') saveGame();
         if (typeof updateUI === 'function') updateUI();
+        if (typeof updateProfileUI === 'function') updateProfileUI();
+        if (typeof updateShopUI === 'function') updateShopUI();
+        if (typeof updateEnergyUI === 'function') updateEnergyUI();
+        if (typeof updateBlueTabUI === 'function') updateBlueTabUI();
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast('⚠️ Account deleted from database by administrator.');
+        }
         return;
       }
 

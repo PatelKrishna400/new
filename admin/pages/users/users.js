@@ -868,13 +868,115 @@ function removeUserFromFirebase(uid, username) {
     return;
   }
 
-  if (!confirm(`🗑️ Permanently remove player "${username || uid}" from Firebase Realtime Database?`)) {
+  const targetUid = uid || activeUserUid;
+  if (!targetUid) return;
+
+  const user = (window.adminState?.users || []).find(u => u.uid === targetUid);
+  const targetName = username || (user ? user.username : targetUid);
+  const userTelegram = user ? (user.telegram || (user.handle ? '@' + user.handle : '')) : '';
+  const userCode = user ? (user.profileCode || '') : '';
+
+  if (!confirm(`🗑️ PERMANENTLY DELETE ALL DATA FOR "${targetName}"?\n\nThis will completely purge from Firebase:\n• Player Account & 14 Metrics (/players/${targetUid})\n• Leaderboard Ranking (/leaderboard/${targetUid})\n• Security Whitelist (/whitelist/${targetUid})\n• All Prize & Diamond Requests (/reward_requests)\n• All Direct Link Ad Clicks (/ads_direct_clicks)\n• All Player Feedback & Suggestions (/suggestions)\n\nThis action cannot be undone!`)) {
     return;
   }
 
-  db.ref(`/players/${uid}`).remove().then(() => {
-    alert(`Player "${username || uid}" removed from Firebase!`);
-  }).catch(err => alert('Error removing player: ' + err.message));
+  // 1. Prepare multi-path atomic delete map
+  const updates = {};
+  updates[`/players/${targetUid}`] = null;
+  updates[`/leaderboard/${targetUid}`] = null;
+  updates[`/whitelist/${targetUid}`] = null;
+
+  // 2. Fetch and purge associated records in parallel
+  const cleanupPromises = [];
+
+  // Clean /reward_requests
+  cleanupPromises.push(
+    db.ref('/reward_requests').once('value').then(snap => {
+      const val = snap.val();
+      if (val) {
+        Object.keys(val).forEach(reqId => {
+          const r = val[reqId];
+          const matchUid = (r.userId === targetUid);
+          const matchName = (r.username && r.username.toLowerCase() === targetName.toLowerCase()) || 
+                            (r.userName && r.userName.toLowerCase() === targetName.toLowerCase());
+          const matchTg = userTelegram && (r.telegramHandle === userTelegram || r.userTgHandle === userTelegram);
+          if (matchUid || matchName || matchTg) {
+            updates[`/reward_requests/${reqId}`] = null;
+          }
+        });
+      }
+    }).catch(err => console.warn('Error reading /reward_requests for cleanup:', err))
+  );
+
+  // Clean /ads_direct_clicks
+  cleanupPromises.push(
+    db.ref('/ads_direct_clicks').once('value').then(snap => {
+      const val = snap.val();
+      if (val) {
+        Object.keys(val).forEach(clickId => {
+          const c = val[clickId];
+          const matchUid = (c.userId === targetUid);
+          const matchName = (c.username && c.username.toLowerCase() === targetName.toLowerCase());
+          if (matchUid || matchName) {
+            updates[`/ads_direct_clicks/${clickId}`] = null;
+          }
+        });
+      }
+    }).catch(err => console.warn('Error reading /ads_direct_clicks for cleanup:', err))
+  );
+
+  // Clean /suggestions
+  cleanupPromises.push(
+    db.ref('/suggestions').once('value').then(snap => {
+      const val = snap.val();
+      if (val) {
+        Object.keys(val).forEach(sugId => {
+          const s = val[sugId];
+          const matchUid = (s.userId === targetUid || s.authorUid === targetUid);
+          const matchName = (s.username && s.username.toLowerCase() === targetName.toLowerCase()) ||
+                            (s.authorName && s.authorName.toLowerCase() === targetName.toLowerCase());
+          if (matchUid || matchName) {
+            updates[`/suggestions/${sugId}`] = null;
+          }
+        });
+      }
+    }).catch(err => console.warn('Error reading /suggestions for cleanup:', err))
+  );
+
+  Promise.all(cleanupPromises).then(() => {
+    // Atomic batch delete from Firebase Realtime Database
+    return db.ref().update(updates);
+  }).then(() => {
+    // Immediate local state update for instant UI feedback
+    if (window.adminState) {
+      window.adminState.users = (window.adminState.users || []).filter(u => u.uid !== targetUid);
+      if (window.adminState.requests) {
+        window.adminState.requests = window.adminState.requests.filter(r => 
+          r.userId !== targetUid && 
+          r.username?.toLowerCase() !== targetName.toLowerCase() && 
+          r.userName?.toLowerCase() !== targetName.toLowerCase()
+        );
+      }
+      if (window.adminState.directClicks) {
+        window.adminState.directClicks = window.adminState.directClicks.filter(c => 
+          c.userId !== targetUid && 
+          c.username?.toLowerCase() !== targetName.toLowerCase()
+        );
+      }
+    }
+
+    if (activeUserUid === targetUid) {
+      const remaining = window.adminState?.users || [];
+      activeUserUid = remaining.length > 0 ? remaining[0].uid : null;
+    }
+
+    refreshUsersUI();
+    if (typeof updateGlobalMetrics === 'function') updateGlobalMetrics();
+
+    alert(`✅ Player "${targetName}" and ALL user data (Account, Leaderboard, Whitelist, Requests, Clicks, Suggestions) were completely removed from Firebase!`);
+  }).catch(err => {
+    alert('❌ Error deleting user data from Firebase: ' + err.message);
+  });
 }
 
 function removeUserFromModal() {
