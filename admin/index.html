@@ -128,7 +128,7 @@
       <!-- PAGE: DASHBOARD -->
       <section class="page-panel active" id="page-dashboard">
         <!-- 3 Key Metric Cards -->
-        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        <div class="metrics-row">
           <!-- 1. Total Players Number -->
           <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
             <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
@@ -169,7 +169,7 @@
         <!-- Mini-Games Live Activity Row -->
         <div style="margin-top: 14px;">
           <h3 style="font-size: 14px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
-          <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="metrics-row">
             <div class="metric-box">
               <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
               <div class="metric-meta">
@@ -249,7 +249,7 @@
       <section class="page-panel" id="page-mega-add">
         <!-- Add / Edit Form -->
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 12px;">
             <h3 style="font-size: 16px; font-weight: 800; color: #fff;" id="rewardFormTitle">Add New Mega Reward</h3>
             <button onclick="seedSampleRewardsToFirebase()" class="btn-secondary" style="padding: 6px 12px; font-size: 11px;">✨ Seed 9 Sample Items</button>
           </div>
@@ -263,19 +263,19 @@
           </div>
       
           <!-- Title & Tag -->
-          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
-            <div class="form-group">
+          <div class="mega-form-row-2col">
+            <div class="form-group" style="flex: 2;">
               <label class="form-label">Reward Item Title</label>
               <input type="text" id="inpRewardTitle" placeholder="e.g. Apple AirPods Pro 2" class="form-input">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="flex: 1;">
               <label class="form-label">Tag Badge</label>
               <input type="text" id="inpRewardTag" placeholder="e.g. SMART TECH" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #22d3ee;">
             </div>
           </div>
       
           <!-- Diamond Cost & Stock Units -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="mega-form-row-2col">
             <div class="form-group">
               <label class="form-label">Diamond Cost 💎</label>
               <input type="number" id="inpRewardDiamonds" placeholder="e.g. 2500" class="form-input" style="color: #22d3ee; font-weight: 800;">
@@ -326,7 +326,7 @@
               <p style="font-size: 12px; color: #94a3b8;">Player prize claims from Firebase (<code style="color: #38bdf8;">/reward_requests</code>).</p>
             </div>
       
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
               <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
               <button class="btn-secondary" data-reqfilter="approved" onclick="filterRequestsTable('approved')">Approved</button>
@@ -395,7 +395,7 @@
           </div>
       
           <!-- Telegram Tasks Container Grid -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="telegramTasksContainer">
+          <div class="tasks-grid-container" id="telegramTasksContainer">
             <!-- Injected dynamically via JS -->
           </div>
         </div>
@@ -419,7 +419,7 @@
           </div>
       
           <!-- Website Tasks Container Grid -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;" id="websiteTasksContainer">
+          <div class="tasks-grid-container" id="websiteTasksContainer">
             <!-- Injected dynamically via JS -->
           </div>
         </div>
@@ -635,7 +635,7 @@
         </div>
       
         <!-- Database Nodes Summary -->
-        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="metrics-row">
           <div class="metric-box">
             <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
             <div class="metric-meta">
@@ -749,7 +749,7 @@
         </div>
       
         <!-- Ads Analytics Overview -->
-        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="metrics-row">
           <div class="metric-box">
             <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
             <div class="metric-meta">
@@ -787,7 +787,7 @@
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <h3 style="font-size: 15px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(25, 55, 120, 0.4); padding-bottom: 10px;">Monetag Provider Settings</h3>
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="ads-form-row-2col">
             <div class="form-group">
               <label class="form-label">Monetag Zone ID</label>
               <input type="text" id="adZoneId" value="11677609" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #fbbf24; font-weight: 800;">
@@ -798,7 +798,7 @@
             </div>
           </div>
       
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+          <div class="ads-form-row-4col">
             <div class="form-group">
               <label class="form-label">Reward Coins per Ad 🪙</label>
               <input type="number" id="adRewardCoins" value="500" class="form-input" style="color: #fbbf24; font-weight: 800;">

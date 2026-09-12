@@ -10,6 +10,12 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
 body {
   min-height: 100vh;
   background-color: #060d24;
@@ -280,6 +286,9 @@ body {
   display: flex;
   flex-direction: column;
   transition: margin-left 0.28s ease;
+  max-width: 100vw;
+  overflow-x: hidden;
+  width: calc(100vw - 260px);
 }
 
 /* Top Navigation Header Bar */
@@ -517,15 +526,19 @@ body {
 .pill-delivered { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5); }
 .pill-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
 
-/* Table Wrapper */
+/* Table Wrapper (Responsive with Smooth Horizontal Scroll) */
 .table-wrapper {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 10px;
+  border: 1px solid rgba(25, 55, 120, 0.4);
 }
 
 .data-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -605,7 +618,9 @@ body {
 
   .main-content {
     margin-left: 0 !important;
-    width: 100% !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
   }
 
   .mobile-menu-btn {
@@ -613,16 +628,40 @@ body {
   }
 
   .top-header {
-    padding: 0 16px;
+    padding: 0 14px;
     height: 60px;
   }
 
   .content-body {
-    padding: 16px;
+    padding: 14px;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 
 @media (max-width: 640px) {
+  .top-header {
+    padding: 0 12px;
+  }
+
+  .content-body {
+    padding: 12px 10px;
+  }
+
+  .card-panel {
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+
+  .metrics-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .metric-box {
+    padding: 12px 14px;
+  }
+
   .header-cloud-pill {
     display: none;
   }
@@ -632,12 +671,22 @@ body {
   }
 
   .header-user-app-btn {
-    padding: 6px 10px;
+    padding: 5px 9px;
     font-size: 11px;
   }
 
   .page-title {
-    font-size: 14.5px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 12px;
   }
 }
 

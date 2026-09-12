@@ -12,3 +12,10 @@
 #userSearchInput:focus {
   border-color: #0284c7;
 }
+
+@media (max-width: 640px) {
+  #userSearchInput {
+    width: 100% !important;
+  }
+}
+

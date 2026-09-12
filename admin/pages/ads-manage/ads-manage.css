@@ -6,3 +6,24 @@
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
 }
+
+.ads-form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ads-form-row-4col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .ads-form-row-2col,
+  .ads-form-row-4col {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+}
+

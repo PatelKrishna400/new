@@ -33,3 +33,30 @@
   border-color: #0284c7;
   color: #fff;
 }
+
+.mega-form-row-2col {
+  display: flex;
+  gap: 14px;
+}
+
+.mega-form-row-2col > * {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)) !important;
+    gap: 6px;
+  }
+
+  .cat-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .mega-form-row-2col {
+    flex-direction: column !important;
+    gap: 12px;
+  }
+}
+
