@@ -220,11 +220,19 @@ function toggleSound() {
 
 // Master UI Update Coordinator
 function updateUI() {
-  // Sync Header Balance Badges
-  const coinEl = document.getElementById('coinCounter') || document.getElementById('headerCoinBalance');
-  if (coinEl) coinEl.textContent = formatNumber(gameState.player.coins);
-  const blueCoinEl = document.getElementById('blueCoinCounter') || document.getElementById('headerBlueBalance');
-  if (blueCoinEl) blueCoinEl.textContent = formatNumber(gameState.player.diamonds || gameState.player.blueCoins || 0);
+  // Sync Header & Page Balance Badges across all pages
+  const formattedCoins = formatNumber(gameState.player.coins || 0);
+  const diaVal = (gameState.player.diamonds !== undefined) ? gameState.player.diamonds : (gameState.player.blueCoins || 0);
+  const formattedDiamonds = formatNumber(diaVal);
+
+  const coinElements = document.querySelectorAll('#coinCounter, #headerCoinBalance, #shopCoinVal, #rewardCoinsBal, #profileCoinBalance');
+  coinElements.forEach(el => { el.textContent = formattedCoins; });
+
+  const diamondElements = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, #shopDiamondVal, #profileDiamondBalance, #playerDiamondBalance, .blue-coin-val');
+  diamondElements.forEach(el => { el.textContent = formattedDiamonds; });
+
+  if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
+  if (typeof updateShopUI === 'function') updateShopUI();
 
   // Sync Home Page
   if (typeof updateHomeUI === 'function') updateHomeUI();

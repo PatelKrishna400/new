@@ -341,6 +341,8 @@ window.buyReactorUpgrade = function(type) {
   updateUI();
   updateProfileUI();
   updateShopUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+  if (typeof updateEnergyUI === 'function') updateEnergyUI();
   saveGame();
 
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -368,12 +370,27 @@ window.buyPassItem = function(itemType) {
   gameState.player.coins -= item.cost;
   gameState.player[item.prop] = (gameState.player[item.prop] || 0) + 1;
 
+  // Unify ticket state between spin and chest references
+  if (itemType === 'spinTicket') {
+    gameState.player.chestTickets = gameState.player[item.prop];
+    gameState.player.spinTickets = gameState.player.chestTickets;
+  }
+
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
   showShopToast(`+1 ${item.name} added to vault!`, item.icon);
 
+  // Synchronize all pages, tabs and mini-games immediately
   updateUI();
   updateProfileUI();
   updateShopUI();
+  if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+  if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+  if (typeof updateChestUI === 'function') updateChestUI();
+  if (typeof updateScratchUI === 'function') updateScratchUI();
+  if (typeof renderEggPageContent === 'function') renderEggPageContent();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+  if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
+
   saveGame();
 
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -411,7 +428,9 @@ window.buyFuelWithAds = function(fuelType, requiredAds, rewardCells) {
     showShopToast(`🎉 +${cells} ${fuelType.toUpperCase()} Fuel Cell Awarded!`, '🔋');
 
     updateShopUI();
+    updateProfileUI();
     if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof updateHomeUI === 'function') updateHomeUI();
     if (typeof updateUI === 'function') updateUI();
     if (typeof saveGame === 'function') saveGame();
     if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -451,7 +470,9 @@ window.buyFuelWithCoins = function(fuelType, coinCost, rewardCells) {
   showShopToast(`🔋 +${cells} ${fuelType.toUpperCase()} Fuel Cells Purchased! (-${cost} 🪙)`, '🪙');
 
   updateShopUI();
+  updateProfileUI();
   if (typeof updateEnergyUI === 'function') updateEnergyUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
   if (typeof updateUI === 'function') updateUI();
   if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -506,7 +527,10 @@ window.buyFuelWithDiamonds = function(fuelType, diamondCost, rewardCells) {
   showShopToast(`🔋 +${cells} ${fuelType.toUpperCase()} Fuel Cells Purchased! (-${cost} 💎)`, '💎');
 
   updateShopUI();
+  updateProfileUI();
   if (typeof updateEnergyUI === 'function') updateEnergyUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+  if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
   if (typeof updateUI === 'function') updateUI();
   if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -582,10 +606,11 @@ window.claimDailyShopFreebie = function() {
 
   // Award care package
   gameState.player.lastShopFreeClaim = now;
-  gameState.player.coins += 25;
+  gameState.player.coins = (gameState.player.coins || 0) + 25;
   gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+  gameState.player.spinTickets = gameState.player.chestTickets;
   gameState.reactor.currentEnergy = Math.min(
-    gameState.reactor.maxEnergy,
+    gameState.reactor.maxEnergy || 1000,
     (gameState.reactor.currentEnergy || 0) + 100
   );
 
@@ -595,6 +620,11 @@ window.claimDailyShopFreebie = function() {
   updateUI();
   updateProfileUI();
   updateShopUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+  if (typeof updateEnergyUI === 'function') updateEnergyUI();
+  if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+  if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+  if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
   saveGame();
 
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -1554,7 +1584,9 @@ window.claimSocialMediaBonus = function() {
   // Award rewards: +50 Coins, +1 Diamond, +1 Spin Ticket
   gameState.player.coins = (gameState.player.coins || 0) + 50;
   gameState.player.diamonds = (gameState.player.diamonds || 0) + 1;
-  gameState.player.spinTickets = (gameState.player.spinTickets || 0) + 1;
+  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+  gameState.player.spinTickets = gameState.player.chestTickets;
   gameState.player.lastReelBonusDate = todayStr;
 
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
@@ -1572,6 +1604,9 @@ window.claimSocialMediaBonus = function() {
   // Synchronize state & Cloud
   if (typeof updateUI === 'function') updateUI();
   updateProfileUI();
+  updateShopUI();
+  if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+  if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
   if (typeof saveGame === 'function') saveGame();
 
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -1633,10 +1668,13 @@ window.buyTapPowerWithBlueCoins = function(amount) {
   // Toast feedback
   showShopToast(`⚡ +${amount} Tap Power Added! (Cost: ${amount} 💎)`, '⚡');
 
-  // Synchronize UI
+  // Synchronize UI across all tabs
   updateBlueTabUI();
   updateShopUI();
   updateProfileUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+  if (typeof updateEnergyUI === 'function') updateEnergyUI();
+  if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
   if (typeof updateUI === 'function') updateUI();
 
   // Persist State

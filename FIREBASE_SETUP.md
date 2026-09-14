@@ -111,3 +111,45 @@ This document outlines the complete Firebase Realtime Database setup, security r
 4. Click **Enable**, then click **Save**.
 
 > **Note**: Even if Anonymous Sign-in is not yet enabled, the app automatically generates and maintains a local persistent UID (`ENERGY_TAP_FIREBASE_LOCAL_UID_V5`) and saves to `localStorage` so the game continues running smoothly without crashing.
+
+---
+
+## 5. Global Zero Reset (Balances, Levels & Event Timers)
+
+To restart all players from Level 0 with 0 balance and new event timers:
+
+### What Gets Reset:
+1. **Currencies & Balances**:
+   - `coins`: 0
+   - `blueCoins`: 0
+   - `diamonds`: 0
+   - `chestKeys`: 0
+   - `scratchCards`: 0
+   - `chestTickets`: 0
+   - `eggs`: 0
+   - `energy`: 0 / 1,000
+   - `generator`: 0.00 EP, 0 seconds remaining, all fuel cells 0, boosts 0
+2. **XP & Goal Levels**:
+   - `level`: 0
+   - `xp`: 0 / 1,000 XP (0%)
+   - `claimedLevels`: Cleared (all 100 levels can be claimed again)
+   - `goal.level`: 0
+   - `goalState.currentLevel`: 0
+   - `levelProgress`: cards: 0, keys: 0, tickets: 0
+   - `claimedGoals`: Cleared (all 100 goals can be completed again)
+3. **Event Timers**:
+   - **XP Season Timer**: Restarts new 30-day countdown (`30d 00h 00m 00s`)
+   - **Goal Season Timer**: Restarts new 30-day countdown (`30d 00h 00m 00s`)
+   - **30-Day Monthly Quest Competition Timer**: Restarts new 30-day cycle
+   - **EP Generator Timer**: Set to 00h 00m (stops consumption)
+   - **Daily Streak**: 0 days
+
+### How to Trigger the Reset:
+- **Method A (Automatic)**: All clients are version-locked to `GAME_RESET_VERSION = 6` and `STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V6'`. When any player opens the app, legacy data is purged and their Firebase cloud record is re-saved to 0.
+- **Method B (Browser Console)**: Run `window.globalAdminResetAllUsers()` or `resetAllDataToZero()` in Developer Tools.
+- **Method C (Node Script)**: Run `node reset-firebase-data.js` (Optionally with `--secret=YOUR_FIREBASE_DB_SECRET` for root database wipe).
+- **Method D (Firebase Console)**:
+  1. Go to Firebase Console -> **Realtime Database** -> **Data** tab.
+  2. Hover over `players` or `leaderboard` and click the red trash can icon `Delete`.
+  3. All users will re-initialize at Level 0 with 0 balance upon loading the game.
+

@@ -21,6 +21,12 @@ function getComboMultiplier(tapCount) {
   return 1.0;
 }
 
+// Global Reset Epoch Versioning (Guarantees fresh 0 balance & level 0 for all users)
+const GAME_RESET_VERSION = 6;
+const GLOBAL_RESET_TIMESTAMP = 1773510000000;
+window.GAME_RESET_VERSION = GAME_RESET_VERSION;
+window.GLOBAL_RESET_TIMESTAMP = GLOBAL_RESET_TIMESTAMP;
+
 // Game State Definition
 const gameState = {
   currentTab: 'home', // 'home' | 'energy' | 'tasks' | 'profile' | 'xp' | 'wallet' | 'goal'
@@ -28,7 +34,10 @@ const gameState = {
   tasksState: {
     claimedDaily: {},
     claimedTelegram: {},
-    claimedWebsite: {}
+    claimedWebsite: {},
+    claimedMonthly: {},
+    failedWebsite: {},
+    openedWebsite: {}
   },
   player: {
     name: 'Alex Vance',
@@ -40,6 +49,8 @@ const gameState = {
     level: 0,
     maxLevel: 100,
     coins: 0,
+    blueCoins: 0,
+    diamonds: 0,
     xp: 0,
     xpToNextLevel: 1000,
     streakDays: 0,
@@ -48,7 +59,8 @@ const gameState = {
     chestTickets: 0,
     scratchCards: 0,
     eggs: 0,
-    diamonds: 0,
+    adsWatchedCount: 0,
+    websiteTasksCompleted: 0
   },
   goal: {
     level: 0,
@@ -110,13 +122,6 @@ const gameState = {
       }
     }
   },
-  tasksState: {
-    claimedDaily: {},
-    claimedTelegram: {},
-    claimedWebsite: {},
-    failedWebsite: {},
-    openedWebsite: {}
-  },
   xpState: {
     currentSubtab: 'mega', // 'mega' | 'levels'
     watchedAds: 0,
@@ -136,6 +141,7 @@ const gameState = {
     claimedGoals: {},
     megaWatchedAds: 0, // 0 to 1000 ads
     megaRewardClaimed: false,
+    grandChestClaimed: false,
     seasonEndMs: Date.now() + 30 * 24 * 3600 * 1000
   },
   settings: {
@@ -161,23 +167,32 @@ const gameState = {
   autoBotInterval: null,
 };
 
-// LocalStorage Key
-const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V5';
+// LocalStorage Key (Bumped to V6 for Global Fresh Zero Restart)
+const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V6';
 
 // Load & Save
 function loadSavedGame() {
-  // Purge legacy saves to guarantee fresh zero start
+  // Purge legacy saves to guarantee fresh zero start for all users
   try {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V1');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V2');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V3');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
+    localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
   } catch (e) {}
 
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
+
+      // Verify reset version & timestamp to guarantee fresh 0 restart
+      if (!parsed.resetVersion || parsed.resetVersion < GAME_RESET_VERSION || (parsed.updatedAt || 0) < GLOBAL_RESET_TIMESTAMP) {
+        console.log('🔄 Older save data detected before Global Zero Reset. Initializing fresh 0 state.');
+        resetAllDataToZero();
+        return;
+      }
+
       Object.assign(gameState.player, parsed.player || {});
       Object.assign(gameState.goal, parsed.goal || {});
       Object.assign(gameState.reactor, parsed.reactor || {});
@@ -206,6 +221,7 @@ function loadSavedGame() {
       checkDailyStatsDate();
 
       if (gameState.player.diamonds === undefined) gameState.player.diamonds = 0;
+      if (gameState.player.blueCoins === undefined) gameState.player.blueCoins = 0;
 
       // Ensure goalState defaults
       if (!gameState.goalState.levelProgress) {
@@ -267,11 +283,12 @@ function loadSavedGame() {
 
       // Ensure tasksState has all subtabs initialized
       if (!gameState.tasksState) {
-        gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {}, failedWebsite: {}, openedWebsite: {} };
+        gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {}, claimedMonthly: {}, failedWebsite: {}, openedWebsite: {} };
       } else {
         if (!gameState.tasksState.claimedDaily) gameState.tasksState.claimedDaily = {};
         if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
         if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
+        if (!gameState.tasksState.claimedMonthly) gameState.tasksState.claimedMonthly = {};
         if (!gameState.tasksState.failedWebsite) gameState.tasksState.failedWebsite = {};
         if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
       }
@@ -281,17 +298,20 @@ function loadSavedGame() {
         processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'localStorage');
       }
     } catch (e) {
-      console.warn('Failed to load saved state, using default', e);
+      console.warn('Failed to load saved state, using default zero restart', e);
+      resetAllDataToZero();
     }
   } else {
     // Initial zero baseline save
-    gameState.energyGenerator.lastTickTime = Date.now();
-    saveGame();
+    resetAllDataToZero();
   }
 }
 
-// Reset Game State to Fresh Zero Slate
+// Reset Game State to Fresh Zero Slate Across Balances, Levels & Event Timers
 function resetAllDataToZero() {
+  const now = Date.now();
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
   try {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V1');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V2');
@@ -302,8 +322,11 @@ function resetAllDataToZero() {
     localStorage.removeItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5');
   } catch(e) {}
   
+  // 1. Reset all player balances & level to 0
   gameState.player.level = 0;
   gameState.player.coins = 0;
+  gameState.player.blueCoins = 0;
+  gameState.player.diamonds = 0;
   gameState.player.xp = 0;
   gameState.player.xpToNextLevel = 1000;
   gameState.player.streakDays = 0;
@@ -312,7 +335,10 @@ function resetAllDataToZero() {
   gameState.player.chestTickets = 0;
   gameState.player.scratchCards = 0;
   gameState.player.eggs = 0;
+  gameState.player.adsWatchedCount = 0;
+  gameState.player.websiteTasksCompleted = 0;
 
+  // 2. Reset Goal page level & mission items to start 0
   gameState.goal.level = 0;
   gameState.goal.currentCoins = 0;
   gameState.goal.targetCoins = 85;
@@ -321,6 +347,18 @@ function resetAllDataToZero() {
   gameState.goal.currentTickets = 0;
   gameState.goal.targetTickets = 49;
 
+  gameState.goalState.currentSubtab = 'mega';
+  gameState.goalState.currentLevel = 0;
+  gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+  gameState.goalState.levelAdsWatched = 0;
+  gameState.goalState.claimedGoals = {};
+  gameState.goalState.megaWatchedAds = 0;
+  gameState.goalState.megaRewardClaimed = false;
+  gameState.goalState.grandChestClaimed = false;
+  gameState.goalState.seasonEndMs = now + thirtyDaysMs;
+
+  // 3. Reset Reactor & Generator Energy to 0
+  gameState.reactor.tapPower = 1;
   gameState.reactor.currentEnergy = 0;
   gameState.reactor.maxEnergy = 1000;
   gameState.reactor.energyTaps = 0;
@@ -330,38 +368,76 @@ function resetAllDataToZero() {
   gameState.energyGenerator.epTotal = 0;
   gameState.energyGenerator.remainingSeconds = 0;
   gameState.energyGenerator.isActive = false;
-  gameState.energyGenerator.fuelCells = { green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-  gameState.energyGenerator.consumed = { green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+  gameState.energyGenerator.lastTickTime = now;
+  gameState.energyGenerator.lastSavedTime = now;
+  gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+  gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
   gameState.energyGenerator.boosts = {
     pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
     purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
   };
 
-  gameState.tasksState.claimedDaily = {};
-  gameState.tasksState.claimedTelegram = {};
+  // 4. Reset Tasks & XP Level rewards to start 0
+  gameState.tasksState = {
+    claimedDaily: {},
+    claimedTelegram: {},
+    claimedWebsite: {},
+    claimedMonthly: {},
+    failedWebsite: {},
+    openedWebsite: {}
+  };
+
+  gameState.xpState.currentSubtab = 'mega';
   gameState.xpState.watchedAds = 0;
   gameState.xpState.claimedLevels = {};
   gameState.xpState.megaRewardClaimed = false;
+  gameState.xpState.seasonEndMs = now + thirtyDaysMs;
 
-  gameState.goalState.currentLevel = 0;
-  gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
-  gameState.goalState.levelAdsWatched = 0;
-  gameState.goalState.claimedGoals = {};
-  gameState.goalState.megaWatchedAds = 0;
-  gameState.goalState.megaRewardClaimed = false;
-  gameState.goalState.grandChestClaimed = false;
-
+  // 5. Reset Daily Stats & Event Timers
   gameState.dailyStats = {
     spins: 0,
     chests: 0,
     scratches: 0,
     eggs: 0,
-    date: new Date().toDateString()
+    taps: 0,
+    fuel_green: 0,
+    fuel_yellow: 0,
+    fuel_orange: 0,
+    fuel_red: 0,
+    fuel_pink: 0,
+    fuel_purple: 0,
+    fuel_darkgreen: 0,
+    date: new Date().toDateString(),
+    resetTimestamp: now
   };
 
+  if (gameState.monthlyCompetition) {
+    gameState.monthlyCompetition.startTime = now;
+    gameState.monthlyCompetition.endTime = now + thirtyDaysMs;
+    gameState.monthlyCompetition.forceResetTimestamp = now;
+  }
+
+  // Save to persistent storage with reset epoch version
   saveGame();
+
+  // Cloud sync to Firebase
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+  if (window.firebaseSync && typeof window.firebaseSync.updateLeaderboardEntry === 'function') {
+    window.firebaseSync.updateLeaderboardEntry();
+  }
+
+  // Re-render UI components to show clean Level 0 and zero balances
+  if (typeof updateUI === 'function') updateUI();
   if (typeof updateAllUI === 'function') updateAllUI();
-  else if (typeof updateUI === 'function') updateUI();
+  if (typeof renderLevelsList === 'function') renderLevelsList();
+  if (typeof renderGoalsList === 'function') renderGoalsList();
+  if (typeof renderTasksList === 'function') renderTasksList();
+  if (typeof formatTimerDisplay === 'function') formatTimerDisplay();
+  if (typeof updateMonthlyCompetitionTimer === 'function') updateMonthlyCompetitionTimer();
+
+  console.log('✅ Full Zero Reset Completed: All balances, XP, Goal levels, and Event Timers set to fresh Level 0 start.');
 }
 
 window.resetAllDataToZero = resetAllDataToZero;
@@ -514,6 +590,8 @@ window.checkSeasonExpiration = checkSeasonExpiration;
 
 function saveGame() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    resetVersion: GAME_RESET_VERSION,
+    updatedAt: Date.now(),
     player: gameState.player,
     goal: gameState.goal,
     reactor: {

@@ -195,6 +195,20 @@ class FirebaseSyncService {
         if (cloudData && typeof cloudData === 'object') {
           console.log('🔥 Cloud state retrieved from Firebase:', cloudData);
 
+          // Check if cloud state is from older version before Global Zero Reset
+          const cloudResetVer = cloudData.resetVersion || 0;
+          const cloudUpdatedAt = cloudData.updatedAt || 0;
+          const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
+          const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6;
+
+          if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
+            console.log('🔄 Cloud player record is from prior season/version. Resetting player to Level 0, zero balances, and new event timers!');
+            if (typeof resetAllDataToZero === 'function') {
+              resetAllDataToZero();
+            }
+            return;
+          }
+
           // Merge cloud data into gameState
           if (cloudData.player) Object.assign(gameState.player, cloudData.player);
           if (cloudData.goal) Object.assign(gameState.goal, cloudData.goal);
@@ -288,50 +302,22 @@ class FirebaseSyncService {
       const cloudData = snapshot.val();
       if (!cloudData || typeof cloudData !== 'object') {
         // Player was removed from Firebase: reset all local state to 0
-        if (typeof gameState !== 'undefined' && gameState.player) {
-          gameState.player.level = 0;
-          gameState.player.xp = 0;
-          gameState.player.coins = 0;
-          gameState.player.diamonds = 0;
-          gameState.player.blueCoins = 0;
-          gameState.player.blueTapsLeft = 0;
-          gameState.player.chestKeys = 0;
-          gameState.player.scratchCards = 0;
-          gameState.player.chestTickets = 0;
-          gameState.player.eggs = 0;
-          gameState.player.energyTaps = 0;
-          gameState.player.currentEnergy = 0;
-          gameState.player.adsWatchedCount = 0;
-          gameState.player.websiteTasksCompleted = 0;
-          gameState.player.directLinkAdsCount = 0;
+        if (typeof resetAllDataToZero === 'function') {
+          resetAllDataToZero();
         }
-        if (typeof gameState !== 'undefined' && gameState.reactor) {
-          gameState.reactor.currentEnergy = 0;
-          gameState.reactor.energyTaps = 0;
-          gameState.reactor.tapPower = 1;
-        }
-        if (typeof gameState !== 'undefined' && gameState.energyGenerator) {
-          gameState.energyGenerator.fuelCells = { darkgreen: 0, green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-        }
-        if (typeof gameState !== 'undefined' && gameState.goal) {
-          gameState.goal.level = 0;
-          gameState.goal.currentCoins = 0;
-          gameState.goal.currentKeys = 0;
-          gameState.goal.currentTickets = 0;
-        }
-        if (typeof gameState !== 'undefined' && gameState.tasksState) {
-          gameState.tasksState.claimedDaily = {};
-          gameState.tasksState.claimedTelegram = {};
-          gameState.tasksState.claimedWebsite = {};
-        }
-        if (typeof saveGame === 'function') saveGame();
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof updateProfileUI === 'function') updateProfileUI();
-        if (typeof updateShopUI === 'function') updateShopUI();
-        if (typeof updateEnergyUI === 'function') updateEnergyUI();
-        if (typeof updateBlueTabUI === 'function') updateBlueTabUI();
-        if (typeof showFloatingToast === 'function') {
-          showFloatingToast('⚠️ Account deleted from database by administrator.');
+        return;
+      }
+
+      // Check if remote cloud state is from older version before Global Zero Reset
+      const cloudResetVer = cloudData.resetVersion || 0;
+      const cloudUpdatedAt = cloudData.updatedAt || 0;
+      const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
+      const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6;
+
+      if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
+        console.log('🔄 Remote cloud player record is older than Global Zero Reset. Enforcing fresh zero state!');
+        if (typeof resetAllDataToZero === 'function') {
+          resetAllDataToZero();
         }
         return;
       }
@@ -433,8 +419,22 @@ class FirebaseSyncService {
 
     const seasonRef = this.database.ref('/season');
     seasonRef.on('value', (snapshot) => {
-      const seasonData = snapshot.val();
-      if (!seasonData) return;
+      let seasonData = snapshot.val();
+      const now = Date.now();
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
+
+      if (!seasonData || !seasonData.forceRestartTimestamp || seasonData.forceRestartTimestamp < resetEpoch) {
+        seasonData = {
+          seasonNumber: 2,
+          seasonStartTime: now,
+          seasonEndTime: now + thirtyDaysMs,
+          seasonDurationDays: 30,
+          forceRestartTimestamp: now,
+          lastUpdated: now
+        };
+        seasonRef.set(seasonData).catch(() => {});
+      }
 
       const adminSeasonTimestamp = seasonData.forceRestartTimestamp || seasonData.seasonStartTime || 0;
       const localLastProcessed = Number(localStorage.getItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET') || 0);
@@ -442,12 +442,11 @@ class FirebaseSyncService {
       // If admin triggered a new season reset after our last processed reset
       if (adminSeasonTimestamp > localLastProcessed) {
         localStorage.setItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET', adminSeasonTimestamp);
-        console.log('🔄 Global Admin Season Reset received from Firebase! Restoring levels & claims for user:', this.userId);
+        console.log('🔄 Global Admin Season Reset received from Firebase! Restoring levels & zero balances for user:', this.userId);
 
-        const now = Date.now();
-        const duration = (seasonData.seasonDurationDays ? seasonData.seasonDurationDays * 86400 * 1000 : 30 * 86400 * 1000);
+        const duration = (seasonData.seasonDurationDays ? seasonData.seasonDurationDays * 86400 * 1000 : thirtyDaysMs);
 
-        // Reset user XP level claim data and restart level progression
+        // Reset user XP level claim data, watched ads, and restart level progression
         if (gameState.xpState) {
           gameState.xpState.claimedLevels = {};
           gameState.xpState.watchedAds = 0;
@@ -458,6 +457,13 @@ class FirebaseSyncService {
           gameState.player.level = 0;
           gameState.player.xp = 0;
           gameState.player.xpToNextLevel = 1000;
+          gameState.player.coins = 0;
+          gameState.player.blueCoins = 0;
+          gameState.player.diamonds = 0;
+          gameState.player.chestKeys = 0;
+          gameState.player.chestTickets = 0;
+          gameState.player.scratchCards = 0;
+          gameState.player.eggs = 0;
         }
 
         // Reset user Goal level claim data and progress
@@ -478,11 +484,45 @@ class FirebaseSyncService {
           gameState.goal.currentTickets = 0;
         }
 
+        // Reset Reactor & Generator Energy
+        if (gameState.reactor) {
+          gameState.reactor.currentEnergy = 0;
+          gameState.reactor.energyTaps = 0;
+          gameState.reactor.comboTaps = 0;
+          gameState.reactor.comboMultiplier = 1.0;
+        }
+        if (gameState.energyGenerator) {
+          gameState.energyGenerator.epTotal = 0;
+          gameState.energyGenerator.remainingSeconds = 0;
+          gameState.energyGenerator.isActive = false;
+          gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+          gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+          gameState.energyGenerator.boosts = {
+            pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
+            purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
+          };
+        }
+
         // Reset monthly tasks
         if (gameState.tasksState) {
           gameState.tasksState.claimedDaily = {};
+          gameState.tasksState.claimedTelegram = {};
+          gameState.tasksState.claimedWebsite = {};
+          gameState.tasksState.claimedMonthly = {};
         }
         if (gameState.dailyStats) {
+          gameState.dailyStats.spins = 0;
+          gameState.dailyStats.chests = 0;
+          gameState.dailyStats.scratches = 0;
+          gameState.dailyStats.eggs = 0;
+          gameState.dailyStats.taps = 0;
+          gameState.dailyStats.fuel_green = 0;
+          gameState.dailyStats.fuel_yellow = 0;
+          gameState.dailyStats.fuel_orange = 0;
+          gameState.dailyStats.fuel_red = 0;
+          gameState.dailyStats.fuel_pink = 0;
+          gameState.dailyStats.fuel_purple = 0;
+          gameState.dailyStats.fuel_darkgreen = 0;
           gameState.dailyStats.resetTimestamp = now;
         }
 
@@ -491,12 +531,13 @@ class FirebaseSyncService {
         if (typeof renderTasksList === 'function') renderTasksList();
         if (typeof renderLevelsList === 'function') renderLevelsList();
         if (typeof renderGoalsList === 'function') renderGoalsList();
+        if (typeof formatTimerDisplay === 'function') formatTimerDisplay();
 
         // Immediately persist this user's newly restored state to their individual Firebase node
         this.saveToCloudImmediate();
 
         if (typeof showFloatingToast === 'function') {
-          showFloatingToast('🌟 New Season Started! Level rewards restored & ready to claim anew!');
+          showFloatingToast('🌟 New Season Started! Level 0 & Zero Balances across all users!');
         }
       }
     });
@@ -511,13 +552,14 @@ class FirebaseSyncService {
       let compData = snapshot.val();
       const now = Date.now();
       const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
 
-      if (!compData || typeof compData !== 'object' || !compData.endTime) {
-        // Initialize 30-day competition in Firebase backend if not yet set
+      if (!compData || typeof compData !== 'object' || !compData.endTime || !compData.forceResetTimestamp || compData.forceResetTimestamp < resetEpoch) {
+        // Initialize 30-day competition in Firebase backend if not yet set or outdated
         compData = {
           title: '30-Day Monthly Task Competition',
           cycleDays: 30,
-          cycleNumber: 1,
+          cycleNumber: 2,
           startTime: now,
           endTime: now + thirtyDaysMs,
           forceResetTimestamp: now,
@@ -562,6 +604,8 @@ class FirebaseSyncService {
             gameState.tasksState = { claimedDaily: {}, claimedTelegram: {}, claimedWebsite: {} };
           }
           gameState.tasksState.claimedDaily = {};
+          gameState.tasksState.claimedTelegram = {};
+          gameState.tasksState.claimedWebsite = {};
           if (gameState.tasksState.claimedMonthly) {
             gameState.tasksState.claimedMonthly = {};
           }
@@ -647,6 +691,7 @@ class FirebaseSyncService {
       };
 
       const payload = {
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6,
         updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
         player: playerPayload,
         goal: gameState.goal,
@@ -703,13 +748,59 @@ class FirebaseSyncService {
       const leaderboardPayload = {
         name: gameState.player.name || 'Alex Vance',
         handle: gameState.player.handle || 'alex_blue',
-        level: gameState.player.level || 0,
-        coins: gameState.player.coins || 0,
-        energyTaps: gameState.reactor.energyTaps || 0,
+        level: Number(gameState.player.level || 0),
+        coins: Number(gameState.player.coins || 0),
+        energyTaps: Number(gameState.reactor.energyTaps || 0),
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6,
         lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
       };
       this.database.ref(`leaderboard/${this.userId}`).set(leaderboardPayload).catch(() => {});
     }).catch(() => {});
+  }
+
+  // Global Admin Reset: Force-restart Season, Competition & User balances across all users
+  triggerGlobalAdminReset() {
+    if (!this.database) return Promise.reject(new Error('Firebase Realtime Database is not initialized.'));
+    const now = Date.now();
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+    const seasonUpdate = this.database.ref('/season').set({
+      seasonNumber: 2,
+      seasonStartTime: now,
+      seasonEndTime: now + thirtyDaysMs,
+      seasonDurationDays: 30,
+      forceRestartTimestamp: now,
+      lastUpdated: now
+    });
+
+    const competitionUpdate = this.database.ref('/monthly_competition').set({
+      title: '30-Day Monthly Task Competition',
+      cycleDays: 30,
+      cycleNumber: 2,
+      startTime: now,
+      endTime: now + thirtyDaysMs,
+      forceResetTimestamp: now,
+      lastUpdated: now
+    });
+
+    return Promise.all([seasonUpdate, competitionUpdate])
+      .then(() => {
+        console.log('🌟 Global Admin Season & Competition reset signals pushed to Firebase!');
+        if (typeof resetAllDataToZero === 'function') {
+          resetAllDataToZero();
+        }
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast('🚀 Global Reset Applied: Level 0 & Zero Balances across all users!');
+        }
+        return true;
+      })
+      .catch((err) => {
+        console.warn('Firebase global reset error:', err);
+        if (typeof resetAllDataToZero === 'function') {
+          resetAllDataToZero();
+        }
+        return false;
+      });
   }
 
   // Submit Whitelist to Firebase (Authentication required)
@@ -1156,4 +1247,8 @@ class FirebaseSyncService {
 
 // Global Firebase Instance
 window.firebaseSync = new FirebaseSyncService();
+window.globalAdminResetAllUsers = function() {
+  if (window.firebaseSync) return window.firebaseSync.triggerGlobalAdminReset();
+};
+
 
