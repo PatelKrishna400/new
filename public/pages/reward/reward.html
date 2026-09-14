@@ -1,0 +1,326 @@
+<div class="page-view" id="pageReward">
+        
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('home')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <div class="xp-timer-pill">
+            <span>🎁 REWARDS VAULT</span>
+          </div>
+
+          <div class="xp-level-badge-btn" style="pointer-events: none;">
+            <span>🪙 <span id="rewardCoinsBal">0</span></span>
+          </div>
+        </div>
+
+        <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
+          <div class="grand-vault-aura spin-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle spin-circle">
+              <!-- 3D Luxury Spin Wheel Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="wheelRim3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="60%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#78350f"/>
+                  </linearGradient>
+                  <radialGradient id="wheelCenter3d" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#38bdf8"/>
+                    <stop offset="75%" stop-color="#0284c7"/>
+                    <stop offset="100%" stop-color="#0c4a6e"/>
+                  </radialGradient>
+                </defs>
+                <!-- Outer 3D Beveled Ring -->
+                <circle cx="50" cy="50" r="46" fill="url(#wheelRim3d)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.6))"/>
+                <circle cx="50" cy="50" r="41" fill="#0b1329" stroke="#1e293b" stroke-width="1.5"/>
+                <!-- Colored 3D Wedges (8 Slices) -->
+                <path d="M50 50 L50 9 A41 41 0 0 1 79 21 Z" fill="#0284c7"/>
+                <path d="M50 50 L79 21 A41 41 0 0 1 91 50 Z" fill="#f59e0b"/>
+                <path d="M50 50 L91 50 A41 41 0 0 1 79 79 Z" fill="#10b981"/>
+                <path d="M50 50 L79 79 A41 41 0 0 1 50 91 Z" fill="#8b5cf6"/>
+                <path d="M50 50 L50 91 A41 41 0 0 1 21 79 Z" fill="#f43f5e"/>
+                <path d="M50 50 L21 79 A41 41 0 0 1 9 50 Z" fill="#06b6d4"/>
+                <path d="M50 50 L9 50 A41 41 0 0 1 21 21 Z" fill="#fbbf24"/>
+                <path d="M50 50 L21 21 A41 41 0 0 1 50 9 Z" fill="#1e293b"/>
+                <!-- Golden Spoke Lines -->
+                <g stroke="#fde047" stroke-width="1.5" opacity="0.8">
+                  <line x1="50" y1="9" x2="50" y2="91"/>
+                  <line x1="9" y1="50" x2="91" y2="50"/>
+                  <line x1="21" y1="21" x2="79" y2="79"/>
+                  <line x1="21" y1="79" x2="79" y2="21"/>
+                </g>
+                <!-- 3D Center Beveled Hub -->
+                <circle cx="50" cy="50" r="14" fill="url(#wheelRim3d)"/>
+                <circle cx="50" cy="50" r="10" fill="url(#wheelCenter3d)"/>
+                <circle cx="47" cy="47" r="3.5" fill="#ffffff" opacity="0.8"/>
+                <!-- 3D Pointer Needle at 12 o'clock -->
+                <polygon points="50,16 44,4 56,4" fill="#fde047" stroke="#78350f" stroke-width="1" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.7))"/>
+                <circle cx="50" cy="5" r="2.5" fill="#ef4444"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag spin-tag">🎡 DANDIYA SPINNER 🎡</div>
+          </div>
+
+          <div class="rewards-rect-badge spin-badge">
+            <span class="sparkle-icon">🎟️</span>
+            <span>8-PRIZE FESTIVE WHEEL</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Lucky Spin Wheel</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">TICKETS</span>
+              <span class="stat-item-val cyan" id="rewardSpinTickets">0 Tickets</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val green">1 Ticket</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">STATUS</span>
+              <span class="stat-item-val gold">Ready</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn spin-btn" onclick="switchPage('spin'); event.stopPropagation();">
+            <span>🎡 LAUNCH SPIN WHEEL</span>
+          </button>
+        </section>
+
+        <!-- ==================== 3. THIRD: MYSTERY CHEST ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabChest" onclick="switchPage('chest')">
+          <div class="grand-vault-aura chest-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle chest-circle">
+              <!-- 3D Luxury Treasure Chest Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="chestWood3d" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#451a03"/>
+                    <stop offset="40%" stop-color="#78350f"/>
+                    <stop offset="85%" stop-color="#351004"/>
+                    <stop offset="100%" stop-color="#1c0701"/>
+                  </linearGradient>
+                  <linearGradient id="chestGold3d" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#b45309"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="65%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#78350f"/>
+                  </linearGradient>
+                </defs>
+                <!-- 3D Chest Base -->
+                <rect x="16" y="44" width="68" height="42" rx="7" fill="url(#chestWood3d)" stroke="#78350f" stroke-width="1.5" filter="drop-shadow(0 6px 8px rgba(0,0,0,0.7))"/>
+                <!-- Chest Base Vertical Straps -->
+                <rect x="26" y="44" width="8" height="42" fill="url(#chestGold3d)"/>
+                <rect x="66" y="44" width="8" height="42" fill="url(#chestGold3d)"/>
+                <!-- Corner Studs -->
+                <circle cx="30" cy="50" r="1.8" fill="#fffbeb"/>
+                <circle cx="30" cy="80" r="1.8" fill="#fffbeb"/>
+                <circle cx="70" cy="50" r="1.8" fill="#fffbeb"/>
+                <circle cx="70" cy="80" r="1.8" fill="#fffbeb"/>
+                <!-- 3D Curved Vault Lid -->
+                <path d="M14 44 C14 26, 86 26, 86 44 Z" fill="url(#chestWood3d)" stroke="#92400e" stroke-width="1.5"/>
+                <!-- Lid Gold Bands -->
+                <path d="M26 44 C26 29, 34 29, 34 44 Z" fill="url(#chestGold3d)"/>
+                <path d="M66 44 C66 29, 74 29, 74 44 Z" fill="url(#chestGold3d)"/>
+                <rect x="13" y="42" width="74" height="6" rx="2" fill="url(#chestGold3d)"/>
+                <!-- Center Glowing Lock Hasp -->
+                <rect x="42" y="38" width="16" height="20" rx="4" fill="url(#chestGold3d)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.6))"/>
+                <circle cx="50" cy="46" r="3" fill="#020617"/>
+                <path d="M48.5 46 L51.5 46 L52 52 L48 52 Z" fill="#020617"/>
+                <circle cx="50" cy="46" r="1.5" fill="#38bdf8"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag chest-tag">🔑 SHAKTI CHEST 🔑</div>
+          </div>
+
+          <div class="rewards-rect-badge chest-badge">
+            <span class="sparkle-icon">✨</span>
+            <span>UNBOX RARE LOOT</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Mystery Loot Chest</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">KEYS</span>
+              <span class="stat-item-val gold" id="rewardChestKeys">0 Keys</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val purple">1 Key</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">STATUS</span>
+              <span class="stat-item-val gold">Ready</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn chest-btn" onclick="switchPage('chest'); event.stopPropagation();">
+            <span>🧰 UNLOCK MYSTERY CHEST</span>
+          </button>
+        </section>
+
+        <!-- ==================== 4. FOURTH: SCRATCH CARD ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabScratch" onclick="switchPage('scratch')">
+          <div class="grand-vault-aura scratch-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle scratch-circle">
+              <!-- 3D Scratch Foil Card Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="scratchFoil3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fda4af"/>
+                    <stop offset="35%" stop-color="#f43f5e"/>
+                    <stop offset="70%" stop-color="#be123c"/>
+                    <stop offset="100%" stop-color="#881337"/>
+                  </linearGradient>
+                  <linearGradient id="scratchSilver3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#cbd5e1"/>
+                    <stop offset="70%" stop-color="#64748b"/>
+                    <stop offset="100%" stop-color="#334155"/>
+                  </linearGradient>
+                </defs>
+                <!-- Angled 3D Foil Ticket -->
+                <rect x="18" y="20" width="64" height="60" rx="8" fill="url(#scratchFoil3d)" stroke="#fda4af" stroke-width="1.5" filter="drop-shadow(0 6px 10px rgba(0,0,0,0.7))"/>
+                <!-- Inner Scratchable Silver Coating Grid -->
+                <rect x="23" y="25" width="54" height="50" rx="5" fill="#0f172a" stroke="#fb7185" stroke-width="1"/>
+                <!-- 3x3 Foil Tiles -->
+                <g fill="url(#scratchSilver3d)">
+                  <rect x="26" y="28" width="14" height="13" rx="2.5"/>
+                  <rect x="43" y="28" width="14" height="13" rx="2.5"/>
+                  <rect x="60" y="28" width="14" height="13" rx="2.5"/>
+                  <rect x="26" y="44" width="14" height="13" rx="2.5"/>
+                  <rect x="43" y="44" width="14" height="13" rx="2.5"/>
+                  <rect x="60" y="44" width="14" height="13" rx="2.5"/>
+                  <rect x="26" y="60" width="14" height="13" rx="2.5"/>
+                  <rect x="43" y="60" width="14" height="13" rx="2.5"/>
+                  <rect x="60" y="60" width="14" height="13" rx="2.5"/>
+                </g>
+                <!-- Peeled Golden Corner with Lucky Star -->
+                <polygon points="68,20 82,20 82,34" fill="#fde047" stroke="#78350f" stroke-width="1"/>
+                <polygon points="43,44 46,50 52,50.5 47.5,55 49,61 43,57.5 37,61 38.5,55 34,50.5 40,50" fill="#fde047" filter="drop-shadow(0 0 4px #fbbf24)"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag scratch-tag">🎟️ GARBA SCRATCH 🎟️</div>
+          </div>
+
+          <div class="rewards-rect-badge scratch-badge">
+            <span class="sparkle-icon">🎴</span>
+            <span>3x3 MATCH 3 WIN</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Scratch Card Fortune</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">CARDS</span>
+              <span class="stat-item-val flame" id="rewardScratchCards">0 Cards</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">GRID</span>
+              <span class="stat-item-val pink">3 x 3</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">MATCH</span>
+              <span class="stat-item-val gold">3 Icons</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn scratch-btn" onclick="switchPage('scratch'); event.stopPropagation();">
+            <span>🎟️ PLAY SCRATCH CARD</span>
+          </button>
+        </section>
+
+        <!-- ==================== 5. FIFTH: HATCHING EGG ==================== -->
+        <section class="rewards-grand-rectangle-card" id="rewardTabEgg" onclick="switchPage('egg')">
+          <div class="grand-vault-aura egg-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle egg-circle">
+              <!-- 3D Dragon Jewel Egg Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <radialGradient id="dragonEgg3d" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#a7f3d0"/>
+                    <stop offset="25%" stop-color="#34d399"/>
+                    <stop offset="55%" stop-color="#059669"/>
+                    <stop offset="85%" stop-color="#064e3b"/>
+                    <stop offset="100%" stop-color="#022c22"/>
+                  </radialGradient>
+                  <radialGradient id="eggAura3d" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#34d399"/>
+                    <stop offset="60%" stop-color="#059669"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                  </radialGradient>
+                </defs>
+                <!-- Radiating Emerald Aura -->
+                <circle cx="50" cy="54" r="40" fill="url(#eggAura3d)" opacity="0.35"/>
+                <!-- 3D Spherical Egg Body -->
+                <ellipse cx="50" cy="54" rx="28" ry="36" fill="url(#dragonEgg3d)" stroke="#6ee7b7" stroke-width="2" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.75))"/>
+                <!-- Top-Left Specular Light Highlight -->
+                <ellipse cx="40" cy="36" rx="9" ry="14" fill="#ffffff" opacity="0.35" transform="rotate(-25 40 36)"/>
+                <!-- Glowing Golden Crack Fractures -->
+                <path d="M43 32 Q51 44 44 54 Q56 64 48 76" fill="none" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" filter="drop-shadow(0 0 4px #f59e0b)"/>
+                <path d="M44 54 L36 58" fill="none" stroke="#fde047" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M51 44 L60 48" fill="none" stroke="#fde047" stroke-width="1.8" stroke-linecap="round"/>
+                <!-- Embedded Glowing Gems -->
+                <circle cx="48" cy="44" r="3" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)"/>
+                <circle cx="55" cy="58" r="2.8" fill="#38bdf8" filter="drop-shadow(0 0 4px #38bdf8)"/>
+                <circle cx="39" cy="62" r="2.5" fill="#fb7185" filter="drop-shadow(0 0 4px #fb7185)"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag egg-tag">🥚 AMRIT HATCHERY 🥚</div>
+          </div>
+
+          <div class="rewards-rect-badge egg-badge">
+            <span class="sparkle-icon">🐣</span>
+            <span>COLLECT 3 TO WIN</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Cyber Egg Hatching (16 Eggs)</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">EGG COINS</span>
+              <span class="stat-item-val green" id="rewardEggCount">0 Eggs</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">GRID</span>
+              <span class="stat-item-val cyan">16 Eggs</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">MATCH</span>
+              <span class="stat-item-val gold">Collect 3</span>
+            </div>
+          </div>
+
+          <button class="rewards-master-action-btn egg-btn" onclick="switchPage('egg')">
+            <span>🥚 PLAY 16-EGG HATCHERY (COLLECT 3)</span>
+          </button>
+        </section>
+
+      </div>
+

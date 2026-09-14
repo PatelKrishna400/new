@@ -513,8 +513,9 @@ ${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
 </html>
 `;
 
-fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), headerContent + pagesContent + footerContent, 'utf8');
-console.log('Successfully assembled modular index.html!');
+const fullHtml = headerContent + pagesContent + footerContent;
+fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), fullHtml, 'utf8');
+console.log('Successfully assembled modular index.html in frontend/!');
 
 // Also write CSS aggregator to style.css for backwards compatibility
 const styleImports = [
@@ -524,4 +525,42 @@ const styleImports = [
 ].join('\n');
 fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), styleImports + '\n', 'utf8');
 console.log('Successfully updated style.css with modular imports!');
+
+// Export to public/ and dist/ directories so Vercel and other deployment platforms find the output directory
+const PROJECT_ROOT = path.join(ROOT_DIR, '..');
+const PUBLIC_DIR = path.join(PROJECT_ROOT, 'public');
+const DIST_DIR = path.join(PROJECT_ROOT, 'dist');
+
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+[PUBLIC_DIR, DIST_DIR].forEach(targetDir => {
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(targetDir, 'index.html'), fullHtml, 'utf8');
+  fs.writeFileSync(path.join(targetDir, 'style.css'), styleImports + '\n', 'utf8');
+  copyDirRecursive(PAGES_DIR, path.join(targetDir, 'pages'));
+  copyDirRecursive(SHARED_DIR, path.join(targetDir, 'shared'));
+  console.log(`Successfully exported deployment bundle to ${path.relative(PROJECT_ROOT, targetDir)}/`);
+});
+
+// Root fallback for root-level static hosting
+fs.writeFileSync(path.join(PROJECT_ROOT, 'index.html'), fullHtml, 'utf8');
+fs.writeFileSync(path.join(PROJECT_ROOT, 'style.css'), styleImports + '\n', 'utf8');
+console.log('Successfully wrote root index.html and style.css!');
+
 

@@ -1,0 +1,86 @@
+<div class="page-view" id="pageSuggestBox">
+  <!-- Top Navigation Header: Back Button & Page Title -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('profile')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <div class="xp-timer-pill">
+      <span>💡 SUGGEST BOX</span>
+    </div>
+    <div class="suggest-status-pill">
+      <span class="suggest-live-dot"></span>
+      <span>Live</span>
+    </div>
+  </div>
+
+  <div class="suggest-page-container">
+    <!-- Hero Header Banner -->
+    <div class="suggest-hero-card">
+      <div class="suggest-hero-icon-box">💡</div>
+      <div class="suggest-hero-text">
+        <h3 class="suggest-hero-title">Community Suggest Box</h3>
+        <p class="suggest-hero-desc">Have a cool idea, a feature request, or feedback to improve the game? Write it below and submit it directly to our team!</p>
+      </div>
+    </div>
+
+    <!-- Suggestion Input Form Card -->
+    <div class="suggest-form-card">
+      <div class="suggest-form-header">
+        <span class="suggest-form-tag">COMMUNITY FEEDBACK</span>
+        <h4 class="suggest-form-title">Send Your Suggestion</h4>
+      </div>
+
+      <form id="suggestBoxForm" onsubmit="handleSuggestionSubmit(event)">
+        <!-- Field 1: User Name -->
+        <div class="suggest-field-group">
+          <label class="suggest-field-label" for="suggestUserName">
+            <span>👤 User Name / Handle</span>
+            <span class="required-star">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="suggestUserName" 
+            class="suggest-field-input" 
+            placeholder="e.g. Alex Vance or @alex_blue" 
+            required
+          />
+        </div>
+
+        <!-- Field 2: Description of Suggestion -->
+        <div class="suggest-field-group">
+          <label class="suggest-field-label" for="suggestDescription">
+            <span>📝 Description / Your Suggestion</span>
+            <span class="required-star">*</span>
+          </label>
+          <textarea 
+            id="suggestDescription" 
+            class="suggest-field-input suggest-textarea" 
+            rows="5" 
+            placeholder="Write your suggestion, feedback, idea, or bug report here in detail..." 
+            required
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-submit-suggestion" id="btnSubmitSuggestion">
+          <span class="suggest-btn-icon">🚀</span>
+          <span>Submit Suggestion</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- History / Previously Submitted Suggestions -->
+    <div class="suggest-history-section">
+      <div class="suggest-history-header">
+        <h4 class="suggest-history-title">Your Submitted Suggestions</h4>
+        <span class="suggest-history-count" id="suggestHistoryCount">0 Suggestions</span>
+      </div>
+      <div class="suggest-history-list" id="suggestHistoryList">
+        <!-- Dynamically rendered by suggest-box.js -->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,373 @@
+/* ==========================================================================
+   PAGE VIEW: CUSTOM AMAZON ORDER FORM (pages/custom/custom.css)
+   - Holo-Violet Themed Product Request Interface
+   - Seamless Inputs for User Name, Amazon Link, Product Name & Description
+   - Real-time Submitted Request Tracker Cards
+   ========================================================================== */
+
+#pageCustom {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  padding: 0 10px 24px 10px !important;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+#pageCustom::-webkit-scrollbar {
+  display: none;
+}
+
+#pageCustom.active {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.custom-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   HERO BANNER
+   ========================================================================== */
+.custom-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(24, 10, 48, 0.92) 0%, rgba(12, 5, 26, 0.98) 100%);
+  border: 1.5px solid rgba(232, 121, 249, 0.4);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.custom-hero-icon-box {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(232, 121, 249, 0.25) 0%, rgba(168, 85, 247, 0.35) 100%);
+  border: 1.5px solid rgba(232, 121, 249, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 0 16px rgba(232, 121, 249, 0.4);
+}
+
+.custom-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.custom-hero-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.custom-hero-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   FORM CARD & INPUT FIELDS
+   ========================================================================== */
+.custom-form-card {
+  background: linear-gradient(135deg, rgba(16, 7, 34, 0.95) 0%, rgba(8, 4, 18, 0.98) 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.45);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.custom-form-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid rgba(232, 121, 249, 0.15);
+  padding-bottom: 10px;
+}
+
+.custom-form-tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #e879f9;
+  text-transform: uppercase;
+}
+
+.custom-form-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.custom-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.custom-field-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.required-star {
+  color: #f43f5e;
+  font-size: 13px;
+}
+
+.custom-field-input {
+  background: rgba(4, 2, 10, 0.85);
+  border: 1.5px solid rgba(168, 85, 247, 0.35);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-family: var(--font-primary);
+  font-size: 12.5px;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.custom-field-input::placeholder {
+  color: #64748b;
+  font-size: 11.5px;
+}
+
+.custom-field-input:focus {
+  border-color: #e879f9;
+  box-shadow: 0 0 14px rgba(232, 121, 249, 0.35), inset 0 0 6px rgba(232, 121, 249, 0.15);
+  background: rgba(8, 4, 18, 0.95);
+}
+
+.custom-textarea {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.4;
+}
+
+.btn-submit-custom-order {
+  margin-top: 6px;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+  border: 1px solid #e879f9;
+  border-radius: var(--radius-pill);
+  padding: 13px 18px;
+  color: #ffffff;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+}
+
+.btn-submit-custom-order:hover {
+  background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 0 26px rgba(232, 121, 249, 0.7);
+}
+
+.btn-submit-custom-order:active {
+  transform: scale(0.97);
+}
+
+.btn-submit-custom-order:disabled {
+  background: rgba(50, 20, 80, 0.5) !important;
+  border-color: rgba(100, 50, 150, 0.3) !important;
+  color: #887 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.sparkle-star {
+  font-size: 16px;
+}
+
+/* ==========================================================================
+   SUBMITTED REQUESTS HISTORY SECTION
+   ========================================================================== */
+.custom-history-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.custom-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.custom-history-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.custom-history-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e879f9;
+}
+
+.custom-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.custom-request-card {
+  background: rgba(14, 6, 30, 0.88);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.custom-req-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.custom-req-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #a855f7;
+  font-weight: 700;
+}
+
+.custom-req-status-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+}
+
+.status-badge-pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.status-badge-approved {
+  background: rgba(6, 182, 212, 0.18);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+
+.status-badge-delivered {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.status-badge-rejected {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.custom-req-product-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.custom-req-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.custom-req-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 6px;
+  font-size: 10.5px;
+}
+
+.custom-req-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.15s;
+}
+
+.custom-req-link-btn:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+.custom-req-date {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.custom-empty-history {
+  padding: 24px 14px;
+  text-align: center;
+  background: rgba(14, 6, 30, 0.5);
+  border: 1.5px dashed rgba(168, 85, 247, 0.3);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-empty-icon {
+  font-size: 26px;
+}
+
+.custom-empty-text {
+  font-size: 11.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+}

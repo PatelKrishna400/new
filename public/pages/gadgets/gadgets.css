@@ -1,0 +1,18 @@
+/* ==========================================================================
+   PAGE VIEW: GADGETS (pages/gadgets/gadgets.css)
+   ========================================================================== */
+
+#pageGadgets {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  padding: 0 10px 16px 10px !important;
+  overflow-y: auto;
+}
+
+#pageGadgets.active {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}

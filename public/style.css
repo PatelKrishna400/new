@@ -1,0 +1,26 @@
+/* CSS Aggregator for modular pages */
+@import url("shared/common.css");
+@import url("pages/home/home.css");
+@import url("pages/energy/energy.css");
+@import url("pages/tasks/tasks.css");
+@import url("pages/profile/profile.css");
+@import url("pages/xp/xp.css");
+@import url("pages/reward/reward.css");
+@import url("pages/goal/goal.css");
+@import url("pages/streak/streak.css");
+@import url("pages/mega-reward/mega-reward.css");
+@import url("pages/gift-card/gift-card.css");
+@import url("pages/gadgets/gadgets.css");
+@import url("pages/accessories/accessories.css");
+@import url("pages/gaming-tool/gaming-tool.css");
+@import url("pages/kitchen/kitchen.css");
+@import url("pages/stationery/stationery.css");
+@import url("pages/fitness/fitness.css");
+@import url("pages/home-decorate/home-decorate.css");
+@import url("pages/custom/custom.css");
+@import url("pages/suggest-box/suggest-box.css");
+@import url("pages/ad-rewards/ad-rewards.css");
+@import url("pages/spin/spin.css");
+@import url("pages/chest/chest.css");
+@import url("pages/scratch/scratch.css");
+@import url("pages/egg/egg.css");

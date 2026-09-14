@@ -1,0 +1,116 @@
+<div class="page-view" id="pageCustom">
+  <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('megaReward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <div class="xp-timer-pill">
+      <span>⭐ 9. CUSTOM REQUEST</span>
+    </div>
+    <div class="mega-diamond-balance-btn" onclick="onMegaDiamondClick()" style="padding: 4px 10px; font-size: 11px;">
+      <span class="mega-diamond-icon">💎</span>
+      <span class="cat-diamond-val" id="diamondValCustom">0</span>
+    </div>
+  </div>
+
+  <div class="custom-page-container">
+    <!-- Hero Header Box -->
+    <div class="custom-hero-card">
+      <div class="custom-hero-icon-box">⭐</div>
+      <div class="custom-hero-text">
+        <h3 class="custom-hero-title">Custom Amazon Reward</h3>
+        <p class="custom-hero-desc">Have a specific item in mind? Submit any Amazon product details below. Our team reviews your custom request and delivers it!</p>
+      </div>
+    </div>
+
+    <!-- Custom Request Form Card -->
+    <div class="custom-form-card">
+      <div class="custom-form-header">
+        <span class="custom-form-tag">AMAZON ORDER FORM</span>
+        <h4 class="custom-form-title">Enter Product Information</h4>
+      </div>
+
+      <form id="customAmazonOrderForm" onsubmit="handleCustomOrderSubmit(event)">
+        <!-- Field 1: User Name -->
+        <div class="custom-field-group">
+          <label class="custom-field-label" for="customUserName">
+            <span>👤 User Name / Handle</span>
+            <span class="required-star">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="customUserName" 
+            class="custom-field-input" 
+            placeholder="e.g. Alex Vance or @alex_blue" 
+            required
+          />
+        </div>
+
+        <!-- Field 2: Amazon Product Link -->
+        <div class="custom-field-group">
+          <label class="custom-field-label" for="customAmazonLink">
+            <span>🔗 Amazon Product Link</span>
+            <span class="required-star">*</span>
+          </label>
+          <input 
+            type="url" 
+            id="customAmazonLink" 
+            class="custom-field-input" 
+            placeholder="https://www.amazon.com/dp/... or https://amzn.to/..." 
+            required
+          />
+        </div>
+
+        <!-- Field 3: Product Name -->
+        <div class="custom-field-group">
+          <label class="custom-field-label" for="customProductName">
+            <span>📦 Product Name</span>
+            <span class="required-star">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="customProductName" 
+            class="custom-field-input" 
+            placeholder="e.g. Sony WH-1000XM5 Wireless Headphones" 
+            required
+          />
+        </div>
+
+        <!-- Field 4: Description of Product -->
+        <div class="custom-field-group">
+          <label class="custom-field-label" for="customProductDesc">
+            <span>📝 Description of Product / Notes</span>
+            <span class="required-star">*</span>
+          </label>
+          <textarea 
+            id="customProductDesc" 
+            class="custom-field-input custom-textarea" 
+            rows="3" 
+            placeholder="Enter color variant, size, specifications, or preferred delivery address..." 
+            required
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-submit-custom-order" id="btnSubmitCustomOrder">
+          <span class="sparkle-star">✨</span>
+          <span>Submit Custom Amazon Request</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- History / Submitted Requests List -->
+    <div class="custom-history-section">
+      <div class="custom-history-header">
+        <h4 class="custom-history-title">Your Submitted Requests</h4>
+        <span class="custom-history-count" id="customHistoryCount">0 Requests</span>
+      </div>
+      <div class="custom-history-list" id="customRequestsHistoryList">
+        <!-- Rendered dynamically by custom.js -->
+      </div>
+    </div>
+  </div>
+</div>
