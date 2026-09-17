@@ -36,7 +36,7 @@
     <div class="info-strip-chip">
       <span class="chip-dot amber"></span>
       <span class="chip-label">JACKPOT:</span>
-      <span class="chip-val">10 Coins (2%)</span>
+      <span class="chip-val">10 Coins (10%)</span>
     </div>
   </div>
 
@@ -89,42 +89,35 @@
               <stop offset="100%" stop-color="#090d16"/>
             </linearGradient>
 
-            <!-- Slice 1: Green Fuel -->
-            <linearGradient id="sliceGreenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#10b981"/>
-              <stop offset="50%" stop-color="#059669"/>
-              <stop offset="100%" stop-color="#064e3b"/>
-            </linearGradient>
-
-            <!-- Slice 2: Yellow Fuel -->
-            <linearGradient id="sliceYellowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#f59e0b"/>
-              <stop offset="50%" stop-color="#d97706"/>
-              <stop offset="100%" stop-color="#78350f"/>
-            </linearGradient>
-
-            <!-- Slice 3: Key -->
-            <linearGradient id="sliceKeyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#8b5cf6"/>
-              <stop offset="50%" stop-color="#6d28d9"/>
-              <stop offset="100%" stop-color="#4c1d95"/>
-            </linearGradient>
-
-            <!-- Slice 4: Energy -->
-            <linearGradient id="sliceEnergyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#06b6d4"/>
+            <!-- Slice 1 & 5: 100 Blue Coins -->
+            <linearGradient id="sliceBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
               <stop offset="50%" stop-color="#0284c7"/>
               <stop offset="100%" stop-color="#0c4a6e"/>
             </linearGradient>
 
-            <!-- Slice 5: Egg -->
-            <linearGradient id="sliceEggGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#14b8a6"/>
-              <stop offset="50%" stop-color="#0f766e"/>
-              <stop offset="100%" stop-color="#134e4a"/>
+            <!-- Slice 2: 1 Key -->
+            <linearGradient id="sliceKeyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#c084fc"/>
+              <stop offset="50%" stop-color="#9333ea"/>
+              <stop offset="100%" stop-color="#581c87"/>
             </linearGradient>
 
-            <!-- Slice 6: Jackpot Coins (2%) -->
+            <!-- Slice 3: 1 Card -->
+            <linearGradient id="sliceCardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#f472b6"/>
+              <stop offset="50%" stop-color="#db2777"/>
+              <stop offset="100%" stop-color="#831843"/>
+            </linearGradient>
+
+            <!-- Slice 4: 1 Ticket -->
+            <linearGradient id="sliceTicketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#22d3ee"/>
+              <stop offset="50%" stop-color="#0891b2"/>
+              <stop offset="100%" stop-color="#155e75"/>
+            </linearGradient>
+
+            <!-- Slice 6: 10 Gold Coins Jackpot (10%) -->
             <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#fde047"/>
               <stop offset="35%" stop-color="#f59e0b"/>
@@ -146,20 +139,20 @@
           <!-- Slice 0: Try Again (0 deg / 12 o'clock) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
 
-          <!-- Slice 1: 1 Green Fuel (45 deg / 1:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceGreenGrad)" stroke="#047857" stroke-width="1.2"/>
+          <!-- Slice 1: 100 Blue Coins (45 deg / 1:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
 
-          <!-- Slice 2: 1 Yellow Fuel (90 deg / 3 o'clock) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceYellowGrad)" stroke="#b45309" stroke-width="1.2"/>
+          <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceKeyGrad)" stroke="#7e22ce" stroke-width="1.2"/>
 
-          <!-- Slice 3: 1 Winning Key (135 deg / 4:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceKeyGrad)" stroke="#6d28d9" stroke-width="1.2"/>
+          <!-- Slice 3: 1 Card (135 deg / 4:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceCardGrad)" stroke="#be123c" stroke-width="1.2"/>
 
-          <!-- Slice 4: 10 Energy (180 deg / 6 o'clock) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceEnergyGrad)" stroke="#0284c7" stroke-width="1.2"/>
+          <!-- Slice 4: 1 Ticket (180 deg / 6 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceTicketGrad)" stroke="#0891b2" stroke-width="1.2"/>
 
-          <!-- Slice 5: 1 Cyber Egg (225 deg / 7:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceEggGrad)" stroke="#0f766e" stroke-width="1.2"/>
+          <!-- Slice 5: 100 Blue Coins (225 deg / 7:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
 
           <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
@@ -189,41 +182,41 @@
             <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
           </g>
 
-          <!-- Slice 1 Label: 1 Green (45 deg) -->
+          <!-- Slice 1 Label: 100 Blue Coins (45 deg) -->
           <g transform="translate(150, 150) rotate(45) translate(0, -96)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🟢</text>
-            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#a7f3d0" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 GREEN</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔷</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">100 BLUE</text>
           </g>
 
-          <!-- Slice 2 Label: 1 Yellow (90 deg) -->
+          <!-- Slice 2 Label: 1 Key (90 deg) -->
           <g transform="translate(150, 150) rotate(90) translate(0, -96)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🟡</text>
-            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fef08a" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 YELLOW</text>
-          </g>
-
-          <!-- Slice 3 Label: 1 Key (135 deg) -->
-          <g transform="translate(150, 150) rotate(135) translate(0, -96)">
             <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔑</text>
             <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#e9d5ff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 KEY</text>
           </g>
 
-          <!-- Slice 4 Label: 10 Energy (180 deg) -->
+          <!-- Slice 3 Label: 1 Card (135 deg) -->
+          <g transform="translate(150, 150) rotate(135) translate(0, -96)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🎴</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fbcfe8" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 CARD</text>
+          </g>
+
+          <!-- Slice 4 Label: 1 Ticket (180 deg) -->
           <g transform="translate(150, 150) rotate(180) translate(0, -96)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">⚡</text>
-            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">10 ENERGY</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🎟️</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#a5f3fc" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 TICKET</text>
           </g>
 
-          <!-- Slice 5 Label: 1 Egg (225 deg) -->
+          <!-- Slice 5 Label: 100 Blue Coins (225 deg) -->
           <g transform="translate(150, 150) rotate(225) translate(0, -96)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🥚</text>
-            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#99f6e4" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 EGG</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔷</text>
+            <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">100 BLUE</text>
           </g>
 
-          <!-- Slice 6 Label: 10 Coins (270 deg) -->
+          <!-- Slice 6 Label: 10 Gold Coins (270 deg) -->
           <g transform="translate(150, 150) rotate(270) translate(0, -96)">
             <text text-anchor="middle" dominant-baseline="central" font-size="18" filter="drop-shadow(0 2px 6px rgba(251,191,36,0.9))">🪙</text>
             <text y="16" text-anchor="middle" font-size="10.5" font-weight="900" fill="#ffffff" letter-spacing="0.6" font-family="'Plus Jakarta Sans', sans-serif">10 COINS</text>
-            <text y="27" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fef08a" letter-spacing="0.8" font-family="'Plus Jakarta Sans', sans-serif">★ JACKPOT 2% ★</text>
+            <text y="27" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fef08a" letter-spacing="0.8" font-family="'Plus Jakarta Sans', sans-serif">★ JACKPOT 10% ★</text>
           </g>
 
           <!-- Slice 7 Label: Try Again (315 deg) -->

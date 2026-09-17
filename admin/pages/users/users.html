@@ -1,0 +1,161 @@
+<!-- PAGE: USERS (Plain Minimal Users Table & Edit) -->
+<section class="page-panel" id="page-users">
+  <div class="plain-user-header">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h2 class="plain-title">Users</h2>
+        <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle users info">
+          <span>Info</span> <span class="arrow-icon">▸</span>
+        </button>
+      </div>
+      <div class="collapsible-text-body">
+        <p class="plain-sub">Manage registered players and edit game balances.</p>
+      </div>
+    </div>
+    <div class="plain-header-right">
+      <span class="plain-count-pill" id="plainTotalUsersCount">0 Players</span>
+      <div class="plain-search-wrap">
+        <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search player..." class="plain-search-input">
+        <button type="button" class="plain-search-clear" onclick="clearUserSearch()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="plain-table-card">
+    <div style="overflow-x: auto;">
+      <table class="plain-data-table">
+        <thead>
+          <tr>
+            <th style="width: 45px;">#</th>
+            <th>Player Name</th>
+            <th>Profile Code</th>
+            <th>Telegram</th>
+            <th>Level</th>
+            <th>Coins 🪙</th>
+            <th>Diamonds 💎</th>
+            <th style="text-align: right; width: 100px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+          <tr>
+            <td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">
+              Loading players...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: DETAILED USER INFORMATION -->
+  <div class="modal-overlay" id="userDetailsModal" onclick="closeUserDetailsModal()">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
+            👤
+          </div>
+          <div>
+            <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+            <span style="font-size: 11.5px; color: #64748b; font-family: 'JetBrains Mono', monospace;" id="detailUid">UID: -</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeUserDetailsModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <!-- Quick Summary Pills -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Profile Code</span>
+          <div style="font-size: 14px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailProfileCode">-</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level</span>
+          <div style="font-size: 14px; font-weight: 800; color: #0f172a;" id="detailLevel">Lv.0</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Goal Tier</span>
+          <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailGoalTier">Goal 0</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram Handle</span>
+          <div style="font-size: 13px; font-weight: 700; color: #0284c7;" id="detailTelegram">-</div>
+        </div>
+      </div>
+
+      <!-- Section: 6 Virtual Currencies -->
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+          💰 All Currency Balances
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #b45309;">COINS 🪙</div>
+            <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
+            <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #7c3aed;">CHEST KEYS 🗝️</div>
+            <div style="font-size: 15px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace;" id="detailKeys">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
+            <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #2563eb;">CHEST TICKETS 🎫</div>
+            <div style="font-size: 15px; font-weight: 800; color: #2563eb; font-family: 'JetBrains Mono', monospace;" id="detailTickets">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS HATCHED 🥚</div>
+            <div style="font-size: 15px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace;" id="detailEggs">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Tasks & Quests Completion Details -->
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+          🎯 Quests &amp; Tasks Activity
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+            <div style="font-size: 11px; color: #64748b;">🌐 Website Quests</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailWebTasks">0</div>
+          </div>
+          <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+            <div style="font-size: 11px; color: #64748b;">✈️ Telegram Tasks</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailTgTasks">0</div>
+          </div>
+          <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+            <div style="font-size: 11px; color: #64748b;">🏆 Monthly Quests</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailMonthlyTasks">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Energy & Monetization -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">⚡ Energy &amp; Tap Reactor</div>
+          <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 4px;" id="detailEnergy">Energy: 1000 / 1000</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailTapPower">Tap Power: 1 | Total Taps: 0</div>
+        </div>
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Ads Monetization</div>
+          <div style="font-size: 13px; font-weight: 700; color: #d97706; margin-top: 4px;" id="detailAdsWatched">0 Ads Watched</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailLastActive">Last Active: -</div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+        <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+        <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+      </div>
+    </div>
+  </div>
+</section>

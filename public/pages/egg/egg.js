@@ -31,16 +31,17 @@ const EGG_HATCH_REWARDS = {
 
 // Generates a reward item for an egg with exact 2% Coin probability
 function generateEggItem() {
+  const rewards = (window.cloudGameConfig && window.cloudGameConfig.egg_rewards) || EGG_HATCH_REWARDS;
   const rand = Math.random();
   // Strictly 2% chance for Coin
   if (rand < 0.02) {
-    return EGG_HATCH_REWARDS.coin;
+    return rewards.coin || EGG_HATCH_REWARDS.coin;
   } else if (rand < 0.3467) { // (100% - 2%) / 3 = 32.67%
-    return EGG_HATCH_REWARDS.key;
+    return rewards.key || EGG_HATCH_REWARDS.key;
   } else if (rand < 0.6733) {
-    return EGG_HATCH_REWARDS.ticket;
+    return rewards.ticket || EGG_HATCH_REWARDS.ticket;
   } else {
-    return EGG_HATCH_REWARDS.card;
+    return rewards.card || EGG_HATCH_REWARDS.card;
   }
 }
 

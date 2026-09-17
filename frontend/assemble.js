@@ -222,14 +222,29 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
 
           <!-- Blue Gem Coin Badge -->
           <div class="metric-pill blue-coin-pill" id="blueCoinPill" title="Blue Gem Coins">
-            <div class="coin-icon">
+            <div class="coin-icon blue-coin-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
                 <polygon points="12 2 21 8.5 17.5 21 6.5 21 3 8.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
                 <polygon points="12 5 18 9.5 15.5 18 8.5 18 6 9.5" fill="#38bdf8" stroke="#bae6fd" stroke-width="1"/>
                 <circle cx="12" cy="12" r="2.5" fill="#f0f9ff"/>
               </svg>
             </div>
-            <span class="pill-value" id="headerBlueBalance">0</span>
+            <span class="pill-value blue-pill-val" id="headerBlueBalance">0</span>
+          </div>
+
+          <!-- Diamond Badge -->
+          <div class="metric-pill diamond-pill" id="diamondPill" title="Diamonds (Mega Rewards)">
+            <div class="coin-icon diamond-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <polygon points="6 3 18 3 22 9 12 22 2 9" fill="#0891b2" stroke="#22d3ee" stroke-width="1.5"/>
+                <polygon points="6 3 12 9 18 3" fill="#67e8f9" opacity="0.8"/>
+                <polygon points="2 9 12 9 6 3" fill="#a5f3fc" opacity="0.6"/>
+                <polygon points="18 3 12 9 22 9" fill="#06b6d4" opacity="0.7"/>
+                <polygon points="12 22 12 9 2 9" fill="#0e7490" opacity="0.5"/>
+                <polygon points="12 22 22 9 12 9" fill="#164e63" opacity="0.7"/>
+              </svg>
+            </div>
+            <span class="pill-value diamond-pill-val" id="headerDiamondBalance">0</span>
           </div>
 
           <!-- Streak / Fire Button -->
@@ -526,10 +541,9 @@ const styleImports = [
 fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), styleImports + '\n', 'utf8');
 console.log('Successfully updated style.css with modular imports!');
 
-// Export to public/ and dist/ directories so Vercel and other deployment platforms find the output directory
+// Export to public/ directory for Vercel deployment (as specified in vercel.json)
 const PROJECT_ROOT = path.join(ROOT_DIR, '..');
 const PUBLIC_DIR = path.join(PROJECT_ROOT, 'public');
-const DIST_DIR = path.join(PROJECT_ROOT, 'dist');
 
 function copyDirRecursive(src, dest) {
   if (!fs.existsSync(dest)) {
@@ -547,20 +561,13 @@ function copyDirRecursive(src, dest) {
   }
 }
 
-[PUBLIC_DIR, DIST_DIR].forEach(targetDir => {
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-  fs.writeFileSync(path.join(targetDir, 'index.html'), fullHtml, 'utf8');
-  fs.writeFileSync(path.join(targetDir, 'style.css'), styleImports + '\n', 'utf8');
-  copyDirRecursive(PAGES_DIR, path.join(targetDir, 'pages'));
-  copyDirRecursive(SHARED_DIR, path.join(targetDir, 'shared'));
-  console.log(`Successfully exported deployment bundle to ${path.relative(PROJECT_ROOT, targetDir)}/`);
-});
-
-// Root fallback for root-level static hosting
-fs.writeFileSync(path.join(PROJECT_ROOT, 'index.html'), fullHtml, 'utf8');
-fs.writeFileSync(path.join(PROJECT_ROOT, 'style.css'), styleImports + '\n', 'utf8');
-console.log('Successfully wrote root index.html and style.css!');
+if (!fs.existsSync(PUBLIC_DIR)) {
+  fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+}
+fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), fullHtml, 'utf8');
+fs.writeFileSync(path.join(PUBLIC_DIR, 'style.css'), styleImports + '\n', 'utf8');
+copyDirRecursive(PAGES_DIR, path.join(PUBLIC_DIR, 'pages'));
+copyDirRecursive(SHARED_DIR, path.join(PUBLIC_DIR, 'shared'));
+console.log(`Successfully exported deployment bundle to public/`);
 
 

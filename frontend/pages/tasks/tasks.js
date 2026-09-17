@@ -414,17 +414,24 @@ const WEBSITE_TASKS = [
 ];
 
 function getWebsiteTasksList() {
-  if (window.cloudWebsiteTasks && Array.isArray(window.cloudWebsiteTasks) && window.cloudWebsiteTasks.length > 0) {
+  if (window.cloudWebsiteTasks && Array.isArray(window.cloudWebsiteTasks)) {
     return window.cloudWebsiteTasks.map(ct => {
       const def = WEBSITE_TASKS.find(dt => dt.id === ct.id) || {};
+      const cost = ct.costCoins !== undefined ? Number(ct.costCoins) : (def.costCoins !== undefined ? def.costCoins : 1000);
+      const diamonds = ct.diamondReward !== undefined ? Number(ct.diamondReward) : (def.diamondReward || 100);
       return {
         ...def,
         ...ct,
-        costCoins: ct.costCoins !== undefined ? ct.costCoins : 1000,
-        diamondReward: ct.diamondReward !== undefined ? ct.diamondReward : (def.diamondReward || 100),
+        costCoins: cost,
+        diamondReward: diamonds,
         code: ct.code || def.code || '1234',
-        rewardText: `${ct.diamondReward !== undefined ? ct.diamondReward : (def.diamondReward || 100)} Diamonds 💎`,
-        tagText: ct.tag || def.tagText || 'SPONSOR QUEST'
+        rewardText: `${diamonds} Diamonds 💎`,
+        tagText: ct.tag || ct.tagText || def.tagText || 'SPONSOR QUEST',
+        colorClass: ct.colorClass || def.colorClass || 'task-blue',
+        iconClass: ct.iconClass || def.iconClass || 'task-icon-blue',
+        accentClass: ct.accentClass || def.accentClass || 'task-tab-accent-blue',
+        liquidTheme: ct.liquidTheme || def.liquidTheme || 'liquid-blue',
+        btnText: ct.btnText || 'Unlock & Visit'
       };
     });
   }
@@ -432,24 +439,41 @@ function getWebsiteTasksList() {
 }
 
 function getTelegramTasksList() {
-  if (window.cloudTelegramTasks && Array.isArray(window.cloudTelegramTasks) && window.cloudTelegramTasks.length > 0) {
+  if (window.cloudTelegramTasks && Array.isArray(window.cloudTelegramTasks)) {
     return window.cloudTelegramTasks.map(ct => {
       const def = TELEGRAM_TASKS.find(dt => dt.id === ct.id) || {};
       const isBot = ct.iconType === 'bot' || (ct.tagText && ct.tagText.includes('BOT'));
-      const keys = ct.rewardKeys !== undefined ? Number(ct.rewardKeys) : (def.rewardKeys || 1);
+      const cards = Number(ct.rewardCards || ct.scratchCards || 0);
+      const keys = Number(ct.rewardKeys || 0);
+      const diamonds = Number(ct.diamonds || ct.rewardDiamonds || 0);
+      const coins = Number(ct.coins || ct.rewardCoins || 0);
+
+      let rewardText = ct.rewardText;
+      if (!rewardText) {
+        if (cards > 0) rewardText = `${cards} Scratch Card${cards > 1 ? 's' : ''} 🎴`;
+        else if (keys > 0) rewardText = `${keys} Key${keys > 1 ? 's' : ''} for Chest`;
+        else if (diamonds > 0) rewardText = `+${diamonds} Diamonds 💎`;
+        else if (coins > 0) rewardText = `+${coins} Coins 🪙`;
+        else rewardText = '1 Scratch Card 🎴';
+      }
+
       return {
         ...def,
         ...ct,
+        rewardCards: cards,
+        scratchCards: cards,
         rewardKeys: keys,
-        rewardText: ct.rewardText || `${keys} ${keys > 1 ? 'Keys' : 'Key'} for Chest`,
-        colorClass: def.colorClass || 'task-blue',
-        iconClass: def.iconClass || 'task-icon-blue',
-        accentClass: def.accentClass || 'task-tab-accent-blue',
-        liquidTheme: def.liquidTheme || 'liquid-blue',
-        tagClass: def.tagClass || 'tag-blue',
+        rewardDiamonds: diamonds,
+        rewardCoins: coins,
+        rewardText: rewardText,
+        colorClass: ct.colorClass || def.colorClass || 'task-blue',
+        iconClass: ct.iconClass || def.iconClass || 'task-icon-blue',
+        accentClass: ct.accentClass || def.accentClass || 'task-tab-accent-blue',
+        liquidTheme: ct.liquidTheme || def.liquidTheme || 'liquid-blue',
+        tagClass: ct.tagClass || def.tagClass || 'tag-blue',
         tagText: ct.tagText || (isBot ? 'TELEGRAM BOT' : 'TELEGRAM CHANNEL'),
-        desc: ct.desc || `Join ${ct.title} on Telegram to win ${keys} Chest Key`,
-        notes: ct.notes || `Join and follow instructions to claim your ${keys} Mystery Chest Key reward!`,
+        desc: ct.desc || `Join ${ct.title} on Telegram to win ${rewardText}`,
+        notes: ct.notes || `Join and follow instructions to claim your ${rewardText} reward!`,
         tip: ct.tip || 'Tip: Tap the button below to launch Telegram directly.',
         btnText: ct.btnText || 'Join'
       };
@@ -1370,16 +1394,42 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     card.classList.add('task-claimed-exit');
   }
 
-  // Award Keys
-  const keysCount = rewardKeys || 1;
-  gameState.tasksState.claimedTelegram[taskId] = true;
-  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + keysCount;
-  if (gameState.goalState && gameState.goalState.levelProgress) {
-    gameState.goalState.levelProgress.keys = (gameState.goalState.levelProgress.keys || 0) + keysCount;
-  }
+  // Award configured reward (Cards, Keys, Diamonds, or Coins)
+  const cardsCount = Number(task.rewardCards || task.scratchCards || 0);
+  const keysCount = Number(task.rewardKeys || (rewardKeys !== undefined ? rewardKeys : 0));
+  const diamondsCount = Number(task.diamonds || task.rewardDiamonds || 0);
+  const coinsCount = Number(task.coins || task.rewardCoins || 0);
 
-  if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🔑 +${keysCount} Key Claimed!`);
+  gameState.tasksState.claimedTelegram[taskId] = true;
+
+  if (cardsCount > 0) {
+    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + cardsCount;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎴 +${cardsCount} Scratch Card${cardsCount > 1 ? 's' : ''} Claimed!`);
+    }
+  } else if (keysCount > 0) {
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + keysCount;
+    if (gameState.goalState && gameState.goalState.levelProgress) {
+      gameState.goalState.levelProgress.keys = (gameState.goalState.levelProgress.keys || 0) + keysCount;
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔑 +${keysCount} Key${keysCount > 1 ? 's' : ''} Claimed!`);
+    }
+  } else if (diamondsCount > 0) {
+    gameState.player.diamonds = (gameState.player.diamonds || 0) + diamondsCount;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`💎 +${diamondsCount} Diamonds Claimed!`);
+    }
+  } else if (coinsCount > 0) {
+    gameState.player.coins = (gameState.player.coins || 0) + coinsCount;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🪙 +${coinsCount} Coins Claimed!`);
+    }
+  } else {
+    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎴 +1 Scratch Card Claimed!`);
+    }
   }
 
   setTimeout(() => {
@@ -1391,6 +1441,14 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     }
   }, 420);
 }
+
+// Real-Time Firebase Synchronizers for Tasks
+window.addEventListener('websiteTasksUpdated', () => {
+  if (typeof renderTasksList === 'function') renderTasksList();
+});
+window.addEventListener('telegramTasksUpdated', () => {
+  if (typeof renderTasksList === 'function') renderTasksList();
+});
 
 // Auto-initialize when Tasks Page renders
 if (typeof window !== 'undefined') {

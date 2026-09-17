@@ -2,28 +2,28 @@
    LUCKY SPIN WHEEL MINI-GAME (pages/spin/spin.js)
    - 8 Precise Slices:
      0: ❌ Try Again
-     1: 🟢 1 Green Fuel Cell
-     2: 🟡 1 Yellow Fuel Cell
-     3: 🔑 1 Winning Key
-     4: ⚡ 10 Energy
-     5: 🥚 1 Cyber Egg
-     6: 🪙 10 Coins (2% Jackpot)
+     1: 🔷 100 Blue Coins
+     2: 🔑 1 Winning Key
+     3: 🎴 1 Scratch Card
+     4: 🎟️ 1 Spin Ticket
+     5: 🔷 100 Blue Coins
+     6: 🪙 10 Gold Coins (10% Jackpot)
      7: ❌ Try Again
    - Mathematically exact pointer alignment at 12 o'clock
    - Dynamic 24-LED perimeter chaser ring
    - Realistic flapper tick audio & haptic feedback
-   - Ticket inventory synchronization & Ad Ticket farming
+   - Ticket inventory synchronization
    ========================================================================== */
 
 const SPIN_PRIZES = [
-  { label: '❌ Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
-  { label: '🟢 1 Green Fuel', type: 'green_fuel', amount: 1, icon: '🟢', rarity: 'green' },
-  { label: '🟡 1 Yellow Fuel', type: 'yellow_fuel', amount: 1, icon: '🟡', rarity: 'epic' },
-  { label: '🔑 1 Winning Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
-  { label: '⚡ 10 Energy', type: 'energy', amount: 10, icon: '⚡', rarity: 'energy' },
-  { label: '🥚 1 Cyber Egg', type: 'egg', amount: 1, icon: '🥚', rarity: 'egg' },
-  { label: '🪙 10 Coins', type: 'coins', amount: 10, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
-  { label: '❌ Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' }
+  { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
+  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '🔷', rarity: 'rare' },
+  { label: '1 Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
+  { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
+  { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
+  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '🔷', rarity: 'rare' },
+  { label: '10 Gold Coins', type: 'coins', amount: 10, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
+  { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' }
 ];
 
 // Initialize 24 circular LED Chaser Bulbs around the perimeter
@@ -183,19 +183,22 @@ function spinLuckyWheel() {
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) gameState.dailyStats.spins = (gameState.dailyStats.spins || 0) + 1;
 
-  // Exact 2% Probability for 10 Coins Jackpot (slice index 6):
-  // rand < 0.02 -> 10 Coins (strictly 2%)
-  // rand >= 0.02 -> other 7 slices: [0, 1, 2, 3, 4, 5, 7]
+  // Exact 10% Probability for 10 Gold Coins Jackpot (slice index 6):
+  // rand < 0.10 -> 10 Gold Coins (strictly 10%)
+  // rand >= 0.10 -> other 7 slices: [0: Try Again, 1: 100 Blue, 2: 1 Key, 3: 1 Card, 4: 1 Ticket, 5: 100 Blue, 7: Try Again]
   const rand = Math.random();
   let sliceIndex;
-  if (rand < 0.02) {
+  if (rand < 0.10) {
     sliceIndex = 6;
   } else {
-    const nonCoinSlices = [0, 1, 2, 3, 4, 5, 7];
-    sliceIndex = nonCoinSlices[Math.floor(Math.random() * nonCoinSlices.length)];
+    const nonJackpotSlices = [0, 1, 2, 3, 4, 5, 7];
+    sliceIndex = nonJackpotSlices[Math.floor(Math.random() * nonJackpotSlices.length)];
   }
 
-  const prize = SPIN_PRIZES[sliceIndex];
+  const prizes = (window.cloudGameConfig && Array.isArray(window.cloudGameConfig.spin_prizes) && window.cloudGameConfig.spin_prizes.length === 8)
+    ? window.cloudGameConfig.spin_prizes
+    : SPIN_PRIZES;
+  const prize = prizes[sliceIndex];
 
   // Mathematical rotation calculation:
   // Slices are laid out clockwise starting with slice 0 at 12 o'clock (0°).
@@ -260,17 +263,15 @@ function spinLuckyWheel() {
     // Award prize
     if (prize.type === 'coins') {
       gameState.player.coins += prize.amount;
-    } else if (prize.type === 'energy') {
-      gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + prize.amount;
+    } else if (prize.type === 'blue_coins') {
+      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + prize.amount;
     } else if (prize.type === 'keys') {
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + prize.amount;
       if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + prize.amount);
-    } else if (prize.type === 'egg') {
-      gameState.player.eggs = (gameState.player.eggs || 0) + prize.amount;
-    } else if (prize.type === 'green_fuel') {
-      gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + prize.amount;
-    } else if (prize.type === 'yellow_fuel') {
-      gameState.energyGenerator.fuelCells.yellow = (gameState.energyGenerator.fuelCells.yellow || 0) + prize.amount;
+    } else if (prize.type === 'card') {
+      gameState.player.scratchCards = (gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : 0) + prize.amount;
+    } else if (prize.type === 'ticket') {
+      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + prize.amount;
     }
 
     gameState.rewardState.isSpinning = false;
@@ -284,7 +285,7 @@ function spinLuckyWheel() {
       }
       if (winIcon) winIcon.textContent = '❌';
       if (winTitle) winTitle.textContent = 'Missed This Time!';
-      if (winDesc) winDesc.textContent = 'Better luck next spin! Tap the reactor orb or complete goals for more tickets!';
+      if (winDesc) winDesc.textContent = 'No reward this spin. Better luck next spin!';
     } else {
       sfx.playLevelUpSound();
       triggerSpinConfetti();
@@ -293,11 +294,11 @@ function spinLuckyWheel() {
         if (resultBox) resultBox.className = 'spin-result-display jackpot-active';
         if (resultTag) {
           resultTag.className = 'spin-result-badge jackpot';
-          resultTag.textContent = '👑 GRAND JACKPOT!';
+          resultTag.textContent = '👑 10% GRAND JACKPOT!';
         }
         if (winIcon) winIcon.textContent = prize.icon;
         if (winTitle) winTitle.textContent = `JACKPOT: +${prize.label.toUpperCase()}!`;
-        if (winDesc) winDesc.textContent = `Massive score! ${prize.label} credited straight to your balance!`;
+        if (winDesc) winDesc.textContent = `Lucky 10% Jackpot hit! 10 Gold Coins credited straight to your balance!`;
       } else {
         if (resultBox) resultBox.className = 'spin-result-display winner-active';
         if (resultTag) {

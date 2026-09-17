@@ -195,8 +195,11 @@ function unlockMysteryChestBox(boxNum) {
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) gameState.dailyStats.chests = (gameState.dailyStats.chests || 0) + 1;
 
-  // Prepare 3 distinct rewards
-  const shuffled = [...CHEST_AND_CARD_REWARDS].sort(() => 0.5 - Math.random());
+  // Prepare 3 distinct rewards (from cloud config if customized)
+  const rewardsPool = (window.cloudGameConfig && Array.isArray(window.cloudGameConfig.chest_rewards) && window.cloudGameConfig.chest_rewards.length >= 3)
+    ? window.cloudGameConfig.chest_rewards
+    : CHEST_AND_CARD_REWARDS;
+  const shuffled = [...rewardsPool].sort(() => 0.5 - Math.random());
   chestRoundState.rewards = {
     1: shuffled[0],
     2: shuffled[1],

@@ -1,0 +1,255 @@
+<!-- PAGE: TASKS (TELEGRAM & WEBSITE TASK ADDER - GLOBAL STATIC DATA) -->
+<section class="page-panel" id="page-tasks-web">
+
+  <!-- PAGE HEADER WITH SCOPE BADGE -->
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+    <div class="scope-badge-wrap">
+      <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
+      <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong> &amp; <strong>/website_tasks_config</strong></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Website &amp; Telegram Quests Editor</h2>
+          <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle quest guide">
+            <span>Info</span> <span class="arrow-icon">▸</span>
+          </button>
+        </div>
+        <div class="collapsible-text-body">
+          <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+            Create, edit, and publish quests and sponsor tasks in Firebase. Every connected player reads these same tasks to earn coins and diamonds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-tab Navigation Bar -->
+  <div class="task-tabs-bar">
+    <button type="button" class="task-subtab-btn active" id="btnSubtabTelegram" onclick="switchAdminTaskSubtab('telegram')">
+      <span>✈️ Telegram Tasks</span>
+      <span class="task-tab-badge" id="adminTgTasksCountBadge">0</span>
+    </button>
+    <button type="button" class="task-subtab-btn" id="btnSubtabWebsite" onclick="switchAdminTaskSubtab('website')">
+      <span>🌐 Website Quests</span>
+      <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
+    </button>
+    <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
+      <span>🏆 30-Day Competition</span>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SUBTAB 1: TELEGRAM TASKS ADDER & MANAGER (STATIC DATA)
+       ============================================================ -->
+  <div id="subtabContentTelegram" class="task-subtab-content active">
+    <div class="minimal-card" style="margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">✈️ Telegram Channel &amp; Bot Tasks</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Players join channels or bots to claim bonus coins. Stored in Firebase at <code>/telegram_tasks_config</code>.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onclick="openNewTelegramTaskModal()" class="btn-minimal-primary">
+            <span>➕</span>
+            <span>Add Telegram Task</span>
+          </button>
+          <button type="button" onclick="saveTelegramTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+            <span>💾</span>
+            <span>Save to Firebase</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telegram Tasks Container Grid -->
+    <div class="tasks-grid-container" id="telegramTasksContainer">
+      <!-- Injected dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SUBTAB 2: WEBSITE TASKS ADDER & MANAGER (STATIC DATA)
+       ============================================================ -->
+  <div id="subtabContentWebsite" class="task-subtab-content" style="display: none;">
+    <div class="minimal-card" style="margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🌐 Sponsor Website &amp; PIN Quests</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Players visit sponsor links and enter secret PINs. Stored in Firebase at <code>/website_tasks_config</code>.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onclick="openNewWebsiteTaskModal()" class="btn-minimal-primary">
+            <span>➕</span>
+            <span>Add Website Quest</span>
+          </button>
+          <button type="button" onclick="saveWebsiteTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+            <span>💾</span>
+            <span>Save to Firebase</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Website Tasks Container Grid -->
+    <div class="tasks-grid-container" id="websiteTasksContainer">
+      <!-- Injected dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SUBTAB 3: MONTHLY (30-DAY) COMPETITION & QUOTAS CONTROLLER
+       ============================================================ -->
+  <div id="subtabContentDaily" class="task-subtab-content" style="display: none;">
+    <div class="minimal-card" style="margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid #f1f5f9;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🏆 30-Day Monthly Task Competition Cycle</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Real-time status of the 30-day competition running in Firebase at <code>/monthly_competition</code>.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onclick="restartMonthlyCompetitionInFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+            <span>🔄</span>
+            <span>Start Fresh 30-Day Cycle</span>
+          </button>
+          <button type="button" onclick="extendMonthlyCompetition(7)" class="btn-minimal-secondary">
+            <span>+7 Days</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Cycle Info Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Active Cycle</div>
+          <div style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCycleNum">Cycle #1</div>
+        </div>
+        <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Time Remaining</div>
+          <div style="font-size: 20px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCountdown">Calculating...</div>
+        </div>
+        <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Cycle End Date</div>
+          <div style="font-size: 14px; font-weight: 800; color: #334155; margin-top: 4px;" id="adminMonthlyEndDate">-</div>
+        </div>
+      </div>
+
+      <!-- Live 30-Day Cycle Progress Bar -->
+      <div style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 12px; font-weight: 800; color: #334155;">Cycle Elapsed Progress</span>
+          <span style="font-size: 12px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyProgressText">Day 0 of 30 (0%)</span>
+        </div>
+        <div style="width: 100%; height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden;">
+          <div id="adminMonthlyProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #0284c7, #38bdf8); transition: width 0.4s ease; border-radius: 99px;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; color: #64748b;">
+          <span id="adminMonthlyCycleStartDate">Started: -</span>
+          <span id="adminMonthlyCycleEndDateFoot">Ends: -</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD NEW TELEGRAM TASK -->
+  <div class="modal-overlay" id="newTelegramTaskModal" onclick="closeNewTelegramTaskModal()">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">✈️ Add New Telegram Task</h3>
+        <button type="button" onclick="closeNewTelegramTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Task Title</label>
+          <input type="text" id="inpNewTgTitle" class="minimal-input" placeholder="e.g. Join Energy Tap Announcements">
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Telegram Channel / Group Link</label>
+          <input type="url" id="inpNewTgLink" class="minimal-input" placeholder="https://t.me/energy_tap_official">
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
+          <input type="number" id="inpNewTgCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+        <button type="button" class="btn-minimal-secondary" onclick="closeNewTelegramTaskModal()">Cancel</button>
+        <button type="button" class="btn-minimal-primary" onclick="confirmAddTelegramTask()">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD NEW WEBSITE QUEST -->
+  <div class="modal-overlay" id="newWebsiteTaskModal" onclick="closeNewWebsiteTaskModal()">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">🌐 Add Sponsor Website Quest</h3>
+        <button type="button" onclick="closeNewWebsiteTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Quest Title</label>
+          <input type="text" id="inpNewWebTitle" class="minimal-input" placeholder="e.g. Visit Crypto Portal & Find Code">
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Quest Description</label>
+          <textarea id="inpNewWebDesc" rows="2" class="minimal-input" placeholder="Visit sponsor website, browse for timer, and find the secret code."></textarea>
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Target Website URL</label>
+          <input type="url" id="inpNewWebUrl" class="minimal-input" placeholder="https://example.com/sponsor">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Secret Verification PIN (optional)</label>
+            <input type="text" id="inpNewWebPin" class="minimal-input" placeholder="e.g. 7894">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Browsing Timer (Seconds ⏱️)</label>
+            <input type="number" id="inpNewWebTimer" class="minimal-input" value="15" min="5" placeholder="e.g. 15">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Reward Coins 🪙</label>
+            <input type="number" id="inpNewWebCoins" class="minimal-input" value="1500" min="0">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Reward Diamonds 💎</label>
+            <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="15" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+        <button type="button" class="btn-minimal-secondary" onclick="closeNewWebsiteTaskModal()">Cancel</button>
+        <button type="button" class="btn-minimal-primary" onclick="confirmAddWebsiteTask()">Create Quest</button>
+      </div>
+    </div>
+  </div>
+
+</section>

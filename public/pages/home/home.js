@@ -124,13 +124,12 @@ function handleOrbTap(e) {
     gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
   }
 
-  // Award +1 Blue Coin on every tap button click
-  gameState.player.diamonds = (gameState.player.diamonds || 0) + 1;
+  // Award +1 Blue Gem Coin on every tap button click (Diamonds are exclusively for Mega Rewards)
   gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 1;
   
   const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
   blueEls.forEach(el => {
-    el.textContent = formatNumber(gameState.player.diamonds);
+    el.textContent = formatNumber(gameState.player.blueCoins);
   });
   const bluePill = document.getElementById('blueCoinPill') || (typeof DOM !== 'undefined' && DOM.blueCoinPill);
   if (bluePill) {
@@ -319,7 +318,9 @@ function updateHomeUI() {
   const goldEls = document.querySelectorAll('#coinCounter, #headerCoinBalance');
   goldEls.forEach(el => { el.textContent = formatNumber(gameState.player.coins); });
   const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-  blueEls.forEach(el => { el.textContent = formatNumber(gameState.player.diamonds || gameState.player.blueCoins || 0); });
+  blueEls.forEach(el => { el.textContent = formatNumber(gameState.player.blueCoins || 0); });
+  const diamondEls = document.querySelectorAll('#headerDiamondBalance, #playerDiamondBalance');
+  diamondEls.forEach(el => { el.textContent = formatNumber(gameState.player.diamonds || 0); });
   if (DOM.xpLevelNum) DOM.xpLevelNum.textContent = gameState.player.level;
 
   // XP Progress Fill
@@ -569,25 +570,27 @@ if (isHome2xBoostActive() || isHome2xCooldownActive()) {
   startHome2xTimerTick();
 }
 
-// Automatic Popup on Login / Next Visit when 2-hour reset timer finishes
-function checkAndShowGarba2xPopupOnLogin() {
-  // If not in 2-hour cooldown and not currently boosted, show popup on visit/login
-  if (!isHome2xBoostActive() && !isHome2xCooldownActive()) {
-    setTimeout(() => {
-      // Only pop up if user is currently on home page
-      const homePage = document.getElementById('pageHome');
-      if (homePage && homePage.classList.contains('active')) {
+// Automatic Fixed Popup on Initial Game Load
+function checkAndShowHomeFixedPopupOnLoad() {
+  setTimeout(() => {
+    const homePage = document.getElementById('pageHome');
+    if (homePage && homePage.classList.contains('active')) {
+      const alreadyShown = sessionStorage.getItem('HOME_FIRST_LOAD_POPUP_SHOWN');
+      if (!alreadyShown) {
+        sessionStorage.setItem('HOME_FIRST_LOAD_POPUP_SHOWN', 'true');
+        openHomeActionPopup('ads_2x');
+      } else if (!isHome2xBoostActive() && !isHome2xCooldownActive()) {
         openHomeActionPopup('ads_2x');
       }
-    }, 1200);
-  }
+    }
+  }, 900);
 }
 
 // Run check on initial load
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     updateHome2xIconVisibility();
-    checkAndShowGarba2xPopupOnLogin();
+    checkAndShowHomeFixedPopupOnLoad();
   });
 }
 
@@ -924,7 +927,7 @@ function convertHomeEnergyToCoins() {
 
 // 5. Blue Coin Vault Reward Popup
 function renderHomeBlueCoinPopup(header, body) {
-  const blueCoins = gameState.player.diamonds || gameState.player.blueCoins || 0;
+  const blueCoins = gameState.player.blueCoins || 0;
 
   header.innerHTML = `
     <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
@@ -986,8 +989,7 @@ function renderHomeBlueCoinPopup(header, body) {
 }
 
 function claimHomeBlueCoinBonus(amount, sourceName) {
-  gameState.player.diamonds = (gameState.player.diamonds || 0) + amount;
-  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + amount;
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
@@ -1006,14 +1008,13 @@ function exchangeGoldToBlueCoins() {
     return;
   }
   gameState.player.coins -= 5000;
-  gameState.player.diamonds = (gameState.player.diamonds || 0) + 25;
-  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 25;
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast('💎 Successfully Synthesized 25 Blue Coins!');
+    showFloatingToast('🔄 Synthesized 5,000 Gold Coins into 25 Blue Coins!');
   }
-  if (typeof sfx !== 'undefined' && sfx.playCoinSound) sfx.playCoinSound();
+  if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
   refreshHomePopupIfOpen('blue');
 }
 
@@ -1107,3 +1108,53 @@ window.claimHomeBlueCoinBonus = claimHomeBlueCoinBonus;
 window.exchangeGoldToBlueCoins = exchangeGoldToBlueCoins;
 window.openHomeMysteryCapsule = openHomeMysteryCapsule;
 window.claimHomeProfileBlessing = claimHomeProfileBlessing;
+
+// ==========================================================================
+// REAL-TIME HOME ANNOUNCEMENT BANNER (ADMIN SYNCED VIA /game_config)
+// ==========================================================================
+function renderHomeAnnouncement() {
+  const cfg = window.cloudGameConfig || {};
+  let banner = document.getElementById('homeLiveAnnouncementBanner');
+
+  if (!cfg.announcementActive || !cfg.announcementText || !cfg.announcementText.trim()) {
+    if (banner) banner.style.display = 'none';
+    return;
+  }
+
+  const pageHome = document.getElementById('pageHome');
+  if (!pageHome) return;
+
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'homeLiveAnnouncementBanner';
+    banner.style.cssText = 'background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(99, 102, 241, 0.22)); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 12px; padding: 10px 14px; margin: 8px 14px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15); animation: fadeIn 0.3s ease; position: relative; z-index: 20;';
+    pageHome.insertBefore(banner, pageHome.firstChild);
+  }
+
+  banner.style.display = 'flex';
+  banner.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+      <span style="font-size: 18px; flex-shrink: 0;">📢</span>
+      <div style="color: #e2e8f0; font-size: 12px; font-weight: 600; line-height: 1.4; word-break: break-word;">
+        ${cfg.announcementText.trim()}
+      </div>
+    </div>
+    <button type="button" onclick="dismissHomeAnnouncement()" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;" title="Dismiss">&times;</button>
+  `;
+}
+
+function dismissHomeAnnouncement() {
+  const banner = document.getElementById('homeLiveAnnouncementBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+window.renderHomeAnnouncement = renderHomeAnnouncement;
+window.dismissHomeAnnouncement = dismissHomeAnnouncement;
+
+window.addEventListener('gameConfigUpdated', () => {
+  renderHomeAnnouncement();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderHomeAnnouncement();
+});

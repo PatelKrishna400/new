@@ -90,8 +90,8 @@ async function testFirebase() {
       }
     }
 
-    // Test writing a player state
-    console.log('\n=== 4. Testing Write to /players/{localId} with Auth ===');
+    // Test writing a player state with ?auth= parameter
+    console.log('\n=== 4. Testing Write to /players/{localId} with ?auth= ===');
     try {
       const testPayload = {
         updatedAt: Date.now(),
@@ -105,13 +105,41 @@ async function testFirebase() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' }
       }, testPayload);
-      console.log('Write /players/{localId} Status:', writeRes.statusCode, writeRes.data);
+      console.log('Write /players/{localId} Status (?auth=):', writeRes.statusCode, writeRes.data);
 
       // Clean up test player
       await request(`${DATABASE_URL}/players/${localId}.json?auth=${idToken}`, { method: 'DELETE' });
       console.log('Cleaned up test player node.');
     } catch (e) {
       console.error('Write error:', e.message);
+    }
+
+    // Test with Bearer header (merged from test-bearer.js)
+    console.log('\n=== 4b. Testing Read & Write with Authorization: Bearer Header ===');
+    try {
+      const bearerGet = await request(`${DATABASE_URL}/players/${localId}.json`, {
+        headers: { 'Authorization': `Bearer ${idToken}` }
+      });
+      console.log('GET with Bearer Status:', bearerGet.statusCode, bearerGet.data);
+
+      const bearerPut = await request(`${DATABASE_URL}/players/${localId}.json`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        }
+      }, {
+        updatedAt: Date.now(),
+        player: { name: "TestBearerPlayer", level: 1, coins: 10 }
+      });
+      console.log('PUT with Bearer Status:', bearerPut.statusCode, bearerPut.data);
+
+      await request(`${DATABASE_URL}/players/${localId}.json`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${idToken}` }
+      });
+    } catch (e) {
+      console.error('Bearer test error:', e.message);
     }
 
     // Test writing to leaderboard

@@ -88,16 +88,19 @@ function dealNewSingleCard(consumeCard = false) {
     singleCardState.cardCountedForDay = false;
   }
 
-  // Pick weighted random reward
-  const totalWeight = SINGLE_SCRATCH_REWARDS.reduce((acc, r) => acc + r.weight, 0);
+  // Pick weighted random reward (support cloud configuration if provided)
+  const pool = (window.cloudGameConfig && Array.isArray(window.cloudGameConfig.scratch_rewards) && window.cloudGameConfig.scratch_rewards.length > 0)
+    ? window.cloudGameConfig.scratch_rewards
+    : SINGLE_SCRATCH_REWARDS;
+  const totalWeight = pool.reduce((acc, r) => acc + (r.weight || 10), 0);
   let rand = Math.random() * totalWeight;
-  let selected = SINGLE_SCRATCH_REWARDS[0];
-  for (const reward of SINGLE_SCRATCH_REWARDS) {
-    if (rand < reward.weight) {
+  let selected = pool[0];
+  for (const reward of pool) {
+    if (rand < (reward.weight || 10)) {
       selected = reward;
       break;
     }
-    rand -= reward.weight;
+    rand -= (reward.weight || 10);
   }
 
   singleCardState.currentReward = selected;

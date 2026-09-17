@@ -45,6 +45,8 @@ const gameState = {
     profileCode: '',
     telegram: '',
     mobile: '',
+    email: '',
+    emailVerified: false,
     tier: 'BRONZE',
     level: 0,
     maxLevel: 100,

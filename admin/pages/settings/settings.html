@@ -1,0 +1,256 @@
+<!-- PAGE: SETTINGS (Minimal Global Website & Game Config Editor) -->
+<section class="page-panel" id="page-settings">
+  
+  <!-- PAGE HEADER WITH SCOPE BADGE -->
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+    <div class="scope-badge-wrap">
+      <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
+      <span class="firebase-path-pill">Reading &amp; Writing: <strong>/game_config</strong></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Website &amp; Game Configuration Editor</h2>
+      <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle settings info">
+        <span>Info</span> <span class="arrow-icon">▸</span>
+      </button>
+    </div>
+    <div class="collapsible-text-body">
+      <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+        Edit website settings, global gameplay constants, announcements, and maintenance mode in Firebase. Changes saved here immediately take effect for all connected players.
+      </p>
+    </div>
+  </div>
+
+  <!-- TOOL 1: GLOBAL WEBSITE & GAME CONFIG EDITOR (STATIC DATA) -->
+  <div class="minimal-card" style="margin-bottom: 18px;">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🛠️ Global Website &amp; Gameplay Parameters</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Static data applied across the Telegram Mini App &amp; Website for every user.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-minimal-primary" onclick="saveGlobalGameConfig()">
+          <span>💾</span>
+          <span>Save Changes to Firebase</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Form Grid -->
+    <div class="minimal-form-grid">
+      <!-- App / Website Name -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgAppName">
+          <span>Website / App Name</span>
+          <span style="font-size: 10px; color: #64748b;">Title Header</span>
+        </label>
+        <input type="text" id="cfgAppName" class="minimal-input" placeholder="Energy Tap">
+      </div>
+
+      <!-- Maintenance Mode Switch -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgMaintenance">
+          <span>Maintenance Mode</span>
+          <span style="font-size: 10px; color: #0284c7;" id="maintenanceStatusTag">Normal Active</span>
+        </label>
+        <select id="cfgMaintenance" class="minimal-input" style="cursor: pointer;">
+          <option value="false">🟢 OFF (Game is Live for All Players)</option>
+          <option value="true">🔴 ON (Under Maintenance - Block Game)</option>
+        </select>
+      </div>
+
+      <!-- Default Starting Energy -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgStartingEnergy">
+          <span>Starting Energy (⚡)</span>
+          <span style="font-size: 10px; color: #64748b;">New Player Default</span>
+        </label>
+        <input type="number" id="cfgStartingEnergy" class="minimal-input" min="100" step="100" placeholder="1000">
+      </div>
+
+      <!-- Max Base Energy Cap -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgMaxEnergy">
+          <span>Max Base Energy Cap</span>
+          <span style="font-size: 10px; color: #64748b;">Base Capacity</span>
+        </label>
+        <input type="number" id="cfgMaxEnergy" class="minimal-input" min="500" step="100" placeholder="1000">
+      </div>
+
+      <!-- Energy Regen Rate -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgRegenRate">
+          <span>Energy Regen Rate</span>
+          <span style="font-size: 10px; color: #64748b;">Energy / Second</span>
+        </label>
+        <input type="number" id="cfgRegenRate" class="minimal-input" min="1" step="1" placeholder="1">
+      </div>
+
+      <!-- Tap Base Power -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="cfgTapPower">
+          <span>Tap Base Power</span>
+          <span style="font-size: 10px; color: #64748b;">Coins per Tap</span>
+        </label>
+        <input type="number" id="cfgTapPower" class="minimal-input" min="1" step="1" placeholder="1">
+      </div>
+
+      <!-- Telegram Support Link -->
+      <div class="minimal-form-group" style="grid-column: 1 / -1;">
+        <label class="minimal-form-label" for="cfgSupportUrl">
+          <span>Telegram Support Channel / Bot URL</span>
+          <span style="font-size: 10px; color: #64748b;">Help Link</span>
+        </label>
+        <input type="url" id="cfgSupportUrl" class="minimal-input" placeholder="https://t.me/energy_tap_support">
+      </div>
+
+      <!-- Global Broadcast Announcement Text -->
+      <div class="minimal-form-group" style="grid-column: 1 / -1;">
+        <label class="minimal-form-label" for="cfgAnnouncement">
+          <span>Global In-App Announcement Banner</span>
+          <label style="font-size: 11px; cursor: pointer; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="cfgAnnouncementActive"> Show to Players
+          </label>
+        </label>
+        <input type="text" id="cfgAnnouncement" class="minimal-input" placeholder="e.g. 🌟 Season 2 is live! Double XP this weekend.">
+      </div>
+    </div>
+
+    <!-- Direct Write Feedback Box -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
+      <span style="font-size: 12px; color: #64748b;" id="gameConfigLastUpdated">Last Synced: Checking Firebase...</span>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn-minimal-secondary" onclick="loadGlobalGameConfigFromFirebase()">
+          <span>🔄</span>
+          <span>Discard &amp; Reload</span>
+        </button>
+        <button type="button" class="btn-minimal-primary" onclick="saveGlobalGameConfig()">
+          <span>💾</span>
+          <span>Save Changes to Firebase</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOL 2: GLOBAL SEASONS & COMPETITIONS (STATIC RULES) -->
+  <div class="minimal-card" style="margin-bottom: 18px;">
+    <div class="minimal-header-group">
+      <div class="scope-badge-wrap">
+        <span class="scope-pill-global">🌐 Global Static Rules</span>
+        <span class="firebase-path-pill">Paths: <strong>/season</strong> and <strong>/monthly_competition</strong></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h3 class="minimal-title">🏆 Global Season &amp; Monthly Competition Cycles</h3>
+        <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+          <span>Info</span> <span class="arrow-icon">▸</span>
+        </button>
+      </div>
+      <div class="collapsible-text-body">
+        <p class="minimal-subtitle">Control global seasonal resets across all players or start new 30-day competition cycles.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <button type="button" onclick="triggerGlobalSeasonReset()" class="btn-minimal-primary">
+        <span>🚀</span>
+        <span>Trigger Global Season Restart (Reset Level 0 for All)</span>
+      </button>
+      <button type="button" onclick="triggerMonthlyCompetitionReset()" class="btn-minimal-secondary" style="color: #059669; border-color: rgba(16, 185, 129, 0.4);">
+        <span>🏆</span>
+        <span>Start New 30-Day Task Competition (/monthly_competition)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TOOL 3: ADMIN ACCESS CONTROL (STRICT 2 - 5 ADMIN USERS) -->
+  <div class="minimal-card" style="margin-bottom: 18px;">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div class="scope-badge-wrap">
+            <span class="scope-pill-global">🔒 Security &amp; Permissions</span>
+            <span class="firebase-path-pill">Path: <strong>/admin_users</strong></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">Admin Team &amp; Access Control</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Strict policy: Exactly 2 to 5 authorized admins can authenticate and manage this console.</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="adminCountPill" class="firebase-path-pill" style="color: #0284c7; font-weight: 800;">Admins: 0 / 5</span>
+          <button type="button" id="openAddAdminBtn" onclick="openAddAdminModal()" class="btn-minimal-primary">
+            <span>➕</span>
+            <span>Add Admin User</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Table -->
+    <div style="overflow-x: auto; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+      <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+        <thead>
+          <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+            <th style="padding: 10px 14px; text-align: left;">Admin User</th>
+            <th style="padding: 10px 14px; text-align: left;">Username</th>
+            <th style="padding: 10px 14px; text-align: left;">Role</th>
+            <th style="padding: 10px 14px; text-align: left;">Password</th>
+            <th style="padding: 10px 14px; text-align: left;">Created</th>
+            <th style="padding: 10px 14px; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminUsersTableBody">
+          <tr>
+            <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">Loading admin team...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TOOL 4: FIREBASE CONNECTION SETTINGS & RECONNECT -->
+  <div class="minimal-card">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">⚡ Firebase Cloud Connection</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Active connection endpoints to Firebase Realtime Database.</p>
+          </div>
+        </div>
+        <button type="button" onclick="reconnectFirebase()" class="btn-minimal-secondary">
+          <span>🔄</span>
+          <span>Reconnect Realtime DB</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; font-size: 12px;">
+      <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #64748b; font-weight: 600;">Database URL:</span>
+        <code style="color: #0284c7; font-weight: 700;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
+      </div>
+      <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #64748b; font-weight: 600;">Project ID:</span>
+        <code style="color: #0284c7; font-weight: 700;">tap-game-80070</code>
+      </div>
+    </div>
+  </div>
+
+</section>

@@ -1,0 +1,209 @@
+<!-- PAGE: ADS MANAGE -->
+<section class="page-panel" id="page-ads-manage">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Ads &amp; Monetization Network Manager</h2>
+        <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle ads info">
+          <span>Info</span> <span class="arrow-icon">▸</span>
+        </button>
+      </div>
+      <div class="collapsible-text-body">
+        <p style="font-size: 13px; color: #64748b;">Configure Direct Link Ads and Monetag Ads with live CPM rate calculators, balance tabs, and player tracking.</p>
+      </div>
+    </div>
+    <button onclick="saveAdsConfigToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+      <span>💾</span>
+      <span>Save Ads Settings</span>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       TWO BALANCE TABS: DIRECT LINK BALANCE VS MONETAG ADS BALANCE
+       ============================================================ -->
+  <div class="ads-balance-tabs-container card-panel" style="margin-bottom: 18px; padding: 18px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 16px;">
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn-ads-balance-tab active" id="tabBtnDirectBalance" onclick="switchAdsBalanceTab('direct')">
+          <span>🔗</span>
+          <span>Direct Link Ads Balance</span>
+        </button>
+        <button type="button" class="btn-ads-balance-tab" id="tabBtnMonetagBalance" onclick="switchAdsBalanceTab('monetag')">
+          <span>🎬</span>
+          <span>Monetag Ads Balance</span>
+        </button>
+      </div>
+      <div style="font-size: 13px; font-weight: 800; color: #059669;" id="adsCombinedRevenue">
+        Total Combined: $0.00
+      </div>
+    </div>
+
+    <!-- BALANCE TAB 1: DIRECT LINK ADS BALANCE -->
+    <div id="balanceTabDirect" class="balance-tab-pane active">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Direct Link Total Clicks (Use Count)</span>
+            <button type="button" onclick="saveDirectClickCountToFirebase()" class="btn-minimal-primary" style="padding: 3px 9px; font-size: 11px;" title="Save updated click count to Firebase">
+              💾 Save
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="number" id="inpDirectCountEdit" min="0" value="0" class="form-input" style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; padding: 5px 10px; width: 150px;" oninput="onDirectCountInputChanged()">
+            <span style="font-size: 12px; color: #64748b; font-weight: 700;">clicks</span>
+          </div>
+          <span style="font-size: 11px; color: #64748b; display: block; margin-top: 5px;">Edit count directly to adjust balance &amp; earnings</span>
+        </div>
+
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+          <span style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Direct Link CPM Rate</span>
+          <div style="font-size: 22px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balDirectCpmRate">$0.60</div>
+          <span style="font-size: 11.5px; color: #64748b;">Per 1,000 clicks (editable below)</span>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px;">
+          <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase;">Direct Link Net Earnings</span>
+          <div style="font-size: 24px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balDirectEarnings">$0.00</div>
+          <span style="font-size: 11.5px; color: #059669; font-weight: 700;">Formula: (Clicks / 1,000) × CPM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BALANCE TAB 2: MONETAG ADS BALANCE -->
+    <div id="balanceTabMonetag" class="balance-tab-pane" style="display: none;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Monetag Total Views (Use Count)</span>
+            <button type="button" onclick="saveMonetagViewCountToFirebase()" class="btn-minimal-primary" style="padding: 3px 9px; font-size: 11px; background: #7c3aed;" title="Save updated views count to Firebase">
+              💾 Save
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="number" id="inpMonetagCountEdit" min="0" value="0" class="form-input" style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; padding: 5px 10px; width: 150px;" oninput="onMonetagCountInputChanged()">
+            <span style="font-size: 12px; color: #64748b; font-weight: 700;">views</span>
+          </div>
+          <span style="font-size: 11px; color: #64748b; display: block; margin-top: 5px;">Edit count directly to adjust balance &amp; earnings</span>
+        </div>
+
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+          <span style="font-size: 11px; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Monetag CPM Rate</span>
+          <div style="font-size: 22px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balMonetagCpmRate">$0.20</div>
+          <span style="font-size: 11.5px; color: #64748b;">Per 1,000 views (editable below)</span>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px;">
+          <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase;">Monetag Net Earnings</span>
+          <div style="font-size: 24px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balMonetagEarnings">$0.00</div>
+          <span style="font-size: 11.5px; color: #059669; font-weight: 700;">Formula: (Views / 1,000) × CPM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADS CONFIGURATION FORM (DIRECT LINK + MONETAG ZONE EDIT)
+       All reward fields removed per request.
+       ============================================================ -->
+  <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;">
+    <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+      ⚙️ Network Configuration &amp; CPM Rates
+    </h3>
+    
+    <!-- 1. Direct Link Ads Settings -->
+    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #0284c7;">🔗 Direct Link Ad Settings</span>
+        <span style="font-size: 11px; font-weight: 800; color: #64748b;">Shop &amp; Sponsor Placements</span>
+      </div>
+      <div class="ads-form-row-2col">
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label">Direct Link Ad URL</label>
+          <input type="url" id="inpDirectLinkUrl" value="https://otieuche.com/4/8893420" placeholder="https://..." class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7; font-weight: 700;">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Direct Link CPM ($ per 1k Clicks)</label>
+          <input type="number" id="inpDirectLinkCpm" step="0.05" min="0" value="0.60" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #059669; font-weight: 800;" oninput="recalculateEarningsPreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Monetag Ads Settings (Zone Code & CPM) -->
+    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 800; color: #7c3aed;">🎬 Monetag Ads Settings</span>
+        <span style="font-size: 11px; font-weight: 800; color: #64748b;">SDK &amp; Zone ID</span>
+      </div>
+      <div class="ads-form-row-3col">
+        <div class="form-group" style="flex: 1.5;">
+          <label class="form-label">Monetag Zone ID / Code</label>
+          <input type="text" id="inpMonetagZoneId" value="11677609" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0f172a;">
+        </div>
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label">Monetag SDK Tag URL</label>
+          <input type="url" id="inpMonetagSdkUrl" value="https://libtl.com/sdk.js" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #7c3aed;">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Monetag CPM ($ per 1k Views)</label>
+          <input type="number" id="inpMonetagCpm" step="0.05" min="0" value="0.20" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #059669; font-weight: 800;" oninput="recalculateEarningsPreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Network Limits & Controls (Reward fields completely removed) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+      <div class="form-group">
+        <label class="form-label">Cooldown Between Ads (Sec ⏱️)</label>
+        <input type="number" id="adCooldownSec" value="30" class="form-input" style="color: #7c3aed; font-weight: 800; text-align: center;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Daily Watch Limit per Player 📅</label>
+        <input type="number" id="adDailyLimit" value="25" class="form-input" style="color: #059669; font-weight: 800; text-align: center;">
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+      <input type="checkbox" id="adActiveToggle" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #0284c7;">
+      <label for="adActiveToggle" style="font-size: 13.5px; font-weight: 700; color: #0f172a; cursor: pointer;">Enable Monetag &amp; Direct Link Ads System in Player Game</label>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BELOW: USER CODE SEARCH BOX & LIST
+       Shows: User Code, User Name, Website Tasks Completed Count,
+       Direct Link Use Count, Monetag Ads Use Count
+       ============================================================ -->
+  <div class="card-panel">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 14px;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">👥 Player Ads &amp; Tasks Activity List</h3>
+        <p style="font-size: 12.5px; color: #64748b; margin-top: 2px;">Track player website quests completed alongside direct link and Monetag ad engagements.</p>
+      </div>
+
+      <!-- User Code Search Box -->
+      <div class="plain-search-wrap" style="width: 260px;">
+        <input type="text" id="adUserSearchInput" oninput="filterAdUsersList()" placeholder="Search User Code (ET-XXXX)..." class="plain-search-input">
+        <button type="button" class="plain-search-clear" onclick="clearAdUserSearch()">✕</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 45px;">#</th>
+            <th>User Code</th>
+            <th>User Name</th>
+            <th>Website Tasks Completed</th>
+            <th>Direct Link Used</th>
+            <th>Monetag Ads Used</th>
+            <th>Total Ad Uses</th>
+          </tr>
+        </thead>
+        <tbody id="adUsersTableBody">
+          <tr><td colspan="7" style="text-align: center; color: #64748b; padding: 28px;">Loading player activities...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

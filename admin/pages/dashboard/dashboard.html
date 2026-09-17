@@ -1,0 +1,737 @@
+<!-- PAGE: DASHBOARD -->
+<section class="page-panel active" id="page-dashboard">
+  <!-- 4 Key Metric Cards -->
+  <div class="metrics-row">
+    <!-- 1. Total Players Number -->
+    <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
+      <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
+      <div class="metric-meta">
+        <span class="metric-label">Total Player Number</span>
+        <span class="metric-value" id="dashTotalPlayers">0</span>
+      </div>
+    </div>
+
+    <!-- 2. Daily Tasks Completed Data -->
+    <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
+      <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">📅</div>
+      <div class="metric-meta">
+        <span class="metric-label">Daily Tasks Completed</span>
+        <span class="metric-value" id="dashDailyTasksCompleted">0</span>
+      </div>
+    </div>
+
+    <!-- 3. Web Tasks Completed Data -->
+    <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
+      <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🌐</div>
+      <div class="metric-meta">
+        <span class="metric-label">Web Tasks Completed</span>
+        <span class="metric-value" id="dashWebTasksCompleted">0</span>
+      </div>
+    </div>
+
+    <!-- 4. Ads Button Count -->
+    <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')">
+      <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
+      <div class="metric-meta">
+        <span class="metric-label">Ads Button Count</span>
+        <span class="metric-value" id="dashAdsButtonCount">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini-Games Live Activity Row -->
+  <div style="margin-top: 14px;">
+    <h3 style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
+        <div class="metric-meta">
+          <span class="metric-label">Lucky Wheel Spins</span>
+          <span class="metric-value" id="dashTotalSpins">0</span>
+        </div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🗝️</div>
+        <div class="metric-meta">
+          <span class="metric-label">Vault Chests Opened</span>
+          <span class="metric-value" id="dashTotalChests">0</span>
+        </div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">🎴</div>
+        <div class="metric-meta">
+          <span class="metric-label">Scratch Cards Played</span>
+          <span class="metric-value" id="dashTotalScratches">0</span>
+        </div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🥚</div>
+        <div class="metric-meta">
+          <span class="metric-label">Eggs Hatched</span>
+          <span class="metric-value" id="dashTotalEggs">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MONTHLY & YEARLY DATA READ & GRAPHICAL REPRESENTATION (PIE CHARTS)
+       ============================================================ -->
+  <div class="dash-analytics-wrapper" style="margin-top: 24px;">
+    <!-- Analytics Header with Period Mode & Filter Controls -->
+    <div class="dash-section-header">
+      <div class="dash-header-title-box">
+        <div class="dash-title-tag">
+          <span class="pulse-dot-cyan"></span>
+          <span>Graphical Analytics Engine</span>
+        </div>
+        <h2 class="dash-analytics-title">Monthly &amp; Yearly Performance Breakdown</h2>
+        <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle section details">
+          <span>Details</span> <span class="arrow-icon">▸</span>
+        </button>
+        <div class="collapsible-text-body">
+          <p class="dash-analytics-desc">Real-time data readouts represented in interactive pie charts with customizable monthly and yearly target benchmarks.</p>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Toolbar -->
+      <div class="dash-period-toolbar">
+        <!-- Monthly vs Yearly Mode Buttons -->
+        <div class="period-toggle-group">
+          <button type="button" class="period-btn active" id="btnPeriodMonthly" onclick="setDashboardPeriodMode('monthly')">
+            <span>📅</span>
+            <span>Monthly View</span>
+          </button>
+          <button type="button" class="period-btn" id="btnPeriodYearly" onclick="setDashboardPeriodMode('yearly')">
+            <span>📆</span>
+            <span>Yearly View</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Dropdowns for Month & Year Selection -->
+        <div class="period-selectors">
+          <div class="select-field-wrap" id="wrapMonthSelect">
+            <label class="period-select-label" for="dashSelectMonth">Month</label>
+            <select id="dashSelectMonth" class="period-dropdown" onchange="onDashboardDateFilterChange()">
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8" selected>September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+          </div>
+
+          <div class="select-field-wrap">
+            <label class="period-select-label" for="dashSelectYear">Year</label>
+            <select id="dashSelectYear" class="period-dropdown" onchange="onDashboardDateFilterChange()">
+              <option value="2027">2027</option>
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Action Buttons: Edit Targets & Refresh -->
+        <div class="dash-action-group">
+          <button type="button" class="btn-dash-primary" onclick="openEditTargetsModal()">
+            <span>✏️</span>
+            <span>Edit Targets &amp; Data</span>
+          </button>
+          <button type="button" class="btn-dash-outline" onclick="refreshDashboardAnalytics(true)" title="Reload live data from Firebase">
+            <span>🔄</span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Period Executive Progress Cards (Live Read vs Benchmark) -->
+    <div class="period-kpi-grid">
+      <!-- KPI 1: Active Players vs Target -->
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label" id="kpiLabelPlayers">Monthly Active Players</span>
+          <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">👥</span>
+        </div>
+        <div class="kpi-numbers">
+          <span class="kpi-value" id="kpiValPlayers">0</span>
+          <span class="kpi-target" id="kpiTargetPlayers">/ 5,000 Target</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" id="kpiFillPlayers" style="width: 0%; background: #0284c7;"></div>
+        </div>
+        <div class="kpi-foot">
+          <span class="kpi-status-tag" id="kpiTagPlayers">0% Goal</span>
+          <span class="kpi-subtext" id="kpiSubPlayers">Based on period activity</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Total Task Completions vs Target -->
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label" id="kpiLabelTasks">Monthly Tasks Volume</span>
+          <span class="kpi-icon-pill" style="background: rgba(16, 185, 129, 0.12); color: #059669;">🎯</span>
+        </div>
+        <div class="kpi-numbers">
+          <span class="kpi-value" id="kpiValTasks">0</span>
+          <span class="kpi-target" id="kpiTargetTasks">/ 25,000 Target</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" id="kpiFillTasks" style="width: 0%; background: #10b981;"></div>
+        </div>
+        <div class="kpi-foot">
+          <span class="kpi-status-tag" id="kpiTagTasks">0% Goal</span>
+          <span class="kpi-subtext" id="kpiSubTasks">Daily + Monthly + Web quests</span>
+        </div>
+      </div>
+
+      <!-- KPI 3: Virtual Economy Circulation -->
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label" id="kpiLabelEconomy">Total Circulating Wealth</span>
+          <span class="kpi-icon-pill" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">🪙</span>
+        </div>
+        <div class="kpi-numbers">
+          <span class="kpi-value" id="kpiValEconomy">0</span>
+          <span class="kpi-target" id="kpiTargetEconomy">/ 5,000,000 Target</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" id="kpiFillEconomy" style="width: 0%; background: #f59e0b;"></div>
+        </div>
+        <div class="kpi-foot">
+          <span class="kpi-status-tag" id="kpiTagEconomy">0% Goal</span>
+          <span class="kpi-subtext" id="kpiSubEconomy">Coins + Blue Gems Mined</span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Ads Engagement Volume -->
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label" id="kpiLabelAds">Ads Monetization Volume</span>
+          <span class="kpi-icon-pill" style="background: rgba(147, 51, 234, 0.12); color: #9333ea;">🎬</span>
+        </div>
+        <div class="kpi-numbers">
+          <span class="kpi-value" id="kpiValAds">0</span>
+          <span class="kpi-target" id="kpiTargetAds">/ 10,000 Target</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" id="kpiFillAds" style="width: 0%; background: #9333ea;"></div>
+        </div>
+        <div class="kpi-foot">
+          <span class="kpi-status-tag" id="kpiTagAds">0% Goal</span>
+          <span class="kpi-subtext" id="kpiSubAds">Watched ads &amp; button clicks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Rich Interactive Pie / Doughnut Charts Grid -->
+    <!-- 4 Rich Interactive Pie / Doughnut Charts Grid (Square Tabs) -->
+    <div class="charts-grid-2x2">
+      <!-- CHART 1: All Coin (coin, diamond, key, ticket, egg, card) -->
+      <div class="chart-box" id="cardChartEconomy">
+        <div class="chart-box-header">
+          <div class="chart-title-group">
+            <span class="chart-badge" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">All Coin (6 Currencies)</span>
+            <h3 class="chart-title">All Coin Balances (Coin, Diamond, Key, Ticket, Egg, Card)</h3>
+          </div>
+          <div class="chart-header-actions">
+            <span class="chart-type-pill">Pie Chart</span>
+            <button type="button" class="btn-chart-edit" onclick="openChartEditor('economy')" title="Edit Currency Wealth Pie Chart">
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-hover-indicator" id="hoverIndicatorEconomy">
+          <span class="hover-dot" style="background-color: #f59e0b;"></span>
+          <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+        </div>
+        <div class="chart-body">
+          <div class="chart-canvas-container">
+            <canvas id="chartEconomyBreakdown"></canvas>
+          </div>
+          <div class="chart-legend-list" id="legendEconomyBreakdown">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- CHART 2: Tasks Completed (Telegram, Monthly, Website) -->
+      <div class="chart-box" id="cardChartTask">
+        <div class="chart-box-header">
+          <div class="chart-title-group">
+            <span class="chart-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7;">Tasks Ratio</span>
+            <h3 class="chart-title">Tasks Completed (Telegram, Monthly, Website)</h3>
+          </div>
+          <div class="chart-header-actions">
+            <span class="chart-type-pill">Pie Chart</span>
+            <button type="button" class="btn-chart-edit" onclick="openChartEditor('task')" title="Edit Tasks Pie Chart slices and targets">
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-hover-indicator" id="hoverIndicatorTask">
+          <span class="hover-dot" style="background-color: #0284c7;"></span>
+          <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+        </div>
+        <div class="chart-body">
+          <div class="chart-canvas-container">
+            <canvas id="chartTaskBreakdown"></canvas>
+          </div>
+          <div class="chart-legend-list" id="legendTaskBreakdown">
+            <!-- Populated via JavaScript with interactive slice badges -->
+          </div>
+        </div>
+      </div>
+
+      <!-- CHART 3: Goal & XP Level Rewards Collected -->
+      <div class="chart-box" id="cardChartTiers">
+        <div class="chart-box-header">
+          <div class="chart-title-group">
+            <span class="chart-badge" style="background: rgba(147, 51, 234, 0.1); color: #9333ea;">Goal &amp; XP Rewards</span>
+            <h3 class="chart-title">Goal &amp; XP Level Rewards Collected</h3>
+          </div>
+          <div class="chart-header-actions">
+            <span class="chart-type-pill">Pie Chart</span>
+            <button type="button" class="btn-chart-edit" onclick="openChartEditor('tiers')" title="Edit Goal & XP Rewards Pie Chart">
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-hover-indicator" id="hoverIndicatorTiers">
+          <span class="hover-dot" style="background-color: #9333ea;"></span>
+          <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+        </div>
+        <div class="chart-body">
+          <div class="chart-canvas-container">
+            <canvas id="chartPlayerTiers"></canvas>
+          </div>
+          <div class="chart-legend-list" id="legendPlayerTiers">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- CHART 4: Mini-Games & Ads Monetization Activity -->
+      <div class="chart-box" id="cardChartMiniGames">
+        <div class="chart-box-header">
+          <div class="chart-title-group">
+            <span class="chart-badge" style="background: rgba(16, 185, 129, 0.1); color: #059669;">Mini-Games &amp; Ads</span>
+            <h3 class="chart-title">Mini-Games &amp; Ads Monetization Activity</h3>
+          </div>
+          <div class="chart-header-actions">
+            <span class="chart-type-pill">Pie Chart</span>
+            <button type="button" class="btn-chart-edit" onclick="openChartEditor('miniGames')" title="Edit Mini-Games Pie Chart">
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-hover-indicator" id="hoverIndicatorMiniGames">
+          <span class="hover-dot" style="background-color: #059669;"></span>
+          <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+        </div>
+        <div class="chart-body">
+          <div class="chart-canvas-container">
+            <canvas id="chartMiniGamesBreakdown"></canvas>
+          </div>
+          <div class="chart-legend-list" id="legendMiniGamesBreakdown">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comprehensive Data Read & Target Benchmark Breakdown Table -->
+    <div class="dash-table-card" style="margin-top: 20px;">
+      <div class="dash-table-header">
+        <div>
+          <h3 class="dash-table-title">Period Data Readout &amp; Target Comparison Table</h3>
+          <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle comparison details">
+            <span>Details</span> <span class="arrow-icon">▸</span>
+          </button>
+          <div class="collapsible-text-body">
+            <p class="dash-table-sub" id="tablePeriodSubtitle">Detailed comparison between live data readouts and configured benchmarks for Selected Period.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-dash-primary" style="padding: 6px 14px; font-size: 12px;" onclick="openEditTargetsModal()">
+          <span>✏️</span>
+          <span>Edit Targets &amp; Charts</span>
+        </button>
+      </div>
+
+      <div class="dash-table-responsive">
+        <table class="dash-summary-table">
+          <thead>
+            <tr>
+              <th>Metric / Category</th>
+              <th>Period Live Read</th>
+              <th>Configured Target</th>
+              <th>Achievement %</th>
+              <th>Performance Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="dashTableBody">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: EDIT MONTHLY/YEARLY TARGETS & FOUR PIE CHARTS (SQUARE TABS)
+       ============================================================ -->
+  <div class="modal-overlay" id="dashboardTargetsModal" onclick="closeEditTargetsModal()">
+    <div class="modal-card dash-modal-card" onclick="event.stopPropagation()">
+      <div class="dash-modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="dash-modal-icon">🎯</div>
+          <div>
+            <h3 class="dash-modal-title">Edit Dashboard &amp; Four Pie Charts</h3>
+            <span class="dash-modal-subtitle">Configure targets or customize slice values for all four pie charts</span>
+          </div>
+        </div>
+        <button type="button" class="dash-modal-close" onclick="closeEditTargetsModal()">&times;</button>
+      </div>
+
+      <!-- Square Tabs Switcher inside Modal -->
+      <div class="modal-square-tabs">
+        <button type="button" class="modal-square-tab active" id="tabBtnChartTask" onclick="switchModalTab('chart-task')">
+          <span class="sq-tab-icon">🎯</span>
+          <span class="sq-tab-label">Tasks (Telegram, Monthly, Web)</span>
+        </button>
+        <button type="button" class="modal-square-tab" id="tabBtnChartEconomy" onclick="switchModalTab('chart-economy')">
+          <span class="sq-tab-icon">🪙</span>
+          <span class="sq-tab-label">All Coin (6 Currencies)</span>
+        </button>
+        <button type="button" class="modal-square-tab" id="tabBtnChartTiers" onclick="switchModalTab('chart-tiers')">
+          <span class="sq-tab-icon">🏆</span>
+          <span class="sq-tab-label">Goal &amp; XP Rewards</span>
+        </button>
+        <button type="button" class="modal-square-tab" id="tabBtnChartMiniGames" onclick="switchModalTab('chart-miniGames')">
+          <span class="sq-tab-icon">🎡</span>
+          <span class="sq-tab-label">Mini-Games &amp; Ads</span>
+        </button>
+        <button type="button" class="modal-square-tab" id="modalTabBtnMonthly" onclick="switchModalTab('monthly')">
+          <span class="sq-tab-icon">📅</span>
+          <span class="sq-tab-label">Monthly Target</span>
+        </button>
+        <button type="button" class="modal-square-tab" id="modalTabBtnYearly" onclick="switchModalTab('yearly')">
+          <span class="sq-tab-icon">📆</span>
+          <span class="sq-tab-label">Yearly Target</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: EDIT TASKS PIE CHART (Telegram, Monthly, Website) -->
+      <div class="modal-tab-pane active" id="modalPaneChartTask">
+        <div class="chart-editor-header">
+          <div>
+            <h4 class="chart-editor-title">🎯 Tasks &amp; Quests Completed Pie Chart</h4>
+            <p class="chart-editor-desc">Manage the distribution of Telegram Tasks, Monthly Quests, and Website Quests completed with user data.</p>
+          </div>
+          <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('task')">
+            <span>↺</span> Reset to Live Data
+          </button>
+        </div>
+        <div class="chart-editor-body">
+          <div class="chart-editor-inputs">
+            <div class="form-group">
+              <label class="form-label">Telegram Tasks Completed ✈️</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditTaskTelegram" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                <span class="live-ref-tag" id="refTaskTelegram">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Monthly Quests Completed 🏆</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditTaskMonthly" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                <span class="live-ref-tag" id="refTaskMonthly">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Website Quests Completed 🌐</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditTaskWeb" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                <span class="live-ref-tag" id="refTaskWeb">Live: 0</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-preview-box">
+            <span class="chart-preview-title">Live Preview</span>
+            <div class="chart-preview-canvas-wrap">
+              <canvas id="chartPreviewTask"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: EDIT ALL COIN PIE CHART (Coins, Diamonds, Keys, Tickets, Eggs, Cards) -->
+      <div class="modal-tab-pane" id="modalPaneChartEconomy" style="display: none;">
+        <div class="chart-editor-header">
+          <div>
+            <h4 class="chart-editor-title">🪙 All Coin &amp; Currencies Pie Chart</h4>
+            <p class="chart-editor-desc">All 6 virtual currency holdings across all players: Gold Coins, Blue Diamonds, Chest Keys, Tickets, Eggs, and Cards.</p>
+          </div>
+          <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('economy')">
+            <span>↺</span> Reset to Live Data
+          </button>
+        </div>
+        <div class="chart-editor-body">
+          <div class="chart-editor-inputs">
+            <div class="form-group">
+              <label class="form-label">Gold Coins Total Holdings 🪙</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyCoins" class="form-input" min="0" step="1000" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyCoins">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Blue Diamonds Total Holdings 💎</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyDiamonds" class="form-input" min="0" step="100" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyDiamonds">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chest Keys Total Holdings 🗝️</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyKeys" class="form-input" min="0" step="10" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyKeys">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chest Tickets Total Holdings 🎫</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyTickets" class="form-input" min="0" step="10" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyTickets">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dragon Eggs Total Holdings 🥚</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyEggs" class="form-input" min="0" step="5" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyEggs">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Scratch Cards Total Holdings 🎴</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditEconomyCards" class="form-input" min="0" step="5" oninput="onChartEditInput('economy')">
+                <span class="live-ref-tag" id="refEconomyCards">Live: 0</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-preview-box">
+            <span class="chart-preview-title">Live Preview</span>
+            <div class="chart-preview-canvas-wrap">
+              <canvas id="chartPreviewEconomy"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: EDIT GOAL & XP REWARDS PIE CHART -->
+      <div class="modal-tab-pane" id="modalPaneChartTiers" style="display: none;">
+        <div class="chart-editor-header">
+          <div>
+            <h4 class="chart-editor-title">🏆 Goal &amp; XP Level Rewards Collected Pie Chart</h4>
+            <p class="chart-editor-desc">Display the total rewards collected from Goal progression and XP Level leveling up, alongside total player participation.</p>
+          </div>
+          <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('tiers')">
+            <span>↺</span> Reset to Live Data
+          </button>
+        </div>
+        <div class="chart-editor-body">
+          <div class="chart-editor-inputs">
+            <div class="form-group">
+              <label class="form-label">Goal Rewards Collected Count 🎯</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditGoalRewardsCount" class="form-input" min="0" step="50" oninput="onChartEditInput('tiers')">
+                <span class="live-ref-tag" id="refGoalRewardsCount">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">XP Level Rewards Collected Count ⚡</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditXpRewardsCount" class="form-input" min="0" step="50" oninput="onChartEditInput('tiers')">
+                <span class="live-ref-tag" id="refXpRewardsCount">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Goal Rewards Claiming Users 👥</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditGoalUsersCount" class="form-input" min="0" step="1" oninput="onChartEditInput('tiers')">
+                <span class="live-ref-tag" id="refGoalUsersCount">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">XP Level Rewards Claiming Users 🌟</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditXpUsersCount" class="form-input" min="0" step="1" oninput="onChartEditInput('tiers')">
+                <span class="live-ref-tag" id="refXpUsersCount">Live: 0</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-preview-box">
+            <span class="chart-preview-title">Live Preview</span>
+            <div class="chart-preview-canvas-wrap">
+              <canvas id="chartPreviewTiers"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: EDIT MINI-GAMES & ADS PIE CHART -->
+      <div class="modal-tab-pane" id="modalPaneChartMiniGames" style="display: none;">
+        <div class="chart-editor-header">
+          <div>
+            <h4 class="chart-editor-title">🎡 Mini-Games &amp; Ads Engagement Pie Chart</h4>
+            <p class="chart-editor-desc">Dedicated breakdown for mini-games: Lucky Wheel Spins, Vault Chests, Scratch Cards, Hatched Eggs, and Ads Watched.</p>
+          </div>
+          <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('miniGames')">
+            <span>↺</span> Reset to Live Data
+          </button>
+        </div>
+        <div class="chart-editor-body">
+          <div class="chart-editor-inputs">
+            <div class="form-group">
+              <label class="form-label">Wheel Spins Played 🎡</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditMiniSpins" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                <span class="live-ref-tag" id="refMiniSpins">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vault Chests Opened 🗝️</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditMiniChests" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                <span class="live-ref-tag" id="refMiniChests">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Scratch Cards Scratched 🎴</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditMiniScratches" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                <span class="live-ref-tag" id="refMiniScratches">Live: 0</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hatched Eggs 🥚</label>
+              <div class="input-with-live-tag">
+                <input type="number" id="inpEditMiniEggs" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                <span class="live-ref-tag" id="refMiniEggs">Live: 0</span>
+              </div>
+            </div>
+          </div>
+          <div class="chart-preview-box">
+            <span class="chart-preview-title">Live Preview</span>
+            <div class="chart-preview-canvas-wrap">
+              <canvas id="chartPreviewMiniGames"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: Monthly Targets Form -->
+      <div class="modal-tab-pane" id="modalPaneMonthly" style="display: none;">
+        <div class="form-grid-2col">
+          <div class="form-group">
+            <label class="form-label">Monthly Active Players Target</label>
+            <input type="number" id="inpTargetMonthlyPlayers" class="form-input" min="1" step="50" placeholder="5000">
+            <span class="form-hint">Expected unique active players per month</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Tasks Completed Target</label>
+            <input type="number" id="inpTargetMonthlyTasks" class="form-input" min="1" step="100" placeholder="25000">
+            <span class="form-hint">Goal for combined daily &amp; web tasks</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Ads Engagement Target</label>
+            <input type="number" id="inpTargetMonthlyAds" class="form-input" min="1" step="100" placeholder="10000">
+            <span class="form-hint">Target volume for ads watched &amp; clicked</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Reward Fulfillment Target</label>
+            <input type="number" id="inpTargetMonthlyRewards" class="form-input" min="1" step="5" placeholder="100">
+            <span class="form-hint">Target number of fulfilled mega orders</span>
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Monthly Economy Wealth Target (Coins + Gems)</label>
+            <input type="number" id="inpTargetMonthlyEconomy" class="form-input" min="1000" step="50000" placeholder="5000000">
+            <span class="form-hint">Expected total circulating coins and diamonds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: Yearly Targets Form -->
+      <div class="modal-tab-pane" id="modalPaneYearly" style="display: none;">
+        <div class="form-grid-2col">
+          <div class="form-group">
+            <label class="form-label">Yearly Active Players Target</label>
+            <input type="number" id="inpTargetYearlyPlayers" class="form-input" min="1" step="500" placeholder="50000">
+            <span class="form-hint">Target annual cumulative player community</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Yearly Tasks Completed Target</label>
+            <input type="number" id="inpTargetYearlyTasks" class="form-input" min="1" step="1000" placeholder="250000">
+            <span class="form-hint">Annual quest completions milestone</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Yearly Ads Engagement Target</label>
+            <input type="number" id="inpTargetYearlyAds" class="form-input" min="1" step="1000" placeholder="100000">
+            <span class="form-hint">Annual monetization ads milestone</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Yearly Reward Fulfillment Target</label>
+            <input type="number" id="inpTargetYearlyRewards" class="form-input" min="1" step="50" placeholder="1200">
+            <span class="form-hint">Target annual mega item deliveries</span>
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Yearly Economy Wealth Target (Coins + Gems)</label>
+            <input type="number" id="inpTargetYearlyEconomy" class="form-input" min="10000" step="500000" placeholder="50000000">
+            <span class="form-hint">Expected annual circulating coins and diamonds milestone</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-modal-actions">
+        <button type="button" class="btn-dash-outline" onclick="resetCurrentTabDefaults()">
+          <span>↺</span>
+          <span>Reset Current Tab</span>
+        </button>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-dash-outline" onclick="closeEditTargetsModal()">Cancel</button>
+          <button type="button" class="btn-dash-primary" onclick="saveActiveModalChanges()">
+            <span>💾</span>
+            <span>Save &amp; Apply Changes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

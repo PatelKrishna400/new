@@ -6,10 +6,35 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 #pageScratch.active {
   display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  padding: 8px 14px 140px 14px !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
+}
+
+#pageScratch::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+  background: transparent !important;
+}
+
+#pageScratch::-webkit-scrollbar-track,
+#pageScratch::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border-radius: 4px !important;
+  border: none !important;
 }
 
 /* Header Title Pill */

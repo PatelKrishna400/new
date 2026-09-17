@@ -306,27 +306,41 @@ function renderCategoryProducts(pageIdOrCatId) {
     const isOutOfStock = (item.stock !== undefined && item.stock <= 0);
     const diamondCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 100;
     const canAfford = playerDiamonds >= diamondCost;
-    const hasImage = item.imageUrl && item.imageUrl.length > 5;
+    const title = item.title || item.productName || item.name || 'Exclusive Reward';
+    const imgUrl = item.imageUrl || item.image || item.img || '';
+    const hasImage = imgUrl && imgUrl.length > 5;
+    const buyerStar = Number(item.buyerStar || item.stars || item.rating || 4.9).toFixed(1);
+    const realVal = item.realValue || item.originalPrice || item.mrp || '';
+    const offerVal = item.offerValue || item.cashValue || item.discountPrice || '';
+    const link = item.link || item.productLink || item.url || '';
 
     html += `
       <div class="category-product-card" id="rewardCard-${item.id}">
         <div class="product-top-row">
           <div class="product-media-box">
             ${hasImage 
-              ? `<img src="${item.imageUrl}" class="product-media-img" alt="${item.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;">${cat.icon}</span>`
+              ? `<img src="${imgUrl}" class="product-media-img" alt="${title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;">${cat.icon}</span>`
               : `<span>${cat.icon}</span>`
             }
           </div>
 
           <div class="product-info-col">
-            <div class="product-tag-row">
-              <span class="product-badge-tag">${item.tag || 'FEATURED'}</span>
+            <div class="product-tag-row" style="display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
+              <span class="product-badge-tag">${item.tag || cat.tag || 'FEATURED'}</span>
+              <span class="product-star-tag" style="display: inline-flex; align-items: center; gap: 2px; background: rgba(234, 179, 8, 0.18); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px;">
+                ⭐ ${buyerStar}
+              </span>
               <span class="product-stock-tag ${isOutOfStock ? 'out' : ''}">
-                ${isOutOfStock ? '● Sold Out' : `● ${item.stock || 1} in stock`}
+                ${isOutOfStock ? '🚫 Sold Out' : `📦 ${item.stock || 1} in stock`}
               </span>
             </div>
-            <h4 class="product-title" title="${item.title}">${item.title}</h4>
+            <h4 class="product-title" title="${title}">${title}</h4>
             <p class="product-desc">${item.description || 'Exclusive reward available for instant diamond redemption.'}</p>
+            ${link ? `
+              <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-store-link" style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: #38bdf8; text-decoration: none; margin-top: 3px; font-weight: 600;" onclick="event.stopPropagation();">
+                <span>🔗 View Product Details</span><span style="font-size: 9px;">↗</span>
+              </a>
+            ` : ''}
           </div>
         </div>
 
@@ -336,7 +350,10 @@ function renderCategoryProducts(pageIdOrCatId) {
               <span>💎</span>
               <span>${diamondCost.toLocaleString()}</span>
             </div>
-            <span class="product-cash-val">Value: ${item.cashValue || '$50'}</span>
+            <div class="product-val-wrap" style="display: inline-flex; align-items: baseline; gap: 5px;">
+              ${realVal ? `<span class="product-real-val" style="font-size: 10px; color: #64748b; text-decoration: line-through; font-weight: 600;">${realVal}</span>` : ''}
+              ${offerVal ? `<span class="product-cash-val" style="font-size: 11px; color: #10b981; font-weight: 700;">${offerVal}</span>` : ''}
+            </div>
           </div>
 
           <div>

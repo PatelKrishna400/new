@@ -127,14 +127,14 @@
 
 /* Universal Transparent & Hidden Scrollbar Design System */
 *, html, body {
-  scrollbar-width: none !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
   -ms-overflow-style: none !important;
 }
 
 ::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  width: 4px !important;
+  height: 4px !important;
   background: transparent !important;
 }
 
@@ -144,6 +144,7 @@
 
 ::-webkit-scrollbar-thumb {
   background: transparent !important;
+  border-radius: 4px !important;
   border: none !important;
 }
 
@@ -481,6 +482,46 @@ html, body {
     0 3px 6px rgba(0, 0, 0, 0.6);
 }
 
+.diamond-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: radial-gradient(circle at 35% 25%, #155e75 0%, #083344 55%, #02141c 100%);
+  border: 1.5px solid #22d3ee;
+  padding: 5px 12px 5px 8px;
+  border-radius: var(--radius-pill);
+  box-shadow: 
+    inset 0 2px 1px rgba(165, 243, 252, 0.75),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 4px 0 #0e7490,
+    0 8px 18px rgba(0, 0, 0, 0.65),
+    0 0 14px rgba(6, 182, 212, 0.45);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.diamond-pill:hover {
+  border-color: #a5f3fc;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 2.5px 1px rgba(165, 243, 252, 0.9),
+    inset 0 -2.5px 1px rgba(0, 0, 0, 0.75),
+    0 6px 0 #0e7490,
+    0 12px 22px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(6, 182, 212, 0.65);
+}
+
+.diamond-pill:active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 0 1px 0 rgba(165, 243, 252, 0.3),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 #0e7490,
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
 .coin-icon {
   display: flex;
   align-items: center;
@@ -490,6 +531,13 @@ html, body {
 }
 .blue-coin-icon svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
+}
+.diamond-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(34, 211, 238, 0.75));
+}
+.diamond-pill-val {
+  color: #22d3ee !important;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.7), 0 1px 3px rgba(0, 0, 0, 0.85);
 }
 .pill-value {
   font-family: var(--font-primary);
@@ -563,21 +611,21 @@ div[id^="page"] {
   flex: 1 1 auto;
   min-height: 0 !important;
   max-height: 100%;
-  padding: 0 16px 110px 16px !important;
+  padding: 0 16px 140px 16px !important;
   flex-direction: column;
   gap: 14px;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
   -ms-overflow-style: none !important;
 }
 
 .page-view::-webkit-scrollbar,
 div[id^="page"]::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  width: 4px !important;
+  height: 4px !important;
   background: transparent !important;
 }
 
@@ -589,6 +637,7 @@ div[id^="page"]::-webkit-scrollbar-track {
 .page-view::-webkit-scrollbar-thumb,
 div[id^="page"]::-webkit-scrollbar-thumb {
   background: transparent !important;
+  border-radius: 4px !important;
   border: none !important;
 }
 
@@ -878,9 +927,13 @@ div[id^="page"].active {
     font-size: 14.5px;
   }
 
-  .coin-pill, .blue-coin-pill {
-    padding: 4px 8px 4px 6px;
-    gap: 4px;
+  .header-actions {
+    gap: 6px;
+  }
+
+  .coin-pill, .blue-coin-pill, .diamond-pill {
+    padding: 3.5px 7px 3.5px 5px;
+    gap: 3.5px;
   }
 
   .pill-value {
@@ -894,7 +947,7 @@ div[id^="page"].active {
 
   /* Page View Container */
   .page-view {
-    padding: 0 10px 8px 10px;
+    padding: 0 10px 140px 10px !important;
     gap: 10px;
   }
 
@@ -1294,7 +1347,7 @@ div[id^="page"].active {
   }
 
   .page-view {
-    padding: 0 8px 6px 8px;
+    padding: 0 8px 140px 8px !important;
     gap: 8px;
   }
 

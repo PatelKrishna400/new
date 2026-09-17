@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Energy Tap Reactor Telegram Web Mini-App",
   "scripts": {
-    "assemble": "node frontend/assemble.js",
-    "build": "node frontend/assemble.js",
+    "assemble": "node assemble.js",
+    "build": "node assemble.js",
     "start": "node server.js",
     "reset": "node reset-firebase-data.js",
     "deploy": "vercel --prod"

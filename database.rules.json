@@ -73,6 +73,10 @@
       ".read": true,
       ".write": "auth != null"
     },
+    "game_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     ".info": {
       ".read": true
     }

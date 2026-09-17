@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Tap - Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Shared Global Styles -->
+  <link rel="stylesheet" href="shared/common.css">
+
+  <!-- Modular Page-Wise Styles -->
+  <link rel="stylesheet" href="pages/dashboard/dashboard.css">
+  <link rel="stylesheet" href="pages/users/users.css">
+  <link rel="stylesheet" href="pages/mega-add/mega-add.css">
+  <link rel="stylesheet" href="pages/mega-request/mega-request.css">
+  <link rel="stylesheet" href="pages/tasks-web/tasks-web.css">
+  <link rel="stylesheet" href="pages/firebase-manage/firebase-manage.css">
+  <link rel="stylesheet" href="pages/ads-manage/ads-manage.css">
+  <link rel="stylesheet" href="pages/settings/settings.css">
+</head>
+<body>
+
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
+
+  <!-- Left Vertical Menu Bar (Sleek, Responsive & Styled Scrollbar) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-left">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <div class="brand-title">tap_energy</div>
+          <div class="brand-subtitle">ADMIN CONSOLE</div>
+        </div>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleAdminSidebar(false)" aria-label="Close Menu">✕</button>
+    </div>
+
+    <!-- Admin Profile Badge & Sign Out Button (Moved to Top of Menu Bar) -->
+    <div class="sidebar-top-user" style="padding: 10px 14px; border-bottom: 1.5px solid #f1f5f9; background: #fafafa; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;">
+      <div class="admin-user-badge" id="currentAdminBadge" style="display: none; width: 100%; justify-content: flex-start;">
+        <div class="admin-avatar" id="headerAdminAvatar">A</div>
+        <div style="display: flex; flex-direction: column; overflow: hidden;">
+          <span style="font-weight: 700; color: #0f172a; font-size: 12px; white-space: nowrap; text-overflow: ellipsis;" id="headerAdminName">Admin</span>
+          <span style="font-size: 10px; color: #0284c7;" id="headerAdminRole">Super Admin</span>
+        </div>
+      </div>
+
+      <button class="admin-logout-btn" id="adminLogoutBtn" onclick="logoutAdmin()" title="Secure Logout from Admin Panel" style="display: none; width: 100%; justify-content: center;">
+        <span>🚪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+
+      <button class="nav-item active" data-page="dashboard" onclick="switchAdminPage('dashboard', 'Dashboard Overview')">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
+
+      <button class="nav-item" data-page="users" onclick="switchAdminPage('users', 'User Analytics & Players')">
+        <span class="nav-icon">👥</span>
+        <span>User</span>
+        <span class="nav-badge" id="badgeUsersCount">0</span>
+      </button>
+
+      <button class="nav-item" data-page="mega-add" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
+        <span class="nav-icon">🎁</span>
+        <span>Mega Add</span>
+        <span class="nav-badge" id="badgeRewardsCount">0</span>
+      </button>
+
+      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
+        <span class="nav-icon">📨</span>
+        <span>Mega Request</span>
+        <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
+      </button>
+
+      <button class="nav-item" data-page="tasks-web" onclick="switchAdminPage('tasks-web', 'Task Manager (Telegram & Web)')">
+        <span class="nav-icon">🎯</span>
+        <span>Task Manage</span>
+      </button>
+
+      <div class="nav-section-label" style="margin-top: 8px;">Management & System</div>
+
+      <button class="nav-item" data-page="firebase-manage" onclick="switchAdminPage('firebase-manage', 'Firebase Database Manager')">
+        <span class="nav-icon">🔥</span>
+        <span>Firebase Manage</span>
+      </button>
+
+      <button class="nav-item" data-page="ads-manage" onclick="switchAdminPage('ads-manage', 'Ads Network & Rewards')">
+        <span class="nav-icon">🎬</span>
+        <span>Ads Manage</span>
+      </button>
+
+      <button class="nav-item" data-page="settings" onclick="switchAdminPage('settings', 'Cloud & Database Settings')">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Sidebar Footer with Realtime Cloud Status -->
+    <div class="sidebar-footer">
+      <div class="cloud-status-box">
+        <div class="status-dot" id="firebaseStatusDot"></div>
+        <div class="status-info">
+          <span class="status-title">Firebase Realtime DB</span>
+          <span class="status-sub" id="firebaseStatusText">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Auto-Tucking Floating Edge Menu Trigger Button (Hidden on Dashboard, visible on other pages) -->
+  <div class="edge-menu-trigger" id="edgeMenuTrigger" onclick="toggleAdminSidebar()" title="Toggle Navigation Menu" style="display: none;">
+    <div class="edge-menu-pill">
+      <span style="font-size: 14px;">⚡</span>
+      <span>Menu</span>
+    </div>
+    <div class="edge-menu-tab-arrow" id="edgeMenuArrow">▸</div>
+  </div>
+
+  <!-- Main Content Workspace -->
+  <main class="main-content">
+    <!-- Top Heading Bar: Only Game Name (tap_energy) & Shown ONLY in Dashboard -->
+    <header class="top-header" id="mainTopHeader">
+      <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleAdminSidebar()" aria-label="Open Navigation Menu">
+          <span>☰</span>
+        </button>
+        <div class="header-game-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 99px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+          <span style="font-size: 14px; color: #0284c7;">⚡</span>
+          <span style="font-size: 13.5px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.8px;">tap_energy</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- ================= PAGE: DASHBOARD ================= -->
+      <!-- PAGE: DASHBOARD -->
+      <section class="page-panel active" id="page-dashboard">
+        <!-- 4 Key Metric Cards -->
+        <div class="metrics-row">
+          <!-- 1. Total Players Number -->
+          <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
+            <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
+            <div class="metric-meta">
+              <span class="metric-label">Total Player Number</span>
+              <span class="metric-value" id="dashTotalPlayers">0</span>
+            </div>
+          </div>
+      
+          <!-- 2. Daily Tasks Completed Data -->
+          <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
+            <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">📅</div>
+            <div class="metric-meta">
+              <span class="metric-label">Daily Tasks Completed</span>
+              <span class="metric-value" id="dashDailyTasksCompleted">0</span>
+            </div>
+          </div>
+      
+          <!-- 3. Web Tasks Completed Data -->
+          <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
+            <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🌐</div>
+            <div class="metric-meta">
+              <span class="metric-label">Web Tasks Completed</span>
+              <span class="metric-value" id="dashWebTasksCompleted">0</span>
+            </div>
+          </div>
+      
+          <!-- 4. Ads Button Count -->
+          <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')">
+            <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
+            <div class="metric-meta">
+              <span class="metric-label">Ads Button Count</span>
+              <span class="metric-value" id="dashAdsButtonCount">0</span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Mini-Games Live Activity Row -->
+        <div style="margin-top: 14px;">
+          <h3 style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
+          <div class="metrics-row">
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
+              <div class="metric-meta">
+                <span class="metric-label">Lucky Wheel Spins</span>
+                <span class="metric-value" id="dashTotalSpins">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🗝️</div>
+              <div class="metric-meta">
+                <span class="metric-label">Vault Chests Opened</span>
+                <span class="metric-value" id="dashTotalChests">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">🎴</div>
+              <div class="metric-meta">
+                <span class="metric-label">Scratch Cards Played</span>
+                <span class="metric-value" id="dashTotalScratches">0</span>
+              </div>
+            </div>
+      
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🥚</div>
+              <div class="metric-meta">
+                <span class="metric-label">Eggs Hatched</span>
+                <span class="metric-value" id="dashTotalEggs">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             MONTHLY & YEARLY DATA READ & GRAPHICAL REPRESENTATION (PIE CHARTS)
+             ============================================================ -->
+        <div class="dash-analytics-wrapper" style="margin-top: 24px;">
+          <!-- Analytics Header with Period Mode & Filter Controls -->
+          <div class="dash-section-header">
+            <div class="dash-header-title-box">
+              <div class="dash-title-tag">
+                <span class="pulse-dot-cyan"></span>
+                <span>Graphical Analytics Engine</span>
+              </div>
+              <h2 class="dash-analytics-title">Monthly &amp; Yearly Performance Breakdown</h2>
+              <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle section details">
+                <span>Details</span> <span class="arrow-icon">▸</span>
+              </button>
+              <div class="collapsible-text-body">
+                <p class="dash-analytics-desc">Real-time data readouts represented in interactive pie charts with customizable monthly and yearly target benchmarks.</p>
+              </div>
+            </div>
+      
+            <!-- Controls & Filter Toolbar -->
+            <div class="dash-period-toolbar">
+              <!-- Monthly vs Yearly Mode Buttons -->
+              <div class="period-toggle-group">
+                <button type="button" class="period-btn active" id="btnPeriodMonthly" onclick="setDashboardPeriodMode('monthly')">
+                  <span>📅</span>
+                  <span>Monthly View</span>
+                </button>
+                <button type="button" class="period-btn" id="btnPeriodYearly" onclick="setDashboardPeriodMode('yearly')">
+                  <span>📆</span>
+                  <span>Yearly View</span>
+                </button>
+              </div>
+      
+              <!-- Dynamic Dropdowns for Month & Year Selection -->
+              <div class="period-selectors">
+                <div class="select-field-wrap" id="wrapMonthSelect">
+                  <label class="period-select-label" for="dashSelectMonth">Month</label>
+                  <select id="dashSelectMonth" class="period-dropdown" onchange="onDashboardDateFilterChange()">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8" selected>September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                  </select>
+                </div>
+      
+                <div class="select-field-wrap">
+                  <label class="period-select-label" for="dashSelectYear">Year</label>
+                  <select id="dashSelectYear" class="period-dropdown" onchange="onDashboardDateFilterChange()">
+                    <option value="2027">2027</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="all">All Time</option>
+                  </select>
+                </div>
+              </div>
+      
+              <!-- Action Buttons: Edit Targets & Refresh -->
+              <div class="dash-action-group">
+                <button type="button" class="btn-dash-primary" onclick="openEditTargetsModal()">
+                  <span>✏️</span>
+                  <span>Edit Targets &amp; Data</span>
+                </button>
+                <button type="button" class="btn-dash-outline" onclick="refreshDashboardAnalytics(true)" title="Reload live data from Firebase">
+                  <span>🔄</span>
+                  <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Period Executive Progress Cards (Live Read vs Benchmark) -->
+          <div class="period-kpi-grid">
+            <!-- KPI 1: Active Players vs Target -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="kpiLabelPlayers">Monthly Active Players</span>
+                <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">👥</span>
+              </div>
+              <div class="kpi-numbers">
+                <span class="kpi-value" id="kpiValPlayers">0</span>
+                <span class="kpi-target" id="kpiTargetPlayers">/ 5,000 Target</span>
+              </div>
+              <div class="kpi-progress-bar">
+                <div class="kpi-progress-fill" id="kpiFillPlayers" style="width: 0%; background: #0284c7;"></div>
+              </div>
+              <div class="kpi-foot">
+                <span class="kpi-status-tag" id="kpiTagPlayers">0% Goal</span>
+                <span class="kpi-subtext" id="kpiSubPlayers">Based on period activity</span>
+              </div>
+            </div>
+      
+            <!-- KPI 2: Total Task Completions vs Target -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="kpiLabelTasks">Monthly Tasks Volume</span>
+                <span class="kpi-icon-pill" style="background: rgba(16, 185, 129, 0.12); color: #059669;">🎯</span>
+              </div>
+              <div class="kpi-numbers">
+                <span class="kpi-value" id="kpiValTasks">0</span>
+                <span class="kpi-target" id="kpiTargetTasks">/ 25,000 Target</span>
+              </div>
+              <div class="kpi-progress-bar">
+                <div class="kpi-progress-fill" id="kpiFillTasks" style="width: 0%; background: #10b981;"></div>
+              </div>
+              <div class="kpi-foot">
+                <span class="kpi-status-tag" id="kpiTagTasks">0% Goal</span>
+                <span class="kpi-subtext" id="kpiSubTasks">Daily + Monthly + Web quests</span>
+              </div>
+            </div>
+      
+            <!-- KPI 3: Virtual Economy Circulation -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="kpiLabelEconomy">Total Circulating Wealth</span>
+                <span class="kpi-icon-pill" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">🪙</span>
+              </div>
+              <div class="kpi-numbers">
+                <span class="kpi-value" id="kpiValEconomy">0</span>
+                <span class="kpi-target" id="kpiTargetEconomy">/ 5,000,000 Target</span>
+              </div>
+              <div class="kpi-progress-bar">
+                <div class="kpi-progress-fill" id="kpiFillEconomy" style="width: 0%; background: #f59e0b;"></div>
+              </div>
+              <div class="kpi-foot">
+                <span class="kpi-status-tag" id="kpiTagEconomy">0% Goal</span>
+                <span class="kpi-subtext" id="kpiSubEconomy">Coins + Blue Gems Mined</span>
+              </div>
+            </div>
+      
+            <!-- KPI 4: Ads Engagement Volume -->
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="kpiLabelAds">Ads Monetization Volume</span>
+                <span class="kpi-icon-pill" style="background: rgba(147, 51, 234, 0.12); color: #9333ea;">🎬</span>
+              </div>
+              <div class="kpi-numbers">
+                <span class="kpi-value" id="kpiValAds">0</span>
+                <span class="kpi-target" id="kpiTargetAds">/ 10,000 Target</span>
+              </div>
+              <div class="kpi-progress-bar">
+                <div class="kpi-progress-fill" id="kpiFillAds" style="width: 0%; background: #9333ea;"></div>
+              </div>
+              <div class="kpi-foot">
+                <span class="kpi-status-tag" id="kpiTagAds">0% Goal</span>
+                <span class="kpi-subtext" id="kpiSubAds">Watched ads &amp; button clicks</span>
+              </div>
+            </div>
+          </div>
+      
+          <!-- 4 Rich Interactive Pie / Doughnut Charts Grid -->
+          <!-- 4 Rich Interactive Pie / Doughnut Charts Grid (Square Tabs) -->
+          <div class="charts-grid-2x2">
+            <!-- CHART 1: All Coin (coin, diamond, key, ticket, egg, card) -->
+            <div class="chart-box" id="cardChartEconomy">
+              <div class="chart-box-header">
+                <div class="chart-title-group">
+                  <span class="chart-badge" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">All Coin (6 Currencies)</span>
+                  <h3 class="chart-title">All Coin Balances (Coin, Diamond, Key, Ticket, Egg, Card)</h3>
+                </div>
+                <div class="chart-header-actions">
+                  <span class="chart-type-pill">Pie Chart</span>
+                  <button type="button" class="btn-chart-edit" onclick="openChartEditor('economy')" title="Edit Currency Wealth Pie Chart">
+                    <span>✏️</span>
+                    <span>Edit</span>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-hover-indicator" id="hoverIndicatorEconomy">
+                <span class="hover-dot" style="background-color: #f59e0b;"></span>
+                <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+              </div>
+              <div class="chart-body">
+                <div class="chart-canvas-container">
+                  <canvas id="chartEconomyBreakdown"></canvas>
+                </div>
+                <div class="chart-legend-list" id="legendEconomyBreakdown">
+                  <!-- Populated via JavaScript -->
+                </div>
+              </div>
+            </div>
+      
+            <!-- CHART 2: Tasks Completed (Telegram, Monthly, Website) -->
+            <div class="chart-box" id="cardChartTask">
+              <div class="chart-box-header">
+                <div class="chart-title-group">
+                  <span class="chart-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7;">Tasks Ratio</span>
+                  <h3 class="chart-title">Tasks Completed (Telegram, Monthly, Website)</h3>
+                </div>
+                <div class="chart-header-actions">
+                  <span class="chart-type-pill">Pie Chart</span>
+                  <button type="button" class="btn-chart-edit" onclick="openChartEditor('task')" title="Edit Tasks Pie Chart slices and targets">
+                    <span>✏️</span>
+                    <span>Edit</span>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-hover-indicator" id="hoverIndicatorTask">
+                <span class="hover-dot" style="background-color: #0284c7;"></span>
+                <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+              </div>
+              <div class="chart-body">
+                <div class="chart-canvas-container">
+                  <canvas id="chartTaskBreakdown"></canvas>
+                </div>
+                <div class="chart-legend-list" id="legendTaskBreakdown">
+                  <!-- Populated via JavaScript with interactive slice badges -->
+                </div>
+              </div>
+            </div>
+      
+            <!-- CHART 3: Goal & XP Level Rewards Collected -->
+            <div class="chart-box" id="cardChartTiers">
+              <div class="chart-box-header">
+                <div class="chart-title-group">
+                  <span class="chart-badge" style="background: rgba(147, 51, 234, 0.1); color: #9333ea;">Goal &amp; XP Rewards</span>
+                  <h3 class="chart-title">Goal &amp; XP Level Rewards Collected</h3>
+                </div>
+                <div class="chart-header-actions">
+                  <span class="chart-type-pill">Pie Chart</span>
+                  <button type="button" class="btn-chart-edit" onclick="openChartEditor('tiers')" title="Edit Goal & XP Rewards Pie Chart">
+                    <span>✏️</span>
+                    <span>Edit</span>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-hover-indicator" id="hoverIndicatorTiers">
+                <span class="hover-dot" style="background-color: #9333ea;"></span>
+                <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+              </div>
+              <div class="chart-body">
+                <div class="chart-canvas-container">
+                  <canvas id="chartPlayerTiers"></canvas>
+                </div>
+                <div class="chart-legend-list" id="legendPlayerTiers">
+                  <!-- Populated via JavaScript -->
+                </div>
+              </div>
+            </div>
+      
+            <!-- CHART 4: Mini-Games & Ads Monetization Activity -->
+            <div class="chart-box" id="cardChartMiniGames">
+              <div class="chart-box-header">
+                <div class="chart-title-group">
+                  <span class="chart-badge" style="background: rgba(16, 185, 129, 0.1); color: #059669;">Mini-Games &amp; Ads</span>
+                  <h3 class="chart-title">Mini-Games &amp; Ads Monetization Activity</h3>
+                </div>
+                <div class="chart-header-actions">
+                  <span class="chart-type-pill">Pie Chart</span>
+                  <button type="button" class="btn-chart-edit" onclick="openChartEditor('miniGames')" title="Edit Mini-Games Pie Chart">
+                    <span>✏️</span>
+                    <span>Edit</span>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-hover-indicator" id="hoverIndicatorMiniGames">
+                <span class="hover-dot" style="background-color: #059669;"></span>
+                <span class="hover-text">Move mouse over any pie slice to inspect values</span>
+              </div>
+              <div class="chart-body">
+                <div class="chart-canvas-container">
+                  <canvas id="chartMiniGamesBreakdown"></canvas>
+                </div>
+                <div class="chart-legend-list" id="legendMiniGamesBreakdown">
+                  <!-- Populated via JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Comprehensive Data Read & Target Benchmark Breakdown Table -->
+          <div class="dash-table-card" style="margin-top: 20px;">
+            <div class="dash-table-header">
+              <div>
+                <h3 class="dash-table-title">Period Data Readout &amp; Target Comparison Table</h3>
+                <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle comparison details">
+                  <span>Details</span> <span class="arrow-icon">▸</span>
+                </button>
+                <div class="collapsible-text-body">
+                  <p class="dash-table-sub" id="tablePeriodSubtitle">Detailed comparison between live data readouts and configured benchmarks for Selected Period.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-dash-primary" style="padding: 6px 14px; font-size: 12px;" onclick="openEditTargetsModal()">
+                <span>✏️</span>
+                <span>Edit Targets &amp; Charts</span>
+              </button>
+            </div>
+      
+            <div class="dash-table-responsive">
+              <table class="dash-summary-table">
+                <thead>
+                  <tr>
+                    <th>Metric / Category</th>
+                    <th>Period Live Read</th>
+                    <th>Configured Target</th>
+                    <th>Achievement %</th>
+                    <th>Performance Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashTableBody">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             MODAL: EDIT MONTHLY/YEARLY TARGETS & FOUR PIE CHARTS (SQUARE TABS)
+             ============================================================ -->
+        <div class="modal-overlay" id="dashboardTargetsModal" onclick="closeEditTargetsModal()">
+          <div class="modal-card dash-modal-card" onclick="event.stopPropagation()">
+            <div class="dash-modal-header">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dash-modal-icon">🎯</div>
+                <div>
+                  <h3 class="dash-modal-title">Edit Dashboard &amp; Four Pie Charts</h3>
+                  <span class="dash-modal-subtitle">Configure targets or customize slice values for all four pie charts</span>
+                </div>
+              </div>
+              <button type="button" class="dash-modal-close" onclick="closeEditTargetsModal()">&times;</button>
+            </div>
+      
+            <!-- Square Tabs Switcher inside Modal -->
+            <div class="modal-square-tabs">
+              <button type="button" class="modal-square-tab active" id="tabBtnChartTask" onclick="switchModalTab('chart-task')">
+                <span class="sq-tab-icon">🎯</span>
+                <span class="sq-tab-label">Tasks (Telegram, Monthly, Web)</span>
+              </button>
+              <button type="button" class="modal-square-tab" id="tabBtnChartEconomy" onclick="switchModalTab('chart-economy')">
+                <span class="sq-tab-icon">🪙</span>
+                <span class="sq-tab-label">All Coin (6 Currencies)</span>
+              </button>
+              <button type="button" class="modal-square-tab" id="tabBtnChartTiers" onclick="switchModalTab('chart-tiers')">
+                <span class="sq-tab-icon">🏆</span>
+                <span class="sq-tab-label">Goal &amp; XP Rewards</span>
+              </button>
+              <button type="button" class="modal-square-tab" id="tabBtnChartMiniGames" onclick="switchModalTab('chart-miniGames')">
+                <span class="sq-tab-icon">🎡</span>
+                <span class="sq-tab-label">Mini-Games &amp; Ads</span>
+              </button>
+              <button type="button" class="modal-square-tab" id="modalTabBtnMonthly" onclick="switchModalTab('monthly')">
+                <span class="sq-tab-icon">📅</span>
+                <span class="sq-tab-label">Monthly Target</span>
+              </button>
+              <button type="button" class="modal-square-tab" id="modalTabBtnYearly" onclick="switchModalTab('yearly')">
+                <span class="sq-tab-icon">📆</span>
+                <span class="sq-tab-label">Yearly Target</span>
+              </button>
+            </div>
+      
+            <!-- TAB 1: EDIT TASKS PIE CHART (Telegram, Monthly, Website) -->
+            <div class="modal-tab-pane active" id="modalPaneChartTask">
+              <div class="chart-editor-header">
+                <div>
+                  <h4 class="chart-editor-title">🎯 Tasks &amp; Quests Completed Pie Chart</h4>
+                  <p class="chart-editor-desc">Manage the distribution of Telegram Tasks, Monthly Quests, and Website Quests completed with user data.</p>
+                </div>
+                <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('task')">
+                  <span>↺</span> Reset to Live Data
+                </button>
+              </div>
+              <div class="chart-editor-body">
+                <div class="chart-editor-inputs">
+                  <div class="form-group">
+                    <label class="form-label">Telegram Tasks Completed ✈️</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditTaskTelegram" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                      <span class="live-ref-tag" id="refTaskTelegram">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Monthly Quests Completed 🏆</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditTaskMonthly" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                      <span class="live-ref-tag" id="refTaskMonthly">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Website Quests Completed 🌐</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditTaskWeb" class="form-input" min="0" step="1" oninput="onChartEditInput('task')">
+                      <span class="live-ref-tag" id="refTaskWeb">Live: 0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-preview-box">
+                  <span class="chart-preview-title">Live Preview</span>
+                  <div class="chart-preview-canvas-wrap">
+                    <canvas id="chartPreviewTask"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- TAB 2: EDIT ALL COIN PIE CHART (Coins, Diamonds, Keys, Tickets, Eggs, Cards) -->
+            <div class="modal-tab-pane" id="modalPaneChartEconomy" style="display: none;">
+              <div class="chart-editor-header">
+                <div>
+                  <h4 class="chart-editor-title">🪙 All Coin &amp; Currencies Pie Chart</h4>
+                  <p class="chart-editor-desc">All 6 virtual currency holdings across all players: Gold Coins, Blue Diamonds, Chest Keys, Tickets, Eggs, and Cards.</p>
+                </div>
+                <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('economy')">
+                  <span>↺</span> Reset to Live Data
+                </button>
+              </div>
+              <div class="chart-editor-body">
+                <div class="chart-editor-inputs">
+                  <div class="form-group">
+                    <label class="form-label">Gold Coins Total Holdings 🪙</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyCoins" class="form-input" min="0" step="1000" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyCoins">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Blue Diamonds Total Holdings 💎</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyDiamonds" class="form-input" min="0" step="100" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyDiamonds">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Chest Keys Total Holdings 🗝️</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyKeys" class="form-input" min="0" step="10" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyKeys">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Chest Tickets Total Holdings 🎫</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyTickets" class="form-input" min="0" step="10" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyTickets">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Dragon Eggs Total Holdings 🥚</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyEggs" class="form-input" min="0" step="5" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyEggs">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Scratch Cards Total Holdings 🎴</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditEconomyCards" class="form-input" min="0" step="5" oninput="onChartEditInput('economy')">
+                      <span class="live-ref-tag" id="refEconomyCards">Live: 0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-preview-box">
+                  <span class="chart-preview-title">Live Preview</span>
+                  <div class="chart-preview-canvas-wrap">
+                    <canvas id="chartPreviewEconomy"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- TAB 3: EDIT GOAL & XP REWARDS PIE CHART -->
+            <div class="modal-tab-pane" id="modalPaneChartTiers" style="display: none;">
+              <div class="chart-editor-header">
+                <div>
+                  <h4 class="chart-editor-title">🏆 Goal &amp; XP Level Rewards Collected Pie Chart</h4>
+                  <p class="chart-editor-desc">Display the total rewards collected from Goal progression and XP Level leveling up, alongside total player participation.</p>
+                </div>
+                <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('tiers')">
+                  <span>↺</span> Reset to Live Data
+                </button>
+              </div>
+              <div class="chart-editor-body">
+                <div class="chart-editor-inputs">
+                  <div class="form-group">
+                    <label class="form-label">Goal Rewards Collected Count 🎯</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditGoalRewardsCount" class="form-input" min="0" step="50" oninput="onChartEditInput('tiers')">
+                      <span class="live-ref-tag" id="refGoalRewardsCount">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">XP Level Rewards Collected Count ⚡</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditXpRewardsCount" class="form-input" min="0" step="50" oninput="onChartEditInput('tiers')">
+                      <span class="live-ref-tag" id="refXpRewardsCount">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Goal Rewards Claiming Users 👥</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditGoalUsersCount" class="form-input" min="0" step="1" oninput="onChartEditInput('tiers')">
+                      <span class="live-ref-tag" id="refGoalUsersCount">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">XP Level Rewards Claiming Users 🌟</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditXpUsersCount" class="form-input" min="0" step="1" oninput="onChartEditInput('tiers')">
+                      <span class="live-ref-tag" id="refXpUsersCount">Live: 0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-preview-box">
+                  <span class="chart-preview-title">Live Preview</span>
+                  <div class="chart-preview-canvas-wrap">
+                    <canvas id="chartPreviewTiers"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- TAB 4: EDIT MINI-GAMES & ADS PIE CHART -->
+            <div class="modal-tab-pane" id="modalPaneChartMiniGames" style="display: none;">
+              <div class="chart-editor-header">
+                <div>
+                  <h4 class="chart-editor-title">🎡 Mini-Games &amp; Ads Engagement Pie Chart</h4>
+                  <p class="chart-editor-desc">Dedicated breakdown for mini-games: Lucky Wheel Spins, Vault Chests, Scratch Cards, Hatched Eggs, and Ads Watched.</p>
+                </div>
+                <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('miniGames')">
+                  <span>↺</span> Reset to Live Data
+                </button>
+              </div>
+              <div class="chart-editor-body">
+                <div class="chart-editor-inputs">
+                  <div class="form-group">
+                    <label class="form-label">Wheel Spins Played 🎡</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditMiniSpins" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                      <span class="live-ref-tag" id="refMiniSpins">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Vault Chests Opened 🗝️</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditMiniChests" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                      <span class="live-ref-tag" id="refMiniChests">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Scratch Cards Scratched 🎴</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditMiniScratches" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                      <span class="live-ref-tag" id="refMiniScratches">Live: 0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Hatched Eggs 🥚</label>
+                    <div class="input-with-live-tag">
+                      <input type="number" id="inpEditMiniEggs" class="form-input" min="0" step="1" oninput="onChartEditInput('miniGames')">
+                      <span class="live-ref-tag" id="refMiniEggs">Live: 0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-preview-box">
+                  <span class="chart-preview-title">Live Preview</span>
+                  <div class="chart-preview-canvas-wrap">
+                    <canvas id="chartPreviewMiniGames"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- TAB 5: Monthly Targets Form -->
+            <div class="modal-tab-pane" id="modalPaneMonthly" style="display: none;">
+              <div class="form-grid-2col">
+                <div class="form-group">
+                  <label class="form-label">Monthly Active Players Target</label>
+                  <input type="number" id="inpTargetMonthlyPlayers" class="form-input" min="1" step="50" placeholder="5000">
+                  <span class="form-hint">Expected unique active players per month</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Monthly Tasks Completed Target</label>
+                  <input type="number" id="inpTargetMonthlyTasks" class="form-input" min="1" step="100" placeholder="25000">
+                  <span class="form-hint">Goal for combined daily &amp; web tasks</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Monthly Ads Engagement Target</label>
+                  <input type="number" id="inpTargetMonthlyAds" class="form-input" min="1" step="100" placeholder="10000">
+                  <span class="form-hint">Target volume for ads watched &amp; clicked</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Monthly Reward Fulfillment Target</label>
+                  <input type="number" id="inpTargetMonthlyRewards" class="form-input" min="1" step="5" placeholder="100">
+                  <span class="form-hint">Target number of fulfilled mega orders</span>
+                </div>
+      
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">Monthly Economy Wealth Target (Coins + Gems)</label>
+                  <input type="number" id="inpTargetMonthlyEconomy" class="form-input" min="1000" step="50000" placeholder="5000000">
+                  <span class="form-hint">Expected total circulating coins and diamonds</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- TAB 6: Yearly Targets Form -->
+            <div class="modal-tab-pane" id="modalPaneYearly" style="display: none;">
+              <div class="form-grid-2col">
+                <div class="form-group">
+                  <label class="form-label">Yearly Active Players Target</label>
+                  <input type="number" id="inpTargetYearlyPlayers" class="form-input" min="1" step="500" placeholder="50000">
+                  <span class="form-hint">Target annual cumulative player community</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Yearly Tasks Completed Target</label>
+                  <input type="number" id="inpTargetYearlyTasks" class="form-input" min="1" step="1000" placeholder="250000">
+                  <span class="form-hint">Annual quest completions milestone</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Yearly Ads Engagement Target</label>
+                  <input type="number" id="inpTargetYearlyAds" class="form-input" min="1" step="1000" placeholder="100000">
+                  <span class="form-hint">Annual monetization ads milestone</span>
+                </div>
+      
+                <div class="form-group">
+                  <label class="form-label">Yearly Reward Fulfillment Target</label>
+                  <input type="number" id="inpTargetYearlyRewards" class="form-input" min="1" step="50" placeholder="1200">
+                  <span class="form-hint">Target annual mega item deliveries</span>
+                </div>
+      
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">Yearly Economy Wealth Target (Coins + Gems)</label>
+                  <input type="number" id="inpTargetYearlyEconomy" class="form-input" min="10000" step="500000" placeholder="50000000">
+                  <span class="form-hint">Expected annual circulating coins and diamonds milestone</span>
+                </div>
+              </div>
+            </div>
+      
+            <div class="dash-modal-actions">
+              <button type="button" class="btn-dash-outline" onclick="resetCurrentTabDefaults()">
+                <span>↺</span>
+                <span>Reset Current Tab</span>
+              </button>
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-dash-outline" onclick="closeEditTargetsModal()">Cancel</button>
+                <button type="button" class="btn-dash-primary" onclick="saveActiveModalChanges()">
+                  <span>💾</span>
+                  <span>Save &amp; Apply Changes</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- ================= PAGE: USERS ================= -->
+      <!-- PAGE: USERS (Plain Minimal Users Table & Edit) -->
+      <section class="page-panel" id="page-users">
+        <div class="plain-user-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h2 class="plain-title">Users</h2>
+              <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle users info">
+                <span>Info</span> <span class="arrow-icon">▸</span>
+              </button>
+            </div>
+            <div class="collapsible-text-body">
+              <p class="plain-sub">Manage registered players and edit game balances.</p>
+            </div>
+          </div>
+          <div class="plain-header-right">
+            <span class="plain-count-pill" id="plainTotalUsersCount">0 Players</span>
+            <div class="plain-search-wrap">
+              <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search player..." class="plain-search-input">
+              <button type="button" class="plain-search-clear" onclick="clearUserSearch()">✕</button>
+            </div>
+          </div>
+        </div>
+      
+        <div class="plain-table-card">
+          <div style="overflow-x: auto;">
+            <table class="plain-data-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>Player Name</th>
+                  <th>Profile Code</th>
+                  <th>Telegram</th>
+                  <th>Level</th>
+                  <th>Coins 🪙</th>
+                  <th>Diamonds 💎</th>
+                  <th style="text-align: right; width: 100px;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">
+                    Loading players...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+        <!-- MODAL: DETAILED USER INFORMATION -->
+        <div class="modal-overlay" id="userDetailsModal" onclick="closeUserDetailsModal()">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
+                  👤
+                </div>
+                <div>
+                  <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+                  <span style="font-size: 11.5px; color: #64748b; font-family: 'JetBrains Mono', monospace;" id="detailUid">UID: -</span>
+                </div>
+              </div>
+              <button type="button" onclick="closeUserDetailsModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+      
+            <!-- Quick Summary Pills -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Profile Code</span>
+                <div style="font-size: 14px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailProfileCode">-</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level</span>
+                <div style="font-size: 14px; font-weight: 800; color: #0f172a;" id="detailLevel">Lv.0</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Goal Tier</span>
+                <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailGoalTier">Goal 0</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram Handle</span>
+                <div style="font-size: 13px; font-weight: 700; color: #0284c7;" id="detailTelegram">-</div>
+              </div>
+            </div>
+      
+            <!-- Section: 6 Virtual Currencies -->
+            <div style="margin-bottom: 16px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                💰 All Currency Balances
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #b45309;">COINS 🪙</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #7c3aed;">CHEST KEYS 🗝️</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace;" id="detailKeys">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #2563eb;">CHEST TICKETS 🎫</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #2563eb; font-family: 'JetBrains Mono', monospace;" id="detailTickets">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS HATCHED 🥚</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace;" id="detailEggs">0</div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Section: Tasks & Quests Completion Details -->
+            <div style="margin-bottom: 16px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                🎯 Quests &amp; Tasks Activity
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 11px; color: #64748b;">🌐 Website Quests</div>
+                  <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailWebTasks">0</div>
+                </div>
+                <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 11px; color: #64748b;">✈️ Telegram Tasks</div>
+                  <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailTgTasks">0</div>
+                </div>
+                <div style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 11px; color: #64748b;">🏆 Monthly Quests</div>
+                  <div style="font-size: 16px; font-weight: 800; color: #0284c7;" id="detailMonthlyTasks">0</div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Section: Energy & Monetization -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">⚡ Energy &amp; Tap Reactor</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 4px;" id="detailEnergy">Energy: 1000 / 1000</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailTapPower">Tap Power: 1 | Total Taps: 0</div>
+              </div>
+              <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Ads Monetization</div>
+                <div style="font-size: 13px; font-weight: 700; color: #d97706; margin-top: 4px;" id="detailAdsWatched">0 Ads Watched</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailLastActive">Last Active: -</div>
+              </div>
+            </div>
+      
+            <!-- Action Footer -->
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+              <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+              <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- ================= PAGE: MEGA-ADD ================= -->
+      <!-- PAGE: MEGA REWARDS ADD -->
+      <section class="page-panel" id="page-mega-add">
+        <!-- Top Tab Switcher: Standard Categories vs User Custom Requests -->
+        <div class="mega-tabs-header">
+          <button type="button" class="mega-tab-btn active" id="tabBtnMegaStandard" onclick="switchMegaAddTab('standard')">
+            <span>🎁</span>
+            <span>Standard Mega Rewards</span>
+          </button>
+          <button type="button" class="mega-tab-btn" id="tabBtnMegaCustom" onclick="switchMegaAddTab('custom')">
+            <span>⭐</span>
+            <span>User Custom Requests</span>
+            <span class="custom-req-count-badge" id="customReqBadge">0</span>
+          </button>
+        </div>
+      
+        <!-- ============================================================
+             TAB PANE 1: STANDARD MEGA REWARDS (CATEGORY DROPDOWN + CATALOG)
+             ============================================================ -->
+        <div id="megaStandardSection">
+          <!-- Add / Edit Form -->
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 18px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
+              <h3 style="font-size: 17px; font-weight: 800; color: #0f172a;" id="rewardFormTitle">Add New Mega Reward</h3>
+            </div>
+      
+            <!-- Category Selection with Arrow Dropdown -->
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <div class="category-dropdown-wrap" id="categoryDropdownWrap">
+                <button type="button" class="category-select-btn" id="categoryDropdownToggle" onclick="toggleCategoryDropdown()">
+                  <div class="cat-select-left">
+                    <span class="cat-select-icon" id="selectedCatIcon">🎁</span>
+                    <span class="cat-select-name" id="selectedCatName">Gift Card</span>
+                  </div>
+                  <span class="cat-select-arrow" id="catSelectArrow">▼</span>
+                </button>
+                <div class="category-dropdown-menu" id="categoryDropdownMenu">
+                  <!-- Injected dynamically with standard categories -->
+                </div>
+              </div>
+            </div>
+      
+            <!-- 1. Product Name & Tag -->
+            <div class="mega-form-row-2col">
+              <div class="form-group" style="flex: 2;">
+                <label class="form-label">Product Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="inpRewardTitle" placeholder="e.g. Apple AirPods Pro 2" class="form-input" required>
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Tag Badge</label>
+                <input type="text" id="inpRewardTag" placeholder="e.g. SMART TECH" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;">
+              </div>
+            </div>
+      
+            <!-- 2. Buyer Star, Diamond Cost, Real Value, Offer Value -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px;">
+              <div class="form-group">
+                <label class="form-label">Buyer Star ⭐ <span style="color: #ef4444;">*</span></label>
+                <input type="number" id="inpRewardBuyerStar" step="0.1" min="1" max="5" placeholder="e.g. 4.9" class="form-input" style="color: #eab308; font-weight: 800; text-align: center;" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Diamond Cost 💎 <span style="color: #ef4444;">*</span></label>
+                <input type="number" id="inpRewardDiamonds" placeholder="e.g. 2500" class="form-input" style="color: #0284c7; font-weight: 800;" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Real Value 🏷️ <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="inpRewardRealVal" placeholder="e.g. $249" class="form-input" style="color: #64748b; font-weight: 800;" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Offer Value 💵 <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="inpRewardOfferVal" placeholder="e.g. $199" class="form-input" style="color: #059669; font-weight: 800;" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stock Units 📦</label>
+                <input type="number" id="inpRewardStock" placeholder="e.g. 20" class="form-input" value="15" style="font-weight: 800;">
+              </div>
+            </div>
+      
+            <!-- 3. Product Link & Image URL -->
+            <div class="mega-form-row-2col">
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Product Link 🔗 <span style="color: #ef4444;">*</span></label>
+                <input type="url" id="inpRewardLink" placeholder="https://amazon.com/dp/... or store URL" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;" required>
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Image URL 🖼️ <span style="color: #ef4444;">*</span></label>
+                <input type="url" id="inpRewardImage" placeholder="https://... image link" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;" required>
+              </div>
+            </div>
+      
+            <!-- Description -->
+            <div class="form-group">
+              <label class="form-label">Reward Description</label>
+              <input type="text" id="inpRewardDesc" placeholder="e.g. Exclusive high-end reward available for instant diamond redemption" class="form-input">
+            </div>
+      
+            <div style="display: flex; gap: 10px; margin-top: 4px;">
+              <button onclick="saveRewardToFirebase()" class="btn-primary" id="btnSaveReward">
+                Save Reward to Firebase
+              </button>
+              <button onclick="clearRewardForm()" class="btn-secondary">
+                Clear
+              </button>
+            </div>
+          </div>
+      
+          <!-- Rewards Catalog Grid -->
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-top: 18px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 style="font-size: 17px; font-weight: 800; color: #0f172a;">Rewards Inventory</h3>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;" id="rewardsInventoryMeta">0 items</span>
+              </div>
+              <!-- Category Filter Pills -->
+              <div class="catalog-filter-pills" id="catalogFilterPills">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+      
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;" id="rewardsCatalogGrid">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             TAB PANE 2: USER CUSTOM REQUESTS LIST
+             (Showing: User Name, Required, Link, Image, Why Requires)
+             ============================================================ -->
+        <div id="megaCustomSection" style="display: none;">
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 20px;">⭐</span>
+                  <h3 style="font-size: 18px; font-weight: 800; color: #0f172a;">User Custom Reward Requests</h3>
+                </div>
+                <p style="font-size: 12.5px; color: #64748b; margin-top: 2px;">
+                  Special reward items requested by players showing required item, link, image, and why required.
+                </p>
+              </div>
+      
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <div class="custom-status-filter-group">
+                  <button type="button" class="btn-custom-filter active" data-custfilter="all" onclick="filterCustomRequests('all')">All</button>
+                  <button type="button" class="btn-custom-filter" data-custfilter="pending" onclick="filterCustomRequests('pending')">Pending</button>
+                  <button type="button" class="btn-custom-filter" data-custfilter="approved" onclick="filterCustomRequests('approved')">Approved</button>
+                  <button type="button" class="btn-custom-filter" data-custfilter="rejected" onclick="filterCustomRequests('rejected')">Rejected</button>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Custom Requests List / Table -->
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>User Name</th>
+                    <th>Required (Item)</th>
+                    <th>Link</th>
+                    <th>Why Requires</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="customRequestsTableBody">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- ================= PAGE: MEGA-REQUEST ================= -->
+      <!-- PAGE: MEGA REDEMPTION REQUESTS -->
+      <section class="page-panel" id="page-mega-request">
+        <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Redemption Orders Queue</h2>
+                <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle orders info">
+                  <span>Info</span> <span class="arrow-icon">▸</span>
+                </button>
+              </div>
+              <div class="collapsible-text-body">
+                <p style="font-size: 13px; color: #64748b;">Player prize claims from Firebase (<code style="color: #0284c7; font-weight: 700;">/reward_requests</code>).</p>
+              </div>
+            </div>
+      
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
+              <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
+              <button class="btn-secondary" data-reqfilter="approved" onclick="filterRequestsTable('approved')">Approved</button>
+              <button class="btn-secondary" data-reqfilter="delivered" onclick="filterRequestsTable('delivered')">Delivered</button>
+              <button class="btn-secondary" data-reqfilter="rejected" onclick="filterRequestsTable('rejected')">Rejected</button>
+            </div>
+          </div>
+      
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>User Name</th>
+                  <th>Order Name</th>
+                  <th>Website Tasks Done</th>
+                  <th>Diamonds 💎</th>
+                  <th>Shipping / Delivery</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Approval &amp; Actions</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTableBody">
+                <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading requests from Firebase...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- ================= PAGE: TASKS-WEB ================= -->
+      <!-- PAGE: TASKS (TELEGRAM & WEBSITE TASK ADDER - GLOBAL STATIC DATA) -->
+      <section class="page-panel" id="page-tasks-web">
+      
+        <!-- PAGE HEADER WITH SCOPE BADGE -->
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+          <div class="scope-badge-wrap">
+            <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
+            <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong> &amp; <strong>/website_tasks_config</strong></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Website &amp; Telegram Quests Editor</h2>
+                <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle quest guide">
+                  <span>Info</span> <span class="arrow-icon">▸</span>
+                </button>
+              </div>
+              <div class="collapsible-text-body">
+                <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+                  Create, edit, and publish quests and sponsor tasks in Firebase. Every connected player reads these same tasks to earn coins and diamonds.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Sub-tab Navigation Bar -->
+        <div class="task-tabs-bar">
+          <button type="button" class="task-subtab-btn active" id="btnSubtabTelegram" onclick="switchAdminTaskSubtab('telegram')">
+            <span>✈️ Telegram Tasks</span>
+            <span class="task-tab-badge" id="adminTgTasksCountBadge">0</span>
+          </button>
+          <button type="button" class="task-subtab-btn" id="btnSubtabWebsite" onclick="switchAdminTaskSubtab('website')">
+            <span>🌐 Website Quests</span>
+            <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
+          </button>
+          <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
+            <span>🏆 30-Day Competition</span>
+          </button>
+        </div>
+      
+        <!-- ============================================================
+             SUBTAB 1: TELEGRAM TASKS ADDER & MANAGER (STATIC DATA)
+             ============================================================ -->
+        <div id="subtabContentTelegram" class="task-subtab-content active">
+          <div class="minimal-card" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">✈️ Telegram Channel &amp; Bot Tasks</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Players join channels or bots to claim bonus coins. Stored in Firebase at <code>/telegram_tasks_config</code>.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="openNewTelegramTaskModal()" class="btn-minimal-primary">
+                  <span>➕</span>
+                  <span>Add Telegram Task</span>
+                </button>
+                <button type="button" onclick="saveTelegramTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+                  <span>💾</span>
+                  <span>Save to Firebase</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Telegram Tasks Container Grid -->
+          <div class="tasks-grid-container" id="telegramTasksContainer">
+            <!-- Injected dynamically via JS -->
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             SUBTAB 2: WEBSITE TASKS ADDER & MANAGER (STATIC DATA)
+             ============================================================ -->
+        <div id="subtabContentWebsite" class="task-subtab-content" style="display: none;">
+          <div class="minimal-card" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🌐 Sponsor Website &amp; PIN Quests</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Players visit sponsor links and enter secret PINs. Stored in Firebase at <code>/website_tasks_config</code>.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="openNewWebsiteTaskModal()" class="btn-minimal-primary">
+                  <span>➕</span>
+                  <span>Add Website Quest</span>
+                </button>
+                <button type="button" onclick="saveWebsiteTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+                  <span>💾</span>
+                  <span>Save to Firebase</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Website Tasks Container Grid -->
+          <div class="tasks-grid-container" id="websiteTasksContainer">
+            <!-- Injected dynamically via JS -->
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             SUBTAB 3: MONTHLY (30-DAY) COMPETITION & QUOTAS CONTROLLER
+             ============================================================ -->
+        <div id="subtabContentDaily" class="task-subtab-content" style="display: none;">
+          <div class="minimal-card" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid #f1f5f9;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🏆 30-Day Monthly Task Competition Cycle</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Real-time status of the 30-day competition running in Firebase at <code>/monthly_competition</code>.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="restartMonthlyCompetitionInFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+                  <span>🔄</span>
+                  <span>Start Fresh 30-Day Cycle</span>
+                </button>
+                <button type="button" onclick="extendMonthlyCompetition(7)" class="btn-minimal-secondary">
+                  <span>+7 Days</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Live Cycle Info Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+              <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Active Cycle</div>
+                <div style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCycleNum">Cycle #1</div>
+              </div>
+              <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Time Remaining</div>
+                <div style="font-size: 20px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyCountdown">Calculating...</div>
+              </div>
+              <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">Cycle End Date</div>
+                <div style="font-size: 14px; font-weight: 800; color: #334155; margin-top: 4px;" id="adminMonthlyEndDate">-</div>
+              </div>
+            </div>
+      
+            <!-- Live 30-Day Cycle Progress Bar -->
+            <div style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; font-weight: 800; color: #334155;">Cycle Elapsed Progress</span>
+                <span style="font-size: 12px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="adminMonthlyProgressText">Day 0 of 30 (0%)</span>
+              </div>
+              <div style="width: 100%; height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden;">
+                <div id="adminMonthlyProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #0284c7, #38bdf8); transition: width 0.4s ease; border-radius: 99px;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; color: #64748b;">
+                <span id="adminMonthlyCycleStartDate">Started: -</span>
+                <span id="adminMonthlyCycleEndDateFoot">Ends: -</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- MODAL: ADD NEW TELEGRAM TASK -->
+        <div class="modal-overlay" id="newTelegramTaskModal" onclick="closeNewTelegramTaskModal()">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">✈️ Add New Telegram Task</h3>
+              <button type="button" onclick="closeNewTelegramTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+      
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Task Title</label>
+                <input type="text" id="inpNewTgTitle" class="minimal-input" placeholder="e.g. Join Energy Tap Announcements">
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Telegram Channel / Group Link</label>
+                <input type="url" id="inpNewTgLink" class="minimal-input" placeholder="https://t.me/energy_tap_official">
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
+                <input type="number" id="inpNewTgCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+              </div>
+            </div>
+      
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+              <button type="button" class="btn-minimal-secondary" onclick="closeNewTelegramTaskModal()">Cancel</button>
+              <button type="button" class="btn-minimal-primary" onclick="confirmAddTelegramTask()">Create Task</button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- MODAL: ADD NEW WEBSITE QUEST -->
+        <div class="modal-overlay" id="newWebsiteTaskModal" onclick="closeNewWebsiteTaskModal()">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">🌐 Add Sponsor Website Quest</h3>
+              <button type="button" onclick="closeNewWebsiteTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+      
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Quest Title</label>
+                <input type="text" id="inpNewWebTitle" class="minimal-input" placeholder="e.g. Visit Crypto Portal & Find Code">
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Quest Description</label>
+                <textarea id="inpNewWebDesc" rows="2" class="minimal-input" placeholder="Visit sponsor website, browse for timer, and find the secret code."></textarea>
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Target Website URL</label>
+                <input type="url" id="inpNewWebUrl" class="minimal-input" placeholder="https://example.com/sponsor">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Secret Verification PIN (optional)</label>
+                  <input type="text" id="inpNewWebPin" class="minimal-input" placeholder="e.g. 7894">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Browsing Timer (Seconds ⏱️)</label>
+                  <input type="number" id="inpNewWebTimer" class="minimal-input" value="15" min="5" placeholder="e.g. 15">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Reward Coins 🪙</label>
+                  <input type="number" id="inpNewWebCoins" class="minimal-input" value="1500" min="0">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Reward Diamonds 💎</label>
+                  <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="15" min="0">
+                </div>
+              </div>
+            </div>
+      
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+              <button type="button" class="btn-minimal-secondary" onclick="closeNewWebsiteTaskModal()">Cancel</button>
+              <button type="button" class="btn-minimal-primary" onclick="confirmAddWebsiteTask()">Create Quest</button>
+            </div>
+          </div>
+        </div>
+      
+      </section>
+      
+
+      <!-- ================= PAGE: FIREBASE-MANAGE ================= -->
+      <!-- PAGE: FIREBASE MANAGE (Minimal Cloud Console & Node Read/Write Tool) -->
+      <section class="page-panel" id="page-firebase-manage">
+      
+        <!-- PAGE HEADER -->
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+          <div class="scope-badge-wrap">
+            <span class="scope-pill-global">⚡ Firebase Realtime DB</span>
+            <span class="firebase-path-pill">Live Operations: <strong>Read &amp; Write Engine</strong></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Firebase Cloud Console &amp; Node Manager</h2>
+                <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle console info">
+                  <span>Info</span> <span class="arrow-icon">▸</span>
+                </button>
+              </div>
+              <div class="collapsible-text-body">
+                <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+                  Monitor database health, inspect global static collections vs user dynamic collections, and test realtime latency.
+                </p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" onclick="testFirebasePing()" class="btn-minimal-secondary">
+                <span>⚡</span>
+                <span>Ping Latency</span>
+              </button>
+              <button type="button" onclick="exportDatabaseJson()" class="btn-minimal-primary">
+                <span>📥</span>
+                <span>Export Full DB JSON</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- NODE SCOPE BREAKDOWN CARDS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 18px;">
+          <!-- Card 1: Global Static Collections (Same for All Users) -->
+          <div class="minimal-card" style="border-top: 3px solid #10b981;">
+            <div class="scope-badge-wrap" style="margin-bottom: 4px;">
+              <span class="scope-pill-global">🌐 Global Static Collections</span>
+            </div>
+            <h3 style="font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Static App &amp; Website Rules</h3>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/game_config</code></span>
+                <strong style="color: #059669;">Website &amp; Gameplay Rules</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/website_tasks_config</code></span>
+                <strong style="color: #0284c7;" id="fbTasksCount">0 Quests</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/telegram_tasks_config</code></span>
+                <strong style="color: #0284c7;" id="fbTgTasksCount">0 Tasks</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/mega_rewards</code></span>
+                <strong style="color: #6366f1;" id="fbRewardsCount">0 Items</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/ads_config</code></span>
+                <strong style="color: #d97706;">Ads Network Links</strong>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Card 2: User Dynamic Collections (Unique Per Player) -->
+          <div class="minimal-card" style="border-top: 3px solid #0284c7;">
+            <div class="scope-badge-wrap" style="margin-bottom: 4px;">
+              <span class="scope-pill-user">👤 User Dynamic Collections</span>
+            </div>
+            <h3 style="font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Individual Player Accounts</h3>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/players</code></span>
+                <strong style="color: #0284c7;" id="fbPlayersCount">0 Registered</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/reward_requests</code></span>
+                <strong style="color: #f59e0b;" id="fbRequestsCount">0 Orders</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span><code>/admin_users</code></span>
+                <strong style="color: #9333ea;">2 to 5 Admins</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+                <span>Connection Latency</span>
+                <strong style="color: #059669;" id="fbPingLatency">Testing...</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- DIRECT NODE READER & WRITER -->
+        <div class="minimal-card" style="margin-bottom: 18px;">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">📖 Direct Firebase Node Inspector &amp; Editor</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle node info">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Select any node to read raw cloud JSON or write targeted changes directly to Firebase.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-minimal-secondary" onclick="readSelectedFirebaseNode()">
+                  <span>🔍</span>
+                  <span>Read Node</span>
+                </button>
+                <button type="button" class="btn-minimal-primary" onclick="writeSelectedFirebaseNode()">
+                  <span>💾</span>
+                  <span>Write JSON to Cloud</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Node Selector -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+            <label style="font-size: 12px; font-weight: 800; color: #334155;">Select Firebase Path:</label>
+            <select id="selectFirebaseNodePath" class="minimal-input" style="cursor: pointer; max-width: 320px;" onchange="readSelectedFirebaseNode()">
+              <option value="/game_config">/game_config (Global Static)</option>
+              <option value="/website_tasks_config">/website_tasks_config (Global Static)</option>
+              <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static)</option>
+              <option value="/monthly_competition">/monthly_competition (Global Static)</option>
+              <option value="/mega_rewards">/mega_rewards (Global Static)</option>
+              <option value="/ads_config">/ads_config (Global Static)</option>
+              <option value="/players">/players (User Dynamic)</option>
+              <option value="/reward_requests">/reward_requests (User Dynamic)</option>
+              <option value="/admin_users">/admin_users (Security)</option>
+            </select>
+            <span style="font-size: 11px; color: #64748b;" id="fbNodeReadStatus">Ready to read</span>
+          </div>
+      
+          <!-- Code Editor Box -->
+          <div style="position: relative;">
+            <textarea id="firebaseNodeEditor" rows="12" class="minimal-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; background: #0f172a; color: #38bdf8; border: 1.5px solid #334155; border-radius: 10px; padding: 14px;" placeholder="Click 'Read Node' to inspect raw JSON data..."></textarea>
+          </div>
+      
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11.5px; color: #64748b;">
+            <span>💡 Reading Command: <code>db.ref(path).once('value')</code> | Writing Command: <code>db.ref(path).set(JSON.parse(data))</code></span>
+            <button type="button" class="btn-minimal-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="formatFirebaseEditorJson()">Format JSON</button>
+          </div>
+        </div>
+      
+        <!-- DATABASE DATA CLEANING & MAINTENANCE OPERATIONS -->
+        <div class="minimal-card">
+          <div class="minimal-header-group">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 class="minimal-title">🧹 Maintenance &amp; Storage Optimization</h3>
+              <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle maintenance info">
+                <span>Info</span> <span class="arrow-icon">▸</span>
+              </button>
+            </div>
+            <div class="collapsible-text-body">
+              <p class="minimal-subtitle">Perform safe data cleaning operations on completed requests or outdated cache.</p>
+            </div>
+          </div>
+      
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+            <!-- Operation 1: Clean Finished Orders -->
+            <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-weight: 800; color: #0f172a; font-size: 13px;">🧹 Clean Fulfilled Requests</div>
+              <p style="font-size: 11.5px; color: #64748b;">Remove orders marked as "delivered" or "rejected" to optimize storage.</p>
+              <button type="button" onclick="cleanFinishedRequests()" class="btn-minimal-secondary" style="margin-top: auto;">Clean Fulfilled Orders</button>
+            </div>
+      
+            <!-- Operation 2: Clear Leaderboard Cache -->
+            <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-weight: 800; color: #d97706; font-size: 13px;">🏆 Clear Leaderboard Cache</div>
+              <p style="font-size: 11.5px; color: #64748b;">Reset rankings cache under <code>/leaderboard</code> without affecting player accounts.</p>
+              <button type="button" onclick="removeAllLeaderboardData()" class="btn-minimal-secondary" style="margin-top: auto; color: #d97706; border-color: rgba(245, 158, 11, 0.4);">Clear Leaderboard</button>
+            </div>
+          </div>
+        </div>
+      
+      </section>
+      
+
+      <!-- ================= PAGE: ADS-MANAGE ================= -->
+      <!-- PAGE: ADS MANAGE -->
+      <section class="page-panel" id="page-ads-manage">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Ads &amp; Monetization Network Manager</h2>
+              <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle ads info">
+                <span>Info</span> <span class="arrow-icon">▸</span>
+              </button>
+            </div>
+            <div class="collapsible-text-body">
+              <p style="font-size: 13px; color: #64748b;">Configure Direct Link Ads and Monetag Ads with live CPM rate calculators, balance tabs, and player tracking.</p>
+            </div>
+          </div>
+          <button onclick="saveAdsConfigToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+            <span>💾</span>
+            <span>Save Ads Settings</span>
+          </button>
+        </div>
+      
+        <!-- ============================================================
+             TWO BALANCE TABS: DIRECT LINK BALANCE VS MONETAG ADS BALANCE
+             ============================================================ -->
+        <div class="ads-balance-tabs-container card-panel" style="margin-bottom: 18px; padding: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 16px;">
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn-ads-balance-tab active" id="tabBtnDirectBalance" onclick="switchAdsBalanceTab('direct')">
+                <span>🔗</span>
+                <span>Direct Link Ads Balance</span>
+              </button>
+              <button type="button" class="btn-ads-balance-tab" id="tabBtnMonetagBalance" onclick="switchAdsBalanceTab('monetag')">
+                <span>🎬</span>
+                <span>Monetag Ads Balance</span>
+              </button>
+            </div>
+            <div style="font-size: 13px; font-weight: 800; color: #059669;" id="adsCombinedRevenue">
+              Total Combined: $0.00
+            </div>
+          </div>
+      
+          <!-- BALANCE TAB 1: DIRECT LINK ADS BALANCE -->
+          <div id="balanceTabDirect" class="balance-tab-pane active">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Direct Link Total Clicks (Use Count)</span>
+                  <button type="button" onclick="saveDirectClickCountToFirebase()" class="btn-minimal-primary" style="padding: 3px 9px; font-size: 11px;" title="Save updated click count to Firebase">
+                    💾 Save
+                  </button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="number" id="inpDirectCountEdit" min="0" value="0" class="form-input" style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; padding: 5px 10px; width: 150px;" oninput="onDirectCountInputChanged()">
+                  <span style="font-size: 12px; color: #64748b; font-weight: 700;">clicks</span>
+                </div>
+                <span style="font-size: 11px; color: #64748b; display: block; margin-top: 5px;">Edit count directly to adjust balance &amp; earnings</span>
+              </div>
+      
+              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Direct Link CPM Rate</span>
+                <div style="font-size: 22px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balDirectCpmRate">$0.60</div>
+                <span style="font-size: 11.5px; color: #64748b;">Per 1,000 clicks (editable below)</span>
+              </div>
+      
+              <div style="background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase;">Direct Link Net Earnings</span>
+                <div style="font-size: 24px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balDirectEarnings">$0.00</div>
+                <span style="font-size: 11.5px; color: #059669; font-weight: 700;">Formula: (Clicks / 1,000) × CPM</span>
+              </div>
+            </div>
+          </div>
+      
+          <!-- BALANCE TAB 2: MONETAG ADS BALANCE -->
+          <div id="balanceTabMonetag" class="balance-tab-pane" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 11px; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Monetag Total Views (Use Count)</span>
+                  <button type="button" onclick="saveMonetagViewCountToFirebase()" class="btn-minimal-primary" style="padding: 3px 9px; font-size: 11px; background: #7c3aed;" title="Save updated views count to Firebase">
+                    💾 Save
+                  </button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="number" id="inpMonetagCountEdit" min="0" value="0" class="form-input" style="font-size: 20px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; padding: 5px 10px; width: 150px;" oninput="onMonetagCountInputChanged()">
+                  <span style="font-size: 12px; color: #64748b; font-weight: 700;">views</span>
+                </div>
+                <span style="font-size: 11px; color: #64748b; display: block; margin-top: 5px;">Edit count directly to adjust balance &amp; earnings</span>
+              </div>
+      
+              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Monetag CPM Rate</span>
+                <div style="font-size: 22px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balMonetagCpmRate">$0.20</div>
+                <span style="font-size: 11.5px; color: #64748b;">Per 1,000 views (editable below)</span>
+              </div>
+      
+              <div style="background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase;">Monetag Net Earnings</span>
+                <div style="font-size: 24px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace; margin-top: 4px;" id="balMonetagEarnings">$0.00</div>
+                <span style="font-size: 11.5px; color: #059669; font-weight: 700;">Formula: (Views / 1,000) × CPM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             ADS CONFIGURATION FORM (DIRECT LINK + MONETAG ZONE EDIT)
+             All reward fields removed per request.
+             ============================================================ -->
+        <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+            ⚙️ Network Configuration &amp; CPM Rates
+          </h3>
+          
+          <!-- 1. Direct Link Ads Settings -->
+          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 14px; font-weight: 800; color: #0284c7;">🔗 Direct Link Ad Settings</span>
+              <span style="font-size: 11px; font-weight: 800; color: #64748b;">Shop &amp; Sponsor Placements</span>
+            </div>
+            <div class="ads-form-row-2col">
+              <div class="form-group" style="flex: 2;">
+                <label class="form-label">Direct Link Ad URL</label>
+                <input type="url" id="inpDirectLinkUrl" value="https://otieuche.com/4/8893420" placeholder="https://..." class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7; font-weight: 700;">
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Direct Link CPM ($ per 1k Clicks)</label>
+                <input type="number" id="inpDirectLinkCpm" step="0.05" min="0" value="0.60" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #059669; font-weight: 800;" oninput="recalculateEarningsPreview()">
+              </div>
+            </div>
+          </div>
+      
+          <!-- 2. Monetag Ads Settings (Zone Code & CPM) -->
+          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 14px; font-weight: 800; color: #7c3aed;">🎬 Monetag Ads Settings</span>
+              <span style="font-size: 11px; font-weight: 800; color: #64748b;">SDK &amp; Zone ID</span>
+            </div>
+            <div class="ads-form-row-3col">
+              <div class="form-group" style="flex: 1.5;">
+                <label class="form-label">Monetag Zone ID / Code</label>
+                <input type="text" id="inpMonetagZoneId" value="11677609" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0f172a;">
+              </div>
+              <div class="form-group" style="flex: 2;">
+                <label class="form-label">Monetag SDK Tag URL</label>
+                <input type="url" id="inpMonetagSdkUrl" value="https://libtl.com/sdk.js" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #7c3aed;">
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Monetag CPM ($ per 1k Views)</label>
+                <input type="number" id="inpMonetagCpm" step="0.05" min="0" value="0.20" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #059669; font-weight: 800;" oninput="recalculateEarningsPreview()">
+              </div>
+            </div>
+          </div>
+      
+          <!-- 3. Network Limits & Controls (Reward fields completely removed) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">Cooldown Between Ads (Sec ⏱️)</label>
+              <input type="number" id="adCooldownSec" value="30" class="form-input" style="color: #7c3aed; font-weight: 800; text-align: center;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Daily Watch Limit per Player 📅</label>
+              <input type="number" id="adDailyLimit" value="25" class="form-input" style="color: #059669; font-weight: 800; text-align: center;">
+            </div>
+          </div>
+      
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+            <input type="checkbox" id="adActiveToggle" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #0284c7;">
+            <label for="adActiveToggle" style="font-size: 13.5px; font-weight: 700; color: #0f172a; cursor: pointer;">Enable Monetag &amp; Direct Link Ads System in Player Game</label>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             BELOW: USER CODE SEARCH BOX & LIST
+             Shows: User Code, User Name, Website Tasks Completed Count,
+             Direct Link Use Count, Monetag Ads Use Count
+             ============================================================ -->
+        <div class="card-panel">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 14px;">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">👥 Player Ads &amp; Tasks Activity List</h3>
+              <p style="font-size: 12.5px; color: #64748b; margin-top: 2px;">Track player website quests completed alongside direct link and Monetag ad engagements.</p>
+            </div>
+      
+            <!-- User Code Search Box -->
+            <div class="plain-search-wrap" style="width: 260px;">
+              <input type="text" id="adUserSearchInput" oninput="filterAdUsersList()" placeholder="Search User Code (ET-XXXX)..." class="plain-search-input">
+              <button type="button" class="plain-search-clear" onclick="clearAdUserSearch()">✕</button>
+            </div>
+          </div>
+      
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>User Code</th>
+                  <th>User Name</th>
+                  <th>Website Tasks Completed</th>
+                  <th>Direct Link Used</th>
+                  <th>Monetag Ads Used</th>
+                  <th>Total Ad Uses</th>
+                </tr>
+              </thead>
+              <tbody id="adUsersTableBody">
+                <tr><td colspan="7" style="text-align: center; color: #64748b; padding: 28px;">Loading player activities...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- ================= PAGE: SETTINGS ================= -->
+      <!-- PAGE: SETTINGS (Minimal Global Website & Game Config Editor) -->
+      <section class="page-panel" id="page-settings">
+        
+        <!-- PAGE HEADER WITH SCOPE BADGE -->
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+          <div class="scope-badge-wrap">
+            <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
+            <span class="firebase-path-pill">Reading &amp; Writing: <strong>/game_config</strong></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Website &amp; Game Configuration Editor</h2>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle settings info">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+              Edit website settings, global gameplay constants, announcements, and maintenance mode in Firebase. Changes saved here immediately take effect for all connected players.
+            </p>
+          </div>
+        </div>
+      
+        <!-- TOOL 1: GLOBAL WEBSITE & GAME CONFIG EDITOR (STATIC DATA) -->
+        <div class="minimal-card" style="margin-bottom: 18px;">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🛠️ Global Website &amp; Gameplay Parameters</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Static data applied across the Telegram Mini App &amp; Website for every user.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-minimal-primary" onclick="saveGlobalGameConfig()">
+                <span>💾</span>
+                <span>Save Changes to Firebase</span>
+              </button>
+            </div>
+          </div>
+      
+          <!-- Edit Form Grid -->
+          <div class="minimal-form-grid">
+            <!-- App / Website Name -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgAppName">
+                <span>Website / App Name</span>
+                <span style="font-size: 10px; color: #64748b;">Title Header</span>
+              </label>
+              <input type="text" id="cfgAppName" class="minimal-input" placeholder="Energy Tap">
+            </div>
+      
+            <!-- Maintenance Mode Switch -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgMaintenance">
+                <span>Maintenance Mode</span>
+                <span style="font-size: 10px; color: #0284c7;" id="maintenanceStatusTag">Normal Active</span>
+              </label>
+              <select id="cfgMaintenance" class="minimal-input" style="cursor: pointer;">
+                <option value="false">🟢 OFF (Game is Live for All Players)</option>
+                <option value="true">🔴 ON (Under Maintenance - Block Game)</option>
+              </select>
+            </div>
+      
+            <!-- Default Starting Energy -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgStartingEnergy">
+                <span>Starting Energy (⚡)</span>
+                <span style="font-size: 10px; color: #64748b;">New Player Default</span>
+              </label>
+              <input type="number" id="cfgStartingEnergy" class="minimal-input" min="100" step="100" placeholder="1000">
+            </div>
+      
+            <!-- Max Base Energy Cap -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgMaxEnergy">
+                <span>Max Base Energy Cap</span>
+                <span style="font-size: 10px; color: #64748b;">Base Capacity</span>
+              </label>
+              <input type="number" id="cfgMaxEnergy" class="minimal-input" min="500" step="100" placeholder="1000">
+            </div>
+      
+            <!-- Energy Regen Rate -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgRegenRate">
+                <span>Energy Regen Rate</span>
+                <span style="font-size: 10px; color: #64748b;">Energy / Second</span>
+              </label>
+              <input type="number" id="cfgRegenRate" class="minimal-input" min="1" step="1" placeholder="1">
+            </div>
+      
+            <!-- Tap Base Power -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="cfgTapPower">
+                <span>Tap Base Power</span>
+                <span style="font-size: 10px; color: #64748b;">Coins per Tap</span>
+              </label>
+              <input type="number" id="cfgTapPower" class="minimal-input" min="1" step="1" placeholder="1">
+            </div>
+      
+            <!-- Telegram Support Link -->
+            <div class="minimal-form-group" style="grid-column: 1 / -1;">
+              <label class="minimal-form-label" for="cfgSupportUrl">
+                <span>Telegram Support Channel / Bot URL</span>
+                <span style="font-size: 10px; color: #64748b;">Help Link</span>
+              </label>
+              <input type="url" id="cfgSupportUrl" class="minimal-input" placeholder="https://t.me/energy_tap_support">
+            </div>
+      
+            <!-- Global Broadcast Announcement Text -->
+            <div class="minimal-form-group" style="grid-column: 1 / -1;">
+              <label class="minimal-form-label" for="cfgAnnouncement">
+                <span>Global In-App Announcement Banner</span>
+                <label style="font-size: 11px; cursor: pointer; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+                  <input type="checkbox" id="cfgAnnouncementActive"> Show to Players
+                </label>
+              </label>
+              <input type="text" id="cfgAnnouncement" class="minimal-input" placeholder="e.g. 🌟 Season 2 is live! Double XP this weekend.">
+            </div>
+          </div>
+      
+          <!-- Direct Write Feedback Box -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 12px; color: #64748b;" id="gameConfigLastUpdated">Last Synced: Checking Firebase...</span>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-minimal-secondary" onclick="loadGlobalGameConfigFromFirebase()">
+                <span>🔄</span>
+                <span>Discard &amp; Reload</span>
+              </button>
+              <button type="button" class="btn-minimal-primary" onclick="saveGlobalGameConfig()">
+                <span>💾</span>
+                <span>Save Changes to Firebase</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- TOOL 2: GLOBAL SEASONS & COMPETITIONS (STATIC RULES) -->
+        <div class="minimal-card" style="margin-bottom: 18px;">
+          <div class="minimal-header-group">
+            <div class="scope-badge-wrap">
+              <span class="scope-pill-global">🌐 Global Static Rules</span>
+              <span class="firebase-path-pill">Paths: <strong>/season</strong> and <strong>/monthly_competition</strong></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 class="minimal-title">🏆 Global Season &amp; Monthly Competition Cycles</h3>
+              <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                <span>Info</span> <span class="arrow-icon">▸</span>
+              </button>
+            </div>
+            <div class="collapsible-text-body">
+              <p class="minimal-subtitle">Control global seasonal resets across all players or start new 30-day competition cycles.</p>
+            </div>
+          </div>
+      
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" onclick="triggerGlobalSeasonReset()" class="btn-minimal-primary">
+              <span>🚀</span>
+              <span>Trigger Global Season Restart (Reset Level 0 for All)</span>
+            </button>
+            <button type="button" onclick="triggerMonthlyCompetitionReset()" class="btn-minimal-secondary" style="color: #059669; border-color: rgba(16, 185, 129, 0.4);">
+              <span>🏆</span>
+              <span>Start New 30-Day Task Competition (/monthly_competition)</span>
+            </button>
+          </div>
+        </div>
+      
+        <!-- TOOL 3: ADMIN ACCESS CONTROL (STRICT 2 - 5 ADMIN USERS) -->
+        <div class="minimal-card" style="margin-bottom: 18px;">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div class="scope-badge-wrap">
+                  <span class="scope-pill-global">🔒 Security &amp; Permissions</span>
+                  <span class="firebase-path-pill">Path: <strong>/admin_users</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">Admin Team &amp; Access Control</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Strict policy: Exactly 2 to 5 authorized admins can authenticate and manage this console.</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="adminCountPill" class="firebase-path-pill" style="color: #0284c7; font-weight: 800;">Admins: 0 / 5</span>
+                <button type="button" id="openAddAdminBtn" onclick="openAddAdminModal()" class="btn-minimal-primary">
+                  <span>➕</span>
+                  <span>Add Admin User</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Admin Table -->
+          <div style="overflow-x: auto; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                  <th style="padding: 10px 14px; text-align: left;">Admin User</th>
+                  <th style="padding: 10px 14px; text-align: left;">Username</th>
+                  <th style="padding: 10px 14px; text-align: left;">Role</th>
+                  <th style="padding: 10px 14px; text-align: left;">Password</th>
+                  <th style="padding: 10px 14px; text-align: left;">Created</th>
+                  <th style="padding: 10px 14px; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">Loading admin team...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+        <!-- TOOL 4: FIREBASE CONNECTION SETTINGS & RECONNECT -->
+        <div class="minimal-card">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">⚡ Firebase Cloud Connection</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Active connection endpoints to Firebase Realtime Database.</p>
+                </div>
+              </div>
+              <button type="button" onclick="reconnectFirebase()" class="btn-minimal-secondary">
+                <span>🔄</span>
+                <span>Reconnect Realtime DB</span>
+              </button>
+            </div>
+          </div>
+      
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; font-size: 12px;">
+            <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #64748b; font-weight: 600;">Database URL:</span>
+              <code style="color: #0284c7; font-weight: 700;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
+            </div>
+            <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #64748b; font-weight: 600;">Project ID:</span>
+              <code style="color: #0284c7; font-weight: 700;">tap-game-80070</code>
+            </div>
+          </div>
+        </div>
+      
+      </section>
+      
+    </div>
+  </main>
+
+  <!-- ============================================================
+       ADMIN PASSWORD VERIFICATION MODAL (PASSWORD: 0911 REQUIRED TO EDIT)
+       ============================================================ -->
+  <div class="modal-overlay" id="adminPasswordModal" onclick="closeAdminPasswordModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 380px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">🔒</span>
+          <h3 style="font-size: 15px; font-weight: 800; color: #0f172a;">Admin Password Required</h3>
+        </div>
+        <button onclick="closeAdminPasswordModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 12px; color: #64748b; margin-top: 10px; line-height: 1.45;">
+        Security Protection: Admin password (0911) is required to edit or change any user or admin data.
+      </p>
+
+      <form onsubmit="submitAdminPasswordVerify(event)" style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 800;">Admin Password</label>
+          <input type="password" id="inputAdminVerifyPassword" class="form-input" placeholder="••••" required autocomplete="off" style="font-family: 'JetBrains Mono', monospace; font-size: 18px; letter-spacing: 4px; text-align: center;">
+        </div>
+
+        <div id="adminVerifyErrorMsg" style="display: none; padding: 6px 10px; border-radius: 6px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); color: #dc2626; font-size: 11.5px; font-weight: 700; text-align: center;">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 4px;">
+          <button type="submit" class="btn-primary" style="flex: 1;">Unlock &amp; Proceed</button>
+          <button type="button" class="btn-secondary" onclick="closeAdminPasswordModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SHARED MODAL: EDIT PLAYER (Firebase /players/{uid}/player)
+       ============================================================ -->
+  <div class="modal-overlay" id="userEditModal" onclick="closeUserEditModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;" id="editModalPlayerName">Edit Player</h3>
+        <button onclick="closeUserEditModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <!-- User Identification (Fixed Cloud Code & Info) -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Fixed Profile Code</label>
+          <input type="text" id="editModalProfileCode" class="form-input" style="color: #0284c7; font-weight: 800; font-family: 'JetBrains Mono', monospace; padding: 6px 10px; font-size: 13px; background: #fff;" readonly>
+        </div>
+        <div>
+          <label style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram Handle</label>
+          <input type="text" id="editModalTelegram" class="form-input" style="color: #0f172a; font-weight: 700; padding: 6px 10px; font-size: 13px; background: #fff;" readonly>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">XP Level</label>
+          <input type="number" id="editModalLevel" class="form-input" style="color: #0284c7; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Goal Level</label>
+          <input type="number" id="editModalGoalLevel" class="form-input" style="color: #2563eb; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Coins 🪙</label>
+          <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blue Coins 🔷</label>
+          <input type="number" id="editModalBlueCoins" class="form-input" style="color: #0284c7; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Diamonds 💎</label>
+          <input type="number" id="editModalDiamonds" class="form-input" style="color: #0891b2; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chest Keys 🗝️</label>
+          <input type="number" id="editModalKeys" class="form-input" style="color: #9333ea; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Scratch Cards 🎴</label>
+          <input type="number" id="editModalCards" class="form-input" style="color: #db2777; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tickets 🎟️</label>
+          <input type="number" id="editModalTickets" class="form-input" style="color: #d97706; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Egg Coins 🥚</label>
+          <input type="number" id="editModalEggs" class="form-input" style="color: #059669; font-weight: 800;">
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+        <div style="display: flex; gap: 10px;">
+          <button onclick="savePlayerEditToFirebase()" class="btn-primary" style="flex: 1;">Save Changes</button>
+          <button onclick="closeUserEditModal()" class="btn-secondary">Cancel</button>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="restartUserSeasonInFirebase()" class="btn-secondary" style="flex: 1; color: #0284c7; border-color: #0284c7; text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+            🌟 Restart Season (Level 0 & New Claims)
+          </button>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #d97706; border-color: #d97706; text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
+            🔄 Full Reset to 0 (Clean All Data)
+          </button>
+          <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #dc2626; border-color: #dc2626; padding: 8px 12px;" title="Permanently Remove Player">
+            🗑️ Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SHARED MODAL: MANAGE REQUEST (Firebase /reward_requests/{id})
+       ============================================================ -->
+  <div class="modal-overlay" id="requestManageModal" onclick="closeRequestManageModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">Manage Order Fulfillment</h3>
+        <button onclick="closeRequestManageModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">User:</span>
+          <strong style="color: #0f172a;" id="modalReqUser">User</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">Reward Item:</span>
+          <strong style="color: #0284c7;" id="modalReqItem">Reward</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-weight: 600;">Diamonds:</span>
+          <strong style="color: #d97706;" id="modalReqDiamonds">0 💎</strong>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <span style="color: #64748b; font-size: 11px; font-weight: 700;">Shipping / Delivery Details:</span>
+          <span style="color: #0f172a;" id="modalReqShipping">Address</span>
+        </div>
+
+        <div class="form-group" style="margin-top: 6px;">
+          <label class="form-label">Update Order Status</label>
+          <select id="modalReqStatus" class="form-input">
+            <option value="pending">PENDING (Reviewing)</option>
+            <option value="approved">APPROVED (Processing)</option>
+            <option value="delivered">DELIVERED (Fulfilled)</option>
+            <option value="rejected">REJECTED (Refunded)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tracking / Delivery Note</label>
+          <textarea id="modalReqNotes" rows="3" placeholder="e.g. Voucher code: AMZ-9842 or Tracking #..." class="form-input"></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button onclick="saveRequestStatusToFirebase()" class="btn-primary" style="flex: 1;">Save Status</button>
+        <button onclick="closeRequestManageModal()" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: ADD NEW ADMIN USER (STRICT LIMIT: MAX 5 ADMINS)
+       ============================================================ -->
+  <div class="modal-overlay" id="addAdminModal" onclick="closeAddAdminModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 420px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px;">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">Add Admin User</h3>
+          <span style="font-size: 11.5px; color: #64748b;">Restricted Access: 2 to 5 Admins Maximum</span>
+        </div>
+        <button onclick="closeAddAdminModal()" style="background: none; border: none; color: #64748b; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <div class="form-group">
+          <label class="form-label">Username (alphanumeric)</label>
+          <input type="text" id="newAdminUsername" class="form-input" placeholder="e.g. admin3 or ops_lead" style="color: #0284c7; font-weight: 700;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name / Display Tag</label>
+          <input type="text" id="newAdminName" class="form-input" placeholder="e.g. Security Officer">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="newAdminRole" class="form-input">
+            <option value="Operations Admin">Operations Admin</option>
+            <option value="Community Moderator">Community Moderator</option>
+            <option value="Finance & Rewards Admin">Finance & Rewards Admin</option>
+            <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password (min 6 chars)</label>
+          <input type="password" id="newAdminPassword" class="form-input" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button onclick="saveNewAdminUser()" class="btn-primary" style="flex: 1;">Create Admin</button>
+        <button onclick="closeAddAdminModal()" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN LOGIN GATEWAY (STRICT AUTH FOR 2 - 5 ADMIN USERS)
+       ============================================================ -->
+  <div class="admin-login-gate" id="adminLoginGate" style="display: flex;">
+    <div class="admin-login-card">
+      <div class="admin-gate-header">
+        <div class="admin-gate-icon">⚡</div>
+        <h2 class="admin-gate-title">Admin Portal Access</h2>
+        <p class="admin-gate-subtitle">Authorized Game Master & Operations Console</p>
+        <div class="admin-gate-badge">
+          <span>🔒 Strictly Restricted to 2 – 5 Admin Users</span>
+        </div>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
+        <div class="form-group">
+          <label class="form-label" for="loginAdminUser" style="color: #475569;">Admin Username</label>
+          <input type="text" id="loginAdminUser" class="form-input" placeholder="admin" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginAdminPass" style="color: #475569;">Admin Password</label>
+          <input type="password" id="loginAdminPass" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <div id="loginErrorMessage" style="display: none; padding: 8px 12px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); color: #dc2626; font-size: 12px; font-weight: 700; text-align: center;">
+        </div>
+
+        <button type="submit" id="adminLoginSubmitBtn" class="btn-primary" style="margin-top: 4px; padding: 12px; font-size: 14px; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>🔓</span>
+          <span>Authenticate & Enter</span>
+        </button>
+      </form>
+
+      <div style="border-top: 1.5px solid #f1f5f9; padding-top: 14px; text-align: center; font-size: 11.5px; color: #64748b;">
+        Default Credentials: <code style="color: #0284c7; font-weight: 700;">admin</code> / <code style="color: #0284c7; font-weight: 700;">password123</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Cloud SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <!-- Shared Firebase Service -->
+  <script src="shared/firebase.js"></script>
+
+  <!-- Global Router Logic -->
+  <script>
+    function toggleAdminSidebar(forceState) {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const edgeBtn = document.getElementById('edgeMenuTrigger');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('open');
+      const nextState = typeof forceState === 'boolean' ? forceState : !isOpen;
+      if (nextState) {
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('active');
+        if (edgeBtn) edgeBtn.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('active');
+        if (edgeBtn) {
+          const isDashboard = (window.adminState && window.adminState.activePage === 'dashboard') || !window.adminState?.activePage;
+          edgeBtn.style.display = isDashboard ? 'none' : 'inline-flex';
+        }
+        document.body.style.overflow = '';
+      }
+    }
+    window.toggleAdminSidebar = toggleAdminSidebar;
+
+    // Auto-Tucking Edge Menu Trigger logic (Point 5)
+    let edgeMenuTimer = null;
+    function resetEdgeMenuTimer() {
+      const edgeBtn = document.getElementById('edgeMenuTrigger');
+      if (!edgeBtn) return;
+      const isDashboard = (window.adminState && window.adminState.activePage === 'dashboard') || !window.adminState?.activePage;
+      if (isDashboard) {
+        edgeBtn.style.display = 'none';
+        return;
+      }
+      edgeBtn.style.display = 'inline-flex';
+      edgeBtn.classList.remove('tucked');
+      clearTimeout(edgeMenuTimer);
+      edgeMenuTimer = setTimeout(() => {
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar || !sidebar.classList.contains('open')) {
+          edgeBtn.classList.add('tucked');
+        }
+      }, 2400);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const edgeBtn = document.getElementById('edgeMenuTrigger');
+      if (edgeBtn) {
+        edgeBtn.addEventListener('mouseenter', () => {
+          clearTimeout(edgeMenuTimer);
+          edgeBtn.classList.remove('tucked');
+        });
+        edgeBtn.addEventListener('mouseleave', () => {
+          resetEdgeMenuTimer();
+        });
+        edgeBtn.addEventListener('touchstart', () => {
+          clearTimeout(edgeMenuTimer);
+          edgeBtn.classList.remove('tucked');
+        }, { passive: true });
+      }
+
+      document.addEventListener('mousemove', (e) => {
+        const isDashboard = (window.adminState && window.adminState.activePage === 'dashboard') || !window.adminState?.activePage;
+        if (isDashboard) return;
+        if (e.clientX <= 70 && e.clientY >= 60 && e.clientY <= 240) {
+          const btn = document.getElementById('edgeMenuTrigger');
+          if (btn && btn.classList.contains('tucked')) {
+            btn.classList.remove('tucked');
+            resetEdgeMenuTimer();
+          }
+        }
+      });
+
+      setTimeout(resetEdgeMenuTimer, 2200);
+    });
+
+    function switchAdminPage(pageKey, pageTitle) {
+      if (window.adminState) window.adminState.activePage = pageKey;
+
+      const normTarget = pageKey.replace(/[-_]/g, '').toLowerCase();
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const itemPage = item.getAttribute('data-page');
+        if (itemPage === pageKey || (itemPage && itemPage.replace(/[-_]/g, '').toLowerCase() === normTarget)) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('.page-panel').forEach(panel => {
+        const normPanel = panel.id.replace(/^page-/, '').replace(/[-_]/g, '').toLowerCase();
+        if (panel.id === `page-${pageKey}` || normTarget === normPanel) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      // Heading bar visible ONLY on dashboard as requested:
+      const mainHeader = document.getElementById('mainTopHeader');
+      if (mainHeader) {
+        mainHeader.style.display = (pageKey === 'dashboard') ? 'flex' : 'none';
+      }
+
+      // Moving menu button: hidden on dashboard, visible on all other pages
+      const edgeBtn = document.getElementById('edgeMenuTrigger');
+      if (edgeBtn) {
+        if (pageKey === 'dashboard') {
+          edgeBtn.style.display = 'none';
+        } else {
+          edgeBtn.style.display = 'inline-flex';
+          resetEdgeMenuTimer();
+        }
+      }
+
+      // Auto-trigger page renders
+      if (normTarget === 'tasksweb') {
+        if (typeof window.switchAdminTaskSubtab === 'function') {
+          window.switchAdminTaskSubtab('telegram');
+        }
+        if (typeof window.renderTelegramTasksUI === 'function') {
+          window.renderTelegramTasksUI();
+        }
+        if (typeof window.renderWebsiteTasksUI === 'function') {
+          window.renderWebsiteTasksUI();
+        }
+      }
+
+      // Auto close sidebar drawer on mobile
+      if (window.innerWidth <= 992) {
+        toggleAdminSidebar(false);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.switchAdminPage = switchAdminPage;
+
+    function toggleExpandText(toggleBtn) {
+      if (!toggleBtn) return;
+      const target = toggleBtn.nextElementSibling || toggleBtn.parentElement.querySelector('.collapsible-text-body');
+      if (!target) return;
+      const isExpanded = target.classList.toggle('expanded');
+      toggleBtn.classList.toggle('expanded', isExpanded);
+    }
+    window.toggleExpandText = toggleExpandText;
+  </script>
+
+  <!-- Chart.js Graphical Representation Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Admin Direct Read & Edit Access Engine (Point 4) -->
+  <script>
+    function requireAdminPassword(actionCallback) {
+      if (typeof actionCallback === 'function') {
+        actionCallback();
+      }
+    }
+    window.requireAdminPassword = requireAdminPassword;
+
+    function closeAdminPasswordModal() {
+      const modal = document.getElementById('adminPasswordModal');
+      if (modal) modal.classList.remove('active');
+    }
+    window.closeAdminPasswordModal = closeAdminPasswordModal;
+
+    function submitAdminPasswordVerify(event) {
+      if (event) event.preventDefault();
+      const input = document.getElementById('inputAdminVerifyPassword');
+      const err = document.getElementById('adminVerifyErrorMsg');
+      const val = input ? input.value.trim() : '';
+
+      if (val === ADMIN_SECURITY_KEY) {
+        closeAdminPasswordModal();
+        if (typeof pendingSecurityAction === 'function') {
+          const fn = pendingSecurityAction;
+          pendingSecurityAction = null;
+          fn();
+        }
+      } else {
+        if (err) {
+          err.textContent = '❌ Incorrect password! Password is: 0911';
+          err.style.display = 'block';
+        } else {
+          alert('❌ Incorrect password! Password is: 0911');
+        }
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+    window.submitAdminPasswordVerify = submitAdminPasswordVerify;
+
+    // Shared modal action wrappers requiring 0911
+    function savePlayerEditToFirebase() {
+      requireAdminPassword(() => {
+        const uid = window.currentEditingUserUid;
+        if (!uid) return;
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) { alert('Firebase is not connected!'); return; }
+
+        const updates = {
+          level: Number(document.getElementById('editModalLevel')?.value) || 0,
+          coins: Number(document.getElementById('editModalCoins')?.value) || 0,
+          diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
+          chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
+          scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,
+          chestTickets: Number(document.getElementById('editModalTickets')?.value) || 0,
+          eggs: Number(document.getElementById('editModalEggs')?.value) || 0
+        };
+
+        const goalLevel = Number(document.getElementById('editModalGoalLevel')?.value) || 0;
+
+        Promise.all([
+          db.ref('/players/' + uid + '/player').update(updates),
+          db.ref('/players/' + uid + '/goal/level').set(goalLevel),
+          db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel)
+        ]).then(() => {
+          alert('✅ Player data successfully updated in Firebase!');
+          closeUserEditModal();
+        }).catch(err => alert('Error saving player: ' + err.message));
+      });
+    }
+    window.savePlayerEditToFirebase = savePlayerEditToFirebase;
+
+    function restartUserSeasonInFirebase() {
+      requireAdminPassword(() => {
+        const uid = window.currentEditingUserUid;
+        if (!uid) return;
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) return;
+        if (!confirm('Restart this player to Level 0 and restore reward claims?')) return;
+        db.ref('/players/' + uid + '/player/level').set(0);
+        db.ref('/players/' + uid + '/player/xp').set(0);
+        db.ref('/players/' + uid + '/claimedLevels').set({});
+        alert('Player season restarted to Level 0.');
+        closeUserEditModal();
+      });
+    }
+    window.restartUserSeasonInFirebase = restartUserSeasonInFirebase;
+
+    function restartPlayerInFirebase() {
+      requireAdminPassword(() => {
+        const uid = window.currentEditingUserUid;
+        if (!uid) return;
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) return;
+        if (!confirm('⚠️ Clean ALL data for this player to fresh 0?')) return;
+        const fresh = { level: 0, xp: 0, coins: 0, diamonds: 0, chestKeys: 0, scratchCards: 0, chestTickets: 0, eggs: 0 };
+        db.ref('/players/' + uid + '/player').update(fresh).then(() => {
+          alert('Player reset to 0.');
+          closeUserEditModal();
+        });
+      });
+    }
+    window.restartPlayerInFirebase = restartPlayerInFirebase;
+
+    function removeUserFromModal() {
+      requireAdminPassword(() => {
+        const uid = window.currentEditingUserUid;
+        if (!uid) return;
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) return;
+        if (!confirm('Permanently delete this player account from Firebase?')) return;
+        db.ref('/players/' + uid).remove().then(() => {
+          alert('Player deleted.');
+          closeUserEditModal();
+        });
+      });
+    }
+    window.removeUserFromModal = removeUserFromModal;
+
+    function saveRequestStatusToFirebase() {
+      requireAdminPassword(() => {
+        const reqId = window.currentManagingRequestId;
+        if (!reqId) return;
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) return;
+        const status = document.getElementById('modalReqStatus')?.value || 'pending';
+        const notes = document.getElementById('modalReqNotes')?.value || '';
+        db.ref('/reward_requests/' + reqId).update({ status: status, notes: notes, updatedAt: Date.now() }).then(() => {
+          alert('Order status saved.');
+          closeRequestManageModal();
+        });
+      });
+    }
+    window.saveRequestStatusToFirebase = saveRequestStatusToFirebase;
+
+    function saveNewAdminUser() {
+      requireAdminPassword(() => {
+        const userInput = document.getElementById('newAdminUsername');
+        const nameInput = document.getElementById('newAdminName');
+        const roleInput = document.getElementById('newAdminRole');
+        const passInput = document.getElementById('newAdminPassword');
+
+        const username = userInput ? userInput.value.trim().toLowerCase() : '';
+        const name = nameInput ? nameInput.value.trim() : '';
+        const role = roleInput ? roleInput.value : 'Operations Admin';
+        const password = passInput ? passInput.value.trim() : '0911';
+
+        if (!username) {
+          alert('Please provide username.');
+          return;
+        }
+        const db = window.getDb ? window.getDb() : null;
+        if (!db) return;
+        db.ref('/admin_users/' + username).set({ username: username, name: name || username, role: role, password: password, createdAt: Date.now() }).then(() => {
+          alert('Admin user "' + username + '" created.');
+          closeAddAdminModal();
+        });
+      });
+    }
+    window.saveNewAdminUser = saveNewAdminUser;
+  </script>
+
+  <!-- Modular Page-Wise Scripts -->
+  <script src="pages/dashboard/dashboard.js"></script>
+  <script src="pages/users/users.js"></script>
+  <script src="pages/mega-add/mega-add.js"></script>
+  <script src="pages/mega-request/mega-request.js"></script>
+  <script src="pages/tasks-web/tasks-web.js"></script>
+  <script src="pages/firebase-manage/firebase-manage.js"></script>
+  <script src="pages/ads-manage/ads-manage.js"></script>
+  <script src="pages/settings/settings.js"></script>
+
+  <!-- Admin Session Authentication & Access Control (Password: 0911) -->
+  <script>
+    const ADMIN_SESSION_KEY = 'ENERGY_TAP_ADMIN_AUTH_USER';
+
+    function getCurrentAdminSession() {
+      try {
+        const raw = sessionStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(ADMIN_SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+    window.getCurrentAdminSession = getCurrentAdminSession;
+
+    function checkAdminAuthGate() {
+      const session = getCurrentAdminSession();
+      const gate = document.getElementById('adminLoginGate');
+      const badge = document.getElementById('currentAdminBadge');
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+      const nameEl = document.getElementById('headerAdminName');
+      const roleEl = document.getElementById('headerAdminRole');
+      const avatarEl = document.getElementById('headerAdminAvatar');
+
+      if (session && session.username) {
+        // Authenticated
+        if (gate) gate.style.display = 'none';
+        if (badge) badge.style.display = 'flex';
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+
+        if (nameEl) nameEl.textContent = session.name || session.username;
+        if (roleEl) roleEl.textContent = session.role || 'Admin';
+        if (avatarEl) avatarEl.textContent = (session.username || 'A')[0].toUpperCase();
+      } else {
+        // Unauthenticated -> Lock interface behind gate
+        if (gate) gate.style.display = 'flex';
+        if (badge) badge.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+    window.checkAdminAuthGate = checkAdminAuthGate;
+
+    function handleAdminLogin(event) {
+      if (event) event.preventDefault();
+      const userInput = document.getElementById('loginAdminUser');
+      const passInput = document.getElementById('loginAdminPass');
+      const errBox = document.getElementById('loginErrorMessage');
+      const submitBtn = document.getElementById('adminLoginSubmitBtn');
+
+      const userVal = userInput ? userInput.value.trim().toLowerCase() : '';
+      const passVal = passInput ? passInput.value.trim() : '';
+
+      if (!userVal || !passVal) {
+        showLoginError('Please enter both username and password.');
+        return;
+      }
+
+      if (errBox) errBox.style.display = 'none';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span><span>Verifying Access...</span>';
+      }
+
+      const admins = (window.adminState && window.adminState.adminUsers && window.adminState.adminUsers.length > 0)
+        ? window.adminState.adminUsers
+        : [
+            { username: 'admin', password: '0911', role: 'Super Admin', name: 'Master Admin' },
+            { username: 'admin2', password: '0911', role: 'Operations Admin', name: 'Secondary Admin' }
+          ];
+
+      // Verify credentials - allow 0911 as master password or match
+      const match = (passVal === '0911')
+        ? (admins.find(a => a.username.toLowerCase() === userVal) || { username: userVal || 'admin', role: 'Super Admin', name: 'Master Admin' })
+        : admins.find(a => a.username.toLowerCase() === userVal && a.password === passVal);
+
+      setTimeout(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>🔓</span><span>Authenticate & Enter</span>';
+        }
+
+        if (match) {
+          const authObj = {
+            username: match.username,
+            name: match.name || match.username,
+            role: match.role || 'Admin',
+            loginTime: Date.now()
+          };
+          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(authObj));
+          localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(authObj));
+          checkAdminAuthGate();
+        } else {
+          showLoginError('Invalid password. Admin password is: 0911');
+        }
+      }, 300);
+    }
+    window.handleAdminLogin = handleAdminLogin;
+
+    function showLoginError(msg) {
+      const errBox = document.getElementById('loginErrorMessage');
+      if (errBox) {
+        errBox.textContent = msg;
+        errBox.style.display = 'block';
+      } else {
+        alert(msg);
+      }
+    }
+
+    function logoutAdmin() {
+      if (confirm('Are you sure you want to log out from the Admin Panel?')) {
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+        checkAdminAuthGate();
+        const userInput = document.getElementById('loginAdminUser');
+        const passInput = document.getElementById('loginAdminPass');
+        if (userInput) userInput.value = '';
+        if (passInput) passInput.value = '';
+      }
+    }
+    window.logoutAdmin = logoutAdmin;
+
+    // Listen for admin changes in Firebase and re-verify session
+    window.addEventListener('adminUsersUpdated', () => {
+      const session = getCurrentAdminSession();
+      if (session && window.adminState && window.adminState.adminUsers) {
+        const stillExists = window.adminState.adminUsers.some(a => a.username.toLowerCase() === session.username.toLowerCase());
+        if (!stillExists) {
+          alert('Your admin account has been removed. You will now be signed out.');
+          sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          localStorage.removeItem(ADMIN_SESSION_KEY);
+          checkAdminAuthGate();
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuthGate();
+    });
+  </script>
+
+  <!-- Auto-Init Firebase -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof initFirebase === 'function') {
+        initFirebase();
+      }
+    });
+  </script>
+</body>
+</html>

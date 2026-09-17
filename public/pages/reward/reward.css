@@ -19,29 +19,34 @@
   flex-direction: column;
   gap: 16px;
   overflow-y: auto !important;
-  padding-bottom: calc(110px + max(16px, env(safe-area-inset-bottom))) !important;
-  scrollbar-width: none !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  padding: 8px 14px 140px 14px !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
   -ms-overflow-style: none !important;
 }
 
+#pageReward.active {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+}
+
 #pageReward::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  width: 4px !important;
+  height: 4px !important;
   background: transparent !important;
 }
 
-#pageReward::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
+#pageReward::-webkit-scrollbar-track,
 #pageReward::-webkit-scrollbar-thumb {
   background: transparent !important;
+  border-radius: 4px !important;
   border: none !important;
-}
-
-#pageReward.active {
-  display: flex;
 }
 
 /* Rewards 6-Subtab Switcher Bar (Horizontal Scrollable) */

@@ -1,0 +1,183 @@
+<!-- PAGE: FIREBASE MANAGE (Minimal Cloud Console & Node Read/Write Tool) -->
+<section class="page-panel" id="page-firebase-manage">
+
+  <!-- PAGE HEADER -->
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+    <div class="scope-badge-wrap">
+      <span class="scope-pill-global">⚡ Firebase Realtime DB</span>
+      <span class="firebase-path-pill">Live Operations: <strong>Read &amp; Write Engine</strong></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Firebase Cloud Console &amp; Node Manager</h2>
+          <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle console info">
+            <span>Info</span> <span class="arrow-icon">▸</span>
+          </button>
+        </div>
+        <div class="collapsible-text-body">
+          <p style="font-size: 13px; color: #64748b; line-height: 1.45;">
+            Monitor database health, inspect global static collections vs user dynamic collections, and test realtime latency.
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" onclick="testFirebasePing()" class="btn-minimal-secondary">
+          <span>⚡</span>
+          <span>Ping Latency</span>
+        </button>
+        <button type="button" onclick="exportDatabaseJson()" class="btn-minimal-primary">
+          <span>📥</span>
+          <span>Export Full DB JSON</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NODE SCOPE BREAKDOWN CARDS -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 18px;">
+    <!-- Card 1: Global Static Collections (Same for All Users) -->
+    <div class="minimal-card" style="border-top: 3px solid #10b981;">
+      <div class="scope-badge-wrap" style="margin-bottom: 4px;">
+        <span class="scope-pill-global">🌐 Global Static Collections</span>
+      </div>
+      <h3 style="font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Static App &amp; Website Rules</h3>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/game_config</code></span>
+          <strong style="color: #059669;">Website &amp; Gameplay Rules</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/website_tasks_config</code></span>
+          <strong style="color: #0284c7;" id="fbTasksCount">0 Quests</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/telegram_tasks_config</code></span>
+          <strong style="color: #0284c7;" id="fbTgTasksCount">0 Tasks</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/mega_rewards</code></span>
+          <strong style="color: #6366f1;" id="fbRewardsCount">0 Items</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/ads_config</code></span>
+          <strong style="color: #d97706;">Ads Network Links</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: User Dynamic Collections (Unique Per Player) -->
+    <div class="minimal-card" style="border-top: 3px solid #0284c7;">
+      <div class="scope-badge-wrap" style="margin-bottom: 4px;">
+        <span class="scope-pill-user">👤 User Dynamic Collections</span>
+      </div>
+      <h3 style="font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Individual Player Accounts</h3>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/players</code></span>
+          <strong style="color: #0284c7;" id="fbPlayersCount">0 Registered</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/reward_requests</code></span>
+          <strong style="color: #f59e0b;" id="fbRequestsCount">0 Orders</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span><code>/admin_users</code></span>
+          <strong style="color: #9333ea;">2 to 5 Admins</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #f8fafc; border-radius: 6px;">
+          <span>Connection Latency</span>
+          <strong style="color: #059669;" id="fbPingLatency">Testing...</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECT NODE READER & WRITER -->
+  <div class="minimal-card" style="margin-bottom: 18px;">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">📖 Direct Firebase Node Inspector &amp; Editor</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle node info">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Select any node to read raw cloud JSON or write targeted changes directly to Firebase.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-minimal-secondary" onclick="readSelectedFirebaseNode()">
+            <span>🔍</span>
+            <span>Read Node</span>
+          </button>
+          <button type="button" class="btn-minimal-primary" onclick="writeSelectedFirebaseNode()">
+            <span>💾</span>
+            <span>Write JSON to Cloud</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Node Selector -->
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+      <label style="font-size: 12px; font-weight: 800; color: #334155;">Select Firebase Path:</label>
+      <select id="selectFirebaseNodePath" class="minimal-input" style="cursor: pointer; max-width: 320px;" onchange="readSelectedFirebaseNode()">
+        <option value="/game_config">/game_config (Global Static)</option>
+        <option value="/website_tasks_config">/website_tasks_config (Global Static)</option>
+        <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static)</option>
+        <option value="/monthly_competition">/monthly_competition (Global Static)</option>
+        <option value="/mega_rewards">/mega_rewards (Global Static)</option>
+        <option value="/ads_config">/ads_config (Global Static)</option>
+        <option value="/players">/players (User Dynamic)</option>
+        <option value="/reward_requests">/reward_requests (User Dynamic)</option>
+        <option value="/admin_users">/admin_users (Security)</option>
+      </select>
+      <span style="font-size: 11px; color: #64748b;" id="fbNodeReadStatus">Ready to read</span>
+    </div>
+
+    <!-- Code Editor Box -->
+    <div style="position: relative;">
+      <textarea id="firebaseNodeEditor" rows="12" class="minimal-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; background: #0f172a; color: #38bdf8; border: 1.5px solid #334155; border-radius: 10px; padding: 14px;" placeholder="Click 'Read Node' to inspect raw JSON data..."></textarea>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11.5px; color: #64748b;">
+      <span>💡 Reading Command: <code>db.ref(path).once('value')</code> | Writing Command: <code>db.ref(path).set(JSON.parse(data))</code></span>
+      <button type="button" class="btn-minimal-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="formatFirebaseEditorJson()">Format JSON</button>
+    </div>
+  </div>
+
+  <!-- DATABASE DATA CLEANING & MAINTENANCE OPERATIONS -->
+  <div class="minimal-card">
+    <div class="minimal-header-group">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h3 class="minimal-title">🧹 Maintenance &amp; Storage Optimization</h3>
+        <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle maintenance info">
+          <span>Info</span> <span class="arrow-icon">▸</span>
+        </button>
+      </div>
+      <div class="collapsible-text-body">
+        <p class="minimal-subtitle">Perform safe data cleaning operations on completed requests or outdated cache.</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+      <!-- Operation 1: Clean Finished Orders -->
+      <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-weight: 800; color: #0f172a; font-size: 13px;">🧹 Clean Fulfilled Requests</div>
+        <p style="font-size: 11.5px; color: #64748b;">Remove orders marked as "delivered" or "rejected" to optimize storage.</p>
+        <button type="button" onclick="cleanFinishedRequests()" class="btn-minimal-secondary" style="margin-top: auto;">Clean Fulfilled Orders</button>
+      </div>
+
+      <!-- Operation 2: Clear Leaderboard Cache -->
+      <div style="padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-weight: 800; color: #d97706; font-size: 13px;">🏆 Clear Leaderboard Cache</div>
+        <p style="font-size: 11.5px; color: #64748b;">Reset rankings cache under <code>/leaderboard</code> without affecting player accounts.</p>
+        <button type="button" onclick="removeAllLeaderboardData()" class="btn-minimal-secondary" style="margin-top: auto; color: #d97706; border-color: rgba(245, 158, 11, 0.4);">Clear Leaderboard</button>
+      </div>
+    </div>
+  </div>
+
+</section>

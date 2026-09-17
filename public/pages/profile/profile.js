@@ -83,7 +83,7 @@ window.openBlueTab = function() {
 // EDIT PROFILE & AVATAR PRESET MODAL
 // ==========================================================================
 window.openEditProfileModal = function() {
-  DOM.sheetTitle.textContent = 'Edit Profile & Avatar';
+  DOM.sheetTitle.textContent = 'Edit Profile & Cyber ID';
   selectedPresetId = gameState.player.avatarPreset || 'alex';
 
   const presetOptionsHtml = AVATAR_PRESETS.map(p => `
@@ -95,8 +95,23 @@ window.openEditProfileModal = function() {
     </div>
   `).join('');
 
+  const currentCode = gameState.player.profileCode || 'ET-000000';
+
   DOM.sheetContent.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <!-- Fixed Permanent User Code (Cloud ID) -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Fixed User Code (Firebase Linked)</label>
+          <span style="font-size: 10px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 8px; border-radius: 9999px;">🔒 FIXED PERMANENT</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="text" id="editPlayerCodeInput" value="${currentCode}" readonly style="flex: 1; background: rgba(3, 8, 24, 0.85); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 800; color: #38bdf8; outline: none; cursor: default;">
+          <button type="button" onclick="copyPlayerProfileCode()" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; border-radius: 12px; padding: 10px 14px; font-weight: 800; cursor: pointer; font-size: 13px;">📋 Copy</button>
+        </div>
+        <span style="font-size: 10.5px; color: #64748b;">Fixed permanent code is synced with Firebase and Admin portal. Duplicate user accounts cannot be created.</span>
+      </div>
+
       <!-- Avatar Preset Picker -->
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Choose Cyber Avatar Style</label>
@@ -120,7 +135,7 @@ window.openEditProfileModal = function() {
         </div>
       </div>
 
-      <button class="feature-btn" onclick="saveProfileData()" style="padding: 12px; font-size: 14px; font-weight: 800; border-radius: 14px; margin-top: 6px;">Save Changes ✨</button>
+      <button class="feature-btn" id="btnSaveProfileData" onclick="saveProfileData()" style="padding: 12px; font-size: 14px; font-weight: 800; border-radius: 14px; margin-top: 6px;">Save Changes ✨</button>
     </div>
   `;
   DOM.modalBackdrop.classList.add('open');
@@ -171,13 +186,54 @@ window.applyAvatarPresetToElements = function(presetId) {
   }
 };
 
-window.saveProfileData = function() {
+window.saveProfileData = async function() {
   const nameInput = document.getElementById('editPlayerNameInput');
   const handleInput = document.getElementById('editPlayerHandleInput');
+  const saveBtn = document.getElementById('btnSaveProfileData');
   
-  if (nameInput && nameInput.value.trim()) {
+  const newName = nameInput ? nameInput.value.trim() : gameState.player.name;
+  const newHandle = handleInput ? handleInput.value.trim().replace(/^@/, '') : (gameState.player.handle || 'alex_blue');
+
+  // Prevent duplicate user creation by validating unique credentials against Firebase
+  if (window.firebaseSync && typeof window.firebaseSync.validateUniqueCredentials === 'function') {
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Checking Cloud Uniqueness...';
+    }
+
+    try {
+      const valRes = await window.firebaseSync.validateUniqueCredentials({
+        profileCode: gameState.player.profileCode,
+        username: newName,
+        telegram: `@${newHandle}`,
+        excludeUid: window.firebaseSync.userId
+      });
+
+      if (!valRes.ok) {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Changes ✨';
+        }
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast(valRes.error || 'Duplicate user detected in Firebase!');
+        } else {
+          alert(valRes.error || 'Duplicate user detected in Firebase!');
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn('Uniqueness check error, proceeding with caution:', err);
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Changes ✨';
+    }
+  }
+
+  if (newName) {
     const oldName = gameState.player.name;
-    gameState.player.name = nameInput.value.trim();
+    gameState.player.name = newName;
     
     // Update promo code prefix if name changed
     if (oldName !== gameState.player.name) {
@@ -188,8 +244,8 @@ window.saveProfileData = function() {
     }
   }
 
-  if (handleInput && handleInput.value.trim()) {
-    gameState.player.handle = handleInput.value.trim().replace(/^@/, '');
+  if (newHandle) {
+    gameState.player.handle = newHandle;
   }
 
   if (selectedPresetId) {
@@ -205,12 +261,15 @@ window.saveProfileData = function() {
   updateProfileUI();
   saveGame();
   
-  // Real-time Firebase cloud write
+  // Real-time Firebase cloud write & ensure profileCode is written
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
   
   closeTabModal();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('✅ Profile updated and synced with Firebase!');
+  }
 };
 
 // ==========================================================================
@@ -269,13 +328,27 @@ window.updateShopUI = function() {
   const eggsEl = document.getElementById('shopOwnedEggs');
   if (eggsEl) eggsEl.textContent = formatNumber(gameState.player.eggs || 0);
 
-  // Fuel Depot Inventory
+  // Fuel Depot Inventory & Progressive Ad Counts
   const fuelKeys = ['green', 'darkgreen', 'yellow', 'orange', 'red', 'pink', 'purple'];
+  const reqAdsMap = { darkgreen: 1, green: 2, yellow: 2, orange: 3, red: 5, pink: 5, purple: 5 };
   fuelKeys.forEach(ft => {
     const el = document.getElementById(`shopOwnedFuel_${ft}`);
     if (el) {
       const count = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[ft]) || 0;
       el.textContent = `${formatNumber(count)} Owned`;
+    }
+
+    const adLabel = document.getElementById(`adLabel_${ft}`);
+    if (adLabel) {
+      const totalReq = reqAdsMap[ft] || 1;
+      const prog = (gameState.shopAdWatchProgress && gameState.shopAdWatchProgress[ft]) || 0;
+      if (prog > 0 && prog < totalReq) {
+        adLabel.textContent = `${prog}/${totalReq} Ads`;
+        adLabel.style.color = '#f59e0b';
+      } else {
+        adLabel.textContent = totalReq === 1 ? '1 Ad' : `${totalReq} Ads`;
+        adLabel.style.color = '';
+      }
     }
   });
 
@@ -333,32 +406,29 @@ window.buyReactorUpgrade = function(type) {
       return;
     }
     gameState.player.coins -= price;
-    gameState.reactor.currentEnergy = gameState.reactor.maxEnergy;
+    gameState.reactor.currentEnergy = gameState.reactor.maxEnergy || 1000;
     if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
     showShopToast(`Energy Tank 100% Supercharged!`, '⚡');
   }
 
   updateUI();
-  updateProfileUI();
   updateShopUI();
-  if (typeof updateHomeUI === 'function') updateHomeUI();
-  if (typeof updateEnergyUI === 'function') updateEnergyUI();
-  saveGame();
-
+  updateProfileUI();
+  if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
 };
 
 window.buyPassItem = function(itemType) {
-  const itemsMap = {
-    spinTicket: { cost: 25, prop: 'chestTickets', name: 'Lucky Spin Ticket', icon: '🎡' },
-    chestKey: { cost: 50, prop: 'chestKeys', name: 'Mystery Chest Key', icon: '🔑' },
-    scratchCard: { cost: 35, prop: 'scratchCards', name: 'Fortune Scratch Card', icon: '🎟️' },
-    egg: { cost: 75, prop: 'eggs', name: 'Cyber Dragon Egg', icon: '🥚' }
+  const PASS_PRICES = {
+    spinTicket: { cost: 25, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets' },
+    chestKey: { cost: 50, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys' },
+    scratchCard: { cost: 35, name: 'Scratch Card', icon: '🎟️', field: 'scratchCards' },
+    egg: { cost: 75, name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' }
   };
 
-  const item = itemsMap[itemType];
+  const item = PASS_PRICES[itemType];
   if (!item) return;
 
   if (gameState.player.coins < item.cost) {
@@ -368,45 +438,32 @@ window.buyPassItem = function(itemType) {
   }
 
   gameState.player.coins -= item.cost;
-  gameState.player[item.prop] = (gameState.player[item.prop] || 0) + 1;
+  gameState.player[item.field] = (gameState.player[item.field] || 0) + 1;
 
-  // Unify ticket state between spin and chest references
-  if (itemType === 'spinTicket') {
-    gameState.player.chestTickets = gameState.player[item.prop];
-    gameState.player.spinTickets = gameState.player.chestTickets;
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  } else if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(1.5);
   }
 
-  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
   showShopToast(`+1 ${item.name} added to vault!`, item.icon);
 
-  // Synchronize all pages, tabs and mini-games immediately
   updateUI();
-  updateProfileUI();
   updateShopUI();
-  if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-  if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
-  if (typeof updateChestUI === 'function') updateChestUI();
-  if (typeof updateScratchUI === 'function') updateScratchUI();
-  if (typeof renderEggPageContent === 'function') renderEggPageContent();
-  if (typeof updateHomeUI === 'function') updateHomeUI();
-  if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
-
-  saveGame();
-
+  updateProfileUI();
+  if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
 };
 
 window.buyFuelInShop = function(fuelType, price, currency) {
-  if (currency === 'diamonds') {
-    window.buyFuelWithDiamonds(fuelType, price, 1);
-  } else {
+  if (currency === 'coins') {
     window.buyFuelWithCoins(fuelType, price, 1);
   }
 };
 
-// 3-Way Fuel Purchase Engine (Ads: 1 cell; Coins: 5 cells; Diamonds: 10 cells)
+// 3-Way Fuel Purchase Engine (Ads: progressive counting; Coins: 5 cells; Diamonds: 10 cells)
 window.buyFuelWithAds = function(fuelType, requiredAds, rewardCells) {
   const cells = rewardCells || 1;
   const ads = requiredAds || 1;
@@ -415,17 +472,38 @@ window.buyFuelWithAds = function(fuelType, requiredAds, rewardCells) {
     sfx.playTapSound(1.2);
   }
 
-  const completeAdWatch = () => {
+  if (!gameState.shopAdWatchProgress) {
+    gameState.shopAdWatchProgress = {};
+  }
+  const currentBefore = gameState.shopAdWatchProgress[fuelType] || 0;
+  const nextProgress = currentBefore + 1;
+
+  const onSingleAdComplete = () => {
+    gameState.player.adsWatchedCount = (gameState.player.adsWatchedCount || 0) + 1;
+
+    if (nextProgress < ads) {
+      gameState.shopAdWatchProgress[fuelType] = nextProgress;
+      const remaining = ads - nextProgress;
+      showShopToast(`🎬 Ad ${nextProgress}/${ads} watched! Watch ${remaining} more to unlock ${cells} ${fuelType.toUpperCase()} Fuel Cell.`, '⏳');
+      updateShopUI();
+      if (typeof saveGame === 'function') saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+      return;
+    }
+
+    // Fully watched all required ads
+    gameState.shopAdWatchProgress[fuelType] = 0;
     if (!gameState.energyGenerator.fuelCells) {
       gameState.energyGenerator.fuelCells = { darkgreen: 0, green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
     }
     gameState.energyGenerator.fuelCells[fuelType] = (gameState.energyGenerator.fuelCells[fuelType] || 0) + cells;
-    gameState.player.adsWatchedCount = (gameState.player.adsWatchedCount || 0) + ads;
 
     if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
       sfx.playLevelUpSound();
     }
-    showShopToast(`🎉 +${cells} ${fuelType.toUpperCase()} Fuel Cell Awarded!`, '🔋');
+    showShopToast(`🎉 +${cells} ${fuelType.toUpperCase()} Fuel Cell Awarded! (${ads}/${ads} Ads Complete)`, '🔋');
 
     updateShopUI();
     updateProfileUI();
@@ -439,12 +517,12 @@ window.buyFuelWithAds = function(fuelType, requiredAds, rewardCells) {
   };
 
   if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(completeAdWatch, {
-      adTitle: `Unlock ${fuelType.toUpperCase()} Fuel Cell`,
-      adDesc: `Watch ${ads} ad${ads > 1 ? 's' : ''} to receive ${cells} fuel cell.`
+    window.showRewardedAd(onSingleAdComplete, {
+      adTitle: `Unlock ${fuelType.toUpperCase()} Fuel Cell (${nextProgress}/${ads})`,
+      adDesc: `Watch ad ${nextProgress} of ${ads} to receive ${cells} fuel cell.`
     });
   } else {
-    completeAdWatch();
+    onSingleAdComplete();
   }
 };
 
@@ -802,6 +880,9 @@ function updateProfileUI() {
   const codeEl = document.getElementById('profileCodeVal');
   if (codeEl) codeEl.textContent = gameState.player.profileCode || 'ET-000000';
 
+  const cardCodeEl = document.getElementById('profileCardUserCode');
+  if (cardCodeEl) cardCodeEl.textContent = gameState.player.profileCode || 'ET-000000';
+
   const userValEl = document.getElementById('profileUsernameVal');
   if (userValEl) userValEl.textContent = gameState.player.name || 'Alex Vance';
 
@@ -809,7 +890,76 @@ function updateProfileUI() {
   if (tgValEl) tgValEl.textContent = gameState.player.telegram || `@${gameState.player.handle || 'alex_blue'}`;
 
   const mobValEl = document.getElementById('profileMobileVal');
-  if (mobValEl) mobValEl.textContent = gameState.player.mobile || 'Not linked';
+  const mobActionWrap = document.getElementById('profileMobileActionWrap');
+  if (mobValEl) {
+    if (gameState.player.mobile) {
+      mobValEl.textContent = gameState.player.mobile;
+      if (mobActionWrap) {
+        if (gameState.player.phoneVerified) {
+          mobActionWrap.innerHTML = `
+            <span style="font-size: 9.5px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 6px; border-radius: 9999px;">Verified ✓</span>
+          `;
+        } else {
+          mobActionWrap.innerHTML = `
+            <button type="button" onclick="openPhoneVerificationModal()" class="feature-btn" style="padding: 2px 7px; font-size: 9.5px; font-weight: 800; border-radius: 9999px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b;">
+              Verify 📱
+            </button>
+          `;
+        }
+      }
+    } else {
+      mobValEl.textContent = 'Not linked';
+      if (mobActionWrap) {
+        mobActionWrap.innerHTML = `
+          <button type="button" onclick="openPhoneVerificationModal()" class="feature-btn" style="padding: 2px 7px; font-size: 9.5px; font-weight: 800; border-radius: 9999px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); color: #34d399;">
+            Link 📱
+          </button>
+        `;
+      }
+    }
+  }
+
+  // Email Address & Verification Status
+  const emailValEl = document.getElementById('profileEmailVal');
+  const emailActionWrap = document.getElementById('profileEmailActionWrap');
+  if (emailValEl) {
+    if (gameState.player.email) {
+      emailValEl.textContent = gameState.player.email;
+      if (emailActionWrap) {
+        if (gameState.player.emailVerified) {
+          emailActionWrap.innerHTML = `
+            <span style="font-size: 10px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); padding: 3px 8px; border-radius: 9999px;">Verified ✅</span>
+            <button type="button" onclick="confirmResetLoginEmail()" title="Unlink / Reset Email" style="background: none; border: none; cursor: pointer; font-size: 11px; color: #94a3b8; padding: 2px;">✕</button>
+          `;
+        } else {
+          emailActionWrap.innerHTML = `
+            <button type="button" onclick="openEmailVerificationModal('emailVerifyPurposeLoginSetup')" class="feature-btn" style="padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 9999px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b;">
+              <span>⚠️ Verify Code</span>
+            </button>
+          `;
+        }
+      }
+    } else {
+      emailValEl.textContent = 'Not linked';
+      if (emailActionWrap) {
+        emailActionWrap.innerHTML = `
+          <button type="button" onclick="openEmailVerificationModal('emailVerifyPurposeLoginSetup')" class="feature-btn" style="padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
+            <span>✉️ Verify Email</span>
+          </button>
+        `;
+      }
+    }
+  }
+
+  // Update active device & session indicator
+  const devModelEl = document.getElementById('currentDeviceModelText');
+  const devHashEl = document.getElementById('currentDeviceSessionHashText');
+  if (devModelEl && window.firebaseSync && typeof window.firebaseSync.detectDeviceInfo === 'function') {
+    const info = window.firebaseSync.detectDeviceInfo();
+    const hash = window.firebaseSync.getSessionHash();
+    devModelEl.textContent = `${info.device_model} • Active Now`;
+    if (devHashEl) devHashEl.textContent = `Session: #${hash.slice(-6)} (${info.platform})`;
+  }
 
   // Apply avatar preset if saved
   if (gameState.player.avatarPreset) {
@@ -852,11 +1002,14 @@ window.openAccountSecurityModal = function() {
         <strong style="color: #38bdf8;">🛡️ Security Guarantee:</strong> All 4 fields (Profile Code, Username, Telegram link, and Mobile number) must be unique. Duplicate values are strictly blocked to protect your account.
       </div>
 
-      <!-- Profile Code Field -->
+      <!-- Profile Code Field (Fixed Permanent Code) -->
       <div style="display: flex; flex-direction: column; gap: 4px;">
-        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Login Code</label>
-        <input type="text" id="secInputCode" value="${currentCode}" placeholder="e.g. ET-8A2F9B" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: #38bdf8; outline: none;">
-        <span style="font-size: 10px; color: #64748b;">Keep this code safe. You can use it to log in on any device.</span>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Login Code</label>
+          <span style="font-size: 9.5px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); padding: 1.5px 6px; border-radius: 999px;">🔒 FIXED PERMANENT</span>
+        </div>
+        <input type="text" id="secInputCode" value="${currentCode}" readonly style="background: rgba(15, 23, 42, 0.6); border: 1.5px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: #38bdf8; outline: none; cursor: not-allowed; opacity: 0.85;">
+        <span style="font-size: 10px; color: #64748b;">Unique auto-assigned code linked to your cloud data. Cannot be changed to prevent duplicate account creation.</span>
       </div>
 
       <!-- Username Field -->
@@ -968,27 +1121,74 @@ window.submitAccountSecurityForm = async function() {
   }
 };
 
-// Open Login with Code Modal
-window.openLoginWithCodeModal = function() {
-  DOM.sheetTitle.textContent = 'Cloud Login with Profile Code';
+// Open Login with Code / Phone Modal
+window.openLoginWithCodeModal = function(activeTab = 'code') {
+  DOM.sheetTitle.textContent = activeTab === 'phone' ? 'Telegram Phone Login' : 'Cloud Login with Profile Code';
 
   DOM.sheetContent.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
-      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-        Enter your unique <strong>Profile Code</strong> (e.g. <code style="color: #38bdf8;">ET-8A2F9B</code>) to log in and instantly restore all your energy, levels, coins, diamonds, and progress.
-      </p>
-
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Code</label>
-        <input type="text" id="loginCodeInput" placeholder="ET-XXXXXX" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #38bdf8; outline: none; text-align: center; text-transform: uppercase;">
+      <!-- Tab Switcher -->
+      <div style="display: flex; gap: 8px; background: rgba(15, 23, 42, 0.6); padding: 4px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
+        <button type="button" onclick="openLoginWithCodeModal('code')" class="feature-btn" style="flex: 1; padding: 8px; font-size: 11.5px; font-weight: 800; border-radius: 8px; background: ${activeTab === 'code' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent'}; color: ${activeTab === 'code' ? '#fff' : '#94a3b8'};">
+          <span>🔑 Profile Code</span>
+        </button>
+        <button type="button" onclick="openLoginWithCodeModal('phone')" class="feature-btn" style="flex: 1; padding: 8px; font-size: 11.5px; font-weight: 800; border-radius: 8px; background: ${activeTab === 'phone' ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'transparent'}; color: ${activeTab === 'phone' ? '#fff' : '#94a3b8'};">
+          <span>📱 Telegram Phone</span>
+        </button>
       </div>
 
-      <div id="loginErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+      ${activeTab === 'code' ? `
+        <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">
+          Enter your unique <strong>Profile Code</strong> (e.g. <code style="color: #38bdf8;">ET-8A2F9B</code>) to log in and instantly restore all your energy, levels, coins, diamonds, and progress.
+        </p>
 
-      <button id="btnLoginSubmit" class="feature-btn" onclick="submitLoginWithCode()" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-        <span>🔑</span>
-        <span>Login & Restore Progress</span>
-      </button>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Code</label>
+          <input type="text" id="loginCodeInput" placeholder="ET-XXXXXX" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #38bdf8; outline: none; text-align: center; text-transform: uppercase;">
+        </div>
+
+        <div id="loginErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+        <button id="btnLoginSubmit" class="feature-btn" onclick="submitLoginWithCode()" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <span>🔑</span>
+          <span>Login & Restore Progress</span>
+        </button>
+      ` : `
+        <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">
+          Enter your phone number to receive a Telegram verification code and restore your account progress.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Phone Number (with country code)</label>
+          <input type="tel" id="loginPhoneInput" placeholder="+1234567890" value="${gameState.player.mobile || ''}" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #38bdf8; outline: none;">
+        </div>
+
+        <!-- Code Settings (codeSettings#ad253d78) -->
+        <div style="display: flex; flex-direction: column; gap: 6px; background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 10px;">
+          <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Delivery Options (CodeSettings)</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <label style="font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" id="chkSettingFirebase" checked style="accent-color: #0284c7;">
+              <span>Firebase SMS</span>
+            </label>
+            <label style="font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" id="chkSettingFlashcall" style="accent-color: #0284c7;">
+              <span>Flash Call</span>
+            </label>
+            <label style="font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" id="chkSettingApp" style="accent-color: #0284c7;">
+              <span>Telegram App</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="loginPhoneErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+        <button id="btnSendPhoneCodeSubmit" class="feature-btn" onclick="submitSendPhoneCode('login')" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <span>📨</span>
+          <span>Send Telegram Code (auth.sendCode)</span>
+        </button>
+      `}
     </div>
   `;
 
@@ -1043,6 +1243,179 @@ window.submitLoginWithCode = async function() {
     updateProfileUI();
   } else {
     alert('Firebase is not ready yet.');
+  }
+};
+
+// ==========================================================================
+// TELEGRAM MTPROTO ACTIVE SESSIONS & DEVICES MANAGER
+// ==========================================================================
+window.openAuthorizationsModal = async function() {
+  DOM.sheetTitle.textContent = 'Active Sessions & Devices';
+
+  DOM.sheetContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 10px; gap: 10px;">
+      <div class="session-pulsing-dot" style="width: 14px; height: 14px;"></div>
+      <span style="font-size: 13px; color: #94a3b8; font-weight: 700;">Loading active authorizations...</span>
+    </div>
+  `;
+  DOM.modalBackdrop.classList.add('open');
+
+  if (!window.firebaseSync || typeof window.firebaseSync.getAuthorizations !== 'function') {
+    DOM.sheetContent.innerHTML = `
+      <div style="padding: 16px; text-align: center; color: #f87171; font-size: 13px;">
+        Active sessions manager unavailable in offline mode.
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const data = await window.firebaseSync.getAuthorizations();
+    renderAuthorizationsModalContent(data);
+  } catch (err) {
+    DOM.sheetContent.innerHTML = `
+      <div style="padding: 16px; text-align: center; color: #f87171; font-size: 13px;">
+        Failed to load authorizations: ${err.message}
+      </div>
+    `;
+  }
+};
+
+window.renderAuthorizationsModalContent = function(data) {
+  const authorizations = data.authorizations || [];
+  const otherSessions = authorizations.filter(a => !a.current);
+
+  const formatTime = (ts) => {
+    if (!ts) return 'Unknown';
+    const d = new Date(ts * 1000);
+    return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getPlatformIcon = (platform, isCurrent) => {
+    const p = (platform || '').toLowerCase();
+    if (p.includes('ios') || p.includes('iphone') || p.includes('ipad')) return '📱';
+    if (p.includes('android')) return '🤖';
+    if (p.includes('mac')) return '💻';
+    if (p.includes('win')) return '🖥️';
+    if (p.includes('linux')) return '🐧';
+    return isCurrent ? '🟢' : '🌐';
+  };
+
+  let html = `
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">
+        Review and manage all devices currently logged into your account. Terminating a session will instantly revoke its access.
+      </p>
+  `;
+
+  if (otherSessions.length > 0) {
+    html += `
+      <button type="button" class="session-btn-terminate-all" onclick="terminateAllOtherAuthSessions()">
+        <span>🛑</span>
+        <span>Terminate All Other Sessions (${otherSessions.length})</span>
+      </button>
+    `;
+  }
+
+  html += `<div style="display: flex; flex-direction: column; gap: 10px;">`;
+
+  authorizations.forEach(auth => {
+    const isCur = Boolean(auth.current);
+    const icon = getPlatformIcon(auth.platform, isCur);
+    const createdStr = formatTime(auth.date_created);
+    const activeStr = isCur ? 'Active Now' : formatTime(auth.date_active);
+    const locationStr = [auth.region, auth.country].filter(Boolean).join(', ') || 'Global';
+
+    html += `
+      <div class="session-item-card ${isCur ? 'current' : ''}">
+        <div class="session-card-header">
+          <div class="session-device-title">
+            <span style="font-size: 16px;">${icon}</span>
+            <span>${auth.device_model || 'Unknown Device'}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            ${isCur ? `<span class="session-badge-current"><span class="session-pulsing-dot" style="width: 6px; height: 6px;"></span> This Device</span>` : ''}
+            ${auth.official_app ? `<span class="session-badge-official">Telegram Mini App</span>` : ''}
+          </div>
+        </div>
+
+        <div class="session-meta-grid">
+          <div>OS: <strong>${auth.platform || 'Web'} ${auth.system_version || ''}</strong></div>
+          <div>IP: <strong>${auth.ip || '127.0.0.1'}</strong></div>
+          <div>Location: <strong>${locationStr}</strong></div>
+          <div>Last Active: <strong>${activeStr}</strong></div>
+          <div>Session Hash: <strong>#${String(auth.hash).slice(-8)}</strong></div>
+          <div>Logged In: <strong>${createdStr}</strong></div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <label style="font-size: 10.5px; color: #94a3b8; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              <input type="checkbox" ${auth.call_requests_disabled ? 'checked' : ''} onchange="toggleAuthCallRequests('${auth.hash}', this.checked)" style="cursor: pointer;">
+              <span>Disable Calls</span>
+            </label>
+          </div>
+
+          ${isCur ? `
+            <span style="font-size: 11px; font-weight: 700; color: #10b981; display: inline-flex; align-items: center; gap: 4px;">
+              <span>✅</span> Current Session
+            </span>
+          ` : `
+            <button type="button" class="session-action-btn-revoke" onclick="terminateAuthSession('${auth.hash}')">
+              <span>🛑</span>
+              <span>Revoke</span>
+            </button>
+          `}
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  DOM.sheetContent.innerHTML = html;
+};
+
+// Terminate single session
+window.terminateAuthSession = async function(hash) {
+  if (!confirm('Are you sure you want to terminate this session? The device will be logged out immediately.')) {
+    return;
+  }
+  if (window.firebaseSync && typeof window.firebaseSync.resetAuthorization === 'function') {
+    await window.firebaseSync.resetAuthorization(hash);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🛑 Session revoked successfully.');
+    }
+    const data = await window.firebaseSync.getAuthorizations();
+    renderAuthorizationsModalContent(data);
+  }
+};
+
+// Terminate all other sessions
+window.terminateAllOtherAuthSessions = async function() {
+  if (!confirm('Terminate ALL other active sessions? All other phones and browsers will be logged out immediately.')) {
+    return;
+  }
+  if (window.firebaseSync && typeof window.firebaseSync.resetAllOtherAuthorizations === 'function') {
+    await window.firebaseSync.resetAllOtherAuthorizations();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🛑 All other sessions terminated.');
+    }
+    const data = await window.firebaseSync.getAuthorizations();
+    renderAuthorizationsModalContent(data);
+  }
+};
+
+// Toggle call requests setting
+window.toggleAuthCallRequests = async function(hash, checked) {
+  if (window.firebaseSync && typeof window.firebaseSync.changeAuthorizationSettings === 'function') {
+    await window.firebaseSync.changeAuthorizationSettings(hash, { call_requests_disabled: checked });
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(checked ? '🔇 Call requests disabled for session' : '🔊 Call requests enabled');
+    }
   }
 };
 
@@ -1921,3 +2294,427 @@ window.updateBlueTabUI = function() {
 window.buyFuelWithAds = buyFuelWithAds;
 window.buyFuelWithCoins = buyFuelWithCoins;
 window.buyFuelWithDiamonds = buyFuelWithDiamonds;
+
+// ==========================================================================
+// TELEGRAM MTPROTO EMAIL VERIFICATION MODAL & FLOW
+// ==========================================================================
+
+window.openEmailVerificationModal = function(purpose = 'emailVerifyPurposeLoginSetup', step = 1, pattern = '') {
+  DOM.sheetTitle.textContent = purpose === 'emailVerifyPurposeLoginChange' ? 'Change Login Email' : 'Setup Login Email';
+
+  const currentEmail = gameState.player.email || '';
+
+  if (step === 1) {
+    DOM.sheetContent.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+        <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">
+          Link a verified email to protect your account and receive Telegram security login notifications.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Email Address</label>
+          <input type="email" id="inpVerifyEmailTarget" placeholder="name@domain.com" value="${currentEmail}" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #38bdf8; outline: none;">
+        </div>
+
+        <div id="emailVerifErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+        <button type="button" id="btnSendEmailCode" onclick="submitSendVerifyEmailCode('${purpose}')" class="feature-btn" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <span>📨</span>
+          <span>Send 6-Digit Code</span>
+        </button>
+
+        <!-- Social 1-Tap Verification (auth.sentCodeTypeSetUpEmailRequired: apple/google) -->
+        <div style="display: flex; align-items: center; gap: 10px; margin: 4px 0;">
+          <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.1);"></div>
+          <span style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Or 1-Tap Sign-In</span>
+          <div style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.1);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" onclick="submitSocialEmailVerification('google')" class="feature-btn" style="padding: 10px; font-size: 11.5px; font-weight: 800; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff;">
+            <span>🌐 Google</span>
+          </button>
+          <button type="button" onclick="submitSocialEmailVerification('apple')" class="feature-btn" style="padding: 10px; font-size: 11.5px; font-weight: 800; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff;">
+            <span>🍎 Apple</span>
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (step === 2) {
+    DOM.sheetContent.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+        <div style="display: flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 10px 12px; border-radius: 12px;">
+          <span style="font-size: 18px;">✉️</span>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-size: 11px; font-weight: 800; color: #f8fafc;">Verification code sent</span>
+            <span style="font-size: 11.5px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #38bdf8;">${pattern || 'your email'}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Enter 6-Digit Code</label>
+          <input type="text" id="inpVerifyEmailCode" maxlength="6" placeholder="• • • • • •" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 800; color: #38bdf8; outline: none; text-align: center; letter-spacing: 6px;">
+        </div>
+
+        <div id="emailVerifErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+        <button type="button" id="btnConfirmEmailVerify" onclick="submitVerifyEmailCode('${purpose}')" class="feature-btn" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <span>✅</span>
+          <span>Verify & Confirm Email</span>
+        </button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+          <button type="button" onclick="openEmailVerificationModal('${purpose}', 1)" style="background: none; border: none; color: #94a3b8; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+            ← Change Email
+          </button>
+          <button type="button" onclick="submitSendVerifyEmailCode('${purpose}')" style="background: none; border: none; color: #38bdf8; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+            Resend Code
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  DOM.modalBackdrop.classList.add('open');
+};
+
+// Send OTP code
+window.submitSendVerifyEmailCode = async function(purpose = 'emailVerifyPurposeLoginSetup') {
+  const input = document.getElementById('inpVerifyEmailTarget');
+  const errNotice = document.getElementById('emailVerifErrorNotice');
+  const btn = document.getElementById('btnSendEmailCode');
+  const email = (input?.value || gameState.player.email || '').trim();
+
+  if (!email) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter an email address.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Sending Code...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.sendVerifyEmailCode === 'function') {
+    const res = await window.firebaseSync.sendVerifyEmailCode(purpose, email);
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Send 6-Digit Code';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Failed to send code.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    openEmailVerificationModal(purpose, 2, res.sent_code?.email_pattern || email);
+  } else {
+    alert('Service offline.');
+  }
+};
+
+// Verify OTP code
+window.submitVerifyEmailCode = async function(purpose = 'emailVerifyPurposeLoginSetup') {
+  const input = document.getElementById('inpVerifyEmailCode');
+  const errNotice = document.getElementById('emailVerifErrorNotice');
+  const btn = document.getElementById('btnConfirmEmailVerify');
+  const code = (input?.value || '').trim();
+
+  if (!code || code.length < 6) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter the 6-digit code.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Verifying...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.verifyEmail === 'function') {
+    const res = await window.firebaseSync.verifyEmail(purpose, { type: 'code', code });
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Verify & Confirm Email';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Verification failed.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    DOM.modalBackdrop.classList.remove('open');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎉 Email ${res.verified?.email || ''} successfully verified!`);
+    } else {
+      alert('Email successfully verified!');
+    }
+    updateProfileUI();
+  } else {
+    alert('Service offline.');
+  }
+};
+
+// Social 1-tap verification
+window.submitSocialEmailVerification = async function(provider) {
+  if (window.firebaseSync && typeof window.firebaseSync.verifyEmail === 'function') {
+    const res = await window.firebaseSync.verifyEmail('emailVerifyPurposeLoginSetup', {
+      type: provider,
+      token: `token_${provider}_${Date.now()}`
+    });
+
+    if (res.ok) {
+      DOM.modalBackdrop.classList.remove('open');
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Linked via ${provider.toUpperCase()}! Email verified.`);
+      }
+      updateProfileUI();
+    } else {
+      alert(res.error || 'Social sign-in failed.');
+    }
+  }
+};
+
+// Confirm unlink / reset email
+window.confirmResetLoginEmail = async function() {
+  if (!confirm('Unlink this email from your account? You can link or verify another email anytime.')) {
+    return;
+  }
+  if (window.firebaseSync && typeof window.firebaseSync.resetLoginEmail === 'function') {
+    await window.firebaseSync.resetLoginEmail();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Email address unlinked.');
+    }
+    updateProfileUI();
+  }
+};
+
+// ==========================================================================
+// TELEGRAM MTPROTO PHONE CODE DISPATCH & VERIFICATION FLOW
+// ==========================================================================
+
+window.renderPhoneCodeInputModal = function(phone, phoneCodeHash, mode = 'login', sentCodeType = {}) {
+  DOM.sheetTitle.textContent = mode === 'link' ? 'Verify Mobile Number' : 'Enter Telegram Code';
+
+  let countdown = 60;
+  const methodLabel = sentCodeType._constructor ? sentCodeType._constructor.split('#')[0] : 'SMS OTP';
+
+  DOM.sheetContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <div style="display: flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 10px 12px; border-radius: 12px;">
+        <span style="font-size: 20px;">📱</span>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-size: 11px; font-weight: 800; color: #f8fafc;">Code sent to ${phone}</span>
+          <span style="font-size: 10px; color: #38bdf8; font-family: 'JetBrains Mono', monospace;">Method: ${methodLabel}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">6-Digit OTP Code</label>
+        <input type="text" id="inpPhoneVerifyCode" maxlength="6" placeholder="• • • • • •" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 800; color: #38bdf8; outline: none; text-align: center; letter-spacing: 6px;">
+      </div>
+
+      <div id="phoneCodeErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+      <button id="btnSubmitPhoneVerify" class="feature-btn" onclick="submitVerifyPhoneCode('${phone}', '${phoneCodeHash}', '${mode}')" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+        <span>✅</span>
+        <span>Verify & Proceed</span>
+      </button>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+        <button type="button" onclick="openLoginWithCodeModal('phone')" style="background: none; border: none; color: #94a3b8; font-size: 11px; font-weight: 700; cursor: pointer;">
+          ← Change Number
+        </button>
+        <button type="button" id="btnPhoneResend" onclick="submitResendPhoneCode('${phone}', '${phoneCodeHash}', '${mode}')" style="background: none; border: none; color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer;">
+          Resend Code (<span id="phoneResendTimer">60s</span>)
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Countdown timer
+  clearInterval(window._phoneResendInterval);
+  window._phoneResendInterval = setInterval(() => {
+    countdown--;
+    const timerEl = document.getElementById('phoneResendTimer');
+    const resendBtn = document.getElementById('btnPhoneResend');
+    if (timerEl) timerEl.textContent = `${countdown}s`;
+    if (countdown <= 0) {
+      clearInterval(window._phoneResendInterval);
+      if (resendBtn) resendBtn.textContent = 'Resend Code Now';
+    }
+  }, 1000);
+};
+
+// Open Phone Verification Modal for linking phone to current account
+window.openPhoneVerificationModal = function() {
+  DOM.sheetTitle.textContent = 'Link & Verify Mobile Number';
+  const currentPhone = gameState.player.mobile || '';
+
+  DOM.sheetContent.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 4px 0;">
+      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">
+        Link your mobile phone number using Telegram's MTProto verification code dispatch.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Mobile Number</label>
+        <input type="tel" id="inpLinkPhoneTarget" placeholder="+1234567890" value="${currentPhone}" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #38bdf8; outline: none;">
+      </div>
+
+      <div id="phoneLinkErrorNotice" style="display: none; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 11px; color: #f87171; line-height: 1.4;"></div>
+
+      <button type="button" id="btnSendPhoneLinkCode" onclick="submitSendPhoneCode('link')" class="feature-btn" style="padding: 12px; font-size: 13px; font-weight: 800; border-radius: 12px; margin-top: 4px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+        <span>📨</span>
+        <span>Send Code (auth.sendCode)</span>
+      </button>
+    </div>
+  `;
+
+  DOM.modalBackdrop.classList.add('open');
+};
+
+// Send Phone Code handler
+window.submitSendPhoneCode = async function(mode = 'login') {
+  const inputId = mode === 'link' ? 'inpLinkPhoneTarget' : 'loginPhoneInput';
+  const errId = mode === 'link' ? 'phoneLinkErrorNotice' : 'loginPhoneErrorNotice';
+  const btnId = mode === 'link' ? 'btnSendPhoneLinkCode' : 'btnSendPhoneCodeSubmit';
+
+  const input = document.getElementById(inputId);
+  const errNotice = document.getElementById(errId);
+  const btn = document.getElementById(btnId);
+  const phone = (input?.value || '').trim();
+
+  if (!phone) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter a valid phone number with country code.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  const allowFirebase = document.getElementById('chkSettingFirebase')?.checked ?? true;
+  const allowFlashcall = document.getElementById('chkSettingFlashcall')?.checked ?? false;
+  const allowApp = document.getElementById('chkSettingApp')?.checked ?? false;
+
+  const settings = {
+    allow_firebase: allowFirebase,
+    allow_flashcall: allowFlashcall,
+    allow_app_hash: allowApp
+  };
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Sending Code...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.sendCode === 'function') {
+    const res = await window.firebaseSync.sendCode(phone, settings);
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Send Telegram Code';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Failed to send code.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    renderPhoneCodeInputModal(phone, res.sent_code?.phone_code_hash, mode, res.sent_code?.type);
+  } else {
+    alert('Service offline.');
+  }
+};
+
+// Verify Phone Code handler
+window.submitVerifyPhoneCode = async function(phone, phoneCodeHash, mode = 'login') {
+  const input = document.getElementById('inpPhoneVerifyCode');
+  const errNotice = document.getElementById('phoneCodeErrorNotice');
+  const btn = document.getElementById('btnSubmitPhoneVerify');
+  const code = (input?.value || '').trim();
+
+  if (!code || code.length < 5) {
+    if (errNotice) {
+      errNotice.textContent = 'Please enter the verification code.';
+      errNotice.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Verifying Code...';
+  }
+  if (errNotice) errNotice.style.display = 'none';
+
+  if (window.firebaseSync && typeof window.firebaseSync.signInWithPhone === 'function') {
+    const res = await window.firebaseSync.signInWithPhone(phone, phoneCodeHash, code);
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Verify & Proceed';
+    }
+
+    if (!res.ok) {
+      if (errNotice) {
+        errNotice.textContent = res.error || 'Verification failed.';
+        errNotice.style.display = 'block';
+      } else {
+        alert(res.error);
+      }
+      return;
+    }
+
+    clearInterval(window._phoneResendInterval);
+    DOM.modalBackdrop.classList.remove('open');
+
+    if (res.action === 'login') {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Logged in via phone ${phone}! Progress restored.`);
+      }
+    } else {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`📱 Mobile number ${phone} successfully linked & verified!`);
+      }
+    }
+    updateProfileUI();
+  } else {
+    alert('Service offline.');
+  }
+};
+
+// Resend Phone Code handler
+window.submitResendPhoneCode = async function(phone, phoneCodeHash, mode = 'login') {
+  if (window.firebaseSync && typeof window.firebaseSync.resendCode === 'function') {
+    const res = await window.firebaseSync.resendCode(phone, phoneCodeHash);
+    if (res.ok) {
+      renderPhoneCodeInputModal(phone, res.sent_code?.phone_code_hash || phoneCodeHash, mode, res.sent_code?.type);
+    }
+  }
+};

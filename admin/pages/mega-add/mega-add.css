@@ -1,0 +1,304 @@
+/* ==========================================================================
+   PAGE: MEGA ADD STYLES (pages/mega-add/mega-add.css)
+   ========================================================================== */
+
+/* Top Mega Tabs Header */
+.mega-tabs-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.02);
+}
+
+.mega-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.mega-tab-btn:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.mega-tab-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+.custom-req-count-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 99px;
+  line-height: 1.4;
+}
+
+.mega-tab-btn.active .custom-req-count-badge {
+  background: #ffffff;
+  color: #0284c7;
+}
+
+/* Category Selection with Arrow Dropdown */
+.category-dropdown-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+
+.category-select-btn {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-select-btn:hover {
+  border-color: #0284c7;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1);
+}
+
+.category-dropdown-wrap.open .category-select-btn {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.cat-select-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cat-select-icon {
+  font-size: 18px;
+}
+
+.cat-select-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cat-select-arrow {
+  font-size: 11px;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.category-dropdown-wrap.open .cat-select-arrow {
+  transform: rotate(180deg);
+  color: #0284c7;
+}
+
+/* Dropdown Menu */
+.category-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  padding: 6px;
+  z-index: 99;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.category-dropdown-wrap.open .category-dropdown-menu {
+  display: flex;
+}
+
+.cat-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.cat-dropdown-item:hover {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.cat-dropdown-item.selected {
+  background: #e0f2fe;
+  color: #0284c7;
+  font-weight: 800;
+}
+
+.cat-dropdown-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cat-dropdown-tag {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Catalog Filter Pills */
+.catalog-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cat-pill-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cat-pill-btn:hover {
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.cat-pill-btn.active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+/* Custom Requests Table Elements */
+.custom-status-filter-group {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 3px;
+}
+
+.btn-custom-filter {
+  background: transparent;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-custom-filter:hover {
+  color: #0f172a;
+}
+
+.btn-custom-filter.active {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.custom-img-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.link-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.link-pill-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.why-requires-text {
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.4;
+  max-width: 260px;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border-left: 3px solid #0284c7;
+}
+
+.mega-form-row-2col {
+  display: flex;
+  gap: 14px;
+}
+
+.mega-form-row-2col > * {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .mega-form-row-2col {
+    flex-direction: column !important;
+    gap: 12px;
+  }
+}
+
+
+

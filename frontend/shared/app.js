@@ -143,45 +143,9 @@ function switchPage(pageName) {
 window.switchPage = switchPage;
 
 // ==========================================================================
-// DAILY STREAK FULL MOBILE VIEW LOGIC
-// 24-Hour Cooldown Cycle & Custom Reward Drops:
-// Day 1: 2 Green Fuel Cells
-// Day 2: 1 Yellow Fuel Cell
-// Day 3: 1 Winning Key
-// Day 4: 25 Energy
-// Day 5: 1 Cyber Dragon Egg
-// Day 6: 1 Fortune Scratch Card
-// Day 7: 50 Coins Jackpot
+// DAILY STREAK HELPER
+// (Full 7-Day interactive streak logic is implemented in pages/streak/streak.js)
 // ==========================================================================
-function renderStreakView() {
-  const currentStreak = gameState.player.streakDays || 0;
-  const streakHeader = document.getElementById('streakDaysCount');
-  if (streakHeader) streakHeader.textContent = currentStreak;
-
-  const claimBtn = document.getElementById('btnClaimStreak');
-  const now = Date.now();
-  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-  const lastClaim = gameState.player.lastStreakClaimTime || 0;
-  const timeSinceClaim = now - lastClaim;
-  const canClaim = timeSinceClaim >= ONE_DAY_MS || lastClaim === 0;
-
-  if (claimBtn) {
-    if (canClaim) {
-      claimBtn.disabled = false;
-      claimBtn.innerHTML = '<span>⚡ CLAIM DAILY STREAK</span>';
-      claimBtn.classList.remove('claimed');
-    } else {
-      claimBtn.disabled = true;
-      const hoursLeft = Math.ceil((ONE_DAY_MS - timeSinceClaim) / (60 * 60 * 1000));
-      claimBtn.innerHTML = `<span>⏳ NEXT CLAIM IN ${hoursLeft}H</span>`;
-      claimBtn.classList.add('claimed');
-    }
-  }
-}
-
-function startStreakTimer() {
-  renderStreakView();
-}
 
 // Legacy modal fallback helper
 function closeTabModal() {
@@ -193,15 +157,15 @@ window.closeTabModal = closeTabModal;
 // Auto Bot & Audio Controls
 function toggleAutoBot() {
   gameState.settings.autoBotEnabled = !gameState.settings.autoBotEnabled;
+  if (DOM.autoTapToggleBtn) {
+    DOM.autoTapToggleBtn.classList.toggle('active', gameState.settings.autoBotEnabled);
+    DOM.autoTapToggleBtn.innerHTML = `<span>🤖</span> Auto Bot: ${gameState.settings.autoBotEnabled ? 'ON' : 'OFF'}`;
+  }
   if (gameState.settings.autoBotEnabled) {
-    DOM.autoTapToggleBtn.classList.add('active');
-    DOM.autoTapToggleBtn.innerHTML = `<span>🤖</span> Auto Bot: ON`;
     gameState.autoBotInterval = setInterval(() => {
-      if (gameState.currentTab === 'home') handleOrbTap();
+      if (gameState.currentTab === 'home' && typeof handleOrbTap === 'function') handleOrbTap();
     }, 600);
   } else {
-    DOM.autoTapToggleBtn.classList.remove('active');
-    DOM.autoTapToggleBtn.innerHTML = `<span>🤖</span> Auto Bot: OFF`;
     clearInterval(gameState.autoBotInterval);
     gameState.autoBotInterval = null;
   }
@@ -209,12 +173,9 @@ function toggleAutoBot() {
 
 function toggleSound() {
   gameState.settings.soundEnabled = !gameState.settings.soundEnabled;
-  if (gameState.settings.soundEnabled) {
-    DOM.soundToggleBtn.innerHTML = `<span>🔊</span> Sound: ON`;
-    DOM.soundToggleBtn.classList.remove('active');
-  } else {
-    DOM.soundToggleBtn.innerHTML = `<span>🔇</span> Sound: OFF`;
-    DOM.soundToggleBtn.classList.add('active');
+  if (DOM.soundToggleBtn) {
+    DOM.soundToggleBtn.innerHTML = `<span>${gameState.settings.soundEnabled ? '🔊' : '🔇'}</span> Sound: ${gameState.settings.soundEnabled ? 'ON' : 'OFF'}`;
+    DOM.soundToggleBtn.classList.toggle('active', !gameState.settings.soundEnabled);
   }
 }
 
@@ -222,13 +183,19 @@ function toggleSound() {
 function updateUI() {
   // Sync Header & Page Balance Badges across all pages
   const formattedCoins = formatNumber(gameState.player.coins || 0);
-  const diaVal = (gameState.player.diamonds !== undefined) ? gameState.player.diamonds : (gameState.player.blueCoins || 0);
-  const formattedDiamonds = formatNumber(diaVal);
+  const formattedBlueCoins = formatNumber(gameState.player.blueCoins || 0);
+  const formattedDiamonds = formatNumber(gameState.player.diamonds || 0);
 
+  // 1. Gold Coins
   const coinElements = document.querySelectorAll('#coinCounter, #headerCoinBalance, #shopCoinVal, #rewardCoinsBal, #profileCoinBalance');
   coinElements.forEach(el => { el.textContent = formattedCoins; });
 
-  const diamondElements = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, #shopDiamondVal, #profileDiamondBalance, #playerDiamondBalance, .blue-coin-val');
+  // 2. Blue Gem Coins (Header & In-Game Badges)
+  const blueElements = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
+  blueElements.forEach(el => { el.textContent = formattedBlueCoins; });
+
+  // 3. Diamonds (Header & Mega Reward & Profile Badges)
+  const diamondElements = document.querySelectorAll('#headerDiamondBalance, #playerDiamondBalance, .diamond-val');
   diamondElements.forEach(el => { el.textContent = formattedDiamonds; });
 
   if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
