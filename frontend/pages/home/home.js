@@ -124,12 +124,31 @@ function handleOrbTap(e) {
     gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
   }
 
-  // Award +1 Blue Gem Coin on every tap button click (Diamonds are exclusively for Mega Rewards)
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 1;
-  
+  const now = Date.now();
+
+  // 3. Tap Registration & Blue Coin Bank Collection
+  gameState.reactor.energyTaps = (gameState.reactor.energyTaps || 0) + 1;
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) {
+    gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
+  }
+
+  // Check 24-hour full bank withdrawal pass
+  const is24hPassActive = !!(gameState.bank && gameState.bank.fullWithdrawalPassEndTime && now < gameState.bank.fullWithdrawalPassEndTime);
+  let blueCoinDepositText = '+1 🏦 Bank';
+  if (is24hPassActive) {
+    // If pass is active, blue coins go directly to player wallet!
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 1;
+    blueCoinDepositText = '+1 💎 Blue Coin';
+  } else {
+    // Otherwise, per tap blue coin collects in the Big Bank
+    if (!gameState.bank) gameState.bank = { blueCoins: 0, fullWithdrawalPassEndTime: 0 };
+    gameState.bank.blueCoins = (gameState.bank.blueCoins || 0) + 1;
+  }
+
   const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
   blueEls.forEach(el => {
-    el.textContent = formatNumber(gameState.player.blueCoins);
+    el.textContent = formatNumber(gameState.player.blueCoins || 0);
   });
   const bluePill = document.getElementById('blueCoinPill') || (typeof DOM !== 'undefined' && DOM.blueCoinPill);
   if (bluePill) {
@@ -137,49 +156,76 @@ function handleOrbTap(e) {
     setTimeout(() => bluePill.classList.remove('pulse-glow'), 220);
   }
 
-  // 4. XP Progression (0.1 XP per tap, scaled with combo & active 2x boost)
-  const is2xActive = isHome2xBoostActive();
-  const boostFactor = is2xActive ? 2 : 1;
-  const xpGain = +(0.1 * (gameState.reactor.comboMultiplier || 1.0) * boostFactor).toFixed(2);
-  gameState.player.xp = +(gameState.player.xp + xpGain).toFixed(2);
+  // 4. Boosters & XP Progression
+  // Booster 2: 3 Hours 2X Profit
+  const isProfit2xActive = !!(
+    (gameState.reactor && gameState.reactor.profit2xEndTime && now < gameState.reactor.profit2xEndTime) ||
+    isHome2xBoostActive()
+  );
+  // Booster 4: Fast XP (+1 XP per tap for 10 min)
+  const isFastXpActive = !!(
+    gameState.reactor && gameState.reactor.fastXpEndTime && now < gameState.reactor.fastXpEndTime
+  );
 
-  // Level Up Check (Level 0: 1,000 XP, Level 1: 2,000 XP, Level 2: 3,000 XP...)
-  const maxLevel = gameState.player.maxLevel || 100;
-  if (!gameState.player.xpToNextLevel) {
-    gameState.player.xpToNextLevel = getLevelRequiredXP(gameState.player.level || 0);
+  const boostFactor = isProfit2xActive ? 2 : 1;
+  const comboMultiplier = gameState.reactor.comboMultiplier || 1.0;
+  let xpGain = +(0.1 * comboMultiplier * boostFactor).toFixed(2);
+  if (isFastXpActive) {
+    xpGain = +(xpGain + 1.0).toFixed(2); // +1 extra point per tap!
   }
-  while (gameState.player.level < maxLevel && gameState.player.xp >= gameState.player.xpToNextLevel) {
-    gameState.player.xp = +(gameState.player.xp - gameState.player.xpToNextLevel).toFixed(2);
-    gameState.player.level += 1;
-    gameState.player.xpToNextLevel = getLevelRequiredXP(gameState.player.level);
-    sfx.playLevelUpSound();
-    triggerLevelUpAnimation();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎉 Level Up! You reached Level ${gameState.player.level}!`);
+
+  gameState.player.xp = +(gameState.player.xp + xpGain).toFixed(2);
+  if (gameState.progression) {
+    gameState.progression.levelXp = +((gameState.progression.levelXp || 0) + xpGain).toFixed(2);
+  }
+
+  // Level Up Check
+  const maxLevel = gameState.player.maxLevel || 100;
+  const curActiveLvl = typeof getActiveLevel === 'function' ? getActiveLevel() : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
+  const cfgActive = typeof getLevelConfig === 'function' ? getLevelConfig(curActiveLvl) : null;
+  const xpNeeded = cfgActive ? Number(cfgActive.xpRequired) : (typeof getLevelRequiredXP === 'function' ? getLevelRequiredXP(curActiveLvl) : curActiveLvl * 1000);
+
+  if ((gameState.progression && gameState.progression.levelXp >= xpNeeded) || (gameState.player.xp >= xpNeeded)) {
+    // Check if targets are also completed or auto-advance
+    if (typeof canClaimActiveLevel === 'function' && canClaimActiveLevel(curActiveLvl)) {
+      if (typeof completeActiveLevel === 'function') {
+        completeActiveLevel(curActiveLvl);
+        sfx.playLevelUpSound();
+        triggerLevelUpAnimation();
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast(`🎉 Level ${curActiveLvl} Completed! Advanced to Level ${getActiveLevel()}!`);
+        }
+      }
     }
   }
 
-  // 5. Random Item Drops on Taps (🎟️ Card, 🔑 Key, 🎫 Ticket) -> Sync to Goal Tab & Level Mission
+  // 5. Random Item Drops on Taps (🎟️ Card, 🔑 Key, 🎫 Ticket) -> Level Targets
   let droppedItem = null;
   const roll = Math.random();
-  if (roll < 0.25) { // 25% chance per tap
-    const curLvl = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
-    const targetLvl = curLvl === 0 ? 1 : curLvl;
-    const req = typeof getGoalLevelRequirements === 'function' ? getGoalLevelRequirements(targetLvl) : { cards: 20, keys: 50, tickets: 35 };
+  if (roll < 0.28) { // 28% chance per tap
+    const activeLvl = typeof getActiveLevel === 'function' ? getActiveLevel() : ((gameState.progression && gameState.progression.activeLevel) || 1);
+    const req = typeof getGoalLevelRequirements === 'function' ? getGoalLevelRequirements(activeLvl) : { cards: 20, keys: 50, tickets: 35 };
+    if (!gameState.progression) {
+      gameState.progression = { activeLevel: 1, completedLevels: {}, levelProgress: { cards: 0, keys: 0, tickets: 0 }, levelXp: 0 };
+    }
+    if (!gameState.progression.levelProgress) {
+      gameState.progression.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+    }
+    if (!gameState.goalState) gameState.goalState = {};
     if (!gameState.goalState.levelProgress) gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     
     const itemRoll = Math.random();
     if (itemRoll < 0.35) {
-      // 🃏 Card Drop
-      gameState.goalState.levelProgress.cards = Math.min(req.cards, (gameState.goalState.levelProgress.cards || 0) + 1);
+      gameState.progression.levelProgress.cards = Math.min(req.cards, (gameState.progression.levelProgress.cards || 0) + 1);
+      gameState.goalState.levelProgress.cards = gameState.progression.levelProgress.cards;
       droppedItem = { text: '🃏 +1 Card', color: '#f43f5e' };
     } else if (itemRoll < 0.70) {
-      // 🥢 Dandiya Drop
-      gameState.goalState.levelProgress.keys = Math.min(req.keys, (gameState.goalState.levelProgress.keys || 0) + 1);
+      gameState.progression.levelProgress.keys = Math.min(req.keys, (gameState.progression.levelProgress.keys || 0) + 1);
+      gameState.goalState.levelProgress.keys = gameState.progression.levelProgress.keys;
       droppedItem = { text: '🥢 +1 Dandiya', color: '#fbbf24' };
     } else {
-      // 🌸 Flower Drop
-      gameState.goalState.levelProgress.tickets = Math.min(req.tickets, (gameState.goalState.levelProgress.tickets || 0) + 1);
+      gameState.progression.levelProgress.tickets = Math.min(req.tickets, (gameState.progression.levelProgress.tickets || 0) + 1);
+      gameState.goalState.levelProgress.tickets = gameState.progression.levelProgress.tickets;
       droppedItem = { text: '🌸 +1 Flower', color: '#ec4899' };
     }
   }
@@ -205,15 +251,24 @@ function handleOrbTap(e) {
   }
 
   if (clientX && clientY) {
-    const is2xActive = isHome2xBoostActive();
-    createFloatingNumber(clientX, clientY, is2xActive ? '⚡ +1 Tap (*2 Boost)' : '+1 Tap', is2xActive ? '#fbbf24' : '#38bdf8');
+    let tapText = '+1 Tap';
+    if (isProfit2xActive) tapText = '🔥 +1 Tap (*2 Profit)';
+    createFloatingNumber(clientX, clientY, tapText, isProfit2xActive ? '#fbbf24' : '#38bdf8');
+    
     setTimeout(() => {
-      createFloatingNumber(clientX + (Math.random() - 0.5) * 24, clientY - 26, '+1 💎 Blue Coin', '#38bdf8');
+      createFloatingNumber(clientX + (Math.random() - 0.5) * 24, clientY - 26, blueCoinDepositText, '#38bdf8');
     }, 70);
+
+    if (isFastXpActive) {
+      setTimeout(() => {
+        createFloatingNumber(clientX + (Math.random() - 0.5) * 20, clientY - 38, '+1 ⭐ Fast XP', '#c084fc');
+      }, 110);
+    }
+
     if (droppedItem) {
       setTimeout(() => {
         createFloatingNumber(clientX + (Math.random() - 0.5) * 30, clientY - 48, droppedItem.text, droppedItem.color);
-      }, 150);
+      }, 160);
     }
     createSparks(clientX, clientY);
   }
@@ -314,28 +369,45 @@ function triggerLevelUpAnimation() {
 }
 
 function updateHomeUI() {
-  if (DOM.playerLevelBadge) DOM.playerLevelBadge.textContent = `Lv.${gameState.player.level}`;
+  const activeLevel = typeof getActiveLevel === 'function'
+    ? getActiveLevel()
+    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
+
+  if (DOM.playerLevelBadge) DOM.playerLevelBadge.textContent = `Lv.${activeLevel}`;
   const goldEls = document.querySelectorAll('#coinCounter, #headerCoinBalance');
   goldEls.forEach(el => { el.textContent = formatNumber(gameState.player.coins); });
   const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
   blueEls.forEach(el => { el.textContent = formatNumber(gameState.player.blueCoins || 0); });
   const diamondEls = document.querySelectorAll('#headerDiamondBalance, #playerDiamondBalance');
   diamondEls.forEach(el => { el.textContent = formatNumber(gameState.player.diamonds || 0); });
-  if (DOM.xpLevelNum) DOM.xpLevelNum.textContent = gameState.player.level;
 
-  // XP Progress Fill
-  const xpCurrent = +(gameState.player.xp || 0);
-  const xpTarget = gameState.player.xpToNextLevel || getLevelRequiredXP(gameState.player.level || 0);
+  // Level Config from single source of truth
+  const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(activeLevel) : null;
+  const xpTarget = cfg ? Number(cfg.xpRequired) : (typeof getLevelRequiredXP === 'function' ? getLevelRequiredXP(activeLevel) : activeLevel * 1000);
+  const xpCurrent = (gameState.progression && gameState.progression.levelXp !== undefined)
+    ? Number(gameState.progression.levelXp)
+    : Number(gameState.player.xp || 0);
+
+  // XP Card
+  if (DOM.xpLevelNum) DOM.xpLevelNum.textContent = activeLevel;
   const xpPercent = Math.min(100, Math.max(0, (xpCurrent / xpTarget) * 100));
   if (DOM.xpProgressFill) DOM.xpProgressFill.style.width = `${xpPercent}%`;
 
-  // Goal Card Progress & Stats (Levels 1 - 100 System)
-  const curGoalLvl = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
-  const targetGoalLvl = curGoalLvl === 0 ? 1 : curGoalLvl;
-  const goalReq = typeof getGoalLevelRequirements === 'function' ? getGoalLevelRequirements(targetGoalLvl) : { cards: 20, keys: 50, tickets: 35 };
-  const goalProg = (gameState.goalState && gameState.goalState.levelProgress) || { cards: 0, keys: 0, tickets: 0 };
+  const xpLevelLimitEl = document.getElementById('xpLevelLimitText');
+  if (xpLevelLimitEl) {
+    xpLevelLimitEl.textContent = `${Math.floor(xpCurrent)} / ${xpTarget}`;
+  }
 
-  if (DOM.goalLevelNum) DOM.goalLevelNum.textContent = curGoalLvl;
+  // Goal Card Progress & Stats (Active Level Targets)
+  const goalReq = (cfg && cfg.targets)
+    ? cfg.targets
+    : (typeof getGoalLevelRequirements === 'function' ? getGoalLevelRequirements(activeLevel) : { cards: 20, keys: 50, tickets: 35 });
+  
+  const goalProg = (gameState.progression && gameState.progression.levelProgress)
+    || (gameState.goalState && gameState.goalState.levelProgress)
+    || { cards: 0, keys: 0, tickets: 0 };
+
+  if (DOM.goalLevelNum) DOM.goalLevelNum.textContent = activeLevel;
   
   const goalCardsEl = document.getElementById('goalCards') || DOM.goalCoins;
   if (goalCardsEl) goalCardsEl.textContent = `${goalProg.cards || 0}/${goalReq.cards}`;
@@ -343,9 +415,9 @@ function updateHomeUI() {
   if (DOM.goalTickets) DOM.goalTickets.textContent = `${goalProg.tickets || 0}/${goalReq.tickets}`;
   
   const totalGoalRatio = (
-    ((goalProg.cards || 0) / goalReq.cards) * 0.34 +
-    ((goalProg.keys || 0) / goalReq.keys) * 0.33 +
-    ((goalProg.tickets || 0) / goalReq.tickets) * 0.33
+    (((goalProg.cards || 0) / goalReq.cards) * 0.34) +
+    (((goalProg.keys || 0) / goalReq.keys) * 0.33) +
+    (((goalProg.tickets || 0) / goalReq.tickets) * 0.33)
   ) * 100;
   if (DOM.goalProgressFill) DOM.goalProgressFill.style.width = `${Math.min(100, Math.max(6, totalGoalRatio))}%`;
 
@@ -356,37 +428,39 @@ function updateHomeUI() {
     energyTapEl.textContent = Math.floor(Math.max(0, curEnergy)).toString();
   }
 
-  // XP Card Level Limit Text (e.g. "10/1000")
-  const xpLevelLimitEl = document.getElementById('xpLevelLimitText');
-  if (xpLevelLimitEl) {
-    const formattedCur = (xpCurrent % 1 === 0) ? xpCurrent.toString() : xpCurrent.toFixed(1);
-    const formattedTar = xpTarget.toString();
-    xpLevelLimitEl.textContent = `${formattedCur}/${formattedTar}`;
-  }
-
-  // Update Profile Circle Badge
-  const profileBadgeEl = document.getElementById('circleProfileBadge');
-  if (profileBadgeEl) {
-    profileBadgeEl.textContent = `LV.${gameState.player.level || 0}`;
-  }
-
-  // Update Auto-Click Circle Badge & Active Pulse
-  const autoBadgeEl = document.getElementById('circleAutoBadge');
-  const autoCircleBtn = document.getElementById('btnCircleAutoClick');
-  const isAutoOn = !!(gameState.settings && gameState.settings.autoBotEnabled);
-  if (autoBadgeEl) {
-    autoBadgeEl.textContent = isAutoOn ? 'ON' : 'BOT';
-  }
-  if (autoCircleBtn) {
-    if (isAutoOn) {
-      autoCircleBtn.classList.add('pulse-active');
+  // Booster Button Badges
+  const now = Date.now();
+  const badgeProfit = document.getElementById('badgeBoosterProfit');
+  if (badgeProfit) {
+    const isAct = !!(gameState.reactor && gameState.reactor.profit2xEndTime && now < gameState.reactor.profit2xEndTime);
+    if (isAct) {
+      const rem = Math.ceil((gameState.reactor.profit2xEndTime - now) / 1000);
+      const h = Math.floor(rem / 3600);
+      const m = Math.floor((rem % 3600) / 60);
+      badgeProfit.textContent = `${h}h ${m}m`;
     } else {
-      autoCircleBtn.classList.remove('pulse-active');
+      badgeProfit.textContent = '*2 PROFIT';
     }
   }
 
-  // Update 2X Multiplier Badge
-  updateHome2xBadge();
+  const badgeBank = document.getElementById('badgeBoosterBank');
+  if (badgeBank) {
+    const bankCoins = (gameState.bank && gameState.bank.blueCoins) || 0;
+    badgeBank.textContent = `${bankCoins} 🪙`;
+  }
+
+  const badgeFastXp = document.getElementById('badgeBoosterFastXp');
+  if (badgeFastXp) {
+    const isAct = !!(gameState.reactor && gameState.reactor.fastXpEndTime && now < gameState.reactor.fastXpEndTime);
+    if (isAct) {
+      const rem = Math.ceil((gameState.reactor.fastXpEndTime - now) / 1000);
+      const m = Math.floor(rem / 60);
+      const s = rem % 60;
+      badgeFastXp.textContent = `${m}:${String(s).padStart(2, '0')}`;
+    } else {
+      badgeFastXp.textContent = 'FAST XP';
+    }
+  }
 
   // Update Combo Pill
   updateHomeComboPill();
@@ -602,18 +676,26 @@ function openHomeActionPopup(type) {
 
   currentHomePopupType = type;
 
-  if (type === 'ads_2x') {
-    renderHome2xPopup(header, body);
+  if (type === 'booster_energy') {
+    renderBoosterEnergyPopup(header, body);
+  } else if (type === 'booster_profit') {
+    renderBoosterProfitPopup(header, body);
+  } else if (type === 'booster_bank') {
+    renderBoosterBankPopup(header, body);
+  } else if (type === 'booster_fast_xp') {
+    renderBoosterFastXpPopup(header, body);
+  } else if (type === 'ads_2x') {
+    renderBoosterProfitPopup(header, body);
   } else if (type === 'auto_click') {
     renderHomeAutoClickPopup(header, body);
   } else if (type === 'profile') {
     renderHomeProfilePopup(header, body);
   } else if (type === 'coin') {
-    renderHomeCoinPopup(header, body);
+    renderBoosterEnergyPopup(header, body);
   } else if (type === 'blue') {
-    renderHomeBlueCoinPopup(header, body);
+    renderBoosterBankPopup(header, body);
   } else if (type === 'bonus') {
-    renderHomeBonusPopup(header, body);
+    renderBoosterFastXpPopup(header, body);
   }
 
   backdrop.classList.add('open');
@@ -636,18 +718,389 @@ function refreshHomePopupIfOpen(type) {
     const header = document.getElementById('homePopupHeader');
     const body = document.getElementById('homePopupBody');
     if (header && body) {
-      if (type === 'ads_2x') renderHome2xPopup(header, body);
-      else if (type === 'auto_click') renderHomeAutoClickPopup(header, body);
-      else if (type === 'profile') renderHomeProfilePopup(header, body);
-      else if (type === 'coin') renderHomeCoinPopup(header, body);
-      else if (type === 'blue') renderHomeBlueCoinPopup(header, body);
-      else if (type === 'bonus') renderHomeBonusPopup(header, body);
+      if (type === 'booster_energy') renderBoosterEnergyPopup(header, body);
+      else if (type === 'booster_profit') renderBoosterProfitPopup(header, body);
+      else if (type === 'booster_bank') renderBoosterBankPopup(header, body);
+      else if (type === 'booster_fast_xp') renderBoosterFastXpPopup(header, body);
+      else if (type === 'ads_2x') renderBoosterProfitPopup(header, body);
     }
   }
 }
 
-// 1. Garba 2X Tap Multiplier Popup View
-// Note: Only the 30-min active usage timer is displayed in popup. The 2-hour reset cooldown is NOT shown in popup.
+
+// ==========================================================================
+// 4 NEW BOOSTER POPUPS & ACTIONS (TASKS #3)
+// 1. 10 Energy (1 Ad or 100 Coins)
+// 2. 3 Hours *2 Profit (1 Ad or 150 Coins)
+// 3. Big Bank Blue Coin Deposit/Withdraw (1 Ad = 100 Coins, 100 Diamonds = Full + 24h Pass)
+// 4. Fast XP Surge (100 Diamonds or 5 Ads)
+// ==========================================================================
+
+// 1. 10 Energy Booster Popup View
+function renderBoosterEnergyPopup(header, body) {
+  header.innerHTML = `
+    <div class="home-popup-festive-pill">⚡ ENERGY GENERATOR</div>
+    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(2, 132, 199, 0.1) 100%); border: 2px solid #38bdf8; color: #38bdf8; font-size: 28px;">⚡</div>
+    <h3 class="home-popup-title">10 ENERGY BOOSTER</h3>
+    <p class="home-popup-subtitle">Instantly get +10 Energy units to keep tapping and powering up your reactor!</p>
+  `;
+  body.innerHTML = `
+    <div class="popup-stat-banner">
+      <span class="popup-stat-label">Energy Reward</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-weight: 800;">+10 ENERGY UNITS</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyEnergyBoosterWithAd()">
+        <span style="font-size: 18px;">🎬</span> WATCH 1 AD FOR +10 ENERGY
+      </button>
+      <button class="popup-action-btn btn-gold-glow" style="background: linear-gradient(135deg, #d97706, #b45309); border: 1.5px solid #fbbf24; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyEnergyBoosterWithCoins()">
+        <span style="font-size: 18px;">🪙</span> BUY FOR 100 COINS (+10 ENERGY)
+      </button>
+    </div>
+  `;
+}
+
+window.buyEnergyBoosterWithAd = function() {
+  const doReward = () => {
+    gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 10;
+    sfx.playEnergyRechargeSound ? sfx.playEnergyRechargeSound() : sfx.playTapSound(2);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ +10 Energy Recharged via Ad!');
+    }
+    closeHomeActionPopup();
+    updateUI();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward);
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('energy', '10 Energy Booster', 'Watch 1 Ad for +10 Energy', doReward);
+  } else {
+    doReward();
+  }
+};
+
+window.buyEnergyBoosterWithCoins = function() {
+  if ((gameState.player.coins || 0) < 100) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Need 100 Coins to recharge +10 Energy!');
+    }
+    return;
+  }
+  gameState.player.coins -= 100;
+  gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 10;
+  sfx.playEnergyRechargeSound ? sfx.playEnergyRechargeSound() : sfx.playTapSound(2);
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('⚡ +10 Energy Purchased! (-100 Coins)');
+  }
+  closeHomeActionPopup();
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// 2. 3 Hours *2 Profit Booster Popup View
+function renderBoosterProfitPopup(header, body) {
+  const now = Date.now();
+  const isAct = !!(gameState.reactor && gameState.reactor.profit2xEndTime && now < gameState.reactor.profit2xEndTime);
+  const remSecs = isAct ? Math.ceil((gameState.reactor.profit2xEndTime - now) / 1000) : 0;
+  const h = Math.floor(remSecs / 3600);
+  const m = Math.floor((remSecs % 3600) / 60);
+  const s = remSecs % 60;
+  const timeStr = `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+
+  header.innerHTML = `
+    <div class="home-popup-festive-pill">🔥 SUPER PROFIT BOOST</div>
+    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, rgba(180, 83, 9, 0.1) 100%); border: 2px solid #f59e0b; color: #fbbf24; font-size: 28px;">🔥</div>
+    <h3 class="home-popup-title">3 HOURS *2 PROFIT</h3>
+    <p class="home-popup-subtitle">Supercharge your sacred taps! Doubles all energy output, tap combo gains, and profits for 3 full hours!</p>
+  `;
+
+  let statusHtml = '';
+  if (isAct) {
+    statusHtml = `
+      <div style="background: rgba(245, 158, 11, 0.18); border: 1.5px solid #f59e0b; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #fbbf24;">🔥 *2 PROFIT ACTIVE!</div>
+        <div style="font-size: 24px; font-weight: 900; color: #ffffff; font-family: monospace;">${timeStr}</div>
+        <div style="font-size: 10px; color: #fde68a;">Time Remaining</div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    ${statusHtml}
+    <div class="popup-stat-banner">
+      <span class="popup-stat-label">Profit Multiplier</span>
+      <span class="popup-stat-value" style="color: #f59e0b; font-weight: 800;">*2.0X SACRED PROFIT (3 HOURS)</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyProfitBoosterWithAd()">
+        <span style="font-size: 18px;">🎬</span> WATCH 1 AD FOR 3H *2 PROFIT
+      </button>
+      <button class="popup-action-btn btn-gold-glow" style="background: linear-gradient(135deg, #d97706, #b45309); border: 1.5px solid #fbbf24; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyProfitBoosterWithCoins()">
+        <span style="font-size: 18px;">🪙</span> BUY FOR 150 COINS (3H *2 PROFIT)
+      </button>
+    </div>
+  `;
+}
+
+window.buyProfitBoosterWithAd = function() {
+  const doReward = () => {
+    gameState.reactor.profit2xEndTime = Date.now() + (3 * 3600 * 1000);
+    sfx.playLevelUpSound();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔥 3 Hours *2 Profit Boost Activated via Ad!');
+    }
+    closeHomeActionPopup();
+    updateUI();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward);
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('profit', '3H *2 Profit Boost', 'Watch 1 Ad for 3 Hours of 2X Profit', doReward);
+  } else {
+    doReward();
+  }
+};
+
+window.buyProfitBoosterWithCoins = function() {
+  if ((gameState.player.coins || 0) < 150) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Need 150 Coins for 3H *2 Profit Boost!');
+    }
+    return;
+  }
+  gameState.player.coins -= 150;
+  gameState.reactor.profit2xEndTime = Date.now() + (3 * 3600 * 1000);
+  sfx.playLevelUpSound();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('🔥 3 Hours *2 Profit Boost Purchased! (-150 Coins)');
+  }
+  closeHomeActionPopup();
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// 3. Big Bank Blue Coin Deposit/Withdraw Popup View
+function renderBoosterBankPopup(header, body) {
+  const now = Date.now();
+  const bankBalance = (gameState.bank && gameState.bank.blueCoins) || 0;
+  const isPassActive = !!(gameState.bank && gameState.bank.fullWithdrawalPassEndTime && now < gameState.bank.fullWithdrawalPassEndTime);
+  const remSecs = isPassActive ? Math.ceil((gameState.bank.fullWithdrawalPassEndTime - now) / 1000) : 0;
+  const h = Math.floor(remSecs / 3600);
+  const m = Math.floor((remSecs % 3600) / 60);
+  const s = remSecs % 60;
+  const passStr = `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+
+  header.innerHTML = `
+    <div class="home-popup-festive-pill">🏦 BLUE COIN BIG BANK</div>
+    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, rgba(8, 145, 178, 0.1) 100%); border: 2px solid #06b6d4; color: #38bdf8; font-size: 28px;">🏦</div>
+    <h3 class="home-popup-title">BIG BANK VAULT</h3>
+    <p class="home-popup-subtitle">Every sacred tap deposits 1 Blue Coin into this vault! Withdraw 100 with 1 Ad, or unlock full withdrawals + 24-hour pass with 100 Diamonds.</p>
+  `;
+
+  let passHtml = '';
+  if (isPassActive) {
+    passHtml = `
+      <div style="background: rgba(16, 185, 129, 0.18); border: 1.5px solid #10b981; border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #10b981;">✅ 24H FULL WITHDRAWAL PASS ACTIVE</div>
+        <div style="font-size: 20px; font-weight: 900; color: #ffffff; font-family: monospace;">${passStr}</div>
+        <div style="font-size: 10px; color: #a7f3d0;">All tap coins go straight to your wallet!</div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    ${passHtml}
+    <div class="popup-stat-banner" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4);">
+      <span class="popup-stat-label">Bank Vault Balance</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 🪙 Blue Coins</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="withdrawBankWithAd()">
+        <span style="font-size: 18px;">🎬</span> WATCH 1 AD -> WITHDRAW 100 BLUE COINS
+      </button>
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 1.5px solid #a78bfa; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);" onclick="withdrawFullBankWithDiamonds()">
+        <span style="font-size: 18px;">💎</span> 100 DIAMONDS: FULL WITHDRAWAL + 24H PASS
+      </button>
+    </div>
+  `;
+}
+
+window.withdrawBankWithAd = function() {
+  const available = (gameState.bank && gameState.bank.blueCoins) || 0;
+  if (available <= 0) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Big Bank is empty! Tap the reactor to store Blue Coins first.');
+    }
+    return;
+  }
+
+  const doReward = () => {
+    const amt = Math.min(100, (gameState.bank && gameState.bank.blueCoins) || 0);
+    gameState.bank.blueCoins = Math.max(0, (gameState.bank.blueCoins || 0) - amt);
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + amt;
+    sfx.playLevelUpSound();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🏦 Withdrew ${amt} Blue Coins from Big Bank!`);
+    }
+    closeHomeActionPopup();
+    updateUI();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward);
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('bank', 'Big Bank Withdrawal', 'Watch 1 Ad to withdraw 100 Blue Coins', doReward);
+  } else {
+    doReward();
+  }
+};
+
+window.withdrawFullBankWithDiamonds = function() {
+  if ((gameState.player.diamonds || 0) < 100) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Need 100 Diamonds for Full Bank Withdrawal + 24H Pass!');
+    }
+    return;
+  }
+
+  gameState.player.diamonds -= 100;
+  const available = (gameState.bank && gameState.bank.blueCoins) || 0;
+  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + available;
+  if (gameState.bank) gameState.bank.blueCoins = 0;
+  gameState.bank.fullWithdrawalPassEndTime = Date.now() + (24 * 3600 * 1000);
+
+  sfx.playLevelUpSound();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🏦 Full Bank Withdrawn (${available} Blue Coins) & 24H Pass Activated!`);
+  }
+  closeHomeActionPopup();
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// 4. Fast XP Surge (+1 XP/tap for 10 min) Popup View
+function renderBoosterFastXpPopup(header, body) {
+  const now = Date.now();
+  const isAct = !!(gameState.reactor && gameState.reactor.fastXpEndTime && now < gameState.reactor.fastXpEndTime);
+  const remSecs = isAct ? Math.ceil((gameState.reactor.fastXpEndTime - now) / 1000) : 0;
+  const m = Math.floor(remSecs / 60);
+  const s = remSecs % 60;
+  const timeStr = `${m}m ${String(s).padStart(2, '0')}s`;
+  const adsWatched = (gameState.reactor && gameState.reactor.fastXpAdsWatched) || 0;
+
+  header.innerHTML = `
+    <div class="home-popup-festive-pill">⭐ FAST XP ACCELERATOR</div>
+    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(126, 34, 206, 0.1) 100%); border: 2px solid #a855f7; color: #c084fc; font-size: 28px;">⭐</div>
+    <h3 class="home-popup-title">FAST XP SURGE (+1 XP/TAP)</h3>
+    <p class="home-popup-subtitle">Supercharge your level progression! Every single tap awards +1 FULL XP point for 10 minutes working duration.</p>
+  `;
+
+  let statusHtml = '';
+  if (isAct) {
+    statusHtml = `
+      <div style="background: rgba(168, 85, 247, 0.18); border: 1.5px solid #a855f7; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #c084fc;">⭐ FAST XP ACTIVE (+1 XP PER TAP)</div>
+        <div style="font-size: 24px; font-weight: 900; color: #ffffff; font-family: monospace;">${timeStr}</div>
+        <div style="font-size: 10px; color: #e9d5ff;">Time Remaining</div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    ${statusHtml}
+    <div class="popup-stat-banner">
+      <span class="popup-stat-label">Fast XP Rate</span>
+      <span class="popup-stat-value" style="color: #c084fc; font-weight: 800;">+1 XP PER TAP (10 MINS)</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 1.5px solid #a78bfa; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="activateFastXpWithDiamonds()">
+        <span style="font-size: 18px;">💎</span> 100 DIAMONDS -> 10 MIN FAST XP
+      </button>
+      <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="watchFastXpAd()">
+        <span style="font-size: 18px;">🎬</span> WATCH 5 ADS (${adsWatched}/5 WATCHED)
+      </button>
+    </div>
+  `;
+}
+
+window.activateFastXpWithDiamonds = function() {
+  if ((gameState.player.diamonds || 0) < 100) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Need 100 Diamonds to activate 10 Min Fast XP!');
+    }
+    return;
+  }
+  gameState.player.diamonds -= 100;
+  gameState.reactor.fastXpEndTime = Date.now() + (10 * 60 * 1000);
+  sfx.playLevelUpSound();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('⭐ Fast XP Surge Activated! +1 XP per tap for 10 minutes!');
+  }
+  closeHomeActionPopup();
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+window.watchFastXpAd = function() {
+  const doReward = () => {
+    gameState.reactor.fastXpAdsWatched = ((gameState.reactor.fastXpAdsWatched || 0) + 1);
+    if (gameState.reactor.fastXpAdsWatched >= 5) {
+      gameState.reactor.fastXpAdsWatched = 0;
+      gameState.reactor.fastXpEndTime = Date.now() + (10 * 60 * 1000);
+      sfx.playLevelUpSound();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⭐ 5 Ads Watched! Fast XP Surge Activated for 10 minutes!');
+      }
+      closeHomeActionPopup();
+    } else {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎬 Ad Watched (${gameState.reactor.fastXpAdsWatched}/5)! Watch ${5 - gameState.reactor.fastXpAdsWatched} more for Fast XP.`);
+      }
+      refreshHomePopupIfOpen('booster_fast_xp');
+    }
+    updateUI();
+    saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward);
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('fast_xp', 'Fast XP Ad Watcher', `Watch ad (${(gameState.reactor.fastXpAdsWatched || 0) + 1}/5) for 10 Min Fast XP Surge`, doReward);
+  } else {
+    doReward();
+  }
+};
+
+
 function renderHome2xPopup(header, body) {
   const isActive = isHome2xBoostActive();
   const isCooldown = isHome2xCooldownActive();
@@ -1155,6 +1608,11 @@ window.addEventListener('gameConfigUpdated', () => {
   renderHomeAnnouncement();
 });
 
+window.addEventListener('levelsConfigUpdated', () => {
+  updateHomeUI();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   renderHomeAnnouncement();
 });
+

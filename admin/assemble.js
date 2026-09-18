@@ -120,9 +120,9 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
         <span class="nav-badge" id="badgeRewardsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
-        <span class="nav-icon">📨</span>
-        <span>Mega Request</span>
+      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Wallet & Withdrawal Management')">
+        <span class="nav-icon">💳</span>
+        <span>Wallet / Withdrawals</span>
         <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
       </button>
 
@@ -265,6 +265,14 @@ const footerContent = `
           <input type="number" id="editModalGoalLevel" class="form-input" style="color: #2563eb; font-weight: 800;">
         </div>
         <div class="form-group">
+          <label class="form-label">Current XP ⭐</label>
+          <input type="number" id="editModalXp" class="form-input" style="color: #6366f1; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Energy ⚡</label>
+          <input type="number" id="editModalEnergy" class="form-input" style="color: #f59e0b; font-weight: 800;">
+        </div>
+        <div class="form-group">
           <label class="form-label">Coins 🪙</label>
           <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
         </div>
@@ -291,6 +299,13 @@ const footerContent = `
         <div class="form-group">
           <label class="form-label">Egg Coins 🥚</label>
           <input type="number" id="editModalEggs" class="form-input" style="color: #059669; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Status</label>
+          <select id="editModalStatus" class="form-input" style="font-weight: 700;">
+            <option value="active">Active (Normal)</option>
+            <option value="disabled">Disabled (Suspended)</option>
+          </select>
         </div>
       </div>
 
@@ -615,8 +630,17 @@ const footerContent = `
   <!-- Chart.js Graphical Representation Engine -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+  <!-- Firebase Cloud Realtime SDKs & Shared Service -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="shared/firebase.js"></script>
+
   <!-- Admin Direct Read & Edit Access Engine (Point 4) -->
   <script>
+    const ADMIN_SECURITY_KEY = '0911';
+    let pendingSecurityAction = null;
+
     function requireAdminPassword(actionCallback) {
       if (typeof actionCallback === 'function') {
         actionCallback();
@@ -660,7 +684,7 @@ const footerContent = `
 
     // Shared modal action wrappers requiring 0911
     function savePlayerEditToFirebase() {
-      requireAdminPassword(() => {
+      requireAdminPassword(async () => {
         const uid = window.currentEditingUserUid;
         if (!uid) return;
         const db = window.getDb ? window.getDb() : null;
@@ -668,7 +692,10 @@ const footerContent = `
 
         const updates = {
           level: Number(document.getElementById('editModalLevel')?.value) || 0,
+          xp: Number(document.getElementById('editModalXp')?.value) || 0,
+          energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
+          blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
           chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
           scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,
@@ -677,15 +704,28 @@ const footerContent = `
         };
 
         const goalLevel = Number(document.getElementById('editModalGoalLevel')?.value) || 0;
+        const status = document.getElementById('editModalStatus')?.value || 'active';
 
-        Promise.all([
-          db.ref('/players/' + uid + '/player').update(updates),
-          db.ref('/players/' + uid + '/goal/level').set(goalLevel),
-          db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel)
-        ]).then(() => {
+        try {
+          if (typeof window.saveUserToFirebase === 'function') {
+            await window.saveUserToFirebase(uid, updates, goalLevel, status);
+          } else {
+            await Promise.all([
+              db.ref('/players/' + uid + '/player').update(updates),
+              db.ref('/players/' + uid + '/goal/level').set(goalLevel),
+              db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel),
+              db.ref('/players/' + uid + '/status').set(status),
+              db.ref('/players/' + uid + '/player/status').set(status)
+            ]);
+            if (typeof window.logActivity === 'function') {
+              window.logActivity('Player Updated', 'Admin updated user data for ' + uid, '👤');
+            }
+          }
           alert('✅ Player data successfully updated in Firebase!');
           closeUserEditModal();
-        }).catch(err => alert('Error saving player: ' + err.message));
+        } catch (err) {
+          alert('Error saving player: ' + err.message);
+        }
       });
     }
     window.savePlayerEditToFirebase = savePlayerEditToFirebase;

@@ -75,9 +75,9 @@
         <span class="nav-badge" id="badgeRewardsCount">0</span>
       </button>
 
-      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Mega Redemption Requests')">
-        <span class="nav-icon">📨</span>
-        <span>Mega Request</span>
+      <button class="nav-item" data-page="mega-request" onclick="switchAdminPage('mega-request', 'Wallet & Withdrawal Management')">
+        <span class="nav-icon">💳</span>
+        <span>Wallet / Withdrawals</span>
         <span class="nav-badge badge-amber" id="badgeRequestsCount">0</span>
       </button>
 
@@ -144,78 +144,129 @@
       <!-- ================= PAGE: DASHBOARD ================= -->
       <!-- PAGE: DASHBOARD -->
       <section class="page-panel active" id="page-dashboard">
-        <!-- 4 Key Metric Cards -->
-        <div class="metrics-row">
-          <!-- 1. Total Players Number -->
-          <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
-            <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
-            <div class="metric-meta">
-              <span class="metric-label">Total Player Number</span>
-              <span class="metric-value" id="dashTotalPlayers">0</span>
+        <!-- Section 1: Live Community & Player Engagement Metrics -->
+        <div style="margin-bottom: 8px;">
+          <h3 style="font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">Live Community &amp; Player Engagement</h3>
+          <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+            <!-- 1. Total Players -->
+            <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
+              <div class="metric-meta">
+                <span class="metric-label">Total Registered Users</span>
+                <span class="metric-value" id="dashTotalPlayers">0</span>
+              </div>
             </div>
-          </div>
       
-          <!-- 2. Daily Tasks Completed Data -->
-          <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
-            <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">📅</div>
-            <div class="metric-meta">
-              <span class="metric-label">Daily Tasks Completed</span>
-              <span class="metric-value" id="dashDailyTasksCompleted">0</span>
+            <!-- 2. Online / Active Players -->
+            <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399; position: relative;">
+                🟢
+              </div>
+              <div class="metric-meta">
+                <span class="metric-label" style="display: flex; align-items: center; gap: 5px;">
+                  <span>Online / Active</span>
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                </span>
+                <span class="metric-value" id="dashOnlinePlayers" style="color: #10b981;">0</span>
+              </div>
             </div>
-          </div>
       
-          <!-- 3. Web Tasks Completed Data -->
-          <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
-            <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🌐</div>
-            <div class="metric-meta">
-              <span class="metric-label">Web Tasks Completed</span>
-              <span class="metric-value" id="dashWebTasksCompleted">0</span>
+            <!-- 3. Withdrawals (Pending & Completed) -->
+            <div class="metric-box" onclick="switchAdminPage('mega-request', 'Withdrawals & Orders')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">💳</div>
+              <div class="metric-meta">
+                <span class="metric-label">Withdrawals (Pending / Total)</span>
+                <div style="display: flex; align-items: baseline; gap: 6px;">
+                  <span class="metric-value" id="dashPendingWithdrawals" style="color: #f59e0b;">0</span>
+                  <span style="font-size: 13px; color: #64748b;" id="dashTotalWithdrawals">/ 0 Total</span>
+                </div>
+              </div>
             </div>
-          </div>
       
-          <!-- 4. Ads Button Count -->
-          <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')">
-            <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
-            <div class="metric-meta">
-              <span class="metric-label">Ads Button Count</span>
-              <span class="metric-value" id="dashAdsButtonCount">0</span>
+            <!-- 4. Total Referrals -->
+            <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🤝</div>
+              <div class="metric-meta">
+                <span class="metric-label">Total Referrals</span>
+                <span class="metric-value" id="dashTotalReferrals">0</span>
+              </div>
+            </div>
+      
+            <!-- 5. Total Ad Views / Rewards -->
+            <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">🎬</div>
+              <div class="metric-meta">
+                <span class="metric-label">Total Ad Views</span>
+                <span class="metric-value" id="dashAdsButtonCount">0</span>
+              </div>
+            </div>
+      
+            <!-- 6. Tasks Completed (Quests) -->
+            <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🎯</div>
+              <div class="metric-meta">
+                <span class="metric-label">Completed Tasks</span>
+                <span class="metric-value" id="dashCompletedTasks">0</span>
+              </div>
             </div>
           </div>
         </div>
       
-        <!-- Mini-Games Live Activity Row -->
-        <div style="margin-top: 14px;">
-          <h3 style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
-          <div class="metrics-row">
+        <!-- Section 2: Live Game Economy & Assets in Circulation -->
+        <div style="margin-top: 14px; margin-bottom: 8px;">
+          <h3 style="font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">Live Economy &amp; Assets in Circulation</h3>
+          <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+            <!-- 1. Total Coins in Circulation -->
             <div class="metric-box">
-              <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
+              <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">🪙</div>
               <div class="metric-meta">
-                <span class="metric-label">Lucky Wheel Spins</span>
-                <span class="metric-value" id="dashTotalSpins">0</span>
+                <span class="metric-label">Coins in Circulation</span>
+                <span class="metric-value" id="dashTotalCoins" style="color: #f59e0b;">0</span>
               </div>
             </div>
       
+            <!-- 2. Total XP Accumulated -->
             <div class="metric-box">
-              <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🗝️</div>
+              <div class="metric-icon-box" style="background: rgba(147, 51, 234, 0.2); color: #c084fc;">⭐</div>
               <div class="metric-meta">
-                <span class="metric-label">Vault Chests Opened</span>
-                <span class="metric-value" id="dashTotalChests">0</span>
+                <span class="metric-label">Total XP Accumulated</span>
+                <span class="metric-value" id="dashTotalXP" style="color: #a855f7;">0</span>
               </div>
             </div>
       
+            <!-- 3. Mystery Chest Keys -->
             <div class="metric-box">
-              <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">🎴</div>
+              <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">🔑</div>
               <div class="metric-meta">
-                <span class="metric-label">Scratch Cards Played</span>
-                <span class="metric-value" id="dashTotalScratches">0</span>
+                <span class="metric-label">Chest Keys Active</span>
+                <span class="metric-value" id="dashTotalKeys">0</span>
               </div>
             </div>
       
+            <!-- 4. Lucky Spin Tickets -->
+            <div class="metric-box">
+              <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">🎡</div>
+              <div class="metric-meta">
+                <span class="metric-label">Spin Tickets Active</span>
+                <span class="metric-value" id="dashTotalTickets">0</span>
+              </div>
+            </div>
+      
+            <!-- 5. Cyber Dragon Eggs -->
             <div class="metric-box">
               <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🥚</div>
               <div class="metric-meta">
-                <span class="metric-label">Eggs Hatched</span>
+                <span class="metric-label">Dragon Eggs Active</span>
                 <span class="metric-value" id="dashTotalEggs">0</span>
+              </div>
+            </div>
+      
+            <!-- 6. Total Levels Configured -->
+            <div class="metric-box" onclick="switchAdminPage('firebase-manage', 'Levels & Database')" style="cursor: pointer;">
+              <div class="metric-icon-box" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">🏆</div>
+              <div class="metric-meta">
+                <span class="metric-label">Configured Levels</span>
+                <span class="metric-value" id="dashTotalLevels">100</span>
               </div>
             </div>
           </div>
@@ -534,6 +585,36 @@
                   <!-- Dynamically populated rows -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      
+        <!-- ============================================================
+             REAL-TIME LIVE ACTIVITY & AUDIT FEED SECTION
+             ============================================================ -->
+        <div class="dash-activity-wrapper" style="margin-top: 24px; margin-bottom: 24px;">
+          <div class="dash-section-header">
+            <div class="dash-header-title-box">
+              <div class="dash-title-tag">
+                <span class="pulse-dot-green"></span>
+                <span>Firebase Real-Time Event Stream</span>
+              </div>
+              <h2 class="dash-analytics-title">Live Real-Time Activity &amp; Audit Feed</h2>
+              <p class="dash-analytics-desc">Real-time stream of player actions, registrations, quests completed, withdrawal requests, and administrative operations.</p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="live-ref-tag" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">● Live Stream</span>
+              <button type="button" class="btn-dash-outline" onclick="renderRealtimeActivityFeed()" style="padding: 6px 12px; font-size: 11.5px;">
+                <span>↻</span> Refresh
+              </button>
+            </div>
+          </div>
+      
+          <div class="minimal-card" style="padding: 14px; max-height: 380px; overflow-y: auto; background: #0b132b; border: 1px solid rgba(255,255,255,0.08);">
+            <div id="dashRealtimeActivityFeed" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="text-align: center; color: #64748b; padding: 24px; font-size: 13px;">
+                Listening for live events from Firebase...
+              </div>
             </div>
           </div>
         </div>
@@ -896,34 +977,57 @@
               <p class="plain-sub">Manage registered players and edit game balances.</p>
             </div>
           </div>
-          <div class="plain-header-right">
+          <div class="plain-header-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 99px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: #059669;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+              <span>Real-Time Cloud Live</span>
+            </div>
+            <button type="button" class="btn-primary" onclick="openAddPlayerModal()" style="padding: 6px 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+              <span>➕</span>
+              <span>Add Player</span>
+            </button>
+            <div style="display: flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 3px; border-radius: 8px;">
+              <button type="button" id="btnViewAllUsers" onclick="switchUsersView('all')" style="border: none; background: #0284c7; color: #fff; font-weight: 700; font-size: 11.5px; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
+                👥 All Players
+              </button>
+              <button type="button" id="btnViewDuplicates" onclick="switchUsersView('duplicates')" style="border: none; background: transparent; color: #64748b; font-weight: 700; font-size: 11.5px; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
+                ⚠️ Potential Duplicates <span id="dupBadgeCount" style="display: none; background: #dc2626; color: #fff; font-size: 9.5px; padding: 1px 6px; border-radius: 99px; margin-left: 4px;">0</span>
+              </button>
+            </div>
             <span class="plain-count-pill" id="plainTotalUsersCount">0 Players</span>
+            <select id="userStatusFilter" onchange="filterUsersTable()" class="plain-search-input" style="width: auto; padding: 7px 12px; cursor: pointer; border-radius: 8px;">
+              <option value="all">All Accounts</option>
+              <option value="active">Active Only</option>
+              <option value="disabled">Disabled Only</option>
+              <option value="highWealth">High Wealth (&gt;100k Coins)</option>
+            </select>
             <div class="plain-search-wrap">
-              <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search player..." class="plain-search-input">
+              <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search username, UID, Telegram..." class="plain-search-input">
               <button type="button" class="plain-search-clear" onclick="clearUserSearch()">✕</button>
             </div>
           </div>
         </div>
       
-        <div class="plain-table-card">
+        <!-- CONTAINER 1: ALL PLAYERS TABLE -->
+        <div class="plain-table-card" id="allUsersTableWrap">
           <div style="overflow-x: auto;">
             <table class="plain-data-table">
               <thead>
                 <tr>
                   <th style="width: 45px;">#</th>
-                  <th>Player Name</th>
-                  <th>Profile Code</th>
-                  <th>Telegram</th>
-                  <th>Level</th>
+                  <th>Player Name / Username</th>
+                  <th>User ID &amp; Telegram</th>
+                  <th>Phone / Email (Masked)</th>
+                  <th>Level &amp; XP</th>
                   <th>Coins 🪙</th>
-                  <th>Diamonds 💎</th>
-                  <th style="text-align: right; width: 100px;">Action</th>
+                  <th>Status</th>
+                  <th style="text-align: right; width: 170px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody">
                 <tr>
                   <td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">
-                    Loading players...
+                    Loading players from Firebase...
                   </td>
                 </tr>
               </tbody>
@@ -931,38 +1035,104 @@
           </div>
         </div>
       
+        <!-- CONTAINER 2: POTENTIAL DUPLICATE ACCOUNTS DETECTION TOOL -->
+        <div class="plain-table-card" id="duplicatesViewWrap" style="display: none; padding: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span>🔍</span>
+                <span>Potential Duplicate Accounts</span>
+              </h3>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+                Accounts sharing the same Telegram ID, Phone Number, or Email address.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" onclick="runDuplicateScan()" class="btn-minimal-primary" style="padding: 7px 14px; font-size: 12px;">
+                <span>🔄</span>
+                <span>Scan Duplicates Now</span>
+              </button>
+            </div>
+          </div>
+      
+          <!-- Controlled Notice -->
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #92400e; line-height: 1.5;">
+            <strong>⚠️ Controlled Resolution Protocol:</strong> Duplicate accounts are NOT automatically merged. Balances, rewards, referrals, and inventory remain strictly isolated to prevent data loss. Use the actions below to review or disable conflicting accounts safely.
+          </div>
+      
+          <!-- Duplicates Group Container -->
+          <div id="duplicateGroupsContainer">
+            <div style="text-align: center; color: #64748b; padding: 30px;">
+              Click <strong>Scan Duplicates Now</strong> to audit all accounts for shared identifiers.
+            </div>
+          </div>
+        </div>
+      
         <!-- MODAL: DETAILED USER INFORMATION -->
         <div class="modal-overlay" id="userDetailsModal" onclick="closeUserDetailsModal()">
-          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
                   👤
                 </div>
                 <div>
-                  <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+                    <span id="detailStatusBadge" style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px; background: #dcfce7; color: #15803d; text-transform: uppercase;">Active</span>
+                  </div>
                   <span style="font-size: 11.5px; color: #64748b; font-family: 'JetBrains Mono', monospace;" id="detailUid">UID: -</span>
                 </div>
               </div>
               <button type="button" onclick="closeUserDetailsModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
             </div>
       
+            <!-- Section: Account Authorization & Linked Identifiers -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                <span>🔐 Account Authorization &amp; Identity</span>
+                <span id="detailAuthStatusTag" style="font-size: 10px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 99px;">Verified</span>
+              </h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                <div>
+                  <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Telegram ID (Permanent)</div>
+                  <div style="font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailAuthTgId">-</div>
+                </div>
+                <div>
+                  <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Telegram Username</div>
+                  <div style="font-weight: 700; color: #0f172a;" id="detailAuthTgUsername">-</div>
+                </div>
+                <div>
+                  <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Phone (Masked)</div>
+                  <div style="font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="detailAuthPhone">-</div>
+                </div>
+                <div>
+                  <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Email (Masked)</div>
+                  <div style="font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="detailAuthEmail">-</div>
+                </div>
+                <div style="grid-column: span 2; display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                  <span style="font-size: 10.5px; font-weight: 700; color: #64748b;">Linked Methods:</span>
+                  <div id="detailLinkedMethodsBadges" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+                </div>
+              </div>
+            </div>
+      
             <!-- Quick Summary Pills -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
               <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Profile Code</span>
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Referral Code</span>
                 <div style="font-size: 14px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailProfileCode">-</div>
               </div>
               <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level</span>
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level &amp; XP</span>
                 <div style="font-size: 14px; font-weight: 800; color: #0f172a;" id="detailLevel">Lv.0</div>
               </div>
               <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Goal Tier</span>
-                <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailGoalTier">Goal 0</div>
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Referrals Count</span>
+                <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailReferralCount">0 Users</div>
               </div>
               <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram Handle</span>
+                <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram ID</span>
                 <div style="font-size: 13px; font-weight: 700; color: #0284c7;" id="detailTelegram">-</div>
               </div>
             </div>
@@ -970,7 +1140,7 @@
             <!-- Section: 6 Virtual Currencies -->
             <div style="margin-bottom: 16px;">
               <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                💰 All Currency Balances
+                💰 Virtual Currency Balances
               </h4>
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                 <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
@@ -978,23 +1148,23 @@
                   <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
                 </div>
                 <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
-                  <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
-                  <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
+                  <div style="font-size: 10px; font-weight: 800; color: #0891b2;">XP ACCUMULATED ⭐</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailXp">0</div>
                 </div>
                 <div style="padding: 10px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
                   <div style="font-size: 10px; font-weight: 800; color: #7c3aed;">CHEST KEYS 🗝️</div>
                   <div style="font-size: 15px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace;" id="detailKeys">0</div>
                 </div>
-                <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
-                  <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
-                  <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
-                </div>
                 <div style="padding: 10px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
                   <div style="font-size: 10px; font-weight: 800; color: #2563eb;">CHEST TICKETS 🎫</div>
                   <div style="font-size: 15px; font-weight: 800; color: #2563eb; font-family: 'JetBrains Mono', monospace;" id="detailTickets">0</div>
                 </div>
+                <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
+                </div>
                 <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
-                  <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS HATCHED 🥚</div>
+                  <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS 🥚</div>
                   <div style="font-size: 15px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace;" id="detailEggs">0</div>
                 </div>
               </div>
@@ -1029,20 +1199,95 @@
                 <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailTapPower">Tap Power: 1 | Total Taps: 0</div>
               </div>
               <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Ads Monetization</div>
-                <div style="font-size: 13px; font-weight: 700; color: #d97706; margin-top: 4px;" id="detailAdsWatched">0 Ads Watched</div>
+                <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Activity &amp; Timestamps</div>
+                <div style="font-size: 12px; color: #0f172a; margin-top: 4px;" id="detailRegistrationDate">Registered: -</div>
                 <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailLastActive">Last Active: -</div>
               </div>
             </div>
       
             <!-- Action Footer -->
-            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
-              <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
-              <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+              <button type="button" class="btn-secondary" id="btnToggleStatusFromDetails" style="color: #dc2626; border-color: #fca5a5;">
+                🔒 Disable Account
+              </button>
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+                <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+              </div>
             </div>
           </div>
         </div>
+      
+        <!-- MODAL: ADD NEW PLAYER (DIRECT REAL-TIME FIREBASE SYNC) -->
+        <div class="modal-overlay" id="addUserModal" onclick="closeAddPlayerModal()">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 540px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">➕</span>
+                <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;">Add New Player to Firebase</h3>
+              </div>
+              <button type="button" onclick="closeAddPlayerModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+      
+            <form onsubmit="saveNewPlayerToFirebase(event)" style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: #334155;">Player Name / Username <span style="color: #ef4444;">*</span></label>
+                  <input type="text" id="inpAddUsername" placeholder="e.g. AlexGamer" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: #334155;">Telegram Handle</label>
+                  <input type="text" id="inpAddTelegram" placeholder="@alex_tap" class="form-input">
+                </div>
+              </div>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #334155;">Starting Level</label>
+                  <input type="number" id="inpAddLevel" value="1" min="1" max="100" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #ca8a04;">Coins 🪙</label>
+                  <input type="number" id="inpAddCoins" value="2500" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Diamonds 💎</label>
+                  <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+                </div>
+              </div>
+      
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #7c3aed;">Keys 🗝️</label>
+                  <input type="number" id="inpAddKeys" value="3" min="0" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #2563eb;">Tickets 🎫</label>
+                  <input type="number" id="inpAddTickets" value="2" min="0" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #e11d48;">Cards 🎴</label>
+                  <input type="number" id="inpAddCards" value="2" min="0" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #059669;">Eggs 🥚</label>
+                  <input type="number" id="inpAddEggs" value="1" min="0" class="form-input">
+                </div>
+              </div>
+      
+              <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px; font-size: 11.5px; color: #065f46;">
+                ⚡ <strong>Instant Cloud Sync:</strong> Saving writes immediately to Firebase <code>/players</code>. The real-time listener will auto-update the table and open the full user details modal.
+              </div>
+      
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+                <button type="button" class="btn-secondary" onclick="closeAddPlayerModal()">Cancel</button>
+                <button type="submit" class="btn-primary" id="btnSubmitAddPlayer">💾 Create &amp; Save Player</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
+      
       
 
       <!-- ================= PAGE: MEGA-ADD ================= -->
@@ -1223,27 +1468,27 @@
       
 
       <!-- ================= PAGE: MEGA-REQUEST ================= -->
-      <!-- PAGE: MEGA REDEMPTION REQUESTS -->
+      <!-- PAGE: MEGA REDEMPTION REQUESTS (WALLET & WITHDRAWAL MANAGEMENT) -->
       <section class="page-panel" id="page-mega-request">
         <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Redemption Orders Queue</h2>
+                <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Wallet &amp; Withdrawal Management</h2>
                 <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle orders info">
                   <span>Info</span> <span class="arrow-icon">▸</span>
                 </button>
               </div>
               <div class="collapsible-text-body">
-                <p style="font-size: 13px; color: #64748b;">Player prize claims from Firebase (<code style="color: #0284c7; font-weight: 700;">/reward_requests</code>).</p>
+                <p style="font-size: 13px; color: #64748b;">Live player withdrawal and redemption queue from Firebase (<code style="color: #0284c7; font-weight: 700;">/reward_requests</code>). Updates reflect immediately in the user app.</p>
               </div>
             </div>
       
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
+              <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All Requests</button>
               <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
               <button class="btn-secondary" data-reqfilter="approved" onclick="filterRequestsTable('approved')">Approved</button>
-              <button class="btn-secondary" data-reqfilter="delivered" onclick="filterRequestsTable('delivered')">Delivered</button>
+              <button class="btn-secondary" data-reqfilter="completed" onclick="filterRequestsTable('completed')">Completed</button>
               <button class="btn-secondary" data-reqfilter="rejected" onclick="filterRequestsTable('rejected')">Rejected</button>
             </div>
           </div>
@@ -1252,24 +1497,24 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
-                  <th>User Name</th>
-                  <th>Order Name</th>
-                  <th>Website Tasks Done</th>
-                  <th>Diamonds 💎</th>
-                  <th>Shipping / Delivery</th>
-                  <th>Date</th>
+                  <th>Tx / Request ID</th>
+                  <th>User &amp; User ID</th>
+                  <th>Amount &amp; Item</th>
+                  <th>Cost (Coins/Diamonds)</th>
+                  <th>Payment / Wallet Info</th>
+                  <th>Request Date</th>
                   <th>Status</th>
-                  <th style="text-align: right;">Approval &amp; Actions</th>
+                  <th style="text-align: right; min-width: 170px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="requestsTableBody">
-                <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading requests from Firebase...</td></tr>
+                <tr><td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">Loading requests from Firebase...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </section>
+      
       
 
       <!-- ================= PAGE: TASKS-WEB ================= -->
@@ -1626,8 +1871,147 @@
           </div>
         </div>
       
+        <!-- ============================================================
+             LEVEL & GOAL SYSTEM VISUAL MANAGER (Firebase /levels_config)
+             ============================================================ -->
+        <div class="minimal-card" style="margin-bottom: 18px; border-top: 3px solid #8b5cf6;">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title" style="color: #7c3aed;">🏆 Levels &amp; Goals Manager (/levels_config)</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle level info">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Configure level requirements (XP, Coins, Keys, Tickets), rewards, and lock/unlock status for Levels 1 to 100. Changes sync live with the user app.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-minimal-secondary" onclick="toggleCurrentLevelLock()">
+                  <span id="btnLevelLockIcon">🔒</span>
+                  <span id="btnLevelLockText">Toggle Lock</span>
+                </button>
+                <button type="button" class="btn-minimal-primary" onclick="saveCurrentLevelConfig()">
+                  <span>💾</span>
+                  <span>Save Level</span>
+                </button>
+                <button type="button" class="btn-minimal-primary" onclick="seedAllLevelsToFirebase()" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
+                  <span>⚡</span>
+                  <span>Seed 1-100 Defaults</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Level Picker & Status Header -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <label style="font-size: 13px; font-weight: 800; color: #0f172a;">Select Level:</label>
+              <select id="selectAdminLevelNum" class="minimal-input" style="width: 140px; font-weight: 800; color: #7c3aed; font-size: 14px; cursor: pointer;" onchange="onAdminLevelSelectChange()">
+                <!-- Populated 1 to 100 via JS -->
+              </select>
+              <button type="button" class="btn-minimal-secondary" onclick="stepAdminLevel(-1)" style="padding: 4px 10px;">◀</button>
+              <button type="button" class="btn-minimal-secondary" onclick="stepAdminLevel(1)" style="padding: 4px 10px;">▶</button>
+            </div>
+      
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span id="lvlConfigStatusBadge" style="font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: #dcfce7; color: #15803d; text-transform: uppercase;">
+                ● Unlocked
+              </span>
+              <span id="lvlConfigSourceBadge" style="font-size: 11px; color: #64748b;">
+                Firebase Cloud
+              </span>
+            </div>
+          </div>
+      
+          <!-- Level Parameters Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+            <!-- Column 1: Identity & Requirements -->
+            <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">
+                🎯 Level Requirements
+              </h4>
+      
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Level Title / Name</label>
+                <input type="text" id="inpLvlName" class="minimal-input" placeholder="e.g. Level 1 - Pioneer">
+              </div>
+      
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">XP Required to Reach &amp; Complete (⭐)</label>
+                <input type="number" id="inpLvlXpReq" class="minimal-input" min="10" step="50" style="color: #a855f7; font-weight: 800;">
+              </div>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Required Cards 🎴</label>
+                  <input type="number" id="inpLvlTargetCards" class="minimal-input" min="0" value="0">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Required Keys 🗝️</label>
+                  <input type="number" id="inpLvlTargetKeys" class="minimal-input" min="0" value="0">
+                </div>
+              </div>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Required Tickets 🎫</label>
+                  <input type="number" id="inpLvlTargetTickets" class="minimal-input" min="0" value="0">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Required Coins 🪙</label>
+                  <input type="number" id="inpLvlTargetCoins" class="minimal-input" min="0" value="0">
+                </div>
+              </div>
+            </div>
+      
+            <!-- Column 2: Rewards Configuration -->
+            <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">
+                🎁 Level Completion Rewards
+              </h4>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Bonus Coins 🪙</label>
+                  <input type="number" id="inpLvlRewardCoins" class="minimal-input" min="0" step="500" style="color: #ca8a04; font-weight: 800;">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Bonus XP ⭐</label>
+                  <input type="number" id="inpLvlRewardXp" class="minimal-input" min="0" step="50" style="color: #a855f7; font-weight: 800;">
+                </div>
+              </div>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Mystery Keys 🗝️</label>
+                  <input type="number" id="inpLvlRewardKeys" class="minimal-input" min="0" value="1">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Spin Tickets 🎫</label>
+                  <input type="number" id="inpLvlRewardTickets" class="minimal-input" min="0" value="1">
+                </div>
+              </div>
+      
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Scratch Cards 🎴</label>
+                  <input type="number" id="inpLvlRewardCards" class="minimal-input" min="0" value="1">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Reactor Fuel Cells ⚡</label>
+                  <input type="number" id="inpLvlRewardFuel" class="minimal-input" min="0" value="20">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
         <!-- DIRECT NODE READER & WRITER -->
         <div class="minimal-card" style="margin-bottom: 18px;">
+      
           <div class="minimal-header-group">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
               <div>
@@ -1658,14 +2042,16 @@
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
             <label style="font-size: 12px; font-weight: 800; color: #334155;">Select Firebase Path:</label>
             <select id="selectFirebaseNodePath" class="minimal-input" style="cursor: pointer; max-width: 320px;" onchange="readSelectedFirebaseNode()">
-              <option value="/game_config">/game_config (Global Static)</option>
-              <option value="/website_tasks_config">/website_tasks_config (Global Static)</option>
-              <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static)</option>
-              <option value="/monthly_competition">/monthly_competition (Global Static)</option>
-              <option value="/mega_rewards">/mega_rewards (Global Static)</option>
-              <option value="/ads_config">/ads_config (Global Static)</option>
-              <option value="/players">/players (User Dynamic)</option>
-              <option value="/reward_requests">/reward_requests (User Dynamic)</option>
+              <option value="/game_config">/game_config (Global Static Gameplay Rules)</option>
+              <option value="/levels_config">/levels_config (Levels 1-100 &amp; Goal Progression)</option>
+              <option value="/website_tasks_config">/website_tasks_config (Global Static Quests)</option>
+              <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static Tasks)</option>
+              <option value="/monthly_competition">/monthly_competition (Global Static 30-Day Cycle)</option>
+              <option value="/mega_rewards">/mega_rewards (Global Static Rewards Catalog)</option>
+              <option value="/ads_config">/ads_config (Global Static Ads)</option>
+              <option value="/players">/players (User Dynamic Accounts)</option>
+              <option value="/reward_requests">/reward_requests (User Dynamic Orders)</option>
+              <option value="/activity_log">/activity_log (Real-time Audit Feed)</option>
               <option value="/admin_users">/admin_users (Security)</option>
             </select>
             <span style="font-size: 11px; color: #64748b;" id="fbNodeReadStatus">Ready to read</span>
@@ -1675,6 +2061,7 @@
           <div style="position: relative;">
             <textarea id="firebaseNodeEditor" rows="12" class="minimal-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; background: #0f172a; color: #38bdf8; border: 1.5px solid #334155; border-radius: 10px; padding: 14px;" placeholder="Click 'Read Node' to inspect raw JSON data..."></textarea>
           </div>
+      
       
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11.5px; color: #64748b;">
             <span>💡 Reading Command: <code>db.ref(path).once('value')</code> | Writing Command: <code>db.ref(path).set(JSON.parse(data))</code></span>
@@ -2069,6 +2456,166 @@
           </div>
         </div>
       
+        <!-- TOOL 1.5: LEVEL PROGRESSION & GOAL/XP SYSTEM MANAGER (LEVELS 1 - 100) -->
+        <div class="minimal-card" style="margin-bottom: 18px; border-top: 3px solid #0284c7;">
+          <div class="minimal-header-group">
+            <div class="scope-badge-wrap" style="margin-bottom: 8px;">
+              <span class="scope-pill-global">🌐 Global Level Rules — Single Source of Truth</span>
+              <span class="firebase-path-pill">Firebase Path: <strong>/levels_config</strong></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🎯 Level Progression, Goal &amp; XP Configuration Manager</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">
+                    Configure XP requirements, Goal targets (Cards, Keys, Tickets), rewards, and Lock/Unlock status for any level from 1 to 100.
+                    Changes update Firebase in realtime and propagate across Goal, XP, and Home pages.
+                  </p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-minimal-secondary" onclick="autoScaleAllLevels()">
+                  <span>⚡</span>
+                  <span>Auto-Scale 1-100</span>
+                </button>
+                <button type="button" class="btn-minimal-secondary" onclick="lockLevelsAbovePrompt()">
+                  <span>🔒</span>
+                  <span>Lock Above...</span>
+                </button>
+                <button type="button" class="btn-minimal-primary" onclick="saveCurrentAdminLevel()">
+                  <span>💾</span>
+                  <span>Save This Level</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Active Level Selector Bar -->
+          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <label for="adminLevelSelect" style="font-size: 13px; font-weight: 800; color: #0f172a;">Select Level to Edit:</label>
+              <select id="adminLevelSelect" class="minimal-input" style="width: 140px; font-weight: 800; font-size: 14px; cursor: pointer;" onchange="onAdminSelectLevel(this.value)">
+                <!-- Generated 1 to 100 -->
+              </select>
+              <button type="button" class="btn-minimal-secondary" style="padding: 6px 12px;" onclick="stepAdminLevel(-1)">◀ Prev</button>
+              <button type="button" class="btn-minimal-secondary" style="padding: 6px 12px;" onclick="stepAdminLevel(1)">Next ▶</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 12px; color: #64748b;">Level Access Status:</span>
+              <span id="adminLevelStatusPill" style="padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3);">
+                🟢 UNLOCKED
+              </span>
+            </div>
+          </div>
+      
+          <!-- Edit Form Grid -->
+          <div class="minimal-form-grid" style="margin-bottom: 16px;">
+            <!-- Lock / Unlock Status Toggle -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditLock">
+                <span>Level Access Rule</span>
+                <span style="font-size: 10px; color: #ef4444;">Admin Access Control</span>
+              </label>
+              <select id="lvlEditLock" class="minimal-input" style="font-weight: 700; cursor: pointer;">
+                <option value="false">🟢 UNLOCKED (Players can reach &amp; play)</option>
+                <option value="true">🔴 LOCKED BY ADMIN (Locked for all players)</option>
+              </select>
+            </div>
+      
+            <!-- XP Required Input -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditXp">
+                <span>XP Requirement (⚡)</span>
+                <span style="font-size: 10px; color: #64748b;">XP to Complete Level</span>
+              </label>
+              <input type="number" id="lvlEditXp" class="minimal-input" min="100" step="100" placeholder="1000">
+            </div>
+      
+            <!-- Target A: Scratch Cards -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditCards">
+                <span>Target A: Scratch Cards (🃏)</span>
+                <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+              </label>
+              <input type="number" id="lvlEditCards" class="minimal-input" min="1" step="1" placeholder="20">
+            </div>
+      
+            <!-- Target B: Dandiya / Keys -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditKeys">
+                <span>Target B: Dandiya / Keys (🥢)</span>
+                <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+              </label>
+              <input type="number" id="lvlEditKeys" class="minimal-input" min="1" step="1" placeholder="50">
+            </div>
+      
+            <!-- Target C: Flowers / Tickets -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditTickets">
+                <span>Target C: Flowers / Tickets (🌸)</span>
+                <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+              </label>
+              <input type="number" id="lvlEditTickets" class="minimal-input" min="1" step="1" placeholder="35">
+            </div>
+      
+            <!-- Coins Reward -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditCoins">
+                <span>Reward: Bonus Coins (🪙)</span>
+                <span style="font-size: 10px; color: #64748b;">Completion Award</span>
+              </label>
+              <input type="number" id="lvlEditCoins" class="minimal-input" min="0" step="25" placeholder="25">
+            </div>
+      
+            <!-- XP Bonus Reward -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditXpBonus">
+                <span>Reward: XP Bonus (⚡)</span>
+                <span style="font-size: 10px; color: #64748b;">Completion Award</span>
+              </label>
+              <input type="number" id="lvlEditXpBonus" class="minimal-input" min="0" step="10" placeholder="10">
+            </div>
+      
+            <!-- Item Drop Reward Quantity -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditItemQty">
+                <span>Reward: Items Qty (🃏🥢🌸 each)</span>
+                <span style="font-size: 10px; color: #64748b;">Card, Key, Flower Qty</span>
+              </label>
+              <input type="number" id="lvlEditItemQty" class="minimal-input" min="1" step="1" placeholder="1">
+            </div>
+      
+            <!-- Fuel Reward -->
+            <div class="minimal-form-group">
+              <label class="minimal-form-label" for="lvlEditFuel">
+                <span>Reward: Fuel Cells (🔋)</span>
+                <span style="font-size: 10px; color: #64748b;">Green Fuel Bonus</span>
+              </label>
+              <input type="number" id="lvlEditFuel" class="minimal-input" min="0" step="1" placeholder="5">
+            </div>
+          </div>
+      
+          <!-- Footer Action Row -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 12px; color: #64748b;" id="adminLevelSyncNote">Levels live-synced with Firebase (/levels_config).</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-minimal-secondary" onclick="resetLevelsToDefaultTemplate()">
+                <span>🔄</span>
+                <span>Reset All to Defaults</span>
+              </button>
+              <button type="button" class="btn-minimal-primary" onclick="saveCurrentAdminLevel()">
+                <span>💾</span>
+                <span>Save Changes to Firebase</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      
         <!-- TOOL 2: GLOBAL SEASONS & COMPETITIONS (STATIC RULES) -->
         <div class="minimal-card" style="margin-bottom: 18px;">
           <div class="minimal-header-group">
@@ -2184,6 +2731,190 @@
           </div>
         </div>
       
+        <!-- TOOL 5: ENERGY FUEL CELL SHOP PRICING & MULTIPLIERS (/fuel_cells_config) -->
+        <div class="minimal-card" style="border-top: 3px solid #10b981;">
+          <div class="minimal-header-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🔋 Energy Fuel Cell Shop Pricing &amp; Multipliers</h3>
+                  <span class="status-tag live">/fuel_cells_config</span>
+                </div>
+                <p class="minimal-subtitle">Manage base prices for Green Fuel Cell and multipliers for Yellow, Orange, Pink, Purple, and Red cells.</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" onclick="resetFuelCellsConfigToDefault()" class="btn-minimal-secondary">
+                  <span>🔄</span>
+                  <span>Reset Defaults</span>
+                </button>
+                <button type="button" onclick="saveFuelCellsConfigFromAdmin()" class="btn-minimal-primary">
+                  <span>💾</span>
+                  <span>Save Fuel Prices</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Base Prices Row -->
+          <div style="margin-top: 10px; margin-bottom: 14px;">
+            <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.8px; margin-bottom: 8px;">
+              Green Base Prices (Multiplier ×1)
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">🎬 Watch Ad</label>
+                <input type="number" id="cfgFuelBaseAd" class="form-input" min="1" value="1" style="font-weight: 800; color: #ef4444;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">🔷 Blue Coins</label>
+                <input type="number" id="cfgFuelBaseBlue" class="form-input" min="1" value="10" style="font-weight: 800; color: #0284c7;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">🪙 Gold Coin</label>
+                <input type="number" id="cfgFuelBaseGold" class="form-input" min="1" value="1" style="font-weight: 800; color: #ca8a04;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">💎 Diamonds</label>
+                <input type="number" id="cfgFuelBaseDiamond" class="form-input" min="1" value="10" style="font-weight: 800; color: #06b6d4;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">🪙 150× Coin Pack</label>
+                <input type="number" id="cfgFuelBaseCoinPack" class="form-input" min="1" value="150" style="font-weight: 800; color: #ca8a04;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px;">🔷 75× Blue Pack</label>
+                <input type="number" id="cfgFuelBaseBluePack" class="form-input" min="1" value="75" style="font-weight: 800; color: #0284c7;">
+              </div>
+            </div>
+          </div>
+      
+          <!-- Color Multipliers Row -->
+          <div>
+            <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.8px; margin-bottom: 8px;">
+              Fuel Cell Color Multipliers
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #10b981;">🟢 Green Multiplier</label>
+                <input type="number" id="cfgFuelMultGreen" class="form-input" step="0.1" value="1.0" style="font-weight: 800; color: #10b981;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #f59e0b;">🟡 Yellow Multiplier</label>
+                <input type="number" id="cfgFuelMultYellow" class="form-input" step="0.1" value="1.5" style="font-weight: 800; color: #f59e0b;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #f97316;">🟠 Orange Multiplier</label>
+                <input type="number" id="cfgFuelMultOrange" class="form-input" step="0.1" value="2.5" style="font-weight: 800; color: #f97316;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #ec4899;">🩷 Pink Multiplier</label>
+                <input type="number" id="cfgFuelMultPink" class="form-input" step="0.1" value="7.0" style="font-weight: 800; color: #ec4899;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #a855f7;">🟣 Purple Multiplier</label>
+                <input type="number" id="cfgFuelMultPurple" class="form-input" step="0.1" value="8.5" style="font-weight: 800; color: #a855f7;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #ef4444;">🔴 Red Multiplier</label>
+                <input type="number" id="cfgFuelMultRed" class="form-input" step="0.1" value="5.0" style="font-weight: 800; color: #ef4444;">
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- TOOL 6: ACCOUNT AUTHORIZATION & ONE ACCOUNT PER USER CONFIGURATION (/auth_config) -->
+        <div class="minimal-card" style="margin-top: 18px; border-top: 3px solid #10b981;">
+          <div class="minimal-header-group">
+            <div class="scope-badge-wrap" style="margin-bottom: 8px;">
+              <span class="scope-pill-global">🔐 Identity &amp; Account Security Rules</span>
+              <span class="firebase-path-pill">Firebase Path: <strong>/auth_config</strong></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🛡️ Account Authorization &amp; Uniqueness Rules</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Enforce strict 1 Telegram = 1 Account, 1 Phone = 1 Account, and 1 Email = 1 Account across the app.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-minimal-secondary" onclick="scanAndMigrateIdentityIndexes()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+                  <span>🔍</span>
+                  <span>Scan &amp; Build Identity Indexes</span>
+                </button>
+                <button type="button" class="btn-minimal-primary" onclick="saveAuthConfigFromAdmin()">
+                  <span>💾</span>
+                  <span>Save Auth Config</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Configuration Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
+            <!-- Section 1: Authentication Methods Enabled -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <span>🔑</span>
+                <span>Authentication Providers</span>
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 600; color: #334155;">✈️ Telegram Login</span>
+                  <input type="checkbox" id="authCfgTelegram" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+                </label>
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 600; color: #334155;">📱 Phone Authentication (OTP)</span>
+                  <input type="checkbox" id="authCfgPhone" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+                </label>
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 600; color: #334155;">✉️ Email Authentication</span>
+                  <input type="checkbox" id="authCfgEmail" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+                </label>
+              </div>
+            </div>
+      
+            <!-- Section 2: Strict Uniqueness & Account Protection -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+              <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <span>🛡️</span>
+                <span>Strict Uniqueness Protections</span>
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Telegram = 1 Account</span>
+                  <input type="checkbox" id="authCfgOneTelegram" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+                </label>
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Phone = 1 Account</span>
+                  <input type="checkbox" id="authCfgOnePhone" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+                </label>
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                  <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Email = 1 Account</span>
+                  <input type="checkbox" id="authCfgOneEmail" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+                </label>
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 2px;">
+                  <span style="font-size: 13px; font-weight: 600; color: #334155;">🔗 Account Linking</span>
+                  <input type="checkbox" id="authCfgLinking" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+                </label>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Index Scan & Migration Report Result Banner -->
+          <div id="authIndexReportWrap" style="display: none; margin-top: 14px; padding: 14px; background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 12px; font-weight: 800; color: #065f46; text-transform: uppercase;">📊 Identity Index &amp; Duplicate Audit Report</span>
+              <button type="button" onclick="document.getElementById('authIndexReportWrap').style.display='none'" style="background: none; border: none; font-size: 16px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+            <div id="authIndexReportContent" style="font-size: 12px; color: #334155; line-height: 1.6;"></div>
+          </div>
+        </div>
+      
       </section>
       
     </div>
@@ -2255,6 +2986,14 @@
           <input type="number" id="editModalGoalLevel" class="form-input" style="color: #2563eb; font-weight: 800;">
         </div>
         <div class="form-group">
+          <label class="form-label">Current XP ⭐</label>
+          <input type="number" id="editModalXp" class="form-input" style="color: #6366f1; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Energy ⚡</label>
+          <input type="number" id="editModalEnergy" class="form-input" style="color: #f59e0b; font-weight: 800;">
+        </div>
+        <div class="form-group">
           <label class="form-label">Coins 🪙</label>
           <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
         </div>
@@ -2281,6 +3020,13 @@
         <div class="form-group">
           <label class="form-label">Egg Coins 🥚</label>
           <input type="number" id="editModalEggs" class="form-input" style="color: #059669; font-weight: 800;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Status</label>
+          <select id="editModalStatus" class="form-input" style="font-weight: 700;">
+            <option value="active">Active (Normal)</option>
+            <option value="disabled">Disabled (Suspended)</option>
+          </select>
         </div>
       </div>
 
@@ -2605,8 +3351,17 @@
   <!-- Chart.js Graphical Representation Engine -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+  <!-- Firebase Cloud Realtime SDKs & Shared Service -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="shared/firebase.js"></script>
+
   <!-- Admin Direct Read & Edit Access Engine (Point 4) -->
   <script>
+    const ADMIN_SECURITY_KEY = '0911';
+    let pendingSecurityAction = null;
+
     function requireAdminPassword(actionCallback) {
       if (typeof actionCallback === 'function') {
         actionCallback();
@@ -2650,7 +3405,7 @@
 
     // Shared modal action wrappers requiring 0911
     function savePlayerEditToFirebase() {
-      requireAdminPassword(() => {
+      requireAdminPassword(async () => {
         const uid = window.currentEditingUserUid;
         if (!uid) return;
         const db = window.getDb ? window.getDb() : null;
@@ -2658,7 +3413,10 @@
 
         const updates = {
           level: Number(document.getElementById('editModalLevel')?.value) || 0,
+          xp: Number(document.getElementById('editModalXp')?.value) || 0,
+          energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
+          blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
           chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
           scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,
@@ -2667,15 +3425,28 @@
         };
 
         const goalLevel = Number(document.getElementById('editModalGoalLevel')?.value) || 0;
+        const status = document.getElementById('editModalStatus')?.value || 'active';
 
-        Promise.all([
-          db.ref('/players/' + uid + '/player').update(updates),
-          db.ref('/players/' + uid + '/goal/level').set(goalLevel),
-          db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel)
-        ]).then(() => {
+        try {
+          if (typeof window.saveUserToFirebase === 'function') {
+            await window.saveUserToFirebase(uid, updates, goalLevel, status);
+          } else {
+            await Promise.all([
+              db.ref('/players/' + uid + '/player').update(updates),
+              db.ref('/players/' + uid + '/goal/level').set(goalLevel),
+              db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel),
+              db.ref('/players/' + uid + '/status').set(status),
+              db.ref('/players/' + uid + '/player/status').set(status)
+            ]);
+            if (typeof window.logActivity === 'function') {
+              window.logActivity('Player Updated', 'Admin updated user data for ' + uid, '👤');
+            }
+          }
           alert('✅ Player data successfully updated in Firebase!');
           closeUserEditModal();
-        }).catch(err => alert('Error saving player: ' + err.message));
+        } catch (err) {
+          alert('Error saving player: ' + err.message);
+        }
       });
     }
     window.savePlayerEditToFirebase = savePlayerEditToFirebase;

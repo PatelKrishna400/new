@@ -12,34 +12,57 @@
         <p class="plain-sub">Manage registered players and edit game balances.</p>
       </div>
     </div>
-    <div class="plain-header-right">
+    <div class="plain-header-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 99px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: #059669;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+        <span>Real-Time Cloud Live</span>
+      </div>
+      <button type="button" class="btn-primary" onclick="openAddPlayerModal()" style="padding: 6px 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+        <span>➕</span>
+        <span>Add Player</span>
+      </button>
+      <div style="display: flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 3px; border-radius: 8px;">
+        <button type="button" id="btnViewAllUsers" onclick="switchUsersView('all')" style="border: none; background: #0284c7; color: #fff; font-weight: 700; font-size: 11.5px; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
+          👥 All Players
+        </button>
+        <button type="button" id="btnViewDuplicates" onclick="switchUsersView('duplicates')" style="border: none; background: transparent; color: #64748b; font-weight: 700; font-size: 11.5px; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
+          ⚠️ Potential Duplicates <span id="dupBadgeCount" style="display: none; background: #dc2626; color: #fff; font-size: 9.5px; padding: 1px 6px; border-radius: 99px; margin-left: 4px;">0</span>
+        </button>
+      </div>
       <span class="plain-count-pill" id="plainTotalUsersCount">0 Players</span>
+      <select id="userStatusFilter" onchange="filterUsersTable()" class="plain-search-input" style="width: auto; padding: 7px 12px; cursor: pointer; border-radius: 8px;">
+        <option value="all">All Accounts</option>
+        <option value="active">Active Only</option>
+        <option value="disabled">Disabled Only</option>
+        <option value="highWealth">High Wealth (&gt;100k Coins)</option>
+      </select>
       <div class="plain-search-wrap">
-        <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search player..." class="plain-search-input">
+        <input type="text" id="userSearchInput" oninput="filterUsersTable()" placeholder="Search username, UID, Telegram..." class="plain-search-input">
         <button type="button" class="plain-search-clear" onclick="clearUserSearch()">✕</button>
       </div>
     </div>
   </div>
 
-  <div class="plain-table-card">
+  <!-- CONTAINER 1: ALL PLAYERS TABLE -->
+  <div class="plain-table-card" id="allUsersTableWrap">
     <div style="overflow-x: auto;">
       <table class="plain-data-table">
         <thead>
           <tr>
             <th style="width: 45px;">#</th>
-            <th>Player Name</th>
-            <th>Profile Code</th>
-            <th>Telegram</th>
-            <th>Level</th>
+            <th>Player Name / Username</th>
+            <th>User ID &amp; Telegram</th>
+            <th>Phone / Email (Masked)</th>
+            <th>Level &amp; XP</th>
             <th>Coins 🪙</th>
-            <th>Diamonds 💎</th>
-            <th style="text-align: right; width: 100px;">Action</th>
+            <th>Status</th>
+            <th style="text-align: right; width: 170px;">Actions</th>
           </tr>
         </thead>
         <tbody id="usersTableBody">
           <tr>
             <td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">
-              Loading players...
+              Loading players from Firebase...
             </td>
           </tr>
         </tbody>
@@ -47,38 +70,104 @@
     </div>
   </div>
 
+  <!-- CONTAINER 2: POTENTIAL DUPLICATE ACCOUNTS DETECTION TOOL -->
+  <div class="plain-table-card" id="duplicatesViewWrap" style="display: none; padding: 18px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🔍</span>
+          <span>Potential Duplicate Accounts</span>
+        </h3>
+        <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+          Accounts sharing the same Telegram ID, Phone Number, or Email address.
+        </p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" onclick="runDuplicateScan()" class="btn-minimal-primary" style="padding: 7px 14px; font-size: 12px;">
+          <span>🔄</span>
+          <span>Scan Duplicates Now</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Controlled Notice -->
+    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #92400e; line-height: 1.5;">
+      <strong>⚠️ Controlled Resolution Protocol:</strong> Duplicate accounts are NOT automatically merged. Balances, rewards, referrals, and inventory remain strictly isolated to prevent data loss. Use the actions below to review or disable conflicting accounts safely.
+    </div>
+
+    <!-- Duplicates Group Container -->
+    <div id="duplicateGroupsContainer">
+      <div style="text-align: center; color: #64748b; padding: 30px;">
+        Click <strong>Scan Duplicates Now</strong> to audit all accounts for shared identifiers.
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: DETAILED USER INFORMATION -->
   <div class="modal-overlay" id="userDetailsModal" onclick="closeUserDetailsModal()">
-    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;" id="detailAvatar">
             👤
           </div>
           <div>
-            <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="detailUsername">Player Details</h3>
+              <span id="detailStatusBadge" style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px; background: #dcfce7; color: #15803d; text-transform: uppercase;">Active</span>
+            </div>
             <span style="font-size: 11.5px; color: #64748b; font-family: 'JetBrains Mono', monospace;" id="detailUid">UID: -</span>
           </div>
         </div>
         <button type="button" onclick="closeUserDetailsModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
       </div>
 
+      <!-- Section: Account Authorization & Linked Identifiers -->
+      <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+          <span>🔐 Account Authorization &amp; Identity</span>
+          <span id="detailAuthStatusTag" style="font-size: 10px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 99px;">Verified</span>
+        </h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+          <div>
+            <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Telegram ID (Permanent)</div>
+            <div style="font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailAuthTgId">-</div>
+          </div>
+          <div>
+            <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Telegram Username</div>
+            <div style="font-weight: 700; color: #0f172a;" id="detailAuthTgUsername">-</div>
+          </div>
+          <div>
+            <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Phone (Masked)</div>
+            <div style="font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="detailAuthPhone">-</div>
+          </div>
+          <div>
+            <div style="font-size: 10.5px; font-weight: 700; color: #64748b;">Email (Masked)</div>
+            <div style="font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;" id="detailAuthEmail">-</div>
+          </div>
+          <div style="grid-column: span 2; display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+            <span style="font-size: 10.5px; font-weight: 700; color: #64748b;">Linked Methods:</span>
+            <div id="detailLinkedMethodsBadges" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Summary Pills -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Profile Code</span>
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Referral Code</span>
           <div style="font-size: 14px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailProfileCode">-</div>
         </div>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level</span>
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Player Level &amp; XP</span>
           <div style="font-size: 14px; font-weight: 800; color: #0f172a;" id="detailLevel">Lv.0</div>
         </div>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Goal Tier</span>
-          <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailGoalTier">Goal 0</div>
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Referrals Count</span>
+          <div style="font-size: 14px; font-weight: 800; color: #7c3aed;" id="detailReferralCount">0 Users</div>
         </div>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
-          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram Handle</span>
+          <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase;">Telegram ID</span>
           <div style="font-size: 13px; font-weight: 700; color: #0284c7;" id="detailTelegram">-</div>
         </div>
       </div>
@@ -86,7 +175,7 @@
       <!-- Section: 6 Virtual Currencies -->
       <div style="margin-bottom: 16px;">
         <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-          💰 All Currency Balances
+          💰 Virtual Currency Balances
         </h4>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
           <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
@@ -94,23 +183,23 @@
             <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
           </div>
           <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
-            <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
-            <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
+            <div style="font-size: 10px; font-weight: 800; color: #0891b2;">XP ACCUMULATED ⭐</div>
+            <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailXp">0</div>
           </div>
           <div style="padding: 10px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
             <div style="font-size: 10px; font-weight: 800; color: #7c3aed;">CHEST KEYS 🗝️</div>
             <div style="font-size: 15px; font-weight: 800; color: #7c3aed; font-family: 'JetBrains Mono', monospace;" id="detailKeys">0</div>
           </div>
-          <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
-            <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
-            <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
-          </div>
           <div style="padding: 10px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
             <div style="font-size: 10px; font-weight: 800; color: #2563eb;">CHEST TICKETS 🎫</div>
             <div style="font-size: 15px; font-weight: 800; color: #2563eb; font-family: 'JetBrains Mono', monospace;" id="detailTickets">0</div>
           </div>
+          <div style="padding: 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #e11d48;">SCRATCH CARDS 🎴</div>
+            <div style="font-size: 15px; font-weight: 800; color: #e11d48; font-family: 'JetBrains Mono', monospace;" id="detailCards">0</div>
+          </div>
           <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
-            <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS HATCHED 🥚</div>
+            <div style="font-size: 10px; font-weight: 800; color: #059669;">EGGS 🥚</div>
             <div style="font-size: 15px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace;" id="detailEggs">0</div>
           </div>
         </div>
@@ -145,17 +234,92 @@
           <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailTapPower">Tap Power: 1 | Total Taps: 0</div>
         </div>
         <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Ads Monetization</div>
-          <div style="font-size: 13px; font-weight: 700; color: #d97706; margin-top: 4px;" id="detailAdsWatched">0 Ads Watched</div>
+          <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">🎬 Activity &amp; Timestamps</div>
+          <div style="font-size: 12px; color: #0f172a; margin-top: 4px;" id="detailRegistrationDate">Registered: -</div>
           <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="detailLastActive">Last Active: -</div>
         </div>
       </div>
 
       <!-- Action Footer -->
-      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
-        <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
-        <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+        <button type="button" class="btn-secondary" id="btnToggleStatusFromDetails" style="color: #dc2626; border-color: #fca5a5;">
+          🔒 Disable Account
+        </button>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+          <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- MODAL: ADD NEW PLAYER (DIRECT REAL-TIME FIREBASE SYNC) -->
+  <div class="modal-overlay" id="addUserModal" onclick="closeAddPlayerModal()">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 540px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">➕</span>
+          <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;">Add New Player to Firebase</h3>
+        </div>
+        <button type="button" onclick="closeAddPlayerModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="saveNewPlayerToFirebase(event)" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: #334155;">Player Name / Username <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="inpAddUsername" placeholder="e.g. AlexGamer" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: #334155;">Telegram Handle</label>
+            <input type="text" id="inpAddTelegram" placeholder="@alex_tap" class="form-input">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #334155;">Starting Level</label>
+            <input type="number" id="inpAddLevel" value="1" min="1" max="100" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #ca8a04;">Coins 🪙</label>
+            <input type="number" id="inpAddCoins" value="2500" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Diamonds 💎</label>
+            <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          <div class="form-group">
+            <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #7c3aed;">Keys 🗝️</label>
+            <input type="number" id="inpAddKeys" value="3" min="0" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #2563eb;">Tickets 🎫</label>
+            <input type="number" id="inpAddTickets" value="2" min="0" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #e11d48;">Cards 🎴</label>
+            <input type="number" id="inpAddCards" value="2" min="0" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #059669;">Eggs 🥚</label>
+            <input type="number" id="inpAddEggs" value="1" min="0" class="form-input">
+          </div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px; font-size: 11.5px; color: #065f46;">
+          ⚡ <strong>Instant Cloud Sync:</strong> Saving writes immediately to Firebase <code>/players</code>. The real-time listener will auto-update the table and open the full user details modal.
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" class="btn-secondary" onclick="closeAddPlayerModal()">Cancel</button>
+          <button type="submit" class="btn-primary" id="btnSubmitAddPlayer">💾 Create &amp; Save Player</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </section>
+

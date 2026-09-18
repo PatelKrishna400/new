@@ -1,24 +1,24 @@
-<!-- PAGE: MEGA REDEMPTION REQUESTS -->
+<!-- PAGE: MEGA REDEMPTION REQUESTS (WALLET & WITHDRAWAL MANAGEMENT) -->
 <section class="page-panel" id="page-mega-request">
   <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
       <div>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Redemption Orders Queue</h2>
+          <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Wallet &amp; Withdrawal Management</h2>
           <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle orders info">
             <span>Info</span> <span class="arrow-icon">▸</span>
           </button>
         </div>
         <div class="collapsible-text-body">
-          <p style="font-size: 13px; color: #64748b;">Player prize claims from Firebase (<code style="color: #0284c7; font-weight: 700;">/reward_requests</code>).</p>
+          <p style="font-size: 13px; color: #64748b;">Live player withdrawal and redemption queue from Firebase (<code style="color: #0284c7; font-weight: 700;">/reward_requests</code>). Updates reflect immediately in the user app.</p>
         </div>
       </div>
 
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All</button>
+        <button class="btn-secondary active" data-reqfilter="all" onclick="filterRequestsTable('all')">All Requests</button>
         <button class="btn-secondary" data-reqfilter="pending" onclick="filterRequestsTable('pending')">Pending</button>
         <button class="btn-secondary" data-reqfilter="approved" onclick="filterRequestsTable('approved')">Approved</button>
-        <button class="btn-secondary" data-reqfilter="delivered" onclick="filterRequestsTable('delivered')">Delivered</button>
+        <button class="btn-secondary" data-reqfilter="completed" onclick="filterRequestsTable('completed')">Completed</button>
         <button class="btn-secondary" data-reqfilter="rejected" onclick="filterRequestsTable('rejected')">Rejected</button>
       </div>
     </div>
@@ -27,21 +27,21 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Order ID</th>
-            <th>User Name</th>
-            <th>Order Name</th>
-            <th>Website Tasks Done</th>
-            <th>Diamonds 💎</th>
-            <th>Shipping / Delivery</th>
-            <th>Date</th>
+            <th>Tx / Request ID</th>
+            <th>User &amp; User ID</th>
+            <th>Amount &amp; Item</th>
+            <th>Cost (Coins/Diamonds)</th>
+            <th>Payment / Wallet Info</th>
+            <th>Request Date</th>
             <th>Status</th>
-            <th style="text-align: right;">Approval &amp; Actions</th>
+            <th style="text-align: right; min-width: 170px;">Actions</th>
           </tr>
         </thead>
         <tbody id="requestsTableBody">
-          <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading requests from Firebase...</td></tr>
+          <tr><td colspan="8" style="text-align: center; color: #64748b; padding: 30px;">Loading requests from Firebase...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
+

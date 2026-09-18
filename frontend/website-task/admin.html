@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel - Website Task & Blog System | Energy Tap</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon" style="background: linear-gradient(135deg, var(--neon-gold), #f97316);">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        </div>
+        <span class="brand-title">ADMIN CONTROL CENTER</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Verification</a></li>
+        <li><a href="task.html" class="nav-link">Website Task</a></li>
+        <li><a href="blog.html" class="nav-link">Financial Blog</a></li>
+        <li><a href="admin.html" class="nav-link active">Admin Panel</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="user-tag">
+          <span class="status-dot connecting" id="navStatusDot"></span>
+          <span id="navUserId">Admin Session</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 1. AUTHENTICATION GATE (Visible if not logged in) -->
+  <div class="admin-auth-box" id="adminAuthGateBox">
+    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🛡️</div>
+    <h3>Secure Admin Access</h3>
+    <p>Enter your administrator security passkey to access real-time task, blog, User Code, and Task Code controls.</p>
+
+    <form id="adminLoginForm">
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label" for="adminPinInput">Administrator Passkey:</label>
+        <input type="password" class="form-input" id="adminPinInput" placeholder="Enter passkey (default: admin7080)" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-gold" style="width: 100%;">
+        🔐 Authenticate Admin Session
+      </button>
+    </form>
+  </div>
+
+  <!-- 2. MAIN ADMIN DASHBOARD & CONTROLS (Unlocked upon login) -->
+  <div class="admin-layout" id="adminMainLayout" style="display: none;">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="admin-nav-item active" data-tab="dashboard">
+        <span>📊</span> Dashboard
+      </div>
+      <div class="admin-nav-item" data-tab="taskcode">
+        <span>🔑</span> Task Management & Codes
+      </div>
+      <div class="admin-nav-item" data-tab="blog">
+        <span>📖</span> Blog Curriculum (10 Pages)
+      </div>
+      <div class="admin-nav-item" data-tab="ads">
+        <span>⚡</span> Direct-Link Ads (5/Page)
+      </div>
+      <div class="admin-nav-item" data-tab="rewards">
+        <span>💎</span> Reward Configuration
+      </div>
+      <div class="admin-nav-item" data-tab="users">
+        <span>👥</span> User Codes & Progress
+      </div>
+
+      <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+        <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="window.adminController.logout()">
+          🚪 Exit Admin
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+      
+      <!-- TAB 1: DASHBOARD -->
+      <section class="admin-section active" id="section_dashboard">
+        <div class="section-header-row">
+          <h2>Website Task Analytics & Metrics</h2>
+          <span class="status-tag done">⚡ Firebase Live Sync Active</span>
+        </div>
+
+        <div class="admin-stats-grid">
+          <div class="stat-card">
+            <h5>Total Registered Users</h5>
+            <div class="val" id="dashTotalUsers">0</div>
+          </div>
+          <div class="stat-card cyan">
+            <h5>Task Participants</h5>
+            <div class="val" id="dashParticipants">0</div>
+          </div>
+          <div class="stat-card green">
+            <h5>Chapters Completed</h5>
+            <div class="val" id="dashPagesCompleted">0</div>
+          </div>
+          <div class="stat-card gold">
+            <h5>Ad Tasks Completed</h5>
+            <div class="val" id="dashAdsCompleted">0</div>
+          </div>
+          <div class="stat-card">
+            <h5>Total Rewards Distributed</h5>
+            <div class="val" id="dashTotalRewards" style="font-size: 1.4rem;">0 Blue Coins</div>
+          </div>
+          <div class="stat-card cyan">
+            <h5>Active Chapters</h5>
+            <div class="val" id="dashActiveTask">10 / 10</div>
+          </div>
+          <div class="stat-card gold">
+            <h5>Active Direct-Link Ads</h5>
+            <div class="val" id="dashActiveAds">50 / 50</div>
+          </div>
+          <div class="stat-card green">
+            <h5>Completions Today</h5>
+            <div class="val" id="dashTodayCompletions">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TASK MANAGEMENT & CODES -->
+      <section class="admin-section" id="section_taskcode">
+        <div class="section-header-row">
+          <h2>Task Management & Verification Codes</h2>
+          <span class="status-tag current" id="activeTaskCodeBadge">Code: TASK-FIN-2026-001</span>
+        </div>
+
+        <div class="card" style="max-width: 680px; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 1rem; color: #fff;">Task Configuration & Access Code</h3>
+
+          <div class="form-group">
+            <label class="form-label">Task Name:</label>
+            <input type="text" class="form-input" id="cfgTaskName" value="Financial Blog Task">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Task Code (User must enter this on First Page):</label>
+            <input type="text" class="form-input" id="cfgTaskCode" value="TASK-FIN-2026-001" style="font-family: 'Outfit', monospace; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.25rem;">e.g. TASK-FIN-2026-001</small>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Total Chapters / Pages:</label>
+              <input type="number" class="form-input" id="cfgTotalPages" value="10" readonly style="opacity: 0.7;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reward Per Chapter (Blue Coins):</label>
+              <input type="number" class="form-input" id="cfgTaskPageReward" value="100">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Task Status:</label>
+            <select class="form-select" id="cfgTaskStatus">
+              <option value="enabled">Enabled (Active & Accessible)</option>
+              <option value="disabled">Disabled (Shows: This task is currently unavailable)</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" onclick="window.adminController.saveTaskManagementConfig()">
+            💾 Save Task Configuration
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 3: BLOG CURRICULUM MANAGEMENT -->
+      <section class="admin-section" id="section_blog">
+        <div class="section-header-row">
+          <h2>10-Chapter Financial Curriculum Management</h2>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Real-time Firebase Synchronization</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Page</th>
+                <th>Chapter Title</th>
+                <th>Completion Reward</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminBlogPagesList">
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 4: ADVERTISEMENT MANAGEMENT -->
+      <section class="admin-section" id="section_ads">
+        <div class="section-header-row">
+          <h2>Direct-Link Advertisement Management</h2>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <label class="form-label" style="margin-bottom: 0;">Select Page:</label>
+            <select class="form-select" id="adminAdPageSelect" style="width: auto;" onchange="window.adminController.selectPageForAds(this.value)">
+              <option value="page1">Page 1 - Personal Finance</option>
+              <option value="page2">Page 2 - Budgeting & Expenses</option>
+              <option value="page3">Page 3 - Saving & Emergency Funds</option>
+              <option value="page4">Page 4 - Bank Accounts & Interest</option>
+              <option value="page5">Page 5 - Loans & Credit Scores</option>
+              <option value="page6">Page 6 - Investing Fundamentals</option>
+              <option value="page7">Page 7 - Stocks & ETFs</option>
+              <option value="page8">Page 8 - Risk & Diversification</option>
+              <option value="page9">Page 9 - Long-Term Planning</option>
+              <option value="page10">Page 10 - Common Pitfalls</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Placement</th>
+                <th>Sponsor Title</th>
+                <th>Direct-Link URL</th>
+                <th>Reward</th>
+                <th>Timer</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminAdsList">
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 5: REWARD CONFIGURATION -->
+      <section class="admin-section" id="section_rewards">
+        <div class="section-header-row">
+          <h2>Global Reward & Bounty Configuration</h2>
+        </div>
+
+        <div class="card" style="max-width: 600px;">
+          <div class="form-group">
+            <label class="form-label">Reward Per Chapter Completed (Blue Coins):</label>
+            <input type="number" class="form-input" id="cfgPageReward" value="100">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reward Per Direct-Link Ad Task (Blue Coins):</label>
+            <input type="number" class="form-input" id="cfgAdReward" value="50">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Grand Finale Completion Bounty (Blue Coins):</label>
+            <input type="number" class="form-input" id="cfgFinalReward" value="500">
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
+            <input type="checkbox" id="cfgTaskEnabled" checked style="width: 18px; height: 18px;">
+            <label for="cfgTaskEnabled" class="form-label" style="margin-bottom: 0;">Website Task System Enabled Globally</label>
+          </div>
+
+          <button class="btn btn-primary" onclick="window.adminController.saveRewardConfig()">
+            💾 Save & Broadcast to Firebase
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 6: REAL-TIME USER CODES & PROGRESS TRACKER -->
+      <section class="admin-section" id="section_users">
+        <div class="section-header-row">
+          <h2>User Codes & Live Progress Auditing</h2>
+          <span id="userCountLabel" style="color: var(--text-muted); font-size: 0.9rem;">Loading users...</span>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-input-box">
+            <input type="text" class="form-input" id="userSearchInput" placeholder="🔍 Search by User Code, User ID, Username, or Telegram..." oninput="window.adminController.renderUsersTable()">
+          </div>
+
+          <select class="form-select" id="userStatusFilter" style="width: 200px;" onchange="window.adminController.renderUsersTable()">
+            <option value="all">All Users</option>
+            <option value="progress">In Progress</option>
+            <option value="completed">Completed (10/10)</option>
+            <option value="new">Not Started</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User / Account</th>
+                <th>User Code</th>
+                <th>Telegram</th>
+                <th>Current Page</th>
+                <th>Progress</th>
+                <th>Ads Done</th>
+                <th>Rewards</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTableBody">
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Edit Blog Page -->
+  <div class="modal-overlay" id="editPageModal">
+    <div class="modal-content" style="max-width: 600px; text-align: left;">
+      <h3 style="margin-bottom: 1rem; color: #fff;">Edit Chapter Details</h3>
+      <div class="form-group">
+        <label class="form-label">Chapter Title:</label>
+        <input type="text" class="form-input" id="modalPageTitle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chapter Subtitle / Summary:</label>
+        <input type="text" class="form-input" id="modalPageSubtitle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Completion Reward (Blue Coins):</label>
+        <input type="number" class="form-input" id="modalPageReward">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-outline btn-sm" onclick="window.adminController.closeEditPageModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="window.adminController.savePageChanges()">💾 Save to Firebase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Advertisement -->
+  <div class="modal-overlay" id="editAdModal">
+    <div class="modal-content" style="max-width: 600px; text-align: left;">
+      <h3 style="margin-bottom: 1rem; color: #fff;">Edit Direct-Link Sponsor Ad</h3>
+      <div class="form-group">
+        <label class="form-label">Sponsor Title:</label>
+        <input type="text" class="form-input" id="modalAdTitle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Direct-Link Destination URL:</label>
+        <input type="url" class="form-input" id="modalAdUrl" placeholder="https://...">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Reward (Blue Coins):</label>
+          <input type="number" class="form-input" id="modalAdReward">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Required Timer (seconds):</label>
+          <input type="number" class="form-input" id="modalAdTimer">
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-outline btn-sm" onclick="window.adminController.closeEditAdModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="window.adminController.saveAdChanges()">💾 Save to Firebase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Realtime SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+
+  <!-- Application Logic -->
+  <script src="js/firebase.js"></script>
+  <script src="js/website.js"></script>
+  <script src="js/blog.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

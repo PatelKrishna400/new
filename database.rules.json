@@ -4,15 +4,21 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "auth != null",
+        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true || root.child('whitelist').child(auth.uid).exists())",
         ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+      }
+    },
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
       }
     },
     "leaderboard": {
       ".read": true,
       "$uid": {
-        ".write": "auth != null",
-        ".validate": "newData.hasChildren(['name', 'level', 'coins'])"
+        ".write": "auth != null"
       }
     },
     "mega_rewards": {
@@ -76,6 +82,27 @@
     "game_config": {
       ".read": true,
       ".write": "auth != null"
+    },
+    "levels_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "fuel_cells_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "identityIndex": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "auth_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "activity_log": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["timestamp"]
     },
     ".info": {
       ".read": true

@@ -2855,6 +2855,60 @@
 }
 
 /* ==========================================================================
+   KEYS, TICKETS & VAULT PASSES STYLES
+   ========================================================================== */
+.pass-shop-card {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.border-key {
+  border: 1.5px solid rgba(245, 158, 11, 0.5) !important;
+}
+.border-key:hover {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(245, 158, 11, 0.3) !important;
+}
+
+.border-ticket {
+  border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+}
+.border-ticket:hover {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(56, 189, 248, 0.3) !important;
+}
+
+.border-egg {
+  border: 1.5px solid rgba(52, 211, 153, 0.5) !important;
+}
+.border-egg:hover {
+  border-color: #34d399 !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(52, 211, 153, 0.3) !important;
+}
+
+.border-scratch {
+  border: 1.5px solid rgba(192, 132, 252, 0.5) !important;
+}
+.border-scratch:hover {
+  border-color: #c084fc !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(192, 132, 252, 0.3) !important;
+}
+
+.fuel-buy-method-btn.coin-buy-btn:hover {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35) !important;
+  transform: translateY(-2px);
+}
+
+.fuel-buy-method-btn.blue-convert-btn:hover {
+  border-color: #06b6d4 !important;
+  background: rgba(6, 182, 212, 0.3) !important;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================================================
    TELEGRAM MTPROTO SESSIONS & ACTIVE DEVICES STYLES
    ========================================================================== */
 .session-pulsing-dot {
@@ -3004,6 +3058,319 @@
   background: rgba(239, 68, 68, 0.22);
   border-color: rgba(239, 68, 68, 0.6);
   color: #ffffff;
+}
+
+/* ==========================================================================
+   ENERGY FUEL CELL TABS & SINGLE ROW SHOP UI
+   ========================================================================== */
+.fuel-tabs-container {
+  width: 100%;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.fuel-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 1px 8px;
+  flex-wrap: nowrap;
+}
+
+.fuel-tabs-row::-webkit-scrollbar {
+  display: none;
+}
+
+.fuel-color-tab {
+  flex: 1 1 0;
+  min-width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 3px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.fuel-color-tab:active {
+  transform: scale(0.95);
+}
+
+.fuel-color-tab .tab-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fuel-color-tab .tab-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.2px;
+  transition: color 0.18s ease;
+}
+
+.fuel-color-tab .tab-multiplier {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Tab Active States */
+.fuel-color-tab[data-color="green"].active {
+  border-color: #10b981;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="green"].active .tab-name { color: #34d399; }
+.fuel-color-tab[data-color="green"].active .tab-multiplier { color: #6ee7b7; }
+
+.fuel-color-tab[data-color="yellow"].active {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.22) 0%, rgba(245, 158, 11, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="yellow"].active .tab-name { color: #fbbf24; }
+.fuel-color-tab[data-color="yellow"].active .tab-multiplier { color: #fde68a; }
+
+.fuel-color-tab[data-color="orange"].active {
+  border-color: #f97316;
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="orange"].active .tab-name { color: #fb923c; }
+.fuel-color-tab[data-color="orange"].active .tab-multiplier { color: #fed7aa; }
+
+.fuel-color-tab[data-color="pink"].active {
+  border-color: #ec4899;
+  background: linear-gradient(180deg, rgba(236, 72, 153, 0.22) 0%, rgba(236, 72, 153, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="pink"].active .tab-name { color: #f472b6; }
+.fuel-color-tab[data-color="pink"].active .tab-multiplier { color: #fbcfe8; }
+
+.fuel-color-tab[data-color="purple"].active {
+  border-color: #a855f7;
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.22) 0%, rgba(168, 85, 247, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="purple"].active .tab-name { color: #c084fc; }
+.fuel-color-tab[data-color="purple"].active .tab-multiplier { color: #e9d5ff; }
+
+.fuel-color-tab[data-color="red"].active {
+  border-color: #ef4444;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.22) 0%, rgba(239, 68, 68, 0.08) 100%);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="red"].active .tab-name { color: #f87171; }
+.fuel-color-tab[data-color="red"].active .tab-multiplier { color: #fecaca; }
+
+/* Active Fuel Card */
+.fuel-active-card {
+  background: linear-gradient(180deg, rgba(16, 27, 54, 0.94) 0%, rgba(8, 14, 30, 0.98) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fuel-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fuel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fuel-hero-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.fuel-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fuel-hero-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.fuel-hero-multiplier-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.fuel-hero-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.fuel-inventory-badge {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #e2e8f0;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.fuel-pricing-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #64748b;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fuel-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.fuel-buy-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.fuel-buy-btn:active {
+  transform: scale(0.97);
+}
+
+.fuel-btn-ad {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+.fuel-btn-ad:hover {
+  border-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+}
+
+.fuel-btn-blue {
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.2) 0%, rgba(2, 132, 199, 0.1) 100%);
+  border-color: rgba(14, 165, 233, 0.4);
+  color: #7dd3fc;
+}
+.fuel-btn-blue:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 14px rgba(14, 165, 233, 0.35);
+}
+
+.fuel-btn-gold {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fde047;
+}
+.fuel-btn-gold:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+}
+
+.fuel-btn-diamond {
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.2) 0%, rgba(8, 145, 178, 0.1) 100%);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #67e8f9;
+}
+.fuel-btn-diamond:hover {
+  border-color: #06b6d4;
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.35);
+}
+
+.fuel-btn-icon {
+  font-size: 18px;
+}
+
+.fuel-btn-cost {
+  font-size: 13px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.fuel-btn-label {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+  .fuel-color-tab {
+    padding: 7px 2px;
+  }
+  .fuel-color-tab .tab-name {
+    font-size: 10px;
+  }
+  .fuel-pricing-grid {
+    gap: 6px;
+  }
+  .fuel-buy-btn {
+    padding: 8px 4px;
+  }
+  .fuel-btn-cost {
+    font-size: 11.5px;
+  }
 }
 
 

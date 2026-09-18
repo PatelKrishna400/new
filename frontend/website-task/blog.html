@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Education Curriculum - 10 Chapters | Energy Tap</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/blog.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+</head>
+<body>
+
+  <!-- Sticky Top Reading Progress Bar -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-fill" id="readingProgressBar"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="brand-title">ENERGY TAP QUESTS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Verification</a></li>
+        <li><a href="task.html" class="nav-link">Website Task</a></li>
+        <li><a href="blog.html" class="nav-link active">Financial Blog</a></li>
+        <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="user-tag" title="Connected Player Account">
+          <span class="status-dot connecting" id="navStatusDot"></span>
+          <span id="navUserId">Connecting...</span>
+        </div>
+        <div class="coin-badge" title="Blue Coins Balance">
+          <span class="coin-icon">💎</span>
+          <span id="navBlueCoins">0</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Blog Content Area -->
+  <main class="container">
+    <!-- Header Section -->
+    <header class="blog-header-section">
+      <div class="blog-meta-badge">
+        ⚡ 10-CHAPTER FINANCIAL EDUCATION BLUEPRINT
+      </div>
+      <h1 class="blog-main-title">Financial Literacy & Wealth Strategy</h1>
+      <p class="blog-subtitle" id="blogSubtitle">
+        Explore actionable principles of personal finance, debt eradication, equity investing, and multi-decade wealth compounding.
+      </p>
+    </header>
+
+    <!-- Page Navigation Bar -->
+    <div class="page-nav-bar">
+      <div class="page-indicator-pill" id="activePageIndicator">
+        Page <span>1</span> of 10
+      </div>
+
+      <!-- 10 Page Chips -->
+      <div class="pages-chip-list" id="pagesChipList"></div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-outline btn-sm" id="btnPrevPage" onclick="window.blogController.openPage(window.blogController.currentPage - 1)">
+          ← Previous
+        </button>
+        <button class="btn btn-primary btn-sm" id="btnNextPage" onclick="window.blogController.openPage(window.blogController.currentPage + 1)">
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- Article Content Wrapper -->
+    <article class="article-wrapper">
+      <div class="article-header">
+        <div class="article-page-tag" id="articlePageTag">ARTICLE CHAPTER 01 / 10</div>
+        <h2 class="article-title" id="articleTitle">Introduction to Personal Finance & Financial Health</h2>
+        <div class="article-meta-row">
+          <span>⏱️ 7–9 Min Read</span>
+          <span>•</span>
+          <span>💎 +100 Blue Coins Completion Reward</span>
+          <span>•</span>
+          <span>⚡ 5 Sponsor Tasks Included</span>
+        </div>
+      </div>
+
+      <!-- Dynamic Article Sections & Interleaved 5 Ads -->
+      <div class="article-content" id="articleContentContainer">
+        <!-- Injected dynamically by js/blog.js -->
+      </div>
+
+      <!-- Bottom Page Completion Box -->
+      <div class="page-bottom-action-box" id="pageBottomActionBox">
+        <div class="page-completion-info">
+          <h4 id="bottomActionTitle">Finish Chapter 1 Knowledge Module</h4>
+          <p id="bottomActionDesc">Read the educational sections, claim your chapter reward, and unlock Chapter 2.</p>
+        </div>
+        <button class="btn btn-gold" id="btnCompletePage">
+          🎁 Complete Page & Claim +100 Blue Coins
+        </button>
+      </div>
+    </article>
+  </main>
+
+  <!-- Grand Finale Celebration Modal (Triggered on Page 10 Completion) -->
+  <div class="modal-overlay" id="celebrationModal">
+    <div class="modal-content">
+      <div class="modal-celebration-icon">🎉</div>
+      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #fff;">Financial Task Completed!</h2>
+      <p style="color: var(--neon-cyan); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem;">
+        10 / 10 Pages Completed • All Eligible Rewards Claimed
+      </p>
+      <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
+        Outstanding achievement! You have mastered the complete financial education curriculum. Your grand finale bonus has been credited directly to your Energy Tap profile.
+      </p>
+
+      <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Final Bonus Credited</span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--neon-gold); font-family: 'Outfit', sans-serif;">
+          +500 Blue Coins 💎
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <a href="task.html" class="btn btn-primary">
+          📋 View Task Summary
+        </a>
+        <button class="btn btn-outline" onclick="window.blogController.closeCelebrationModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-row">
+        <div style="font-weight: 700; color: #fff;">ENERGY TAP REACTOR • WEBSITE TASK PLATFORM</div>
+        <div>
+          <a href="task.html" style="margin-right: 1rem;">Tasks</a>
+          <a href="blog.html" style="margin-right: 1rem;">Blog</a>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Educational Disclaimer:</strong> All articles and materials provided on this platform are for general informational and educational purposes only. They do not constitute personalized investment, financial, tax, or legal advice. Energy Tap Reactor and its affiliates do not guarantee financial returns. Direct sponsor links are third-party opportunities; review their terms independently.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Realtime SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+
+  <!-- Application Logic -->
+  <script src="js/firebase.js"></script>
+  <script src="js/website.js"></script>
+  <script src="js/blog.js"></script>
+</body>
+</html>

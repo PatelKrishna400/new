@@ -93,8 +93,147 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       LEVEL & GOAL SYSTEM VISUAL MANAGER (Firebase /levels_config)
+       ============================================================ -->
+  <div class="minimal-card" style="margin-bottom: 18px; border-top: 3px solid #8b5cf6;">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title" style="color: #7c3aed;">🏆 Levels &amp; Goals Manager (/levels_config)</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle level info">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Configure level requirements (XP, Coins, Keys, Tickets), rewards, and lock/unlock status for Levels 1 to 100. Changes sync live with the user app.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-minimal-secondary" onclick="toggleCurrentLevelLock()">
+            <span id="btnLevelLockIcon">🔒</span>
+            <span id="btnLevelLockText">Toggle Lock</span>
+          </button>
+          <button type="button" class="btn-minimal-primary" onclick="saveCurrentLevelConfig()">
+            <span>💾</span>
+            <span>Save Level</span>
+          </button>
+          <button type="button" class="btn-minimal-primary" onclick="seedAllLevelsToFirebase()" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
+            <span>⚡</span>
+            <span>Seed 1-100 Defaults</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Level Picker & Status Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 14px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-size: 13px; font-weight: 800; color: #0f172a;">Select Level:</label>
+        <select id="selectAdminLevelNum" class="minimal-input" style="width: 140px; font-weight: 800; color: #7c3aed; font-size: 14px; cursor: pointer;" onchange="onAdminLevelSelectChange()">
+          <!-- Populated 1 to 100 via JS -->
+        </select>
+        <button type="button" class="btn-minimal-secondary" onclick="stepAdminLevel(-1)" style="padding: 4px 10px;">◀</button>
+        <button type="button" class="btn-minimal-secondary" onclick="stepAdminLevel(1)" style="padding: 4px 10px;">▶</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="lvlConfigStatusBadge" style="font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: #dcfce7; color: #15803d; text-transform: uppercase;">
+          ● Unlocked
+        </span>
+        <span id="lvlConfigSourceBadge" style="font-size: 11px; color: #64748b;">
+          Firebase Cloud
+        </span>
+      </div>
+    </div>
+
+    <!-- Level Parameters Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+      <!-- Column 1: Identity & Requirements -->
+      <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">
+          🎯 Level Requirements
+        </h4>
+
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Level Title / Name</label>
+          <input type="text" id="inpLvlName" class="minimal-input" placeholder="e.g. Level 1 - Pioneer">
+        </div>
+
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">XP Required to Reach &amp; Complete (⭐)</label>
+          <input type="number" id="inpLvlXpReq" class="minimal-input" min="10" step="50" style="color: #a855f7; font-weight: 800;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Required Cards 🎴</label>
+            <input type="number" id="inpLvlTargetCards" class="minimal-input" min="0" value="0">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Required Keys 🗝️</label>
+            <input type="number" id="inpLvlTargetKeys" class="minimal-input" min="0" value="0">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Required Tickets 🎫</label>
+            <input type="number" id="inpLvlTargetTickets" class="minimal-input" min="0" value="0">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Required Coins 🪙</label>
+            <input type="number" id="inpLvlTargetCoins" class="minimal-input" min="0" value="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Rewards Configuration -->
+      <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">
+          🎁 Level Completion Rewards
+        </h4>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Bonus Coins 🪙</label>
+            <input type="number" id="inpLvlRewardCoins" class="minimal-input" min="0" step="500" style="color: #ca8a04; font-weight: 800;">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Bonus XP ⭐</label>
+            <input type="number" id="inpLvlRewardXp" class="minimal-input" min="0" step="50" style="color: #a855f7; font-weight: 800;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Mystery Keys 🗝️</label>
+            <input type="number" id="inpLvlRewardKeys" class="minimal-input" min="0" value="1">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Spin Tickets 🎫</label>
+            <input type="number" id="inpLvlRewardTickets" class="minimal-input" min="0" value="1">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Scratch Cards 🎴</label>
+            <input type="number" id="inpLvlRewardCards" class="minimal-input" min="0" value="1">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Reactor Fuel Cells ⚡</label>
+            <input type="number" id="inpLvlRewardFuel" class="minimal-input" min="0" value="20">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DIRECT NODE READER & WRITER -->
   <div class="minimal-card" style="margin-bottom: 18px;">
+
     <div class="minimal-header-group">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div>
@@ -125,14 +264,16 @@
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
       <label style="font-size: 12px; font-weight: 800; color: #334155;">Select Firebase Path:</label>
       <select id="selectFirebaseNodePath" class="minimal-input" style="cursor: pointer; max-width: 320px;" onchange="readSelectedFirebaseNode()">
-        <option value="/game_config">/game_config (Global Static)</option>
-        <option value="/website_tasks_config">/website_tasks_config (Global Static)</option>
-        <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static)</option>
-        <option value="/monthly_competition">/monthly_competition (Global Static)</option>
-        <option value="/mega_rewards">/mega_rewards (Global Static)</option>
-        <option value="/ads_config">/ads_config (Global Static)</option>
-        <option value="/players">/players (User Dynamic)</option>
-        <option value="/reward_requests">/reward_requests (User Dynamic)</option>
+        <option value="/game_config">/game_config (Global Static Gameplay Rules)</option>
+        <option value="/levels_config">/levels_config (Levels 1-100 &amp; Goal Progression)</option>
+        <option value="/website_tasks_config">/website_tasks_config (Global Static Quests)</option>
+        <option value="/telegram_tasks_config">/telegram_tasks_config (Global Static Tasks)</option>
+        <option value="/monthly_competition">/monthly_competition (Global Static 30-Day Cycle)</option>
+        <option value="/mega_rewards">/mega_rewards (Global Static Rewards Catalog)</option>
+        <option value="/ads_config">/ads_config (Global Static Ads)</option>
+        <option value="/players">/players (User Dynamic Accounts)</option>
+        <option value="/reward_requests">/reward_requests (User Dynamic Orders)</option>
+        <option value="/activity_log">/activity_log (Real-time Audit Feed)</option>
         <option value="/admin_users">/admin_users (Security)</option>
       </select>
       <span style="font-size: 11px; color: #64748b;" id="fbNodeReadStatus">Ready to read</span>
@@ -142,6 +283,7 @@
     <div style="position: relative;">
       <textarea id="firebaseNodeEditor" rows="12" class="minimal-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; background: #0f172a; color: #38bdf8; border: 1.5px solid #334155; border-radius: 10px; padding: 14px;" placeholder="Click 'Read Node' to inspect raw JSON data..."></textarea>
     </div>
+
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11.5px; color: #64748b;">
       <span>💡 Reading Command: <code>db.ref(path).once('value')</code> | Writing Command: <code>db.ref(path).set(JSON.parse(data))</code></span>

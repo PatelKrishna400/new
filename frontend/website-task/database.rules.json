@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "websiteTasks": {
+      ".read": true,
+      ".write": "auth != null && (root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
+    },
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)",
+        "websiteTask": {
+          ".validate": "newData.hasChildren(['currentPage']) || newData.hasChildren(['completedPages']) || newData.hasChildren(['lastActivity'])"
+        }
+      }
+    },
+    "players": {
+      ".read": true,
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true || root.child('whitelist').child(auth.uid).exists())",
+        ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+      }
+    },
+    "admin_users": {
+      ".read": true,
+      ".write": "auth != null && (root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
+    },
+    "activity_log": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["timestamp", "userId"]
+    },
+    ".info": {
+      ".read": true
+    }
+  }
+}

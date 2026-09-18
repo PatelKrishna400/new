@@ -179,8 +179,11 @@
         </div>
 
         <div>
-          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Telegram Link</div>
-          <div style="font-size: 12px; font-weight: 700; color: #60a5fa; font-family: 'JetBrains Mono', monospace; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="profileTelegramVal">@alex_blue</div>
+          <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Telegram Identity</div>
+          <div style="display: flex; flex-direction: column; margin-top: 2px;">
+            <div style="font-size: 12px; font-weight: 700; color: #60a5fa; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="profileTelegramVal">@alex_blue</div>
+            <div style="font-size: 9.5px; font-weight: 700; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="profileTelegramIdBadge">ID: Not linked</div>
+          </div>
         </div>
 
         <div>
@@ -319,13 +322,13 @@
       <div class="shop-balance-info">
         <span class="shop-balance-label">REACTOR STORE VAULT</span>
         <div class="shop-balance-pills">
-          <div class="shop-curr-pill coin-pill-glow">
+          <div class="shop-curr-pill coin-pill-glow" title="Gold Coins">
             <span class="curr-icon">🪙</span>
             <span class="curr-amount" id="shopCoinVal">0</span>
           </div>
-          <div class="shop-curr-pill diamond-pill-glow">
+          <div class="shop-curr-pill diamond-pill-glow" title="Blue Coins" style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4;">
             <span class="curr-icon">💎</span>
-            <span class="curr-amount" id="shopDiamondVal">0</span>
+            <span class="curr-amount" id="shopBlueCoinVal">0</span>
           </div>
         </div>
       </div>
@@ -335,233 +338,178 @@
       </div>
     </section>
 
-    <!-- Section: Energy Fuel Cell Depot -->
+    <!-- ==================== SECTION: KEYS, TICKETS & VAULT PASSES ==================== -->
+    <section class="shop-section" id="shopPassesSection">
+      <div class="shop-section-header">
+        <div class="section-title-wrap">
+          <span class="section-icon">🗝️</span>
+          <h3 class="section-title">Keys & Passes Vault</h3>
+        </div>
+        <span class="section-tag">200 BLUE COIN EXCHANGE</span>
+      </div>
+
+      <div class="shop-items-grid">
+        <!-- 1. Mystery Chest Key -->
+        <div class="shop-item-card pass-shop-card border-key">
+          <div class="shop-item-top">
+            <div class="item-icon-box gold-box"><span class="item-emoji">🔑</span></div>
+            <div class="item-badge-pill" id="shopOwnedKeys">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #fbbf24;">Mystery Chest Key</h4>
+            <p class="item-desc">Unlock Mystery Chest for rare jackpot prizes & loot</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
+              <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('key', 200)" title="Buy 1 Key for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
+                <span class="method-icon">💎</span>
+                <span class="method-label">200 Blue</span>
+                <span class="method-gain">+1 Key</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('chestKey')" title="Buy 1 Key for 50 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">50 Coins</span>
+                <span class="method-gain">+1 Key</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Lucky Spin Ticket -->
+        <div class="shop-item-card pass-shop-card border-ticket">
+          <div class="shop-item-top">
+            <div class="item-icon-box cyan-box"><span class="item-emoji">🎡</span></div>
+            <div class="item-badge-pill" id="shopOwnedTickets">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #38bdf8;">Lucky Spin Ticket</h4>
+            <p class="item-desc">Spin the Lucky Fortune Wheel for instant cash & gems</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
+              <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('ticket', 200)" title="Buy 1 Ticket for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
+                <span class="method-icon">💎</span>
+                <span class="method-label">200 Blue</span>
+                <span class="method-gain">+1 Ticket</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('spinTicket')" title="Buy 1 Ticket for 25 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">25 Coins</span>
+                <span class="method-gain">+1 Ticket</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Cyber Dragon Egg -->
+        <div class="shop-item-card pass-shop-card border-egg">
+          <div class="shop-item-top">
+            <div class="item-icon-box green-box"><span class="item-emoji">🥚</span></div>
+            <div class="item-badge-pill" id="shopOwnedEggs">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #34d399;">Cyber Dragon Egg</h4>
+            <p class="item-desc">Hatch 16 mystery dragon eggs for cards, keys & coins</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
+              <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('egg', 200)" title="Buy 1 Egg for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
+                <span class="method-icon">💎</span>
+                <span class="method-label">200 Blue</span>
+                <span class="method-gain">+1 Egg</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('egg')" title="Buy 1 Egg for 75 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">75 Coins</span>
+                <span class="method-gain">+1 Egg</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Lucky Scratch Card -->
+        <div class="shop-item-card pass-shop-card border-scratch">
+          <div class="shop-item-top">
+            <div class="item-icon-box purple-box"><span class="item-emoji">🎟️</span></div>
+            <div class="item-badge-pill" id="shopOwnedScratch">0 Owned</div>
+          </div>
+          <div class="shop-item-details">
+            <h4 class="item-name" style="color: #c084fc;">Scratch Card</h4>
+            <p class="item-desc">Scratch & match 3 icons to win jackpot coins & gems</p>
+          </div>
+          <div class="shop-item-bottom">
+            <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
+              <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('scratchCard', 200)" title="Buy 1 Scratch Card for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
+                <span class="method-icon">💎</span>
+                <span class="method-label">200 Blue</span>
+                <span class="method-gain">+1 Card</span>
+              </button>
+              <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('scratchCard')" title="Buy 1 Card for 35 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
+                <span class="method-icon">🪙</span>
+                <span class="method-label">35 Coins</span>
+                <span class="method-gain">+1 Card</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Energy Fuel Cell Shop (Tabbed by Color) -->
     <section class="shop-section" id="shopFuelSection">
       <div class="shop-section-header">
         <div class="section-title-wrap">
           <span class="section-icon">🔋</span>
-          <h3 class="section-title">Fuel Cell Depot</h3>
+          <h3 class="section-title">Energy Fuel Cell Shop</h3>
         </div>
-        <span class="section-tag">ENERGY GENERATORS</span>
+        <span class="section-tag" id="fuelActiveTag">ENERGY GENERATORS</span>
       </div>
 
-      <div class="shop-items-grid">
-        <!-- 1. Dark Green Fuel Cell (First) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-darkgreen">
-          <div class="shop-item-top">
-            <div class="item-icon-box darkgreen-box"><span class="item-emoji">🌱</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_darkgreen">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #34d399;">Dark Green Fuel</h4>
-            <p class="item-desc">+1 Minute generator timer boost</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('darkgreen', 1, 1)" title="Watch 1 Ad for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_darkgreen">1 Ad</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('darkgreen', 100, 5)" title="100 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">100</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('darkgreen', 10, 10)" title="10 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">10</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
+      <!-- Single Horizontal Row for all 6 Color Tabs -->
+      <div class="fuel-tabs-container">
+        <div class="fuel-tabs-row" id="fuelTabsRow">
+          <!-- 1. Green -->
+          <button type="button" class="fuel-color-tab active" data-color="green" onclick="switchFuelTab('green')">
+            <span class="tab-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <span class="tab-name">Green</span>
+            <span class="tab-multiplier">×1</span>
+          </button>
+          <!-- 2. Yellow -->
+          <button type="button" class="fuel-color-tab" data-color="yellow" onclick="switchFuelTab('yellow')">
+            <span class="tab-dot" style="background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
+            <span class="tab-name">Yellow</span>
+            <span class="tab-multiplier">×1.5</span>
+          </button>
+          <!-- 3. Orange -->
+          <button type="button" class="fuel-color-tab" data-color="orange" onclick="switchFuelTab('orange')">
+            <span class="tab-dot" style="background: #f97316; box-shadow: 0 0 8px #f97316;"></span>
+            <span class="tab-name">Orange</span>
+            <span class="tab-multiplier">×2.5</span>
+          </button>
+          <!-- 4. Pink -->
+          <button type="button" class="fuel-color-tab" data-color="pink" onclick="switchFuelTab('pink')">
+            <span class="tab-dot" style="background: #ec4899; box-shadow: 0 0 8px #ec4899;"></span>
+            <span class="tab-name">Pink</span>
+            <span class="tab-multiplier">×7</span>
+          </button>
+          <!-- 5. Purple -->
+          <button type="button" class="fuel-color-tab" data-color="purple" onclick="switchFuelTab('purple')">
+            <span class="tab-dot" style="background: #a855f7; box-shadow: 0 0 8px #a855f7;"></span>
+            <span class="tab-name">Purple</span>
+            <span class="tab-multiplier">×8.5</span>
+          </button>
+          <!-- 6. Red -->
+          <button type="button" class="fuel-color-tab" data-color="red" onclick="switchFuelTab('red')">
+            <span class="tab-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+            <span class="tab-name">Red</span>
+            <span class="tab-multiplier">×5</span>
+          </button>
         </div>
+      </div>
 
-        <!-- 2. Green Fuel Cell (Second) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-green">
-          <div class="shop-item-top">
-            <div class="item-icon-box green-box"><span class="item-emoji">🌿</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_green">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #10b981;">Green Fuel Cell</h4>
-            <p class="item-desc">+5 Minutes generator timer boost</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('green', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_green">2 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('green', 200, 5)" title="200 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">200</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('green', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">20</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Yellow Fuel Cell (Third) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-yellow">
-          <div class="shop-item-top">
-            <div class="item-icon-box yellow-box"><span class="item-emoji">⚡</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_yellow">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #f59e0b;">Yellow Fuel Cell</h4>
-            <p class="item-desc">+15 Minutes generator timer boost</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('yellow', 2, 1)" title="Watch 2 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_yellow">2 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('yellow', 200, 5)" title="200 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">200</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('yellow', 20, 10)" title="20 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">20</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Orange Fuel Cell (Fourth) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-orange">
-          <div class="shop-item-top">
-            <div class="item-icon-box orange-box"><span class="item-emoji">🔥</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_orange">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #f97316;">Orange Fuel Cell</h4>
-            <p class="item-desc">+30 Minutes generator timer boost</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('orange', 3, 1)" title="Watch 3 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_orange">3 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('orange', 300, 5)" title="300 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">300</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('orange', 30, 10)" title="30 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">30</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Red Fuel Cell (Fifth) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-red">
-          <div class="shop-item-top">
-            <div class="item-icon-box red-box"><span class="item-emoji">💎</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_red">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #ef4444;">Red Fuel Cell</h4>
-            <p class="item-desc">+0.01 EP/Sec rate permanent boost</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('red', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_red">5 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('red', 500, 5)" title="500 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">500</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('red', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">50</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. Pink Boost Fuel (Sixth) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-pink">
-          <div class="shop-item-top">
-            <div class="item-icon-box pink-box"><span class="item-emoji">⚡</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_pink">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #ec4899;">Pink Boost Fuel</h4>
-            <p class="item-desc">2x speed generator boost for 10 min</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('pink', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_pink">5 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('pink', 500, 5)" title="500 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">500</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('pink', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">50</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 7. Purple Boost Fuel (Seventh) -->
-        <div class="shop-item-card fuel-shop-card fuel-border-purple">
-          <div class="shop-item-top">
-            <div class="item-icon-box purple-box"><span class="item-emoji">🔮</span></div>
-            <div class="item-badge-pill" id="shopOwnedFuel_purple">0 Owned</div>
-          </div>
-          <div class="shop-item-details">
-            <h4 class="item-name" style="color: #a855f7;">Purple Boost Fuel</h4>
-            <p class="item-desc">5x speed generator boost for 10 min</p>
-          </div>
-          <div class="shop-item-bottom">
-            <div class="fuel-three-ways-buy">
-              <button class="fuel-buy-method-btn ad-btn" onclick="buyFuelWithAds('purple', 5, 1)" title="Watch 5 Ads for 1 Fuel Cell">
-                <span class="method-icon">🎬</span>
-                <span class="method-label" id="adLabel_purple">5 Ads</span>
-                <span class="method-gain">+1 Cell</span>
-              </button>
-              <button class="fuel-buy-method-btn coin-btn" onclick="buyFuelWithCoins('purple', 500, 5)" title="500 Coins for 5 Fuel Cells">
-                <span class="method-icon">🪙</span>
-                <span class="method-label">500</span>
-                <span class="method-gain">+5 Cells</span>
-              </button>
-              <button class="fuel-buy-method-btn dia-btn" onclick="buyFuelWithDiamonds('purple', 50, 10)" title="50 Diamonds for 10 Fuel Cells">
-                <span class="method-icon">💎</span>
-                <span class="method-label">50</span>
-                <span class="method-gain">+10 Cells</span>
-              </button>
-            </div>
-          </div>
-        </div>
+      <!-- Active Fuel Cell Display & Purchase Card -->
+      <div class="fuel-active-card" id="fuelActiveCard">
+        <!-- Injected dynamically via renderFuelShopTab() -->
       </div>
     </section>
 

@@ -66,6 +66,39 @@ function onTgTaskInput(taskId) {
 }
 window.onTgTaskInput = onTgTaskInput;
 
+function getTaskCompletionStats(taskType, taskId) {
+  const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+  let count = 0;
+  users.forEach(u => {
+    const raw = u.raw || {};
+    const tasksState = raw.tasksState || {};
+    if (taskType === 'telegram') {
+      if (tasksState.claimedTelegram && tasksState.claimedTelegram[taskId]) count++;
+    } else {
+      if (tasksState.claimedWebsite && tasksState.claimedWebsite[taskId]) count++;
+    }
+  });
+  return count;
+}
+window.getTaskCompletionStats = getTaskCompletionStats;
+
+function toggleTaskStatus(taskType, taskId) {
+  const isTg = taskType === 'telegram';
+  const tasks = isTg ? getTelegramTasks() : getWebsiteTasks();
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  task.disabled = !task.disabled;
+  if (isTg) {
+    performSaveTelegramTasksToFirebase(false);
+    renderTelegramTasksUI();
+  } else {
+    performSaveWebsiteTasksToFirebase(false);
+    renderWebsiteTasksUI();
+  }
+}
+window.toggleTaskStatus = toggleTaskStatus;
+
 function renderTelegramTasksUI() {
   const container = document.getElementById('telegramTasksContainer');
   const badge = document.getElementById('adminTgTasksCountBadge');
@@ -77,7 +110,7 @@ function renderTelegramTasksUI() {
   if (tasks.length === 0) {
     container.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(4, 10, 26, 0.5); border-radius: 12px; border: 1px dashed rgba(25, 55, 120, 0.5);">
-        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 12px;">No Telegram tasks found.</p>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 12px;">No Telegram tasks found in Firebase.</p>
         <button onclick="openNewTelegramTaskModal()" class="btn-primary">➕ Add Your First Telegram Task</button>
       </div>
     `;
@@ -90,15 +123,27 @@ function renderTelegramTasksUI() {
     const typeLabel = isBot ? '🤖 BOT' : '✈️ CHANNEL';
     const tag = task.tagText || (isBot ? 'TELEGRAM BOT' : 'TELEGRAM CHANNEL');
     const cardsVal = Number(task.rewardCards || task.scratchCards || task.rewardKeys || 1);
+    const completions = getTaskCompletionStats('telegram', task.id);
+    const isDisabled = task.disabled === true;
 
     html += `
-      <div class="task-item-card" id="tgCard_${task.id}">
+      <div class="task-item-card" id="tgCard_${task.id}" style="${isDisabled ? 'opacity: 0.7; border-color: rgba(239, 68, 68, 0.4);' : ''}">
         <div class="task-card-header">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-weight: 800; color: #38bdf8; font-size: 13px;">${typeLabel} #${idx + 1}</span>
-            <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${tag}</span>
+            <span style="font-size: 10px; background: ${isDisabled ? 'rgba(239, 68, 68, 0.15)' : 'rgba(56, 189, 248, 0.15)'}; color: ${isDisabled ? '#f87171' : '#38bdf8'}; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+              ${isDisabled ? 'DISABLED' : tag}
+            </span>
+            <span style="font-size: 10.5px; color: #10b981; font-weight: 700; font-family: 'JetBrains Mono', monospace;" title="Number of players who completed this task">
+              👥 ${completions} Done
+            </span>
           </div>
-          <button type="button" onclick="removeTelegramTask('${task.id}')" title="Delete Task" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 6px; padding: 3px 8px; font-size: 11px; cursor: pointer;">🗑️ Remove</button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" onclick="toggleTaskStatus('telegram', '${task.id}')" class="btn-dash-outline" style="padding: 2px 8px; font-size: 10.5px; border-color: ${isDisabled ? '#10b981' : '#f59e0b'}; color: ${isDisabled ? '#10b981' : '#f59e0b'};">
+              ${isDisabled ? 'Enable' : 'Disable'}
+            </button>
+            <button type="button" onclick="removeTelegramTask('${task.id}')" title="Delete Task" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 6px; padding: 2px 8px; font-size: 10.5px; cursor: pointer;">🗑️</button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -139,6 +184,7 @@ function renderTelegramTasksUI() {
 
   container.innerHTML = html;
 }
+
 
 function openNewTelegramTaskModal() {
   const modal = document.getElementById('newTelegramTaskModal') || document.getElementById('addTgTaskModal');
@@ -299,14 +345,27 @@ function renderWebsiteTasksUI() {
 
   let html = '';
   tasks.forEach((task, idx) => {
+    const completions = getTaskCompletionStats('website', task.id);
+    const isDisabled = task.disabled === true;
+
     html += `
-      <div class="task-item-card" id="webCard_${task.id}">
+      <div class="task-item-card" id="webCard_${task.id}" style="${isDisabled ? 'opacity: 0.7; border-color: rgba(239, 68, 68, 0.4);' : ''}">
         <div class="task-card-header">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-weight: 800; color: #2dd4bf; font-size: 13px;">🌐 QUEST #${idx + 1}</span>
-            <span style="font-size: 10px; background: rgba(45, 212, 191, 0.15); color: #2dd4bf; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${task.tag || 'SPONSOR QUEST'}</span>
+            <span style="font-size: 10px; background: ${isDisabled ? 'rgba(239, 68, 68, 0.15)' : 'rgba(45, 212, 191, 0.15)'}; color: ${isDisabled ? '#f87171' : '#2dd4bf'}; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+              ${isDisabled ? 'DISABLED' : (task.tag || 'SPONSOR QUEST')}
+            </span>
+            <span style="font-size: 10.5px; color: #10b981; font-weight: 700; font-family: 'JetBrains Mono', monospace;" title="Number of players who completed this quest">
+              👥 ${completions} Done
+            </span>
           </div>
-          <button type="button" onclick="removeWebsiteTask('${task.id}')" title="Delete Quest" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 6px; padding: 3px 8px; font-size: 11px; cursor: pointer;">🗑️ Remove</button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" onclick="toggleTaskStatus('website', '${task.id}')" class="btn-dash-outline" style="padding: 2px 8px; font-size: 10.5px; border-color: ${isDisabled ? '#10b981' : '#f59e0b'}; color: ${isDisabled ? '#10b981' : '#f59e0b'};">
+              ${isDisabled ? 'Enable' : 'Disable'}
+            </button>
+            <button type="button" onclick="removeWebsiteTask('${task.id}')" title="Delete Quest" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 6px; padding: 2px 8px; font-size: 10.5px; cursor: pointer;">🗑️</button>
+          </div>
         </div>
 
         <div class="form-group">

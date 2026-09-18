@@ -541,33 +541,5 @@ const styleImports = [
 fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), styleImports + '\n', 'utf8');
 console.log('Successfully updated style.css with modular imports!');
 
-// Export to public/ directory for Vercel deployment (as specified in vercel.json)
-const PROJECT_ROOT = path.join(ROOT_DIR, '..');
-const PUBLIC_DIR = path.join(PROJECT_ROOT, 'public');
-
-function copyDirRecursive(src, dest) {
-  if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest, { recursive: true });
-  }
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-    if (entry.isDirectory()) {
-      copyDirRecursive(srcPath, destPath);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
-}
-
-if (!fs.existsSync(PUBLIC_DIR)) {
-  fs.mkdirSync(PUBLIC_DIR, { recursive: true });
-}
-fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), fullHtml, 'utf8');
-fs.writeFileSync(path.join(PUBLIC_DIR, 'style.css'), styleImports + '\n', 'utf8');
-copyDirRecursive(PAGES_DIR, path.join(PUBLIC_DIR, 'pages'));
-copyDirRecursive(SHARED_DIR, path.join(PUBLIC_DIR, 'shared'));
-console.log(`Successfully exported deployment bundle to public/`);
 
 

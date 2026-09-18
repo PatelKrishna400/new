@@ -5,12 +5,19 @@
 function initFirebaseManagePage() {
   updateNodeCounts();
   testFirebasePing();
+  populateLevelPicker();
+  loadLevelConfigIntoForm(1);
 }
 
 window.addEventListener('usersUpdated', updateNodeCounts);
 window.addEventListener('rewardsUpdated', updateNodeCounts);
 window.addEventListener('requestsUpdated', updateNodeCounts);
 window.addEventListener('websiteTasksUpdated', updateNodeCounts);
+window.addEventListener('levelsConfigUpdated', () => {
+  const select = document.getElementById('selectAdminLevelNum');
+  const lvl = select ? parseInt(select.value, 10) || 1 : 1;
+  loadLevelConfigIntoForm(lvl);
+});
 
 function updateNodeCounts() {
   const users = window.adminState.users || [];
@@ -31,6 +38,253 @@ function updateNodeCounts() {
   if (elT) elT.textContent = `${tasks.length} quests`;
   if (elTg) elTg.textContent = `${tgTasks.length} tasks`;
 }
+
+// ==========================================================================
+// LEVEL & GOAL SYSTEM MANAGER (Firebase /levels_config)
+// ==========================================================================
+
+let currentInspectedLevel = 1;
+
+function populateLevelPicker() {
+  const select = document.getElementById('selectAdminLevelNum');
+  if (!select) return;
+
+  let options = '';
+  for (let i = 1; i <= 100; i++) {
+    options += `<option value="${i}">Level ${i}</option>`;
+  }
+  select.innerHTML = options;
+  select.value = '1';
+}
+
+function getLevelTierName(l) {
+  if (l <= 10) return 'Pioneer';
+  if (l <= 25) return 'Voyager';
+  if (l <= 50) return 'Commander';
+  if (l <= 75) return 'Cyber Master';
+  return 'Cosmic Titan';
+}
+
+function generateDefaultLevelConfig(l) {
+  const xpRequired = 1000 + (l - 1) * 250;
+  const cardsTarget = Math.min(30, 2 + Math.floor(l * 0.4));
+  const keysTarget = Math.min(25, 1 + Math.floor(l * 0.3));
+  const ticketsTarget = Math.min(20, 1 + Math.floor(l * 0.2));
+  const coinsTarget = 5000 + (l - 1) * 1500;
+
+  const coinsReward = 5000 + (l - 1) * 2000;
+  const xpReward = 500 + (l - 1) * 100;
+  const keysReward = l % 5 === 0 ? 3 : 1;
+  const ticketsReward = l % 3 === 0 ? 2 : 1;
+  const cardsReward = 1;
+  const fuelReward = Math.min(100, 20 + l * 2);
+
+  return {
+    level: l,
+    name: `Level ${l} - ${getLevelTierName(l)}`,
+    isLocked: false,
+    xpRequired: xpRequired,
+    targets: {
+      cards: cardsTarget,
+      keys: keysTarget,
+      tickets: ticketsTarget,
+      coins: coinsTarget
+    },
+    rewards: {
+      coins: coinsReward,
+      xpBonus: xpReward,
+      keys: keysReward,
+      tickets: ticketsReward,
+      cards: cardsReward,
+      fuel: fuelReward
+    }
+  };
+}
+
+function loadLevelConfigIntoForm(lvl) {
+  currentInspectedLevel = lvl;
+  const select = document.getElementById('selectAdminLevelNum');
+  if (select && select.value !== String(lvl)) {
+    select.value = String(lvl);
+  }
+
+  const levelsConfig = (window.adminState && window.adminState.levelsConfig) ? window.adminState.levelsConfig : {};
+  const isFromCloud = levelsConfig && levelsConfig[lvl];
+  const def = generateDefaultLevelConfig(lvl);
+  const cfg = isFromCloud ? levelsConfig[lvl] : def;
+
+  const targets = cfg.targets || def.targets || {};
+  const rewards = cfg.rewards || def.rewards || {};
+  const isLocked = !!cfg.isLocked;
+
+  // Header badges
+  const statusBadge = document.getElementById('lvlConfigStatusBadge');
+  const sourceBadge = document.getElementById('lvlConfigSourceBadge');
+  const btnLockIcon = document.getElementById('btnLevelLockIcon');
+  const btnLockText = document.getElementById('btnLevelLockText');
+
+  if (statusBadge) {
+    statusBadge.textContent = isLocked ? '● Locked' : '● Unlocked';
+    statusBadge.style.background = isLocked ? '#fee2e2' : '#dcfce7';
+    statusBadge.style.color = isLocked ? '#dc2626' : '#15803d';
+  }
+  if (sourceBadge) {
+    sourceBadge.textContent = isFromCloud ? 'Firebase Cloud (Custom)' : 'Formula Default';
+  }
+  if (btnLockIcon) btnLockIcon.textContent = isLocked ? '🔓' : '🔒';
+  if (btnLockText) btnLockText.textContent = isLocked ? 'Unlock Level' : 'Lock Level';
+
+  // Populate inputs
+  if (document.getElementById('inpLvlName')) {
+    document.getElementById('inpLvlName').value = cfg.name || def.name;
+  }
+  if (document.getElementById('inpLvlXpReq')) {
+    document.getElementById('inpLvlXpReq').value = cfg.xpRequired !== undefined ? cfg.xpRequired : def.xpRequired;
+  }
+  if (document.getElementById('inpLvlTargetCards')) {
+    document.getElementById('inpLvlTargetCards').value = targets.cards !== undefined ? targets.cards : def.targets.cards;
+  }
+  if (document.getElementById('inpLvlTargetKeys')) {
+    document.getElementById('inpLvlTargetKeys').value = targets.keys !== undefined ? targets.keys : def.targets.keys;
+  }
+  if (document.getElementById('inpLvlTargetTickets')) {
+    document.getElementById('inpLvlTargetTickets').value = targets.tickets !== undefined ? targets.tickets : def.targets.tickets;
+  }
+  if (document.getElementById('inpLvlTargetCoins')) {
+    document.getElementById('inpLvlTargetCoins').value = targets.coins !== undefined ? targets.coins : def.targets.coins;
+  }
+
+  // Rewards
+  if (document.getElementById('inpLvlRewardCoins')) {
+    document.getElementById('inpLvlRewardCoins').value = rewards.coins !== undefined ? rewards.coins : def.rewards.coins;
+  }
+  if (document.getElementById('inpLvlRewardXp')) {
+    document.getElementById('inpLvlRewardXp').value = rewards.xpBonus !== undefined ? rewards.xpBonus : def.rewards.xpBonus;
+  }
+  if (document.getElementById('inpLvlRewardKeys')) {
+    document.getElementById('inpLvlRewardKeys').value = rewards.keys !== undefined ? rewards.keys : def.rewards.keys;
+  }
+  if (document.getElementById('inpLvlRewardTickets')) {
+    document.getElementById('inpLvlRewardTickets').value = rewards.tickets !== undefined ? rewards.tickets : def.rewards.tickets;
+  }
+  if (document.getElementById('inpLvlRewardCards')) {
+    document.getElementById('inpLvlRewardCards').value = rewards.cards !== undefined ? rewards.cards : def.rewards.cards;
+  }
+  if (document.getElementById('inpLvlRewardFuel')) {
+    document.getElementById('inpLvlRewardFuel').value = rewards.fuel !== undefined ? rewards.fuel : def.rewards.fuel;
+  }
+}
+
+function onAdminLevelSelectChange() {
+  const select = document.getElementById('selectAdminLevelNum');
+  const lvl = select ? parseInt(select.value, 10) || 1 : 1;
+  loadLevelConfigIntoForm(lvl);
+}
+window.onAdminLevelSelectChange = onAdminLevelSelectChange;
+
+function stepAdminLevel(delta) {
+  let nextLvl = currentInspectedLevel + delta;
+  if (nextLvl < 1) nextLvl = 1;
+  if (nextLvl > 100) nextLvl = 100;
+  loadLevelConfigIntoForm(nextLvl);
+}
+window.stepAdminLevel = stepAdminLevel;
+
+function saveCurrentLevelConfig() {
+  const lvl = currentInspectedLevel;
+  const levelsConfig = (window.adminState && window.adminState.levelsConfig) ? window.adminState.levelsConfig : {};
+  const currentCfg = levelsConfig[lvl] || generateDefaultLevelConfig(lvl);
+
+  const cfg = {
+    level: lvl,
+    name: document.getElementById('inpLvlName')?.value.trim() || `Level ${lvl}`,
+    isLocked: !!currentCfg.isLocked,
+    xpRequired: Number(document.getElementById('inpLvlXpReq')?.value) || 1000,
+    targets: {
+      cards: Number(document.getElementById('inpLvlTargetCards')?.value) || 0,
+      keys: Number(document.getElementById('inpLvlTargetKeys')?.value) || 0,
+      tickets: Number(document.getElementById('inpLvlTargetTickets')?.value) || 0,
+      coins: Number(document.getElementById('inpLvlTargetCoins')?.value) || 0
+    },
+    rewards: {
+      coins: Number(document.getElementById('inpLvlRewardCoins')?.value) || 5000,
+      xpBonus: Number(document.getElementById('inpLvlRewardXp')?.value) || 500,
+      keys: Number(document.getElementById('inpLvlRewardKeys')?.value) || 1,
+      tickets: Number(document.getElementById('inpLvlRewardTickets')?.value) || 1,
+      cards: Number(document.getElementById('inpLvlRewardCards')?.value) || 1,
+      fuel: Number(document.getElementById('inpLvlRewardFuel')?.value) || 20
+    }
+  };
+
+  if (typeof window.saveLevelConfig === 'function') {
+    window.saveLevelConfig(lvl, cfg)
+      .then(() => {
+        alert(`✅ Level ${lvl} configuration saved to Firebase!`);
+        loadLevelConfigIntoForm(lvl);
+      })
+      .catch(err => alert('Firebase error: ' + err.message));
+  } else {
+    const db = window.getDb ? window.getDb() : null;
+    if (!db) return;
+    db.ref(`/levels_config/${lvl}`).set(cfg)
+      .then(() => {
+        alert(`✅ Level ${lvl} saved to Firebase!`);
+        loadLevelConfigIntoForm(lvl);
+      })
+      .catch(err => alert('Error: ' + err.message));
+  }
+}
+window.saveCurrentLevelConfig = saveCurrentLevelConfig;
+
+function toggleCurrentLevelLock() {
+  const lvl = currentInspectedLevel;
+  const levelsConfig = (window.adminState && window.adminState.levelsConfig) ? window.adminState.levelsConfig : {};
+  const currentCfg = levelsConfig[lvl] || generateDefaultLevelConfig(lvl);
+  const nextLockState = !currentCfg.isLocked;
+
+  if (typeof window.toggleLevelLock === 'function') {
+    window.toggleLevelLock(lvl, nextLockState)
+      .then(() => {
+        if (!levelsConfig[lvl]) levelsConfig[lvl] = { ...currentCfg };
+        levelsConfig[lvl].isLocked = nextLockState;
+        loadLevelConfigIntoForm(lvl);
+      })
+      .catch(err => alert('Firebase error: ' + err.message));
+  }
+}
+window.toggleCurrentLevelLock = toggleCurrentLevelLock;
+
+function seedAllLevelsToFirebase() {
+  if (!confirm('⚠️ Seed all 100 default level configurations to Firebase (/levels_config)? Existing customizations will be refreshed.')) {
+    return;
+  }
+
+  const allConfigs = {};
+  for (let l = 1; l <= 100; l++) {
+    allConfigs[l] = generateDefaultLevelConfig(l);
+  }
+
+  if (typeof window.saveAllLevelsConfig === 'function') {
+    window.saveAllLevelsConfig(allConfigs)
+      .then(() => {
+        alert('✅ All 100 Level configurations published to Firebase (/levels_config)!');
+        loadLevelConfigIntoForm(currentInspectedLevel);
+      })
+      .catch(err => alert('Error: ' + err.message));
+  } else {
+    const db = window.getDb ? window.getDb() : null;
+    if (!db) return;
+    db.ref('/levels_config').set(allConfigs)
+      .then(() => {
+        alert('✅ All 100 levels saved to Firebase!');
+        loadLevelConfigIntoForm(currentInspectedLevel);
+      })
+      .catch(err => alert('Error: ' + err.message));
+  }
+}
+window.seedAllLevelsToFirebase = seedAllLevelsToFirebase;
+window.loadLevelConfigIntoForm = loadLevelConfigIntoForm;
+
 
 // ==========================================================================
 // DIRECT FIREBASE NODE READING & WRITING ENGINE

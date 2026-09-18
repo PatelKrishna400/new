@@ -13,20 +13,48 @@
    - Subtabs: Goals 1-100 List vs Mega Reward
    ========================================================================== */
 
-// Helper: Calculate 3-Emoji Requirements for any Level 1 to 100
+// Helper: Calculate 3-Emoji Requirements for any Level 1 to 100 (Admin Synced)
 function getGoalLevelRequirements(lvl) {
+  if (typeof getLevelConfig === 'function') {
+    const cfg = getLevelConfig(lvl);
+    if (cfg && cfg.targets) {
+      return {
+        cards: Number(cfg.targets.cards) || 20,
+        keys: Number(cfg.targets.keys) || 50,
+        tickets: Number(cfg.targets.tickets) || 35
+      };
+    }
+  }
   if (lvl === 1) {
     return { cards: 20, keys: 50, tickets: 35 };
   }
-  // Deterministic progressive scaling curve
+  // Fallback progressive scaling curve
   const cards = 20 + (lvl - 1) * 6 + ((lvl * 11) % 15);
   const keys = 50 + (lvl - 1) * 9 + ((lvl * 17) % 20);
   const tickets = 35 + (lvl - 1) * 7 + ((lvl * 13) % 18);
   return { cards, keys, tickets };
 }
 
+// Helper: Get Level Rewards configuration
+function getGoalLevelRewards(lvl) {
+  if (typeof getLevelConfig === 'function') {
+    const cfg = getLevelConfig(lvl);
+    if (cfg && cfg.rewards) {
+      return cfg.rewards;
+    }
+  }
+  const qty = getGoalLevelRewardQty(lvl);
+  return { cards: qty, keys: qty, tickets: qty, coins: lvl * 25, xp: lvl * 10 };
+}
+
 // Helper: Calculate Tier Reward Quantity based on Level
 function getGoalLevelRewardQty(lvl) {
+  if (typeof getLevelConfig === 'function') {
+    const cfg = getLevelConfig(lvl);
+    if (cfg && cfg.rewards && cfg.rewards.cards !== undefined) {
+      return Number(cfg.rewards.cards) || 1;
+    }
+  }
   if (lvl <= 10) return 1;
   if (lvl <= 25) return 2;
   if (lvl <= 50) return 3;
@@ -36,11 +64,8 @@ function getGoalLevelRewardQty(lvl) {
 
 // Helper: Get Tier Label
 function getGoalTierLabel(lvl) {
-  if (lvl <= 10) return '⭐ TIER 1: +1 CARD • +1 DANDIYA • +1 FLOWER';
-  if (lvl <= 25) return '⭐⭐ TIER 2: +2 CARDS • +2 DANDIYAS • +2 FLOWERS';
-  if (lvl <= 50) return '⭐⭐⭐ TIER 3: +3 CARDS • +3 DANDIYAS • +3 FLOWERS';
-  if (lvl <= 75) return '⭐⭐⭐⭐ TIER 4: +4 CARDS • +4 DANDIYAS • +4 FLOWERS';
-  return '👑 MASTER TIER: +5 CARDS • +5 DANDIYAS • +5 FLOWERS';
+  const r = getGoalLevelRewards(lvl);
+  return `⭐ LEVEL ${lvl} REWARD: +${r.cards || 1} CARDS • +${r.keys || 1} DANDIYAS • +${r.tickets || 1} FLOWERS`;
 }
 
 // Subtab Switcher (Goals 1-100 vs Mega Reward)
@@ -75,19 +100,27 @@ window.toggleGoalSubView = function() {
   }
 };
 
-// Render Goals 1 to 100 Roadmap List
+// Render Goals 1 to 100 Roadmap List (Admin-Controlled & Synced)
 window.renderGoalsList = function() {
   if (!DOM.goalsScrollList) return;
-  const curLvl = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
-  const prog = gameState.goalState.levelProgress || { cards: 0, keys: 0, tickets: 0 };
-  const adsWatched = gameState.goalState.levelAdsWatched || 0;
+  const curLvl = typeof getActiveLevel === 'function' 
+    ? getActiveLevel() 
+    : ((gameState.progression && gameState.progression.activeLevel) || (gameState.goalState && gameState.goalState.currentLevel) || 1);
+  
+  const prog = (gameState.progression && gameState.progression.levelProgress)
+    || (gameState.goalState && gameState.goalState.levelProgress)
+    || { cards: 0, keys: 0, tickets: 0 };
+  
   let html = '';
 
   for (let g = 1; g <= 100; g++) {
+    const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(g) : null;
     const req = getGoalLevelRequirements(g);
-    const rewardQty = getGoalLevelRewardQty(g);
-    const isClaimed = !!(gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[g]);
-    const isCurrent = (curLvl === 0 && g === 1) || g === curLvl;
+    const rewards = getGoalLevelRewards(g);
+    const isUnlocked = typeof isLevelUnlocked === 'function' ? isLevelUnlocked(g) : (g <= curLvl);
+    const isClaimed = typeof isLevelCompleted === 'function' ? isLevelCompleted(g) : !!(gameState.goalState && gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[g]);
+    const isCurrent = (g === curLvl);
+    const isLockedByAdmin = !!(cfg && cfg.isLocked);
 
     let rowClass = 'level-row-card';
     if (isClaimed) rowClass += ' reached';
@@ -95,14 +128,24 @@ window.renderGoalsList = function() {
 
     // Status / Action Column
     let statusHtml = '';
-    if (isClaimed) {
-      statusHtml = `<span style="font-size: 11px; font-weight: 800; color: #10b981;">✓ Claimed</span>`;
-    } else if (isCurrent) {
-      const isItemsComplete = prog.cards >= req.cards && prog.keys >= req.keys && prog.tickets >= req.tickets;
+    if (isLockedByAdmin && !isClaimed) {
+      statusHtml = `
+        <div class="level-lock-status" title="Locked by Admin" style="color: #ef4444; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span style="font-size: 8px; font-weight: 800; color: #f87171;">LOCKED</span>
+        </div>
+      `;
+    } else if (isClaimed) {
+      statusHtml = `<span style="font-size: 11px; font-weight: 800; color: #10b981;">✓ Done</span>`;
+    } else if (isCurrent && isUnlocked) {
+      const isItemsComplete = (prog.cards || 0) >= req.cards && (prog.keys || 0) >= req.keys && (prog.tickets || 0) >= req.tickets;
       if (!isItemsComplete) {
         statusHtml = `<button class="level-claim-btn" onclick="handleGoalLevelAction(${g})">Collect 🎯</button>`;
       } else {
-        statusHtml = `<button class="level-claim-btn" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);" onclick="handleGoalLevelAction(${g})"><span>🎬</span> Claim</button>`;
+        statusHtml = `<button class="level-claim-btn" style="background: linear-gradient(135deg, #8b5cf6, #d946ef); box-shadow: 0 0 12px rgba(217, 70, 239, 0.5);" onclick="handleGoalLevelAction(${g})"><span>🎬</span> Claim</button>`;
       }
     } else {
       statusHtml = `
@@ -117,10 +160,10 @@ window.renderGoalsList = function() {
 
     let progressSnippet = '';
     if (isCurrent && !isClaimed) {
-      const isItemsComplete = prog.cards >= req.cards && prog.keys >= req.keys && prog.tickets >= req.tickets;
+      const isItemsComplete = (prog.cards || 0) >= req.cards && (prog.keys || 0) >= req.keys && (prog.tickets || 0) >= req.tickets;
       progressSnippet = `
         <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
-          Progress: 🃏 ${prog.cards}/${req.cards} • 🥢 ${prog.keys}/${req.keys} • 🌸 ${prog.tickets}/${req.tickets} ${isItemsComplete ? '• 🎬 1 Ad to Claim' : ''}
+          Progress: 🃏 ${prog.cards || 0}/${req.cards} • 🥢 ${prog.keys || 0}/${req.keys} • 🌸 ${prog.tickets || 0}/${req.tickets} ${isItemsComplete ? '• 🎬 1 Ad to Claim' : ''}
         </div>
       `;
     }
@@ -135,7 +178,7 @@ window.renderGoalsList = function() {
           <div class="level-text-info">
             <div class="level-title-row">
               <span class="level-title-text">Goal Level ${g}</span>
-              <span class="level-tier-tag" style="color: #38bdf8; font-weight: 800;">(+${rewardQty} All)</span>
+              ${isLockedByAdmin ? '<span class="level-tier-tag" style="color: #ef4444; font-weight: 800;">[LOCKED]</span>' : `<span class="level-tier-tag" style="color: #38bdf8; font-weight: 800;">(+${rewards.cards || 1} All)</span>`}
             </div>
             <span class="level-xp-req" style="color: #94a3b8; font-size: 10px;">Req: 🃏 ${req.cards} • 🥢 ${req.keys} • 🌸 ${req.tickets}</span>
             ${progressSnippet}
@@ -144,9 +187,9 @@ window.renderGoalsList = function() {
 
         <div class="level-right-rewards">
           <div style="display: flex; gap: 4px;">
-            <span class="lvl-reward-pill pill-ticket">🃏 +${rewardQty}</span>
-            <span class="lvl-reward-pill pill-key">🥢 +${rewardQty}</span>
-            <span class="lvl-reward-pill pill-fuel">🌸 +${rewardQty}</span>
+            <span class="lvl-reward-pill pill-ticket">🃏 +${rewards.cards || 1}</span>
+            <span class="lvl-reward-pill pill-key">🥢 +${rewards.keys || 1}</span>
+            <span class="lvl-reward-pill pill-fuel">🌸 +${rewards.tickets || 1}</span>
           </div>
           ${statusHtml}
         </div>
@@ -156,21 +199,40 @@ window.renderGoalsList = function() {
   DOM.goalsScrollList.innerHTML = html;
 };
 
-// Level Action Handler (Collect items via taps -> watch 1 Telegram ad -> claim)
+// Level Action Handler (Collect items via taps -> watch 1 ad -> claim & advance level)
 window.handleGoalLevelAction = function(lvl) {
-  const curLevel = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
-  const targetLvl = curLevel === 0 ? 1 : curLevel;
-  if (lvl !== targetLvl) return;
+  const curLvl = typeof getActiveLevel === 'function'
+    ? getActiveLevel()
+    : ((gameState.progression && gameState.progression.activeLevel) || (gameState.goalState && gameState.goalState.currentLevel) || 1);
+  
+  const targetLvl = curLvl;
+  if (lvl !== targetLvl) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`Complete Level ${targetLvl} before accessing Level ${lvl}!`);
+    }
+    return;
+  }
+
+  const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(targetLvl) : null;
+  if (cfg && cfg.isLocked) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`Level ${targetLvl} is locked by Admin.`);
+    }
+    return;
+  }
 
   const req = getGoalLevelRequirements(targetLvl);
-  const prog = gameState.goalState.levelProgress || { cards: 0, keys: 0, tickets: 0 };
-  const isItemsComplete = prog.cards >= req.cards && prog.keys >= req.keys && prog.tickets >= req.tickets;
+  const prog = (gameState.progression && gameState.progression.levelProgress)
+    || (gameState.goalState && gameState.goalState.levelProgress)
+    || { cards: 0, keys: 0, tickets: 0 };
+  
+  const isItemsComplete = (prog.cards || 0) >= req.cards && (prog.keys || 0) >= req.keys && (prog.tickets || 0) >= req.tickets;
 
   if (!isItemsComplete) {
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`Tap the Energy Reactor to collect all 3 items first!`);
     } else {
-      alert(`Collect all 3 items (Cards: ${prog.cards}/${req.cards}, Dandiyas: ${prog.keys}/${req.keys}, Flowers: ${prog.tickets}/${req.tickets}) by tapping the reactor!`);
+      alert(`Collect all 3 items (Cards: ${prog.cards || 0}/${req.cards}, Dandiyas: ${prog.keys || 0}/${req.keys}, Flowers: ${prog.tickets || 0}/${req.tickets}) by tapping the reactor!`);
     }
     return;
   }
@@ -192,18 +254,27 @@ window.handleGoalLevelAction = function(lvl) {
 };
 
 function executeClaimGoalLevel(targetLvl) {
-  const rewardQty = getGoalLevelRewardQty(targetLvl);
-  if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
-  gameState.goalState.claimedGoals[targetLvl] = true;
-
-  // Award loot (Cards, Dandiyas, Flowers + Bonus Coins & XP)
-  gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewardQty;
-  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewardQty;
-  gameState.player.coins = (gameState.player.coins || 0) + (targetLvl * 25);
-  gameState.player.xp = (gameState.player.xp || 0) + (targetLvl * 10);
+  const rewards = getGoalLevelRewards(targetLvl);
+  
+  // Single source of truth: complete active level
+  if (typeof completeActiveLevel === 'function') {
+    completeActiveLevel(targetLvl);
+  } else {
+    if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
+    gameState.goalState.claimedGoals[targetLvl] = true;
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 1);
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 1);
+    gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || targetLvl * 25);
+    gameState.player.xp = (gameState.player.xp || 0) + (rewards.xp || targetLvl * 10);
+    if (targetLvl < 100) {
+      gameState.goalState.currentLevel = targetLvl + 1;
+      gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+    }
+  }
 
   sfx.playLevelUpSound();
 
+  const nextLvl = Math.min(100, targetLvl + 1);
   if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
     DOM.sheetTitle.textContent = `🎉 GOAL LEVEL ${targetLvl} COMPLETE!`;
     DOM.sheetContent.innerHTML = `
@@ -212,20 +283,13 @@ function executeClaimGoalLevel(targetLvl) {
         <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Goal Level ${targetLvl} Claimed!</h3>
         <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You collected all items, watched 1 ad, and unlocked your loot:</p>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 12px 18px; width: 100%; display: flex; flex-direction: column; gap: 6px;">
-          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewardQty} 🃏 Cards • +${rewardQty} 🥢 Dandiyas • +${rewardQty} 🌸 Flowers</div>
-          <div style="font-size: 12px; color: #94a3b8;">+${targetLvl * 25} Coins • +${targetLvl * 10} XP</div>
+          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewards.cards || 1} 🃏 Cards • +${rewards.keys || 1} 🥢 Dandiyas • +${rewards.tickets || 1} 🌸 Flowers</div>
+          <div style="font-size: 12px; color: #94a3b8;">+${rewards.coins || targetLvl * 25} Coins • +${rewards.xp || targetLvl * 10} XP</div>
         </div>
-        <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">Advance to Level ${Math.min(100, targetLvl + 1)} ✨</button>
+        <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">Advance to Level ${nextLvl} ✨</button>
       </div>
     `;
     DOM.modalBackdrop.classList.add('open');
-  }
-
-  // Advance level
-  if (targetLvl < 100) {
-    gameState.goalState.currentLevel = targetLvl + 1;
-    gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
-    gameState.goalState.levelAdsWatched = 0;
   }
 
   updateUI();
@@ -514,6 +578,15 @@ function updateGoalViewUI() {
 }
 
 window.getGoalLevelRequirements = getGoalLevelRequirements;
+window.getGoalLevelRewards = getGoalLevelRewards;
 window.getGoalLevelRewardQty = getGoalLevelRewardQty;
 window.getGoalTierLabel = getGoalTierLabel;
 window.updateGoalViewUI = updateGoalViewUI;
+
+window.addEventListener('levelsConfigUpdated', () => {
+  if (gameState.goalState && gameState.goalState.currentSubtab === 'goals') {
+    renderGoalsList();
+  }
+  updateGoalViewUI();
+});
+

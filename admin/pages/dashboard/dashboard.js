@@ -62,6 +62,7 @@ function initDashboardPage() {
   setupPeriodSelectors();
   loadTargetsFromStorageOrCloud();
   updateDashboardMetrics();
+  renderRealtimeActivityFeed();
   refreshDashboardAnalytics();
 }
 
@@ -70,15 +71,23 @@ function initDashboardPage() {
  */
 window.addEventListener('usersUpdated', () => {
   updateDashboardMetrics();
+  renderRealtimeActivityFeed();
   refreshDashboardAnalytics();
 });
 
 window.addEventListener('rewardsUpdated', () => {
+  updateDashboardMetrics();
   refreshDashboardAnalytics();
 });
 
 window.addEventListener('requestsUpdated', () => {
+  updateDashboardMetrics();
+  renderRealtimeActivityFeed();
   refreshDashboardAnalytics();
+});
+
+window.addEventListener('activitiesUpdated', () => {
+  renderRealtimeActivityFeed();
 });
 
 /**
@@ -157,37 +166,192 @@ function loadTargetsFromStorageOrCloud() {
 }
 
 /**
- * Update Top 4 Metric Cards (Preserved)
+ * Update Top Metric Cards with Live Firebase Aggregations
  */
 function updateDashboardMetrics() {
-  const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+  const metrics = (typeof window.calculateAggregatedMetrics === 'function')
+    ? window.calculateAggregatedMetrics()
+    : {
+        totalUsers: 0, onlineUsers: 0, totalCoins: 0, totalXP: 0, totalKeys: 0,
+        totalTickets: 0, totalEggs: 0, totalWithdrawals: 0, pendingWithdrawals: 0,
+        totalReferrals: 0, totalAdViews: 0, totalCompletedTasks: 0, totalLevels: 100
+      };
 
-  const totalPlayers = users.length;
+  const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
   const totalDailyTasks = users.reduce((sum, u) => sum + (Number(u.dailyTasksDone) || 0), 0);
   const totalWebTasks = users.reduce((sum, u) => sum + (Number(u.webTasksDone) || 0), 0);
-  const totalAdsButtonCount = users.reduce((sum, u) => sum + (Number(u.adsButtonCount || u.adsWatched) || 0), 0);
 
+  // Section 1: Live Community & Player Engagement
   const elPlayers = document.getElementById('dashTotalPlayers');
+  const elOnline = document.getElementById('dashOnlinePlayers');
+  const elPendingWith = document.getElementById('dashPendingWithdrawals');
+  const elTotalWith = document.getElementById('dashTotalWithdrawals');
+  const elReferrals = document.getElementById('dashTotalReferrals');
+  const elAds = document.getElementById('dashAdsButtonCount');
+  const elCompletedTasks = document.getElementById('dashCompletedTasks');
+
+  if (elPlayers) elPlayers.textContent = Number(metrics.totalUsers || 0).toLocaleString();
+  if (elOnline) elOnline.textContent = Number(metrics.onlineUsers || 0).toLocaleString();
+  if (elPendingWith) elPendingWith.textContent = Number(metrics.pendingWithdrawals || 0).toLocaleString();
+  if (elTotalWith) elTotalWith.textContent = `/ ${Number(metrics.totalWithdrawals || 0).toLocaleString()} Total`;
+  if (elReferrals) elReferrals.textContent = Number(metrics.totalReferrals || 0).toLocaleString();
+  if (elAds) elAds.textContent = Number(metrics.totalAdViews || 0).toLocaleString();
+  if (elCompletedTasks) elCompletedTasks.textContent = Number(metrics.totalCompletedTasks || 0).toLocaleString();
+
+  // Section 2: Live Economy & Assets in Circulation
+  const elCoins = document.getElementById('dashTotalCoins');
+  const elXP = document.getElementById('dashTotalXP');
+  const elKeys = document.getElementById('dashTotalKeys');
+  const elTickets = document.getElementById('dashTotalTickets');
+  const elEggs = document.getElementById('dashTotalEggs');
+  const elLevels = document.getElementById('dashTotalLevels');
+
+  if (elCoins) {
+    const c = Number(metrics.totalCoins || 0);
+    elCoins.textContent = c >= 1000000 ? (c / 1000000).toFixed(2) + 'M' : c.toLocaleString();
+    elCoins.title = `${c.toLocaleString()} Coins`;
+  }
+  if (elXP) {
+    const xp = Number(metrics.totalXP || 0);
+    elXP.textContent = xp >= 1000000 ? (xp / 1000000).toFixed(2) + 'M' : xp.toLocaleString();
+    elXP.title = `${xp.toLocaleString()} XP`;
+  }
+  if (elKeys) elKeys.textContent = Number(metrics.totalKeys || 0).toLocaleString();
+  if (elTickets) elTickets.textContent = Number(metrics.totalTickets || 0).toLocaleString();
+  if (elEggs) elEggs.textContent = Number(metrics.totalEggs || 0).toLocaleString();
+  if (elLevels) elLevels.textContent = Number(metrics.totalLevels || 100).toLocaleString();
+
+  // Legacy elements if present
   const elDaily = document.getElementById('dashDailyTasksCompleted');
   const elWeb = document.getElementById('dashWebTasksCompleted');
-  const elAds = document.getElementById('dashAdsButtonCount');
+  if (elDaily) elDaily.textContent = totalDailyTasks.toLocaleString();
+  if (elWeb) elWeb.textContent = totalWebTasks.toLocaleString();
 
   const gameStats = (window.adminState && window.adminState.gameStats) ? window.adminState.gameStats : {};
   const elSpins = document.getElementById('dashTotalSpins');
   const elChests = document.getElementById('dashTotalChests');
   const elScratches = document.getElementById('dashTotalScratches');
-  const elEggs = document.getElementById('dashTotalEggs');
-
-  if (elPlayers) elPlayers.textContent = totalPlayers.toLocaleString();
-  if (elDaily) elDaily.textContent = totalDailyTasks.toLocaleString();
-  if (elWeb) elWeb.textContent = totalWebTasks.toLocaleString();
-  if (elAds) elAds.textContent = totalAdsButtonCount.toLocaleString();
-
   if (elSpins) elSpins.textContent = (gameStats.totalSpins || 0).toLocaleString();
   if (elChests) elChests.textContent = (gameStats.totalChests || 0).toLocaleString();
   if (elScratches) elScratches.textContent = (gameStats.totalScratches || 0).toLocaleString();
-  if (elEggs) elEggs.textContent = (gameStats.totalEggs || 0).toLocaleString();
 }
+
+/**
+ * Render Live Real-Time Activity & Audit Feed
+ */
+function renderRealtimeActivityFeed() {
+  const container = document.getElementById('dashRealtimeActivityFeed');
+  if (!container) return;
+
+  let activities = (window.adminState && window.adminState.activities) ? [...window.adminState.activities] : [];
+
+  // If activity_log is empty in Firebase, synthesize from real active users and real requests
+  if (activities.length === 0) {
+    const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+    const requests = (window.adminState && window.adminState.rewardRequests) ? window.adminState.rewardRequests : [];
+
+    users.slice(0, 10).forEach(u => {
+      if (u.lastActive) {
+        activities.push({
+          type: 'active',
+          title: `Player ${u.name || u.username || (u.id ? u.id.slice(0, 8) : 'User')} Active`,
+          details: `Level ${u.level || 1} • ${(u.coins || 0).toLocaleString()} Coins • ${(u.xp || 0).toLocaleString()} XP`,
+          timestamp: new Date(u.lastActive).getTime() || Date.now()
+        });
+      }
+    });
+
+    requests.slice(0, 10).forEach(r => {
+      activities.push({
+        type: 'withdrawal',
+        title: `Withdrawal Request: ${r.amount || 0} ${r.type || 'Coins'}`,
+        details: `Player: ${r.userName || r.userId || 'User'} • Status: ${(r.status || 'pending').toUpperCase()}`,
+        timestamp: new Date(r.createdAt || r.date || Date.now()).getTime()
+      });
+    });
+
+    activities.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  }
+
+  if (activities.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; color: #64748b; padding: 24px; font-size: 13px;">
+        Listening for live events from Firebase...
+      </div>
+    `;
+    return;
+  }
+
+  const icons = {
+    user_register: '👤',
+    user_edit: '✏️',
+    user_status: '🔒',
+    user_delete: '🗑️',
+    withdrawal_status: '💳',
+    withdrawal: '💳',
+    task_save: '🎯',
+    task_delete: '🗑️',
+    level_save: '🏆',
+    level_lock: '🔐',
+    active: '⚡'
+  };
+
+  const colors = {
+    user_register: '#38bdf8',
+    user_edit: '#f59e0b',
+    user_status: '#ec4899',
+    user_delete: '#ef4444',
+    withdrawal_status: '#10b981',
+    withdrawal: '#f59e0b',
+    task_save: '#06b6d4',
+    task_delete: '#ef4444',
+    level_save: '#8b5cf6',
+    level_lock: '#f43f5e',
+    active: '#34d399'
+  };
+
+  const escapeText = (str) => {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  };
+
+  container.innerHTML = activities.slice(0, 25).map(act => {
+    const icon = icons[act.type] || '⚡';
+    const color = colors[act.type] || '#38bdf8';
+    const timeStr = act.timestamp ? new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Just now';
+    const dateStr = act.timestamp ? new Date(act.timestamp).toLocaleDateString() : '';
+
+    return `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; font-size: 12.5px; transition: all 0.2s ease;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: ${color}20; color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; border: 1px solid ${color}35;">
+            ${icon}
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 6px;">
+              <span>${escapeText(act.title || 'Live Activity')}</span>
+              <span style="font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px; background: ${color}25; color: ${color}; text-transform: uppercase;">
+                ${escapeText(act.type || 'Event')}
+              </span>
+            </div>
+            <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+              ${escapeText(act.details || '')}
+            </div>
+          </div>
+        </div>
+        <div style="text-align: right; flex-shrink: 0; color: #64748b; font-size: 11px; font-family: monospace;">
+          <div>${timeStr}</div>
+          <div style="font-size: 10px; color: #475569;">${dateStr}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+window.renderRealtimeActivityFeed = renderRealtimeActivityFeed;
 
 /**
  * Toggle between 'monthly' and 'yearly' mode

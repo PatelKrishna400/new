@@ -1,6 +1,8 @@
 # Dependencies & Build Output
 node_modules/
 dist/
+public/
+.kilo/
 
 # OS Files
 .DS_Store

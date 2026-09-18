@@ -38,12 +38,23 @@ window.toggleXpSubView = function() {
 
 window.renderLevelsList = function() {
   if (!DOM.levelsScrollList) return;
+  const activeLevel = typeof getActiveLevel === 'function'
+    ? getActiveLevel()
+    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
+
+  const curXp = (gameState.progression && gameState.progression.levelXp !== undefined)
+    ? Number(gameState.progression.levelXp)
+    : Number(gameState.player.xp || 0);
+
   let html = '';
   for (let lvl = 1; lvl <= 100; lvl++) {
-    const isReached = gameState.player.level >= lvl;
-    const isClaimed = !!gameState.xpState.claimedLevels[lvl];
-    const isMilestone = (lvl % 10 === 0);
-    const xpReq = (lvl * 1000).toLocaleString();
+    const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
+    const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
+    const isUnlocked = typeof isLevelUnlocked === 'function' ? isLevelUnlocked(lvl) : (lvl <= activeLevel);
+    const isClaimed = typeof isLevelCompleted === 'function' ? isLevelCompleted(lvl) : !!gameState.xpState.claimedLevels[lvl];
+    const isCurrent = (lvl === activeLevel);
+    const isLockedByAdmin = !!(cfg && cfg.isLocked);
+    const isReached = (lvl < activeLevel) || (isCurrent && curXp >= reqXp);
 
     let tierName = 'Bronze';
     if (lvl > 80) tierName = 'Diamond';
@@ -51,31 +62,51 @@ window.renderLevelsList = function() {
     else if (lvl > 40) tierName = 'Gold';
     else if (lvl > 20) tierName = 'Silver';
 
-    // Reward pills
+    // Reward pills from cfg.rewards
     let rewardHtml = '';
-    if (isMilestone) {
+    if (cfg && cfg.rewards) {
+      rewardHtml = `
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+          <span class="lvl-reward-pill pill-milestone-coins">🪙 +${cfg.rewards.coins || lvl * 25}</span>
+          <span class="lvl-reward-pill pill-ticket">🃏 +${cfg.rewards.cards || 1}</span>
+          <span class="lvl-reward-pill pill-key">🥢 +${cfg.rewards.keys || 1}</span>
+        </div>
+      `;
+    } else if (lvl % 10 === 0) {
       rewardHtml = `
         <div class="milestone-container">
           <div class="milestone-banner-tag">MILESTONE</div>
           <div class="milestone-pills-row">
-            <span class="lvl-reward-pill pill-milestone-coins">🟡 +${lvl}</span>
+            <span class="lvl-reward-pill pill-milestone-coins">🟡 +${lvl * 25}</span>
             <span class="lvl-reward-pill pill-fuel">⚡ +5 Fuel</span>
           </div>
         </div>
       `;
-    } else if (lvl % 3 === 0) {
-      rewardHtml = `<span class="lvl-reward-pill pill-key">🔑 +1 Key</span>`;
-    } else if (lvl % 2 === 0) {
-      rewardHtml = `<span class="lvl-reward-pill pill-fuel">⚡ +5 Fuel</span>`;
     } else {
       rewardHtml = `<span class="lvl-reward-pill pill-ticket">🎟️ +1 Ticket</span>`;
     }
 
     // Status action
     let statusHtml = '';
-    if (isClaimed) {
+    if (isLockedByAdmin && !isClaimed) {
+      statusHtml = `
+        <div class="level-lock-status" title="Locked by Admin" style="color: #ef4444; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span style="font-size: 8px; font-weight: 800; color: #f87171;">LOCKED</span>
+        </div>
+      `;
+    } else if (isClaimed) {
       statusHtml = `<span style="font-size: 11px; font-weight: 800; color: #10b981;">✓ Claimed</span>`;
-    } else if (isReached) {
+    } else if (isCurrent && isUnlocked) {
+      if (curXp >= reqXp) {
+        statusHtml = `<button class="level-claim-btn" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);" onclick="claimLevelReward(${lvl})"><span>🎬</span> Claim</button>`;
+      } else {
+        statusHtml = `<span style="font-size: 10px; font-weight: 700; color: #38bdf8;">${Math.floor(curXp)}/${reqXp}</span>`;
+      }
+    } else if (isReached && isUnlocked) {
       statusHtml = `<button class="level-claim-btn" onclick="claimLevelReward(${lvl})"><span>🎬</span> Claim</button>`;
     } else {
       statusHtml = `
@@ -88,19 +119,29 @@ window.renderLevelsList = function() {
       `;
     }
 
+    let progressSnippet = '';
+    if (isCurrent && !isClaimed) {
+      progressSnippet = `
+        <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
+          XP Progress: ${Math.floor(curXp)} / ${reqXp} XP ${curXp >= reqXp ? '• Ready!' : ''}
+        </div>
+      `;
+    }
+
     html += `
-      <div class="level-row-card ${isReached ? 'reached' : ''}" id="levelRow-${lvl}">
+      <div class="level-row-card ${isReached ? 'reached' : ''} ${isCurrent ? 'active-level-row' : ''}" id="levelRow-${lvl}">
         <div class="level-left-info">
-          <div class="level-number-badge">
+          <div class="level-number-badge" style="background: ${isCurrent ? '#0284c7' : 'rgba(30, 41, 59, 0.8)'};">
             <span class="lv-lbl">LV</span>
             <span class="lv-val">${lvl}</span>
           </div>
           <div class="level-text-info">
             <div class="level-title-row">
               <span class="level-title-text">Level ${lvl}</span>
-              <span class="level-tier-tag">(${tierName})</span>
+              ${isLockedByAdmin ? '<span class="level-tier-tag" style="color: #ef4444; font-weight: 800;">[LOCKED]</span>' : `<span class="level-tier-tag">(${tierName})</span>`}
             </div>
-            <span class="level-xp-req">${xpReq} XP</span>
+            <span class="level-xp-req">${reqXp.toLocaleString()} XP</span>
+            ${progressSnippet}
           </div>
         </div>
 
@@ -114,15 +155,37 @@ window.renderLevelsList = function() {
   DOM.levelsScrollList.innerHTML = html;
 };
 
-// 1 Telegram Ad Watch Compulsory for XP Level Reward
+// 1 Ad Watch Compulsory for XP Level Reward
 window.claimLevelReward = function(lvl) {
-  if (gameState.player.level < lvl) {
+  const activeLevel = typeof getActiveLevel === 'function'
+    ? getActiveLevel()
+    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
+
+  const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
+  if (cfg && cfg.isLocked) {
+    if (typeof showFloatingToast === 'function') showFloatingToast(`Level ${lvl} is locked by Admin.`);
+    return;
+  }
+
+  if (typeof isLevelUnlocked === 'function' && !isLevelUnlocked(lvl)) {
+    if (typeof showFloatingToast === 'function') showFloatingToast(`Reach and complete Level ${activeLevel} first!`);
+    return;
+  }
+
+  const curXp = (gameState.progression && gameState.progression.levelXp !== undefined)
+    ? Number(gameState.progression.levelXp)
+    : Number(gameState.player.xp || 0);
+  const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
+
+  if (lvl === activeLevel && curXp < reqXp) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`Reach Level ${lvl} first to claim this reward!`);
+      showFloatingToast(`Need ${reqXp - Math.floor(curXp)} more XP to claim Level ${lvl}!`);
     }
     return;
   }
-  if (gameState.xpState.claimedLevels && gameState.xpState.claimedLevels[lvl]) return;
+
+  const isClaimed = typeof isLevelCompleted === 'function' ? isLevelCompleted(lvl) : !!gameState.xpState.claimedLevels[lvl];
+  if (isClaimed) return;
 
   sfx.playTapSound(1);
 
@@ -141,24 +204,24 @@ window.claimLevelReward = function(lvl) {
 };
 
 function executeClaimLevelReward(lvl) {
-  if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
-  gameState.xpState.claimedLevels[lvl] = true;
+  const activeLevel = typeof getActiveLevel === 'function'
+    ? getActiveLevel()
+    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
 
-  let rewardDesc = '';
-  if (lvl % 10 === 0) {
-    gameState.player.coins += lvl;
-    gameState.energyGenerator.fuelCells.green += 5;
-    rewardDesc = `+${lvl} Coins & +5 Fuel`;
-  } else if (lvl % 3 === 0) {
-    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
-    gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, gameState.goal.currentKeys + 1);
-    rewardDesc = `+1 Key`;
-  } else if (lvl % 2 === 0) {
-    gameState.energyGenerator.fuelCells.green += 5;
-    rewardDesc = `+5 Fuel`;
+  if (lvl === activeLevel && typeof completeActiveLevel === 'function') {
+    completeActiveLevel(lvl);
   } else {
-    gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets, gameState.goal.currentTickets + 1);
-    rewardDesc = `+1 Ticket`;
+    if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
+    gameState.xpState.claimedLevels[lvl] = true;
+    if (gameState.progression && gameState.progression.completedLevels) {
+      gameState.progression.completedLevels[lvl] = true;
+    }
+
+    const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
+    const rew = (cfg && cfg.rewards) || { coins: lvl * 25, cards: 1, keys: 1, tickets: 1, xp: lvl * 10 };
+    gameState.player.coins = (gameState.player.coins || 0) + (rew.coins || lvl * 25);
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rew.keys || 1);
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rew.tickets || 1);
   }
 
   sfx.playLevelUpSound();
@@ -170,7 +233,7 @@ function executeClaimLevelReward(lvl) {
   }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Level ${lvl} Claimed! (${rewardDesc})`);
+    showFloatingToast(`🎉 Level ${lvl} Rewards Claimed!`);
   }
 }
 
@@ -342,3 +405,11 @@ function updateXpViewUI() {
 }
 
 window.updateXpViewUI = updateXpViewUI;
+
+window.addEventListener('levelsConfigUpdated', () => {
+  if (gameState.xpState && gameState.xpState.currentSubtab === 'levels') {
+    renderLevelsList();
+  }
+  updateXpViewUI();
+});
+

@@ -75,27 +75,20 @@
           </div>
 
           <div class="orb-stage" id="orbStage">
-            <!-- Left Side Action Circles (3 Circles: Garba *2, Dandiya Bot, Maa Shakti) -->
+            <!-- Left Side Action Circles: Booster 1 (10 Energy) & Booster 2 (3h *2 Profit) -->
             <div class="orb-side-column orb-side-left">
-              <!-- Circle 1: Garba *2 -->
-              <button class="home-action-circle circle-gold" id="btnCircle2x" onclick="openHomeActionPopup('ads_2x')" title="2X Garba Multiplier Boost">
-                <div class="circle-badge" id="circle2xBadge">*2 GARBA</div>
+              <!-- Booster 1: 10 Energy (1 Ad or 100 Coins) -->
+              <button class="home-action-circle circle-gold" id="btnBoosterEnergy" onclick="openHomeActionPopup('booster_energy')" title="10 Energy Booster (1 Ad or 100 Coins)">
+                <div class="circle-badge" id="badgeBoosterEnergy">+10 ⚡</div>
                 <div class="circle-icon">⚡</div>
-                <span class="circle-label">GARBA *2</span>
+                <span class="circle-label">10 ENERGY</span>
               </button>
 
-              <!-- Circle 2: Dandiya Auto Click -->
-              <button class="home-action-circle circle-emerald" id="btnCircleAutoClick" onclick="openHomeActionPopup('auto_click')" title="Dandiya Auto-Clicker Bot">
-                <div class="circle-badge" id="circleAutoBadge">DANDIYA</div>
-                <div class="circle-icon">🤖</div>
-                <span class="circle-label">DANDIYA</span>
-              </button>
-
-              <!-- Circle 3: Maa Shakti Profile -->
-              <button class="home-action-circle circle-purple" id="btnCircleProfile" onclick="openHomeActionPopup('profile')" title="Maa Shakti Player Profile">
-                <div class="circle-badge" id="circleProfileBadge">LV.0</div>
-                <div class="circle-icon">🪔</div>
-                <span class="circle-label">SHAKTI</span>
+              <!-- Booster 2: 3 Hours 2X Profit (1 Ad or 150 Coins) -->
+              <button class="home-action-circle circle-amber" id="btnBoosterProfit" onclick="openHomeActionPopup('booster_profit')" title="3 Hours *2 Profit (1 Ad or 150 Coins)">
+                <div class="circle-badge" id="badgeBoosterProfit">*2 PROFIT</div>
+                <div class="circle-icon">🔥</div>
+                <span class="circle-label">3H *2 PROFIT</span>
               </button>
             </div>
 
@@ -281,27 +274,20 @@
               </div>
             </div>
 
-            <!-- Right Side Action Circles (3 Circles: Lakshmi Coin, Blue Gem, Utsav Gift) -->
+            <!-- Right Side Action Circles: Booster 3 (Big Bank) & Booster 4 (Fast XP) -->
             <div class="orb-side-column orb-side-right">
-              <!-- Circle 4: Lakshmi Golden Coin Booster -->
-              <button class="home-action-circle circle-amber" id="btnCircleCoin" onclick="openHomeActionPopup('coin')" title="Lakshmi Coin Booster">
-                <div class="circle-badge">+LAKSHMI</div>
-                <div class="circle-icon">🪙</div>
-                <span class="circle-label">COIN</span>
+              <!-- Booster 3: Big Bank (Blue Coin Deposit & Withdraw) -->
+              <button class="home-action-circle circle-cyan" id="btnBoosterBank" onclick="openHomeActionPopup('booster_bank')" title="Big Bank - Per-Tap Blue Coin Deposit">
+                <div class="circle-badge" id="badgeBoosterBank">BANK</div>
+                <div class="circle-icon">🏦</div>
+                <span class="circle-label">BIG BANK</span>
               </button>
 
-              <!-- Circle 5: Shakti Blue Gem Booster -->
-              <button class="home-action-circle circle-cyan" id="btnCircleBlue" onclick="openHomeActionPopup('blue')" title="Shakti Blue Gem Vault">
-                <div class="circle-badge">+SHAKTI</div>
-                <div class="circle-icon">💎</div>
-                <span class="circle-label">BLUE GEM</span>
-              </button>
-
-              <!-- Circle 6: Utsav Mahotsav Gift -->
-              <button class="home-action-circle circle-rose" id="btnCircleBonus" onclick="openHomeActionPopup('bonus')" title="Navratri Utsav Mahotsav Gift">
-                <div class="circle-badge">UTSAV</div>
-                <div class="circle-icon">🎁</div>
-                <span class="circle-label">MAHOTSAV</span>
+              <!-- Booster 4: Fast XP Surge (1 XP/tap for 10 mins) -->
+              <button class="home-action-circle circle-purple" id="btnBoosterFastXp" onclick="openHomeActionPopup('booster_fast_xp')" title="Fast XP Surge - 1 XP Per Tap for 10 Mins">
+                <div class="circle-badge" id="badgeBoosterFastXp">FAST XP</div>
+                <div class="circle-icon">⭐</div>
+                <span class="circle-label">+1 XP/TAP</span>
               </button>
             </div>
           </div>

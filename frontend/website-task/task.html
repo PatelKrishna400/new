@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Task - Financial Education Progress | Energy Tap</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/task.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="brand-title">ENERGY TAP QUESTS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Verification</a></li>
+        <li><a href="task.html" class="nav-link active">Website Task</a></li>
+        <li><a href="blog.html" class="nav-link">Financial Blog</a></li>
+        <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="user-tag" title="Connected Player Account">
+          <span class="status-dot connecting" id="navStatusDot"></span>
+          <span id="navUserId">Connecting...</span>
+        </div>
+        <div class="coin-badge" title="Blue Coins Balance">
+          <span class="coin-icon">💎</span>
+          <span id="navBlueCoins">0</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Task Container -->
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="task-hero-section">
+      <div class="task-badge-pill">
+        ⚡ OFFICIAL WEBSITE QUEST
+      </div>
+      <h1 class="task-hero-title">Financial Website Task</h1>
+      <p class="task-hero-desc">
+        Read the comprehensive 10-chapter financial article, complete sponsor verification timers, and unlock huge Blue Coins rewards for your game account.
+      </p>
+    </section>
+
+    <!-- Key Metrics Grid -->
+    <div class="task-metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon-box blue">📖</div>
+        <div class="metric-info">
+          <h4>Article Progress</h4>
+          <div class="metric-val" id="statCompletedPages">0 / 10 Pages</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box cyan">⚡</div>
+        <div class="metric-info">
+          <h4>Advertisement Tasks</h4>
+          <div class="metric-val" id="statCompletedAds">0 / 50 Completed</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box gold">💎</div>
+        <div class="metric-info">
+          <h4>Available Reward</h4>
+          <div class="metric-val" id="statAvailableReward">4,000 Blue Coins</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Progress Card -->
+    <div class="task-progress-card">
+      <div class="progress-header-row">
+        <h3>Curriculum Completion Status</h3>
+        <span class="progress-percent-badge" id="mainProgressPercent">0% Completed</span>
+      </div>
+
+      <div class="main-progress-bar-bg">
+        <div class="main-progress-bar-fill" id="mainProgressBarFill"></div>
+      </div>
+
+      <div class="progress-stats-summary">
+        <span id="progressSummaryPages">Curriculum Progress: 0 of 10 Chapters</span>
+        <span id="progressSummaryAds">Sponsor Tasks: 0 of 50 Finished</span>
+        <span>Total Claimed: <strong id="statTotalEarned" style="color: var(--neon-blue-light);">0 Blue Coins</strong></span>
+      </div>
+    </div>
+
+    <!-- Final 10/10 Banner (Hidden until completed) -->
+    <div id="finalCompletionBanner" style="display: none; background: linear-gradient(135deg, rgba(6, 40, 28, 0.8), rgba(4, 20, 15, 0.95)); border: 1px solid var(--neon-green); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2.5rem; text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 0.5rem;">Financial Task Completed!</h2>
+      <p style="color: var(--neon-green-glow); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">10 / 10 Pages Completed</p>
+      <p style="color: var(--text-dim); margin-bottom: 1.25rem;">All eligible rewards and the final 500 Blue Coins completion bounty have been claimed.</p>
+      <a href="blog.html#page1" class="btn btn-outline btn-sm">📖 Re-read Entire Curriculum</a>
+    </div>
+
+    <!-- 10-Chapter Roadmap Section -->
+    <div style="margin-bottom: 4rem;">
+      <h3 class="roadmap-section-title">
+        <span>🗺️ Chapter-by-Chapter Progression Roadmap</span>
+      </h3>
+      <div class="roadmap-grid" id="taskRoadmapContainer">
+        <!-- Dynamically populated by js/task.js -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-row">
+        <div style="font-weight: 700; color: #fff;">ENERGY TAP REACTOR • WEBSITE TASK PLATFORM</div>
+        <div>
+          <a href="task.html" style="margin-right: 1rem;">Tasks</a>
+          <a href="blog.html" style="margin-right: 1rem;">Blog</a>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Educational Disclaimer:</strong> All articles and materials provided on this platform are for general informational and educational purposes only. They do not constitute personalized investment, financial, tax, or legal advice. Energy Tap Reactor and its affiliates do not guarantee financial returns. Direct sponsor links are third-party opportunities; review their terms independently.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Realtime SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+
+  <!-- Application Logic -->
+  <script src="js/firebase.js"></script>
+  <script src="js/website.js"></script>
+  <script src="js/task.js"></script>
+</body>
+</html>

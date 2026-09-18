@@ -138,6 +138,166 @@
     </div>
   </div>
 
+  <!-- TOOL 1.5: LEVEL PROGRESSION & GOAL/XP SYSTEM MANAGER (LEVELS 1 - 100) -->
+  <div class="minimal-card" style="margin-bottom: 18px; border-top: 3px solid #0284c7;">
+    <div class="minimal-header-group">
+      <div class="scope-badge-wrap" style="margin-bottom: 8px;">
+        <span class="scope-pill-global">🌐 Global Level Rules — Single Source of Truth</span>
+        <span class="firebase-path-pill">Firebase Path: <strong>/levels_config</strong></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🎯 Level Progression, Goal &amp; XP Configuration Manager</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">
+              Configure XP requirements, Goal targets (Cards, Keys, Tickets), rewards, and Lock/Unlock status for any level from 1 to 100.
+              Changes update Firebase in realtime and propagate across Goal, XP, and Home pages.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-minimal-secondary" onclick="autoScaleAllLevels()">
+            <span>⚡</span>
+            <span>Auto-Scale 1-100</span>
+          </button>
+          <button type="button" class="btn-minimal-secondary" onclick="lockLevelsAbovePrompt()">
+            <span>🔒</span>
+            <span>Lock Above...</span>
+          </button>
+          <button type="button" class="btn-minimal-primary" onclick="saveCurrentAdminLevel()">
+            <span>💾</span>
+            <span>Save This Level</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Level Selector Bar -->
+    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="adminLevelSelect" style="font-size: 13px; font-weight: 800; color: #0f172a;">Select Level to Edit:</label>
+        <select id="adminLevelSelect" class="minimal-input" style="width: 140px; font-weight: 800; font-size: 14px; cursor: pointer;" onchange="onAdminSelectLevel(this.value)">
+          <!-- Generated 1 to 100 -->
+        </select>
+        <button type="button" class="btn-minimal-secondary" style="padding: 6px 12px;" onclick="stepAdminLevel(-1)">◀ Prev</button>
+        <button type="button" class="btn-minimal-secondary" style="padding: 6px 12px;" onclick="stepAdminLevel(1)">Next ▶</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 12px; color: #64748b;">Level Access Status:</span>
+        <span id="adminLevelStatusPill" style="padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3);">
+          🟢 UNLOCKED
+        </span>
+      </div>
+    </div>
+
+    <!-- Edit Form Grid -->
+    <div class="minimal-form-grid" style="margin-bottom: 16px;">
+      <!-- Lock / Unlock Status Toggle -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditLock">
+          <span>Level Access Rule</span>
+          <span style="font-size: 10px; color: #ef4444;">Admin Access Control</span>
+        </label>
+        <select id="lvlEditLock" class="minimal-input" style="font-weight: 700; cursor: pointer;">
+          <option value="false">🟢 UNLOCKED (Players can reach &amp; play)</option>
+          <option value="true">🔴 LOCKED BY ADMIN (Locked for all players)</option>
+        </select>
+      </div>
+
+      <!-- XP Required Input -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditXp">
+          <span>XP Requirement (⚡)</span>
+          <span style="font-size: 10px; color: #64748b;">XP to Complete Level</span>
+        </label>
+        <input type="number" id="lvlEditXp" class="minimal-input" min="100" step="100" placeholder="1000">
+      </div>
+
+      <!-- Target A: Scratch Cards -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditCards">
+          <span>Target A: Scratch Cards (🃏)</span>
+          <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+        </label>
+        <input type="number" id="lvlEditCards" class="minimal-input" min="1" step="1" placeholder="20">
+      </div>
+
+      <!-- Target B: Dandiya / Keys -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditKeys">
+          <span>Target B: Dandiya / Keys (🥢)</span>
+          <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+        </label>
+        <input type="number" id="lvlEditKeys" class="minimal-input" min="1" step="1" placeholder="50">
+      </div>
+
+      <!-- Target C: Flowers / Tickets -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditTickets">
+          <span>Target C: Flowers / Tickets (🌸)</span>
+          <span style="font-size: 10px; color: #64748b;">Goal Target Count</span>
+        </label>
+        <input type="number" id="lvlEditTickets" class="minimal-input" min="1" step="1" placeholder="35">
+      </div>
+
+      <!-- Coins Reward -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditCoins">
+          <span>Reward: Bonus Coins (🪙)</span>
+          <span style="font-size: 10px; color: #64748b;">Completion Award</span>
+        </label>
+        <input type="number" id="lvlEditCoins" class="minimal-input" min="0" step="25" placeholder="25">
+      </div>
+
+      <!-- XP Bonus Reward -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditXpBonus">
+          <span>Reward: XP Bonus (⚡)</span>
+          <span style="font-size: 10px; color: #64748b;">Completion Award</span>
+        </label>
+        <input type="number" id="lvlEditXpBonus" class="minimal-input" min="0" step="10" placeholder="10">
+      </div>
+
+      <!-- Item Drop Reward Quantity -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditItemQty">
+          <span>Reward: Items Qty (🃏🥢🌸 each)</span>
+          <span style="font-size: 10px; color: #64748b;">Card, Key, Flower Qty</span>
+        </label>
+        <input type="number" id="lvlEditItemQty" class="minimal-input" min="1" step="1" placeholder="1">
+      </div>
+
+      <!-- Fuel Reward -->
+      <div class="minimal-form-group">
+        <label class="minimal-form-label" for="lvlEditFuel">
+          <span>Reward: Fuel Cells (🔋)</span>
+          <span style="font-size: 10px; color: #64748b;">Green Fuel Bonus</span>
+        </label>
+        <input type="number" id="lvlEditFuel" class="minimal-input" min="0" step="1" placeholder="5">
+      </div>
+    </div>
+
+    <!-- Footer Action Row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
+      <span style="font-size: 12px; color: #64748b;" id="adminLevelSyncNote">Levels live-synced with Firebase (/levels_config).</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn-minimal-secondary" onclick="resetLevelsToDefaultTemplate()">
+          <span>🔄</span>
+          <span>Reset All to Defaults</span>
+        </button>
+        <button type="button" class="btn-minimal-primary" onclick="saveCurrentAdminLevel()">
+          <span>💾</span>
+          <span>Save Changes to Firebase</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOOL 2: GLOBAL SEASONS & COMPETITIONS (STATIC RULES) -->
   <div class="minimal-card" style="margin-bottom: 18px;">
     <div class="minimal-header-group">
@@ -250,6 +410,190 @@
         <span style="color: #64748b; font-weight: 600;">Project ID:</span>
         <code style="color: #0284c7; font-weight: 700;">tap-game-80070</code>
       </div>
+    </div>
+  </div>
+
+  <!-- TOOL 5: ENERGY FUEL CELL SHOP PRICING & MULTIPLIERS (/fuel_cells_config) -->
+  <div class="minimal-card" style="border-top: 3px solid #10b981;">
+    <div class="minimal-header-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🔋 Energy Fuel Cell Shop Pricing &amp; Multipliers</h3>
+            <span class="status-tag live">/fuel_cells_config</span>
+          </div>
+          <p class="minimal-subtitle">Manage base prices for Green Fuel Cell and multipliers for Yellow, Orange, Pink, Purple, and Red cells.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" onclick="resetFuelCellsConfigToDefault()" class="btn-minimal-secondary">
+            <span>🔄</span>
+            <span>Reset Defaults</span>
+          </button>
+          <button type="button" onclick="saveFuelCellsConfigFromAdmin()" class="btn-minimal-primary">
+            <span>💾</span>
+            <span>Save Fuel Prices</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Base Prices Row -->
+    <div style="margin-top: 10px; margin-bottom: 14px;">
+      <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.8px; margin-bottom: 8px;">
+        Green Base Prices (Multiplier ×1)
+      </h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">🎬 Watch Ad</label>
+          <input type="number" id="cfgFuelBaseAd" class="form-input" min="1" value="1" style="font-weight: 800; color: #ef4444;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">🔷 Blue Coins</label>
+          <input type="number" id="cfgFuelBaseBlue" class="form-input" min="1" value="10" style="font-weight: 800; color: #0284c7;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">🪙 Gold Coin</label>
+          <input type="number" id="cfgFuelBaseGold" class="form-input" min="1" value="1" style="font-weight: 800; color: #ca8a04;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">💎 Diamonds</label>
+          <input type="number" id="cfgFuelBaseDiamond" class="form-input" min="1" value="10" style="font-weight: 800; color: #06b6d4;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">🪙 150× Coin Pack</label>
+          <input type="number" id="cfgFuelBaseCoinPack" class="form-input" min="1" value="150" style="font-weight: 800; color: #ca8a04;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px;">🔷 75× Blue Pack</label>
+          <input type="number" id="cfgFuelBaseBluePack" class="form-input" min="1" value="75" style="font-weight: 800; color: #0284c7;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Multipliers Row -->
+    <div>
+      <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.8px; margin-bottom: 8px;">
+        Fuel Cell Color Multipliers
+      </h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #10b981;">🟢 Green Multiplier</label>
+          <input type="number" id="cfgFuelMultGreen" class="form-input" step="0.1" value="1.0" style="font-weight: 800; color: #10b981;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #f59e0b;">🟡 Yellow Multiplier</label>
+          <input type="number" id="cfgFuelMultYellow" class="form-input" step="0.1" value="1.5" style="font-weight: 800; color: #f59e0b;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #f97316;">🟠 Orange Multiplier</label>
+          <input type="number" id="cfgFuelMultOrange" class="form-input" step="0.1" value="2.5" style="font-weight: 800; color: #f97316;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #ec4899;">🩷 Pink Multiplier</label>
+          <input type="number" id="cfgFuelMultPink" class="form-input" step="0.1" value="7.0" style="font-weight: 800; color: #ec4899;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #a855f7;">🟣 Purple Multiplier</label>
+          <input type="number" id="cfgFuelMultPurple" class="form-input" step="0.1" value="8.5" style="font-weight: 800; color: #a855f7;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size: 11px; color: #ef4444;">🔴 Red Multiplier</label>
+          <input type="number" id="cfgFuelMultRed" class="form-input" step="0.1" value="5.0" style="font-weight: 800; color: #ef4444;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOL 6: ACCOUNT AUTHORIZATION & ONE ACCOUNT PER USER CONFIGURATION (/auth_config) -->
+  <div class="minimal-card" style="margin-top: 18px; border-top: 3px solid #10b981;">
+    <div class="minimal-header-group">
+      <div class="scope-badge-wrap" style="margin-bottom: 8px;">
+        <span class="scope-pill-global">🔐 Identity &amp; Account Security Rules</span>
+        <span class="firebase-path-pill">Firebase Path: <strong>/auth_config</strong></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🛡️ Account Authorization &amp; Uniqueness Rules</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Enforce strict 1 Telegram = 1 Account, 1 Phone = 1 Account, and 1 Email = 1 Account across the app.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-minimal-secondary" onclick="scanAndMigrateIdentityIndexes()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+            <span>🔍</span>
+            <span>Scan &amp; Build Identity Indexes</span>
+          </button>
+          <button type="button" class="btn-minimal-primary" onclick="saveAuthConfigFromAdmin()">
+            <span>💾</span>
+            <span>Save Auth Config</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuration Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
+      <!-- Section 1: Authentication Methods Enabled -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>🔑</span>
+          <span>Authentication Providers</span>
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">✈️ Telegram Login</span>
+            <input type="checkbox" id="authCfgTelegram" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">📱 Phone Authentication (OTP)</span>
+            <input type="checkbox" id="authCfgPhone" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">✉️ Email Authentication</span>
+            <input type="checkbox" id="authCfgEmail" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+          </label>
+        </div>
+      </div>
+
+      <!-- Section 2: Strict Uniqueness & Account Protection -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>🛡️</span>
+          <span>Strict Uniqueness Protections</span>
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Telegram = 1 Account</span>
+            <input type="checkbox" id="authCfgOneTelegram" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Phone = 1 Account</span>
+            <input type="checkbox" id="authCfgOnePhone" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 700; color: #0f172a;">1 Email = 1 Account</span>
+            <input type="checkbox" id="authCfgOneEmail" checked style="width: 18px; height: 18px; accent-color: #10b981; cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 2px;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">🔗 Account Linking</span>
+            <input type="checkbox" id="authCfgLinking" checked style="width: 18px; height: 18px; accent-color: #0284c7; cursor: pointer;">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Index Scan & Migration Report Result Banner -->
+    <div id="authIndexReportWrap" style="display: none; margin-top: 14px; padding: 14px; background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 12px; font-weight: 800; color: #065f46; text-transform: uppercase;">📊 Identity Index &amp; Duplicate Audit Report</span>
+        <button type="button" onclick="document.getElementById('authIndexReportWrap').style.display='none'" style="background: none; border: none; font-size: 16px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+      <div id="authIndexReportContent" style="font-size: 12px; color: #334155; line-height: 1.6;"></div>
     </div>
   </div>
 

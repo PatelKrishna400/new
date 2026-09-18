@@ -493,6 +493,12 @@ function switchTaskSubtab(subtabName) {
   if (subTelegram) subTelegram.classList.toggle('active', subtabName === 'telegram');
   if (subWebsite) subWebsite.classList.toggle('active', subtabName === 'website');
 
+  // Hide 30-day competition timer tab/banner on Telegram and Website tabs
+  const monthlyBanner = document.getElementById('monthlyCompetitionBanner');
+  if (monthlyBanner) {
+    monthlyBanner.style.display = subtabName === 'daily' ? 'flex' : 'none';
+  }
+
   sfx.playTapSound(1);
   renderTasksList();
 }
@@ -640,6 +646,12 @@ function renderTasksList() {
 
   // Update 30-day competition cycle timer display
   updateMonthlyCompetitionTimer();
+
+  // Show/Hide 30-day competition timer banner: Only visible on Monthly ('daily') subtab; removed on Telegram and Website
+  const monthlyBanner = document.getElementById('monthlyCompetitionBanner');
+  if (monthlyBanner) {
+    monthlyBanner.style.display = gameState.taskSubtab === 'daily' ? 'flex' : 'none';
+  }
 
   if (gameState.taskSubtab === 'daily') {
     if (activeDailyTasks.length === 0) {

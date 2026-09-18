@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Task - Verification | Energy Tap</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+  <style>
+    /* Verification Portal Centered Styling */
+    .verify-page-wrapper {
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+    }
+
+    .verify-card {
+      background: linear-gradient(145deg, rgba(8, 20, 50, 0.85), rgba(3, 10, 26, 0.95));
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 2.25rem;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(37, 99, 235, 0.2);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .verify-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--neon-blue-light), var(--neon-cyan), var(--neon-gold));
+    }
+
+    .verify-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius-full);
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--neon-blue-light);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .verify-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--neon-cyan-glow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .verify-subtitle {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .verify-instructions {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      background: rgba(14, 30, 68, 0.4);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(30, 70, 150, 0.3);
+    }
+
+    .form-group-verify {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group-verify label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .input-code {
+      width: 100%;
+      background: rgba(4, 10, 26, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.1rem;
+      color: #fff;
+      font-family: 'Outfit', monospace;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      outline: none;
+      transition: all var(--transition-fast);
+      text-transform: uppercase;
+    }
+
+    .input-code:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
+      background: rgba(6, 15, 36, 0.95);
+    }
+
+    .btn-verify {
+      width: 100%;
+      padding: 0.95rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-top: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    /* Verification Feedback Boxes */
+    .verify-feedback-box {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      margin-top: 1.5rem;
+      text-align: left;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .verify-feedback-box.error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      border-left: 4px solid var(--neon-red);
+    }
+
+    .verify-feedback-box.error strong {
+      display: block;
+      font-size: 1rem;
+      color: #fee2e2;
+      margin-bottom: 0.35rem;
+    }
+
+    .verify-feedback-box.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #86efac;
+      border-left: 4px solid var(--neon-green);
+      text-align: center;
+    }
+
+    .verify-feedback-box.success strong {
+      display: block;
+      font-size: 1.15rem;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .helper-tag {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .helper-tag span {
+      color: var(--neon-blue-light);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="brand-title">ENERGY TAP QUESTS</span>
+      </a>
+
+      <div class="nav-actions">
+        <div class="user-tag" title="Connected Account State">
+          <span class="status-dot connecting" id="navStatusDot"></span>
+          <span id="navUserId">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN VERIFICATION PAGE -->
+  <main class="verify-page-wrapper">
+    <div class="verify-card">
+      <div class="verify-badge-pill">
+        ⚡ WEBSITE TASK
+      </div>
+
+      <h1 class="verify-title">WEBSITE TASK</h1>
+      <h2 class="verify-subtitle">Complete Task Verification</h2>
+
+      <p class="verify-instructions">
+        Enter the User Code and Task Code provided for this task.
+      </p>
+
+      <form id="verificationForm" onsubmit="handleTaskVerification(event)" autocomplete="off">
+        <!-- 1. User Code Input -->
+        <div class="form-group-verify">
+          <label for="inputUserCode">User Code</label>
+          <input 
+            type="text" 
+            id="inputUserCode" 
+            class="input-code" 
+            placeholder="Enter User Code" 
+            required 
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
+
+        <!-- 2. Task Code Input -->
+        <div class="form-group-verify">
+          <label for="inputTaskCode">Task Code</label>
+          <input 
+            type="text" 
+            id="inputTaskCode" 
+            class="input-code" 
+            placeholder="Enter Task Code" 
+            required 
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
+
+        <!-- 3. Verify Button -->
+        <button type="submit" class="btn btn-primary btn-verify" id="btnVerify">
+          <span>VERIFY & CONTINUE</span>
+        </button>
+      </form>
+
+      <!-- Dynamic Feedback Banner (Success / Error) -->
+      <div class="verify-feedback-box" id="verifyFeedbackBox">
+        <div id="feedbackContent"></div>
+      </div>
+
+      <!-- Account Info Helper Tip -->
+      <div class="helper-tag" id="userHelperBox">
+        <span>💡 Need your User Code?</span> It matches your Energy Tap account Profile Code.
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-row">
+        <div style="font-weight: 700; color: #fff;">ENERGY TAP REACTOR • WEBSITE TASK PLATFORM</div>
+        <div>
+          <a href="admin.html">Admin Panel</a>
+        </div>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Educational & Security Disclaimer:</strong> Verification validates authorized access to assigned website tasks and ensures fair distribution of Blue Coins rewards. Both your unique User Code and Task Code are required.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Realtime SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+
+  <!-- Application Logic -->
+  <script src="js/firebase.js"></script>
+  <script src="js/website.js"></script>
+
+  <script>
+    // Handle Verification Form Submission
+    async function handleTaskVerification(event) {
+      event.preventDefault();
+
+      const userCodeInput = document.getElementById('inputUserCode').value;
+      const taskCodeInput = document.getElementById('inputTaskCode').value;
+      const btn = document.getElementById('btnVerify');
+      const feedbackBox = document.getElementById('verifyFeedbackBox');
+      const feedbackContent = document.getElementById('feedbackContent');
+
+      // Clear previous feedback
+      feedbackBox.style.display = 'none';
+      feedbackBox.className = 'verify-feedback-box';
+
+      // Set Loading State
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Verifying Codes...</span>';
+
+      try {
+        if (!window.firebaseService) {
+          throw new Error('Verification service initializing. Please wait a moment.');
+        }
+
+        const result = await window.firebaseService.verifyTaskCredentials(userCodeInput, taskCodeInput);
+
+        if (result && result.success) {
+          // Success State
+          feedbackBox.className = 'verify-feedback-box success';
+          feedbackBox.style.display = 'block';
+          feedbackContent.innerHTML = `
+            <strong>✓ Verification Successful</strong>
+            <span>Opening Task...</span>
+          `;
+
+          btn.innerHTML = '<span>✓ Verified</span>';
+
+          // Redirect to Task Page after short pause
+          setTimeout(() => {
+            window.location.href = 'task.html';
+          }, 1000);
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>VERIFY & CONTINUE</span>';
+
+        feedbackBox.className = 'verify-feedback-box error';
+        feedbackBox.style.display = 'block';
+
+        if (err.code === 'INVALID_USER_CODE') {
+          feedbackContent.innerHTML = `
+            <strong>Invalid User Code.</strong>
+            <span>Please enter the User Code associated with your account.</span>
+          `;
+        } else if (err.code === 'INVALID_TASK_CODE') {
+          feedbackContent.innerHTML = `
+            <strong>Invalid Task Code.</strong>
+            <span>Please check the Task Code and try again.</span>
+          `;
+        } else if (err.code === 'TASK_DISABLED') {
+          feedbackContent.innerHTML = `
+            <strong>This task is currently unavailable.</strong>
+          `;
+        } else if (err.code === 'TASK_ALREADY_COMPLETED') {
+          feedbackContent.innerHTML = `
+            <strong>Task Already Completed</strong>
+            <span>You have already completed this task.</span>
+          `;
+        } else {
+          feedbackContent.innerHTML = `
+            <strong>Verification Error</strong>
+            <span>${err.message || 'Unable to verify credentials. Please try again.'}</span>
+          `;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

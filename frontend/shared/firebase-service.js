@@ -18,6 +18,7 @@ const firebaseConfig = {
   appId: "1:1028935905694:web:af5190281ad93c0ebbe68f",
   measurementId: "G-B8KMYEQ0L4"
 };
+window.firebaseConfig = firebaseConfig;
 
 class FirebaseSyncService {
   constructor() {
@@ -32,6 +33,15 @@ class FirebaseSyncService {
     this.authPromise = null;
     this.saveTimeout = null;
     this.syncStatus = 'connecting'; // 'connecting' | 'synced' | 'saving' | 'offline' | 'auth_required'
+    this.authConfig = {
+      telegramAuth: true,
+      phoneAuth: true,
+      emailAuth: true,
+      oneTelegramPerAccount: true,
+      onePhonePerAccount: true,
+      oneEmailPerAccount: true,
+      accountLinking: true
+    };
 
     this.init();
   }
@@ -79,9 +89,18 @@ class FirebaseSyncService {
             this.listenToSeason();
             this.listenToMonthlyCompetition();
             this.listenToAdsConfig();
+            this.listenToLevelsConfig();
             this.listenToGameConfig();
+            this.listenToFuelCellsConfig();
+            this.listenToAuthConfig();
             this.registerOrUpdateCurrentAuthorization();
             this.listenToAuthorizations();
+
+            // Enforce Telegram identity if inside Telegram WebApp
+            const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            if (tgUser) {
+              this.handleTelegramAuthorization(tgUser).catch(e => console.warn('Telegram auth check:', e));
+            }
           } else {
             this.isAuthenticated = false;
             console.log('Firebase Auth required: authenticating player session...');
@@ -214,6 +233,17 @@ class FirebaseSyncService {
 
           // Merge cloud data into gameState
           if (cloudData.player) Object.assign(gameState.player, cloudData.player);
+          if (cloudData.progression) {
+            gameState.progression = Object.assign(gameState.progression || {}, cloudData.progression);
+            if (gameState.progression.activeLevel < 1) gameState.progression.activeLevel = 1;
+            const activeLvl = gameState.progression.activeLevel;
+            gameState.player.level = activeLvl;
+            gameState.goal.level = activeLvl;
+            if (gameState.goalState) gameState.goalState.currentLevel = activeLvl;
+          }
+          if (cloudData.bank) {
+            gameState.bank = Object.assign(gameState.bank || {}, cloudData.bank);
+          }
           if (cloudData.goal) Object.assign(gameState.goal, cloudData.goal);
           if (cloudData.tasksState) Object.assign(gameState.tasksState, cloudData.tasksState);
           if (cloudData.xpState) Object.assign(gameState.xpState, cloudData.xpState);
@@ -405,6 +435,23 @@ class FirebaseSyncService {
       if (cloudData.tasksState && typeof gameState !== 'undefined' && gameState.tasksState) {
         if (JSON.stringify(gameState.tasksState.claimedDaily || {}) !== JSON.stringify(cloudData.tasksState.claimedDaily || {})) {
           gameState.tasksState.claimedDaily = cloudData.tasksState.claimedDaily || {};
+          hasChanged = true;
+        }
+      if (cloudData.progression && typeof gameState !== 'undefined' && gameState.progression) {
+        if (JSON.stringify(gameState.progression) !== JSON.stringify(cloudData.progression)) {
+          gameState.progression = Object.assign(gameState.progression, cloudData.progression);
+          if (gameState.progression.activeLevel < 1) gameState.progression.activeLevel = 1;
+          const activeLvl = gameState.progression.activeLevel;
+          gameState.player.level = activeLvl;
+          gameState.goal.level = activeLvl;
+          if (gameState.goalState) gameState.goalState.currentLevel = activeLvl;
+          hasChanged = true;
+        }
+      }
+
+      if (cloudData.bank && typeof gameState !== 'undefined' && gameState.bank) {
+        if (gameState.bank.blueCoins !== cloudData.bank.blueCoins) {
+          gameState.bank.blueCoins = cloudData.bank.blueCoins || 0;
           hasChanged = true;
         }
       }
@@ -656,6 +703,75 @@ class FirebaseSyncService {
     });
   }
 
+  // Real-time listener for Level Configurations from Admin Portal (/levels_config)
+  listenToLevelsConfig() {
+    if (!this.database) return;
+
+    const levelsRef = this.database.ref('/levels_config');
+    levelsRef.on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val && typeof val === 'object') {
+        gameState.levelsConfig = val;
+        try {
+          localStorage.setItem('ENERGY_TAP_LEVELS_CONFIG', JSON.stringify(val));
+        } catch(e) {}
+      } else {
+        gameState.levelsConfig = {};
+      }
+
+      // Check current active level configuration
+      const activeLvl = getActiveLevel();
+      const activeCfg = getLevelConfig(activeLvl);
+      if (gameState.player) {
+        gameState.player.xpToNextLevel = activeCfg.xpRequired;
+      }
+
+      console.log('🔄 Firebase Levels Config updated from Admin:', Object.keys(gameState.levelsConfig).length, 'levels configured');
+
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof renderGoalsList === 'function') renderGoalsList();
+      if (typeof renderLevelsList === 'function') renderLevelsList();
+      if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
+      if (typeof updateXpViewUI === 'function') updateXpViewUI();
+      if (typeof updateHomeViewUI === 'function') updateHomeViewUI();
+    });
+  }
+
+  // Real-time listener for Global Game Configuration (/game_config)
+  listenToGameConfig() {
+    if (!this.database) return;
+
+    const configRef = this.database.ref('/game_config');
+    configRef.on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val && typeof val === 'object') {
+        gameState.gameConfig = val;
+        try {
+          localStorage.setItem('ENERGY_TAP_GAME_CONFIG', JSON.stringify(val));
+        } catch(e) {}
+      }
+    });
+  }
+
+  // Real-time listener for Fuel Cells Configuration (/fuel_cells_config)
+  listenToFuelCellsConfig() {
+    if (!this.database) return;
+
+    const fuelRef = this.database.ref('/fuel_cells_config');
+    fuelRef.on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val && typeof val === 'object') {
+        gameState.fuelCellsConfig = val;
+        try {
+          localStorage.setItem('ENERGY_TAP_FUEL_CONFIG', JSON.stringify(val));
+        } catch(e) {}
+      }
+      if (typeof window.renderFuelShopTab === 'function') {
+        window.renderFuelShopTab();
+      }
+    });
+  }
+
   // Debounced Save (efficient for fast taps)
   debouncedSave() {
     if (!this.database || !this.userId) return;
@@ -698,9 +814,11 @@ class FirebaseSyncService {
       };
 
       const payload = {
-        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6,
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7,
         updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
         player: playerPayload,
+        progression: gameState.progression,
+        bank: gameState.bank,
         goal: gameState.goal,
         reactor: {
           tapPower: gameState.reactor.tapPower || 1,
@@ -708,7 +826,10 @@ class FirebaseSyncService {
           maxEnergy: gameState.reactor.maxEnergy || 1000,
           energyTaps: gameState.reactor.energyTaps || 0,
           comboMultiplier: gameState.reactor.comboMultiplier || 1.0,
-          comboTaps: gameState.reactor.comboTaps || 0
+          comboTaps: gameState.reactor.comboTaps || 0,
+          profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
+          fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
+          fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
         },
         energyGenerator: {
           epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
@@ -880,6 +1001,141 @@ class FirebaseSyncService {
         }
       }
     });
+  }
+
+  // ==========================================================================
+  // AUTH CONFIG & ONE ACCOUNT PER USER ENFORCEMENT
+  // ==========================================================================
+  listenToAuthConfig() {
+    if (!this.database) return;
+    this.database.ref('auth_config').on('value', (snap) => {
+      const val = snap.val();
+      if (val && typeof val === 'object') {
+        this.authConfig = Object.assign(this.authConfig || {}, val);
+        console.log('🔐 Active Auth & Uniqueness Config:', this.authConfig);
+      }
+    });
+  }
+
+  // Handle Telegram Login / Telegram Mini App Primary Identity
+  async handleTelegramAuthorization(tgUser) {
+    if (!tgUser || !tgUser.id) return { ok: false, error: 'No Telegram user payload provided' };
+    const tgId = String(tgUser.id);
+    const tgUsername = tgUser.username ? String(tgUser.username).replace(/^@/, '') : '';
+    const firstName = tgUser.first_name || '';
+    const lastName = tgUser.last_name || '';
+    const fullName = `${firstName}${lastName ? ' ' + lastName : ''}`.trim();
+
+    console.log(`🔐 Processing Telegram Authorization for ID: ${tgId} (@${tgUsername || 'no_user'})`);
+
+    // 1. Verify with backend API & check server store
+    let serverRes = null;
+    try {
+      const resp = await fetch('/api/auth/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          initData: window.Telegram?.WebApp?.initData || '',
+          user: tgUser
+        })
+      });
+      if (resp.ok) {
+        serverRes = await resp.json();
+      }
+    } catch (e) {
+      console.warn('Backend Telegram auth API fallback to Firebase:', e);
+    }
+
+    // 2. Direct RTDB index lookup
+    let existingUid = (serverRes && serverRes.ok) ? serverRes.uid : null;
+    if (!existingUid && this.database) {
+      try {
+        const snap = await this.database.ref(`identityIndex/telegram/${tgId}`).once('value');
+        if (snap.exists() && snap.val()) {
+          existingUid = snap.val();
+        }
+      } catch (e) {
+        console.warn('Error checking identityIndex/telegram:', e);
+      }
+    }
+
+    // 3. Fallback scan across /players to prevent duplicate if index wasn't built yet
+    if (!existingUid && this.database) {
+      try {
+        const pSnap = await this.database.ref('/players').once('value');
+        const pVal = pSnap.val() || {};
+        for (const [pUid, pNode] of Object.entries(pVal)) {
+          const pl = pNode.player || {};
+          if (String(pl.telegramId) === tgId) {
+            existingUid = pUid;
+            this.database.ref(`identityIndex/telegram/${tgId}`).set(pUid).catch(() => {});
+            break;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 4. If Telegram ID already exists -> Login to existing account! DO NOT create another account.
+    if (existingUid) {
+      console.log(`✅ Existing account found for Telegram ID ${tgId} (UID: ${existingUid}) -> Logging in`);
+      if (existingUid !== this.userId) {
+        this.userId = existingUid;
+        localStorage.setItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5', existingUid);
+        this.loadFromCloud();
+        this.listenToUser();
+        await this.registerOrUpdateCurrentAuthorization();
+        this.listenToAuthorizations();
+      }
+
+      gameState.player.telegramId = tgId;
+      if (tgUsername) gameState.player.telegram = `@${tgUsername}`;
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof updateProfileUI === 'function') updateProfileUI();
+
+      return { ok: true, isNew: false, uid: existingUid };
+    }
+
+    // 5. If Telegram ID does not exist -> Associate Telegram ID with current account
+    console.log(`🆕 Registering Telegram ID ${tgId} as primary account identity for UID: ${this.userId}`);
+    gameState.player.telegramId = tgId;
+    if (tgUsername) gameState.player.telegram = `@${tgUsername}`;
+    if (fullName && (!gameState.player.name || gameState.player.name === 'Alex Vance')) {
+      gameState.player.name = fullName;
+    }
+
+    if (this.database && this.userId) {
+      try {
+        // Enforce 1 Telegram = 1 Account via identityIndex
+        await this.database.ref(`identityIndex/telegram/${tgId}`).set(this.userId);
+
+        // Update player data
+        await this.database.ref(`players/${this.userId}/player`).update({
+          telegramId: tgId,
+          telegram: tgUsername ? `@${tgUsername}` : (gameState.player.telegram || ''),
+          firstName: firstName,
+          lastName: lastName
+        });
+
+        // Mirror to users/ node
+        await this.database.ref(`users/${this.userId}`).update({
+          telegramId: tgId,
+          username: tgUsername || gameState.player.name || '',
+          firstName: firstName,
+          lastName: lastName,
+          phone: gameState.player.mobile || '',
+          email: gameState.player.email || '',
+          createdAt: Date.now(),
+          lastLogin: Date.now(),
+          accountStatus: 'active'
+        });
+      } catch (e) {
+        console.warn('Error saving Telegram identity index:', e);
+      }
+    }
+
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof updateProfileUI === 'function') updateProfileUI();
+    return { ok: true, isNew: true, uid: this.userId };
   }
 
   loadCachedMegaRewards() {
@@ -1181,8 +1437,6 @@ class FirebaseSyncService {
   // (Prevents duplicate Profile Code, Username, Telegram Link, and Mobile Number)
   // ==========================================================================
   async validateUniqueCredentials({ profileCode, username, telegram, mobile, email, excludeUid }) {
-    if (!this.database) return { ok: true };
-
     const targetUid = excludeUid || this.userId;
     const normCode = (c) => (c || '').toString().trim().toUpperCase();
     const normName = (n) => (n || '').toString().trim().toLowerCase();
@@ -1196,7 +1450,95 @@ class FirebaseSyncService {
     const targetPhone = normMobile(mobile);
     const targetEmail = normEmail(email);
 
+    // 1. Server-side authoritative validation
     try {
+      if (targetPhone) {
+        const sRes = await fetch(`/api/auth/check-identifier?type=phone&value=${encodeURIComponent(targetPhone)}&currentUid=${encodeURIComponent(targetUid || '')}`);
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData.exists && sData.linkedUid && sData.linkedUid !== targetUid) {
+            return {
+              ok: false,
+              field: 'mobile',
+              error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        }
+      }
+      if (targetEmail) {
+        const sRes = await fetch(`/api/auth/check-identifier?type=email&value=${encodeURIComponent(targetEmail)}&currentUid=${encodeURIComponent(targetUid || '')}`);
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData.exists && sData.linkedUid && sData.linkedUid !== targetUid) {
+            return {
+              ok: false,
+              field: 'email',
+              error: 'This email is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        }
+      }
+      if (targetTg) {
+        const sRes = await fetch(`/api/auth/check-identifier?type=telegram&value=${encodeURIComponent(targetTg)}&currentUid=${encodeURIComponent(targetUid || '')}`);
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData.exists && sData.linkedUid && sData.linkedUid !== targetUid) {
+            return {
+              ok: false,
+              field: 'telegram',
+              error: 'This Telegram account is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Backend identifier check notice:', e);
+    }
+
+    // 2. Direct RTDB identityIndex lookup
+    if (this.database) {
+      if (targetPhone) {
+        try {
+          const snap = await this.database.ref(`identityIndex/phone/${targetPhone}`).once('value');
+          if (snap.exists() && snap.val() && snap.val() !== targetUid) {
+            return {
+              ok: false,
+              field: 'mobile',
+              error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        } catch (e) {}
+      }
+      if (targetEmail) {
+        try {
+          const safeKey = targetEmail.replace(/[^a-z0-9_]/g, '_');
+          const snap = await this.database.ref(`identityIndex/email/${safeKey}`).once('value');
+          if (snap.exists() && snap.val() && snap.val() !== targetUid) {
+            return {
+              ok: false,
+              field: 'email',
+              error: 'This email is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        } catch (e) {}
+      }
+      if (targetTg) {
+        try {
+          const snap = await this.database.ref(`identityIndex/telegram/${targetTg}`).once('value');
+          if (snap.exists() && snap.val() && snap.val() !== targetUid) {
+            return {
+              ok: false,
+              field: 'telegram',
+              error: 'This Telegram account is already linked to an existing account. Please log in to your existing account.'
+            };
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 3. RTDB /players scan fallback
+    try {
+      if (!this.database) return { ok: true };
       const snap = await this.database.ref('/players').once('value');
       const val = snap.val();
       if (!val) return { ok: true };
@@ -1231,12 +1573,12 @@ class FirebaseSyncService {
 
         // 3. Check Telegram Link / Account Uniqueness
         if (targetTg) {
-          const existingTg = normTg(pl.telegram || pl.handle);
+          const existingTg = normTg(pl.telegram || pl.handle || pl.telegramId);
           if (existingTg && existingTg === targetTg) {
             return {
               ok: false,
               field: 'telegram',
-              error: `Security Error: Telegram account "${telegram}" is already linked to another player! A Telegram link can only be registered once.`
+              error: 'This Telegram account is already linked to an existing account. Please log in to your existing account.'
             };
           }
         }
@@ -1248,7 +1590,7 @@ class FirebaseSyncService {
             return {
               ok: false,
               field: 'mobile',
-              error: `Security Error: Mobile number "${mobile}" is already registered to another player! Each phone number can only be used once.`
+              error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
             };
           }
         }
@@ -1260,7 +1602,7 @@ class FirebaseSyncService {
             return {
               ok: false,
               field: 'email',
-              error: `Security Error: Email "${email}" is already registered to another player! Each email address can only be linked once.`
+              error: 'This email is already linked to an existing account. Please log in to your existing account.'
             };
           }
         }
@@ -1814,12 +2156,19 @@ class FirebaseSyncService {
     // Success: Commit to player profile in Firebase and local state
     gameState.player.email = verifiedEmail;
     gameState.player.emailVerified = true;
+    const safeEmailKey = verifiedEmail.toLowerCase().replace(/[^a-z0-9_]/g, '_');
 
     if (this.database && this.userId) {
       try {
+        await this.database.ref(`identityIndex/email/${safeEmailKey}`).set(this.userId);
         await this.database.ref(`players/${this.userId}/player`).update({
           email: verifiedEmail,
           emailVerified: true
+        });
+        await this.database.ref(`users/${this.userId}`).update({
+          email: verifiedEmail,
+          emailVerified: true,
+          updatedAt: Date.now()
         });
         await this.database.ref(`players/${this.userId}/email_verification`).remove();
         await this.database.ref(`players/${this.userId}`).update({ updatedAt: Date.now() });
@@ -1827,6 +2176,13 @@ class FirebaseSyncService {
         console.warn('Error writing verified email to Firebase:', e);
       }
     }
+
+    // Sync with server store
+    fetch('/api/auth/link-credential', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'email', value: verifiedEmail, uid: this.userId })
+    }).catch(() => {});
 
     sessionStorage.removeItem('ENERGY_TAP_PENDING_EMAIL_VERIF');
     this.saveToCloudImmediate();
@@ -1846,14 +2202,24 @@ class FirebaseSyncService {
 
   // auth.resetLoginEmail#7e960193
   async resetLoginEmail() {
+    const oldEmail = gameState.player.email;
     gameState.player.email = '';
     gameState.player.emailVerified = false;
 
     if (this.database && this.userId) {
       try {
+        if (oldEmail) {
+          const safeKey = oldEmail.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+          await this.database.ref(`identityIndex/email/${safeKey}`).remove();
+        }
         await this.database.ref(`players/${this.userId}/player`).update({
           email: '',
           emailVerified: false
+        });
+        await this.database.ref(`users/${this.userId}`).update({
+          email: '',
+          emailVerified: false,
+          updatedAt: Date.now()
         });
         await this.database.ref(`players/${this.userId}/email_verification`).remove();
         await this.database.ref(`players/${this.userId}`).update({ updatedAt: Date.now() });
@@ -1887,6 +2253,14 @@ class FirebaseSyncService {
     const cleanPhone = this.normalizePhoneNumber(phone_number);
     if (!cleanPhone || cleanPhone.length < 8) {
       return { ok: false, error: 'Please enter a valid phone number with country code (e.g. +1234567890).' };
+    }
+
+    // Uniqueness pre-check when linking
+    if (settings.mode === 'link') {
+      const check = await this.validateUniqueCredentials({ mobile: cleanPhone, excludeUid: this.userId });
+      if (!check.ok) {
+        return check;
+      }
     }
 
     const phone_code_hash = 'pch_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
@@ -1960,30 +2334,28 @@ class FirebaseSyncService {
         _constructor: 'auth.sentCode#5e002502',
         type: sentCodeType,
         phone_code_hash,
-        timeout,
-        next_type: 'auth.sentCodeTypeCall#5353e5a7'
+        next_type: { _constructor: 'auth.codeTypeSms#72a3158c' },
+        timeout
       },
       code
     };
   }
 
-  // auth.resendCode#cae47523
+  // auth.resendCode#3ef1a81c phone_number:string phone_code_hash:string = auth.SentCode
   async resendCode(phone_number, phone_code_hash, reason = '') {
     const cleanPhone = this.normalizePhoneNumber(phone_number);
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const timeout = 60;
-
-    const sentCodeType = {
-      _constructor: 'auth.sentCodeTypeSms#c000bba2',
-      length: 6
-    };
 
     const payload = {
       phone_number: cleanPhone,
       phone_code_hash,
       code: newCode,
-      type: sentCodeType,
-      timeout,
+      type: {
+        _constructor: reason === 'firebase_sms' ? 'auth.sentCodeTypeFirebaseSms#009fd736' : 'auth.sentCodeTypeSms#c000bba2',
+        length: 6,
+        push_timeout: 60
+      },
+      timeout: 60,
       sentAt: Date.now(),
       expiresAt: Date.now() + 10 * 60 * 1000
     };
@@ -2003,21 +2375,21 @@ class FirebaseSyncService {
       ok: true,
       sent_code: {
         _constructor: 'auth.sentCode#5e002502',
-        type: sentCodeType,
+        type: payload.type,
         phone_code_hash,
-        timeout
+        timeout: 60
       },
       code: newCode
     };
   }
 
-  // auth.requestFirebaseSms#8e39261e
+  // auth.requestFirebaseSms#89464b50
   async requestFirebaseSms(phone_number, phone_code_hash, tokens = {}) {
     return this.resendCode(phone_number, phone_code_hash, 'firebase_sms');
   }
 
   // Verify phone code and sign in (or link to account)
-  async signInWithPhone(phone_number, phone_code_hash, inputCode) {
+  async signInWithPhone(phone_number, phone_code_hash, inputCode, mode = 'login') {
     const cleanPhone = this.normalizePhoneNumber(phone_number);
     const cleanCode = (inputCode || '').toString().trim();
 
@@ -2052,22 +2424,45 @@ class FirebaseSyncService {
       return { ok: false, error: 'Invalid verification code. Please check and try again.' };
     }
 
+    const normPhone = (p) => (p || '').toString().replace(/[^0-9]/g, '');
+    const cleanDigits = normPhone(cleanPhone);
+
+    // 1. Search for existing account linked to this phone
     let foundUid = null;
     let foundPlayer = null;
 
     if (this.database) {
       try {
+        const idxSnap = await this.database.ref(`identityIndex/phone/${cleanDigits}`).once('value');
+        if (idxSnap.exists() && idxSnap.val()) {
+          foundUid = idxSnap.val();
+        }
+      } catch (e) {}
+    }
+
+    if (!foundUid) {
+      try {
+        const chkResp = await fetch(`/api/auth/check-identifier?type=phone&value=${encodeURIComponent(cleanDigits)}`);
+        if (chkResp.ok) {
+          const chkData = await chkResp.json();
+          if (chkData.exists && chkData.linkedUid) {
+            foundUid = chkData.linkedUid;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!foundUid && this.database) {
+      try {
         const snap = await this.database.ref('/players').once('value');
         const val = snap.val() || {};
-        const normPhone = (p) => (p || '').toString().replace(/[^0-9]/g, '');
-        const targetClean = normPhone(cleanPhone);
-
         for (const [uid, node] of Object.entries(val)) {
           const pl = node.player || {};
           const existingPhone = normPhone(pl.mobile || pl.phone);
-          if (existingPhone && existingPhone === targetClean) {
+          if (existingPhone && existingPhone === cleanDigits) {
             foundUid = uid;
             foundPlayer = pl;
+            this.database.ref(`identityIndex/phone/${cleanDigits}`).set(uid).catch(() => {});
             break;
           }
         }
@@ -2076,6 +2471,17 @@ class FirebaseSyncService {
       }
     }
 
+    // 2. Uniqueness Conflict Check:
+    // If the user is currently logged into an account (this.userId) and trying to LINK a phone,
+    // but this phone belongs to another account: STOP!
+    if (foundUid && this.userId && foundUid !== this.userId && mode === 'link') {
+      return {
+        ok: false,
+        error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
+      };
+    }
+
+    // 3. Login Flow: Switch to existing account
     if (foundUid) {
       this.userId = foundUid;
       localStorage.setItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5', foundUid);
@@ -2091,18 +2497,32 @@ class FirebaseSyncService {
         player: foundPlayer
       };
     } else {
+      // 4. Link verified phone to current account
       gameState.player.mobile = cleanPhone;
       gameState.player.phoneVerified = true;
 
       if (this.database && this.userId) {
         try {
+          await this.database.ref(`identityIndex/phone/${cleanDigits}`).set(this.userId);
           await this.database.ref(`players/${this.userId}/player`).update({
             mobile: cleanPhone,
             phoneVerified: true
           });
+          await this.database.ref(`users/${this.userId}`).update({
+            phone: cleanPhone,
+            phoneVerified: true,
+            updatedAt: Date.now()
+          });
           await this.database.ref(`players/${this.userId}`).update({ updatedAt: Date.now() });
         } catch (e) {}
       }
+
+      // Sync with server store
+      fetch('/api/auth/link-credential', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'phone', value: cleanDigits, uid: this.userId })
+      }).catch(() => {});
 
       this.saveToCloudImmediate();
       if (typeof saveGame === 'function') saveGame();
@@ -2147,8 +2567,11 @@ window.sendPhoneCode = function(phone, settings) {
 window.resendPhoneCode = function(phone, hash, reason) {
   return window.firebaseSync ? window.firebaseSync.resendCode(phone, hash, reason) : Promise.resolve({ ok: false });
 };
-window.signInWithPhone = function(phone, hash, code) {
-  return window.firebaseSync ? window.firebaseSync.signInWithPhone(phone, hash, code) : Promise.resolve({ ok: false });
+window.signInWithPhone = function(phone, hash, code, mode = 'login') {
+  return window.firebaseSync ? window.firebaseSync.signInWithPhone(phone, hash, code, mode) : Promise.resolve({ ok: false });
+};
+window.handleTelegramAuthorization = function(tgUser) {
+  return window.firebaseSync ? window.firebaseSync.handleTelegramAuthorization(tgUser) : Promise.resolve({ ok: false });
 };
 
 

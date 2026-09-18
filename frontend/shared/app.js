@@ -250,8 +250,16 @@ function initTelegramWebApp() {
       if (tgUser.username) {
         gameState.player.handle = `@${tgUser.username}`;
       }
+      if (tgUser.id) {
+        gameState.player.telegramId = String(tgUser.id);
+      }
       if (typeof updateProfileUI === 'function') updateProfileUI();
       if (DOM.playerUsername) DOM.playerUsername.textContent = gameState.player.name;
+
+      // Enforce 1 Telegram = 1 Account via primary Telegram identity
+      if (window.firebaseSync && typeof window.firebaseSync.handleTelegramAuthorization === 'function') {
+        window.firebaseSync.handleTelegramAuthorization(tgUser).catch(e => console.warn('TG Auth Sync:', e));
+      }
     }
 
     // Native BackButton handler

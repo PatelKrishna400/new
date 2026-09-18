@@ -1,15 +1,128 @@
-// Level XP Threshold Calculator
-// Level 0 complete limit: 1,000 XP
-// Level 1 complete limit: 2,000 XP
-// Level 2 complete limit: 3,000 XP
-// Level N complete limit: (N + 1) * 1,000 XP
-function getLevelRequiredXP(lvl) {
-  const currentLvl = Math.max(0, parseInt(lvl, 10) || 0);
-  return (currentLvl + 1) * 1000;
+// ==========================================================================
+// UNIFIED LEVEL-BASED GOAL & XP SYSTEM ENGINE (Single Source of Truth)
+// Levels 1 to 100 configured via Firebase (/levels_config) and Admin Portal
+// ==========================================================================
+
+// Deterministic baseline level configuration generator
+function generateDefaultLevelConfig(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  let cards = 20;
+  let keys = 50;
+  let tickets = 35;
+  if (l > 1) {
+    cards = 20 + (l - 1) * 6 + (((l - 1) * 11) % 15);
+    keys = 50 + (l - 1) * 9 + (((l - 1) * 17) % 20);
+    tickets = 35 + (l - 1) * 7 + (((l - 1) * 13) % 18);
+  }
+  const xpRequired = l * 1000;
+  let rewardQty = 1;
+  if (l > 75) rewardQty = 5;
+  else if (l > 50) rewardQty = 4;
+  else if (l > 25) rewardQty = 3;
+  else if (l > 10) rewardQty = 2;
+
+  return {
+    level: l,
+    name: `Level ${l}`,
+    isLocked: false,
+    xpRequired: xpRequired,
+    targets: {
+      cards: cards,
+      keys: keys,
+      tickets: tickets
+    },
+    rewards: {
+      coins: l * 25,
+      xpBonus: l * 10,
+      cards: rewardQty,
+      keys: rewardQty,
+      tickets: rewardQty,
+      fuel: 5
+    }
+  };
 }
 
+// Authoritative Level Configuration accessor (Firebase / Backend API is Source of Truth)
+function getLevelConfig(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  const def = generateDefaultLevelConfig(l);
+
+  if (typeof gameState !== 'undefined' && gameState.levelsConfig && gameState.levelsConfig[l]) {
+    const cfg = gameState.levelsConfig[l];
+    const targets = cfg.targets || {};
+    const rewards = cfg.rewards || {};
+
+    return {
+      level: l,
+      name: cfg.name || def.name,
+      isLocked: !!cfg.isLocked,
+      xpRequired: Number(cfg.xpRequired !== undefined ? cfg.xpRequired : (cfg.xpToNextLevel || def.xpRequired)),
+      targets: {
+        cards: Number(targets.cards !== undefined ? targets.cards : def.targets.cards),
+        keys: Number(targets.keys !== undefined ? targets.keys : def.targets.keys),
+        tickets: Number(targets.tickets !== undefined ? targets.tickets : def.targets.tickets)
+      },
+      rewards: {
+        coins: Number(rewards.coins !== undefined ? rewards.coins : def.rewards.coins),
+        xpBonus: Number(rewards.xpBonus !== undefined ? rewards.xpBonus : def.rewards.xpBonus),
+        cards: Number(rewards.cards !== undefined ? rewards.cards : def.rewards.cards),
+        keys: Number(rewards.keys !== undefined ? rewards.keys : def.rewards.keys),
+        tickets: Number(rewards.tickets !== undefined ? rewards.tickets : def.rewards.tickets),
+        fuel: Number(rewards.fuel !== undefined ? rewards.fuel : def.rewards.fuel)
+      }
+    };
+  }
+
+  return def;
+}
+
+// XP Threshold Calculator: directly uses Level Configuration
+function getLevelRequiredXP(lvl) {
+  return getLevelConfig(lvl).xpRequired;
+}
+
+// Level Lock / Unlock Status verification
+function isLevelUnlocked(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  const cfg = getLevelConfig(l);
+
+  // 1. Admin Lock Check: If Admin set isLocked = true, level is locked for everyone
+  if (cfg.isLocked) return false;
+
+  // 2. Level 1 is always unlocked if not Admin locked
+  if (l === 1) return true;
+
+  // 3. Level N requires Level N-1 to be completed
+  const completed = (typeof gameState !== 'undefined' && gameState.progression && gameState.progression.completedLevels)
+    ? gameState.progression.completedLevels
+    : {};
+  return !!completed[l - 1];
+}
+
+function isLevelCompleted(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  const completed = (typeof gameState !== 'undefined' && gameState.progression && gameState.progression.completedLevels)
+    ? gameState.progression.completedLevels
+    : {};
+  return !!completed[l];
+}
+
+function getActiveLevel() {
+  if (typeof gameState !== 'undefined' && gameState.progression && gameState.progression.activeLevel) {
+    return Math.max(1, parseInt(gameState.progression.activeLevel, 10) || 1);
+  }
+  return 1;
+}
+
+// Global Exports
+window.generateDefaultLevelConfig = generateDefaultLevelConfig;
+window.getLevelConfig = getLevelConfig;
+window.getLevelRequiredXP = getLevelRequiredXP;
+window.isLevelUnlocked = isLevelUnlocked;
+window.isLevelCompleted = isLevelCompleted;
+window.getActiveLevel = getActiveLevel;
+
 // Combo Multiplier Calculator
-// *1 for 10 tap, *1.3 for 30 tap, *1.5 for 50 tap, *1.7 for 75 tap, *2 for 150 tap, *2.5 for 250 tap, *3 for 500 tap
 function getComboMultiplier(tapCount) {
   if (tapCount >= 500) return 3.0;
   if (tapCount >= 250) return 2.5;
@@ -21,16 +134,31 @@ function getComboMultiplier(tapCount) {
   return 1.0;
 }
 
-// Global Reset Epoch Versioning (Guarantees fresh 0 balance & level 0 for all users)
-const GAME_RESET_VERSION = 6;
+// Global Reset Epoch Versioning (Guarantees fresh 0 balance & level 1 for all users)
+const GAME_RESET_VERSION = 7;
 const GLOBAL_RESET_TIMESTAMP = 1773510000000;
 window.GAME_RESET_VERSION = GAME_RESET_VERSION;
 window.GLOBAL_RESET_TIMESTAMP = GLOBAL_RESET_TIMESTAMP;
 
-// Game State Definition
+// Authoritative Game State Definition
 const gameState = {
   currentTab: 'home', // 'home' | 'energy' | 'tasks' | 'profile' | 'xp' | 'wallet' | 'goal'
   taskSubtab: 'daily', // 'daily' | 'telegram' | 'website'
+  levelsConfig: {}, // Live cache from Firebase /levels_config (Source of Truth)
+  progression: {
+    activeLevel: 1, // Current active level (1, 2, 3...)
+    completedLevels: {}, // { 1: true, 2: true, ... }
+    levelProgress: {
+      cards: 0,
+      keys: 0,
+      tickets: 0
+    },
+    levelXp: 0 // Current XP accumulated within the active level
+  },
+  bank: {
+    blueCoins: 0, // Accumulated Blue Coins from taps in the Big Bank
+    fullWithdrawalPassEndTime: 0 // If active (> Date.now()), full auto-withdrawal pass for 24h
+  },
   tasksState: {
     claimedDaily: {},
     claimedTelegram: {},
@@ -48,7 +176,7 @@ const gameState = {
     email: '',
     emailVerified: false,
     tier: 'BRONZE',
-    level: 0,
+    level: 1,
     maxLevel: 100,
     coins: 0,
     blueCoins: 0,
@@ -65,7 +193,7 @@ const gameState = {
     websiteTasksCompleted: 0
   },
   goal: {
-    level: 0,
+    level: 1,
     currentCoins: 0,
     targetCoins: 85,
     currentKeys: 0,
@@ -81,6 +209,9 @@ const gameState = {
     comboMultiplier: 1.0,
     comboTaps: 0,
     comboDecayInterval: null,
+    profit2xEndTime: 0, // 3-Hour *2 Profit Boost
+    fastXpEndTime: 0,   // 10-Minute Fast XP Surge (+1 XP per tap)
+    fastXpAdsWatched: 0 // Progress towards 5 ads
   },
   energyGenerator: {
     epTotal: 0,
@@ -198,6 +329,9 @@ function loadSavedGame() {
       Object.assign(gameState.player, parsed.player || {});
       Object.assign(gameState.goal, parsed.goal || {});
       Object.assign(gameState.reactor, parsed.reactor || {});
+      if (parsed.progression) gameState.progression = Object.assign(gameState.progression, parsed.progression);
+      if (parsed.bank) gameState.bank = Object.assign(gameState.bank, parsed.bank);
+      if (parsed.levelsConfig) gameState.levelsConfig = Object.assign(gameState.levelsConfig, parsed.levelsConfig);
       if (parsed.energyGenerator) Object.assign(gameState.energyGenerator, parsed.energyGenerator);
       if (parsed.tasksState) Object.assign(gameState.tasksState, parsed.tasksState);
       if (parsed.xpState) Object.assign(gameState.xpState, parsed.xpState);
@@ -222,6 +356,26 @@ function loadSavedGame() {
       }
       checkDailyStatsDate();
 
+      // Ensure authoritative progression state
+      if (!gameState.progression) {
+        gameState.progression = {
+          activeLevel: Math.max(1, gameState.player.level || (gameState.goalState && gameState.goalState.currentLevel) || 1),
+          completedLevels: {},
+          levelProgress: { cards: 0, keys: 0, tickets: 0 },
+          levelXp: 0
+        };
+      }
+      if (gameState.progression.activeLevel < 1) gameState.progression.activeLevel = 1;
+      if (!gameState.bank) {
+        gameState.bank = { blueCoins: 0, fullWithdrawalPassEndTime: 0 };
+      }
+
+      // Synchronize all legacy level pointers to authoritative activeLevel
+      const activeLvl = gameState.progression.activeLevel;
+      gameState.player.level = activeLvl;
+      gameState.goal.level = activeLvl;
+      if (gameState.goalState) gameState.goalState.currentLevel = activeLvl;
+
       if (gameState.player.diamonds === undefined) gameState.player.diamonds = 0;
       if (gameState.player.blueCoins === undefined) gameState.player.blueCoins = 0;
 
@@ -229,17 +383,13 @@ function loadSavedGame() {
       if (!gameState.goalState.levelProgress) {
         gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
       }
-      if (gameState.goalState.currentLevel === undefined) {
-        gameState.goalState.currentLevel = 0;
-      }
       if (gameState.goalState.levelAdsWatched === undefined) {
         gameState.goalState.levelAdsWatched = 0;
       }
 
-      // Ensure proper XP curve initialization
-      if (!gameState.player.xpToNextLevel || gameState.player.xpToNextLevel < 1000) {
-        gameState.player.xpToNextLevel = getLevelRequiredXP(gameState.player.level || 0);
-      }
+      // Ensure proper XP curve initialization from level config
+      const activeCfg = getLevelConfig(activeLvl);
+      gameState.player.xpToNextLevel = activeCfg.xpRequired;
       if (gameState.player.eggs === undefined) {
         gameState.player.eggs = 0;
       }
@@ -300,7 +450,7 @@ function loadSavedGame() {
         processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'localStorage');
       }
     } catch (e) {
-      console.warn('Failed to load saved state, using default zero restart', e);
+      console.warn('Failed to load saved state, using default restart', e);
       resetAllDataToZero();
     }
   } else {
@@ -309,7 +459,7 @@ function loadSavedGame() {
   }
 }
 
-// Reset Game State to Fresh Zero Slate Across Balances, Levels & Event Timers
+// Reset Game State to Fresh Starting Slate Across Balances, Levels & Event Timers
 function resetAllDataToZero() {
   const now = Date.now();
   const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
@@ -320,17 +470,29 @@ function resetAllDataToZero() {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V3');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
+    localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
     localStorage.removeItem('ENERGY_TAP_FIREBASE_LOCAL_UID');
     localStorage.removeItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5');
   } catch(e) {}
   
-  // 1. Reset all player balances & level to 0
-  gameState.player.level = 0;
+  // 1. Reset progression & player balances to Level 1
+  gameState.progression = {
+    activeLevel: 1,
+    completedLevels: {},
+    levelProgress: { cards: 0, keys: 0, tickets: 0 },
+    levelXp: 0
+  };
+  gameState.bank = {
+    blueCoins: 0,
+    fullWithdrawalPassEndTime: 0
+  };
+
+  gameState.player.level = 1;
   gameState.player.coins = 0;
   gameState.player.blueCoins = 0;
   gameState.player.diamonds = 0;
   gameState.player.xp = 0;
-  gameState.player.xpToNextLevel = 1000;
+  gameState.player.xpToNextLevel = getLevelRequiredXP(1);
   gameState.player.streakDays = 0;
   gameState.player.lastStreakClaimTime = 0;
   gameState.player.chestKeys = 0;
@@ -340,8 +502,8 @@ function resetAllDataToZero() {
   gameState.player.adsWatchedCount = 0;
   gameState.player.websiteTasksCompleted = 0;
 
-  // 2. Reset Goal page level & mission items to start 0
-  gameState.goal.level = 0;
+  // 2. Reset Goal page level & mission items to start Level 1
+  gameState.goal.level = 1;
   gameState.goal.currentCoins = 0;
   gameState.goal.targetCoins = 85;
   gameState.goal.currentKeys = 0;
@@ -350,7 +512,7 @@ function resetAllDataToZero() {
   gameState.goal.targetTickets = 49;
 
   gameState.goalState.currentSubtab = 'mega';
-  gameState.goalState.currentLevel = 0;
+  gameState.goalState.currentLevel = 1;
   gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
   gameState.goalState.levelAdsWatched = 0;
   gameState.goalState.claimedGoals = {};
@@ -594,6 +756,9 @@ function saveGame() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     resetVersion: GAME_RESET_VERSION,
     updatedAt: Date.now(),
+    progression: gameState.progression,
+    bank: gameState.bank,
+    levelsConfig: gameState.levelsConfig,
     player: gameState.player,
     goal: gameState.goal,
     reactor: {
@@ -602,7 +767,10 @@ function saveGame() {
       maxEnergy: gameState.reactor.maxEnergy,
       energyTaps: gameState.reactor.energyTaps,
       comboTaps: gameState.reactor.comboTaps,
-      comboMultiplier: gameState.reactor.comboMultiplier
+      comboMultiplier: gameState.reactor.comboMultiplier,
+      profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
+      fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
+      fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
     },
     energyGenerator: {
       epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
@@ -626,6 +794,97 @@ function saveGame() {
     window.firebaseSync.debouncedSave();
   }
 }
+
+// Level Progression Completer (Unified across Goal, XP, Home)
+function canClaimActiveLevel() {
+  const activeLvl = getActiveLevel();
+  const cfg = getLevelConfig(activeLvl);
+  if (cfg.isLocked) return false;
+
+  const prog = (gameState.progression && gameState.progression.levelProgress) || { cards: 0, keys: 0, tickets: 0 };
+  const itemsComplete = (prog.cards || 0) >= cfg.targets.cards &&
+                        (prog.keys || 0) >= cfg.targets.keys &&
+                        (prog.tickets || 0) >= cfg.targets.tickets;
+  return itemsComplete;
+}
+
+function completeActiveLevel(targetLvl) {
+  const activeLvl = getActiveLevel();
+  const lvlToComplete = targetLvl || activeLvl;
+  const cfg = getLevelConfig(lvlToComplete);
+
+  // Mark current level as completed
+  if (!gameState.progression) {
+    gameState.progression = { activeLevel: 1, completedLevels: {}, levelProgress: { cards: 0, keys: 0, tickets: 0 }, levelXp: 0 };
+  }
+  if (!gameState.progression.completedLevels) {
+    gameState.progression.completedLevels = {};
+  }
+  gameState.progression.completedLevels[lvlToComplete] = true;
+
+  // Sync to legacy claimed maps
+  if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
+  gameState.xpState.claimedLevels[lvlToComplete] = true;
+  if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
+  gameState.goalState.claimedGoals[lvlToComplete] = true;
+
+  // Award level rewards
+  const rewards = cfg.rewards;
+  gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || 0);
+  gameState.player.xp = (gameState.player.xp || 0) + (rewards.xpBonus || 0);
+  gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 0);
+  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 0);
+  gameState.player.scratchCards = (gameState.player.scratchCards || 0) + (rewards.cards || 0);
+  if (rewards.fuel) {
+    if (!gameState.energyGenerator.fuelCells) {
+      gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+    }
+    gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + rewards.fuel;
+  }
+
+  // Advance to next level if available and not locked by admin
+  const nextLvl = lvlToComplete + 1;
+  const nextCfg = getLevelConfig(nextLvl);
+
+  if (nextLvl <= 100) {
+    gameState.progression.activeLevel = nextLvl;
+    gameState.progression.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+    gameState.progression.levelXp = 0;
+
+    // Sync legacy pointers
+    gameState.player.level = nextLvl;
+    gameState.goal.level = nextLvl;
+    if (gameState.goalState) {
+      gameState.goalState.currentLevel = nextLvl;
+      gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
+      gameState.goalState.levelAdsWatched = 0;
+    }
+    gameState.player.xpToNextLevel = nextCfg.xpRequired;
+  }
+
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  }
+
+  // Synchronize all UI views
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof renderGoalsList === 'function') renderGoalsList();
+  if (typeof renderLevelsList === 'function') renderLevelsList();
+  if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
+  if (typeof updateXpViewUI === 'function') updateXpViewUI();
+  if (typeof updateHomeViewUI === 'function') updateHomeViewUI();
+
+  // Save game state locally and cloud
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+
+  return { success: true, activeLevel: gameState.progression.activeLevel, rewards };
+}
+
+window.canClaimActiveLevel = canClaimActiveLevel;
+window.completeActiveLevel = completeActiveLevel;
 
 // Audio System
 class SoundFX {
@@ -880,3 +1139,32 @@ const DOM = {
   resetDataBtn: document.getElementById('resetDataBtn'),
   ambientParticles: document.getElementById('ambientParticles')
 };
+
+if (typeof window !== 'undefined') {
+  window.gameState = gameState;
+  window.DOM = DOM;
+  window.generateDefaultLevelConfig = generateDefaultLevelConfig;
+  window.getLevelConfig = getLevelConfig;
+  window.getLevelRequiredXP = getLevelRequiredXP;
+  window.isLevelUnlocked = isLevelUnlocked;
+  window.isLevelCompleted = isLevelCompleted;
+  window.getActiveLevel = getActiveLevel;
+  window.canClaimActiveLevel = canClaimActiveLevel;
+  window.completeActiveLevel = completeActiveLevel;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    gameState,
+    DOM,
+    generateDefaultLevelConfig,
+    getLevelConfig,
+    getLevelRequiredXP,
+    isLevelUnlocked,
+    isLevelCompleted,
+    getActiveLevel,
+    canClaimActiveLevel,
+    completeActiveLevel
+  };
+}
+

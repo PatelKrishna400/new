@@ -1,77 +1,128 @@
 <!-- PAGE: DASHBOARD -->
 <section class="page-panel active" id="page-dashboard">
-  <!-- 4 Key Metric Cards -->
-  <div class="metrics-row">
-    <!-- 1. Total Players Number -->
-    <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
-      <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
-      <div class="metric-meta">
-        <span class="metric-label">Total Player Number</span>
-        <span class="metric-value" id="dashTotalPlayers">0</span>
+  <!-- Section 1: Live Community & Player Engagement Metrics -->
+  <div style="margin-bottom: 8px;">
+    <h3 style="font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">Live Community &amp; Player Engagement</h3>
+    <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+      <!-- 1. Total Players -->
+      <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">👥</div>
+        <div class="metric-meta">
+          <span class="metric-label">Total Registered Users</span>
+          <span class="metric-value" id="dashTotalPlayers">0</span>
+        </div>
       </div>
-    </div>
 
-    <!-- 2. Daily Tasks Completed Data -->
-    <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')">
-      <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">📅</div>
-      <div class="metric-meta">
-        <span class="metric-label">Daily Tasks Completed</span>
-        <span class="metric-value" id="dashDailyTasksCompleted">0</span>
+      <!-- 2. Online / Active Players -->
+      <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399; position: relative;">
+          🟢
+        </div>
+        <div class="metric-meta">
+          <span class="metric-label" style="display: flex; align-items: center; gap: 5px;">
+            <span>Online / Active</span>
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+          </span>
+          <span class="metric-value" id="dashOnlinePlayers" style="color: #10b981;">0</span>
+        </div>
       </div>
-    </div>
 
-    <!-- 3. Web Tasks Completed Data -->
-    <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')">
-      <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🌐</div>
-      <div class="metric-meta">
-        <span class="metric-label">Web Tasks Completed</span>
-        <span class="metric-value" id="dashWebTasksCompleted">0</span>
+      <!-- 3. Withdrawals (Pending & Completed) -->
+      <div class="metric-box" onclick="switchAdminPage('mega-request', 'Withdrawals & Orders')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">💳</div>
+        <div class="metric-meta">
+          <span class="metric-label">Withdrawals (Pending / Total)</span>
+          <div style="display: flex; align-items: baseline; gap: 6px;">
+            <span class="metric-value" id="dashPendingWithdrawals" style="color: #f59e0b;">0</span>
+            <span style="font-size: 13px; color: #64748b;" id="dashTotalWithdrawals">/ 0 Total</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- 4. Ads Button Count -->
-    <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')">
-      <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎬</div>
-      <div class="metric-meta">
-        <span class="metric-label">Ads Button Count</span>
-        <span class="metric-value" id="dashAdsButtonCount">0</span>
+      <!-- 4. Total Referrals -->
+      <div class="metric-box" onclick="switchAdminPage('users', 'User Analytics & Players')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🤝</div>
+        <div class="metric-meta">
+          <span class="metric-label">Total Referrals</span>
+          <span class="metric-value" id="dashTotalReferrals">0</span>
+        </div>
+      </div>
+
+      <!-- 5. Total Ad Views / Rewards -->
+      <div class="metric-box" onclick="switchAdminPage('ads-manage', 'Ads & Monetization')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">🎬</div>
+        <div class="metric-meta">
+          <span class="metric-label">Total Ad Views</span>
+          <span class="metric-value" id="dashAdsButtonCount">0</span>
+        </div>
+      </div>
+
+      <!-- 6. Tasks Completed (Quests) -->
+      <div class="metric-box" onclick="switchAdminPage('tasks-web', 'Tasks & Website Quests')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">🎯</div>
+        <div class="metric-meta">
+          <span class="metric-label">Completed Tasks</span>
+          <span class="metric-value" id="dashCompletedTasks">0</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Mini-Games Live Activity Row -->
-  <div style="margin-top: 14px;">
-    <h3 style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Mini-Games Cloud Statistics</h3>
-    <div class="metrics-row">
+  <!-- Section 2: Live Game Economy & Assets in Circulation -->
+  <div style="margin-top: 14px; margin-bottom: 8px;">
+    <h3 style="font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">Live Economy &amp; Assets in Circulation</h3>
+    <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+      <!-- 1. Total Coins in Circulation -->
       <div class="metric-box">
-        <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fde047;">🎡</div>
+        <div class="metric-icon-box" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">🪙</div>
         <div class="metric-meta">
-          <span class="metric-label">Lucky Wheel Spins</span>
-          <span class="metric-value" id="dashTotalSpins">0</span>
+          <span class="metric-label">Coins in Circulation</span>
+          <span class="metric-value" id="dashTotalCoins" style="color: #f59e0b;">0</span>
         </div>
       </div>
 
+      <!-- 2. Total XP Accumulated -->
       <div class="metric-box">
-        <div class="metric-icon-box" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">🗝️</div>
+        <div class="metric-icon-box" style="background: rgba(147, 51, 234, 0.2); color: #c084fc;">⭐</div>
         <div class="metric-meta">
-          <span class="metric-label">Vault Chests Opened</span>
-          <span class="metric-value" id="dashTotalChests">0</span>
+          <span class="metric-label">Total XP Accumulated</span>
+          <span class="metric-value" id="dashTotalXP" style="color: #a855f7;">0</span>
         </div>
       </div>
 
+      <!-- 3. Mystery Chest Keys -->
       <div class="metric-box">
-        <div class="metric-icon-box" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">🎴</div>
+        <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">🔑</div>
         <div class="metric-meta">
-          <span class="metric-label">Scratch Cards Played</span>
-          <span class="metric-value" id="dashTotalScratches">0</span>
+          <span class="metric-label">Chest Keys Active</span>
+          <span class="metric-value" id="dashTotalKeys">0</span>
         </div>
       </div>
 
+      <!-- 4. Lucky Spin Tickets -->
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">🎡</div>
+        <div class="metric-meta">
+          <span class="metric-label">Spin Tickets Active</span>
+          <span class="metric-value" id="dashTotalTickets">0</span>
+        </div>
+      </div>
+
+      <!-- 5. Cyber Dragon Eggs -->
       <div class="metric-box">
         <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🥚</div>
         <div class="metric-meta">
-          <span class="metric-label">Eggs Hatched</span>
+          <span class="metric-label">Dragon Eggs Active</span>
           <span class="metric-value" id="dashTotalEggs">0</span>
+        </div>
+      </div>
+
+      <!-- 6. Total Levels Configured -->
+      <div class="metric-box" onclick="switchAdminPage('firebase-manage', 'Levels & Database')" style="cursor: pointer;">
+        <div class="metric-icon-box" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">🏆</div>
+        <div class="metric-meta">
+          <span class="metric-label">Configured Levels</span>
+          <span class="metric-value" id="dashTotalLevels">100</span>
         </div>
       </div>
     </div>
@@ -390,6 +441,36 @@
             <!-- Dynamically populated rows -->
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       REAL-TIME LIVE ACTIVITY & AUDIT FEED SECTION
+       ============================================================ -->
+  <div class="dash-activity-wrapper" style="margin-top: 24px; margin-bottom: 24px;">
+    <div class="dash-section-header">
+      <div class="dash-header-title-box">
+        <div class="dash-title-tag">
+          <span class="pulse-dot-green"></span>
+          <span>Firebase Real-Time Event Stream</span>
+        </div>
+        <h2 class="dash-analytics-title">Live Real-Time Activity &amp; Audit Feed</h2>
+        <p class="dash-analytics-desc">Real-time stream of player actions, registrations, quests completed, withdrawal requests, and administrative operations.</p>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="live-ref-tag" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">● Live Stream</span>
+        <button type="button" class="btn-dash-outline" onclick="renderRealtimeActivityFeed()" style="padding: 6px 12px; font-size: 11.5px;">
+          <span>↻</span> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="minimal-card" style="padding: 14px; max-height: 380px; overflow-y: auto; background: #0b132b; border: 1px solid rgba(255,255,255,0.08);">
+      <div id="dashRealtimeActivityFeed" style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="text-align: center; color: #64748b; padding: 24px; font-size: 13px;">
+          Listening for live events from Firebase...
+        </div>
       </div>
     </div>
   </div>

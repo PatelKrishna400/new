@@ -31,8 +31,39 @@ let memoryStore = {
     maintenanceMode: false,
     announcementText: '',
     announcementActive: false
+  },
+  levelsConfig: {},
+  identityIndex: {
+    telegram: {}, // tgId -> uid
+    phone: {},    // normalizedPhone -> uid
+    email: {}     // normalizedEmail -> uid
+  },
+  authConfig: {
+    telegramLogin: true,
+    phoneAuth: true,
+    emailAuth: true,
+    oneTelegramOneAccount: true,
+    onePhoneOneAccount: true,
+    oneEmailOneAccount: true,
+    accountLinking: true,
+    updatedAt: Date.now()
   }
 };
+
+// Identity Normalization Helpers
+function normalizeTelegramId(id) {
+  if (!id) return '';
+  return String(id).trim();
+}
+function normalizePhone(phone) {
+  if (!phone) return '';
+  const digits = String(phone).replace(/[^0-9]/g, '');
+  return digits;
+}
+function normalizeEmail(email) {
+  if (!email) return '';
+  return String(email).trim().toLowerCase();
+}
 
 // Helper: parse request body
 function parseRequestBody(req) {
@@ -308,6 +339,410 @@ const server = http.createServer(async (req, res) => {
           updatedAt: Date.now()
         };
         return sendJson(res, 200, { ok: true, gameConfig: memoryStore.gameConfig });
+      }
+    }
+
+    // 7. Level Progression Configuration API (/api/levels-config)
+    if (apiRoute === '/levels-config' || apiRoute.startsWith('/levels-config/')) {
+      if (req.method === 'GET') {
+        return sendJson(res, 200, { ok: true, levelsConfig: memoryStore.levelsConfig });
+      }
+
+      if (req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        if (body && typeof body === 'object') {
+          memoryStore.levelsConfig = { ...memoryStore.levelsConfig, ...body };
+          return sendJson(res, 200, { ok: true, levelsConfig: memoryStore.levelsConfig });
+        }
+        return sendJson(res, 400, { ok: false, error: 'Invalid levels configuration format' });
+      }
+
+      if (req.method === 'PUT') {
+        const lvlId = apiRoute.replace('/levels-config/', '');
+        const body = await parseRequestBody(req);
+        if (lvlId && body) {
+          memoryStore.levelsConfig[lvlId] = { ...body, updatedAt: Date.now() };
+          return sendJson(res, 200, { ok: true, level: memoryStore.levelsConfig[lvlId] });
+        }
+        return sendJson(res, 400, { ok: false, error: 'Level ID and payload required' });
+      }
+    }
+
+    // 8. Fuel Cells Configuration & Purchases API
+    if (apiRoute === '/fuel-cells-config' || apiRoute === '/fuel_cells_config') {
+      if (req.method === 'GET') {
+        return sendJson(res, 200, { ok: true, fuelCellsConfig: memoryStore.fuelCellsConfig || {} });
+      }
+      if (req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        memoryStore.fuelCellsConfig = { ...(memoryStore.fuelCellsConfig || {}), ...body, updatedAt: Date.now() };
+        return sendJson(res, 200, { ok: true, fuelCellsConfig: memoryStore.fuelCellsConfig });
+      }
+    }
+
+    if (apiRoute.startsWith('/fuel/buy') || apiRoute.startsWith('/shop/fuel/buy')) {
+      const body = await parseRequestBody(req);
+      return sendJson(res, 200, {
+        ok: true,
+        success: true,
+        message: 'Energy fuel cell purchase approved and recorded.',
+        transaction: {
+          fuelType: body.fuelType || 'green',
+          method: body.method || 'coins',
+          cost: body.cost || 0,
+          timestamp: Date.now()
+        }
+      });
+    }
+
+    // 9. Account Authorization & Identity Uniqueness APIs (/api/auth/...)
+    if (apiRoute.startsWith('/auth')) {
+      // POST /api/auth/telegram - Telegram Authorization & Uniqueness Enforcement
+      if (apiRoute === '/auth/telegram' && req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        const uPayload = body.user || {};
+        const rawTgId = body.telegramId || body.id || uPayload.id || uPayload.telegramId;
+        const tgId = normalizeTelegramId(rawTgId);
+
+        if (!tgId) {
+          return sendJson(res, 400, { ok: false, error: 'Telegram User ID is required' });
+        }
+
+        const username = body.username || uPayload.username || '';
+        const firstName = body.firstName || uPayload.first_name || '';
+        const lastName = body.lastName || uPayload.last_name || '';
+
+        // 1. Check if Telegram ID already mapped to an existing account
+        const existingUid = memoryStore.identityIndex.telegram[tgId];
+        if (existingUid) {
+          const existingUser = memoryStore.users[existingUid] || { uid: existingUid };
+          // Update lastLogin and latest handle
+          existingUser.lastLogin = Date.now();
+          if (username) existingUser.telegramHandle = '@' + username.replace(/^@/, '');
+          if (firstName) existingUser.firstName = firstName;
+          memoryStore.users[existingUid] = existingUser;
+
+          return sendJson(res, 200, {
+            ok: true,
+            isNew: false,
+            isExisting: true,
+            uid: existingUid,
+            telegramId: tgId,
+            user: existingUser,
+            message: 'Existing Telegram account verified. Logging into existing account.'
+          });
+        }
+
+        // 2. Not existing: Check Phone and Email conflicts if provided before account creation
+        const phone = normalizePhone(body.phone || body.mobile || uPayload.phone || uPayload.mobile);
+        const email = normalizeEmail(body.email || uPayload.email);
+
+        if (phone && memoryStore.identityIndex.phone[phone]) {
+          const conflictingUid = memoryStore.identityIndex.phone[phone];
+          return sendJson(res, 409, {
+            ok: false,
+            conflict: 'phone',
+            conflictingUid,
+            error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
+          });
+        }
+
+        if (email && memoryStore.identityIndex.email[email]) {
+          const conflictingUid = memoryStore.identityIndex.email[email];
+          return sendJson(res, 409, {
+            ok: false,
+            conflict: 'email',
+            conflictingUid,
+            error: 'This email is already linked to an existing account. Please log in to your existing account.'
+          });
+        }
+
+        // 3. Create or provision new account with Telegram ID as primary immutable key
+        const newUid = body.uid || ('tg_' + tgId);
+        const cleanUid = newUid.replace(/[^a-zA-Z0-9]/g, '');
+        const profileCode = body.profileCode || ('ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : cleanUid.toUpperCase()));
+
+        const newUser = {
+          uid: newUid,
+          telegramId: tgId,
+          username: username ? ('@' + username.replace(/^@/, '')) : ('user_' + tgId.substring(0, 6)),
+          firstName: firstName || 'Player',
+          lastName: lastName || '',
+          telegramHandle: username ? ('@' + username.replace(/^@/, '')) : '',
+          phone: phone || '',
+          email: email || '',
+          phoneVerified: Boolean(phone && body.phoneVerified),
+          emailVerified: Boolean(email && body.emailVerified),
+          profileCode,
+          level: 0,
+          xp: 0,
+          coins: 1000,
+          diamonds: 50,
+          status: 'active',
+          createdAt: Date.now(),
+          lastLogin: Date.now()
+        };
+
+        memoryStore.users[newUid] = newUser;
+        // Index Telegram ID
+        memoryStore.identityIndex.telegram[tgId] = newUid;
+        if (phone) memoryStore.identityIndex.phone[phone] = newUid;
+        if (email) memoryStore.identityIndex.email[email] = newUid;
+
+        return sendJson(res, 200, {
+          ok: true,
+          isNew: true,
+          isExisting: false,
+          uid: newUid,
+          telegramId: tgId,
+          user: newUser,
+          message: 'Account created with permanent Telegram identity.'
+        });
+      }
+
+      // GET & POST /api/auth/check-identifier - Check availability and detect conflicts
+      if (apiRoute === '/auth/check-identifier') {
+        const body = req.method === 'POST' ? await parseRequestBody(req) : {};
+        const q = parsedUrl.query || {};
+        const targetType = body.type || q.type; // 'telegram' | 'phone' | 'email'
+        const rawVal = body.value || q.value;
+        const currentUid = body.currentUid || body.excludeUid || q.currentUid || q.excludeUid || '';
+
+        if (!targetType || !rawVal) {
+          return sendJson(res, 400, { ok: false, error: 'Type and value are required' });
+        }
+
+        let mappedUid = null;
+        let conflictMsg = '';
+
+        if (targetType === 'telegram') {
+          const tgId = normalizeTelegramId(rawVal);
+          mappedUid = memoryStore.identityIndex.telegram[tgId];
+          conflictMsg = 'This Telegram account is already linked to an existing account. Please log in to your existing account.';
+        } else if (targetType === 'phone' || targetType === 'mobile') {
+          const phone = normalizePhone(rawVal);
+          mappedUid = memoryStore.identityIndex.phone[phone];
+          conflictMsg = 'This phone number is already linked to an existing account. Please log in to your existing account.';
+        } else if (targetType === 'email') {
+          const email = normalizeEmail(rawVal);
+          mappedUid = memoryStore.identityIndex.email[email];
+          conflictMsg = 'This email is already linked to an existing account. Please log in to your existing account.';
+        }
+
+        if (mappedUid) {
+          const isSelf = (mappedUid === currentUid);
+          return sendJson(res, 200, {
+            ok: true,
+            exists: true,
+            isSelf,
+            available: isSelf,
+            linkedUid: mappedUid,
+            conflict: isSelf ? null : targetType,
+            conflictingUid: isSelf ? null : mappedUid,
+            error: isSelf ? null : conflictMsg
+          });
+        }
+
+        return sendJson(res, 200, {
+          ok: true,
+          exists: false,
+          available: true,
+          isSelf: false,
+          linkedUid: null
+        });
+      }
+
+      // POST /api/auth/link-credential - Link phone or email to existing account
+      if (apiRoute === '/auth/link-credential' && req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        const uid = body.uid;
+        if (!uid) {
+          return sendJson(res, 400, { ok: false, error: 'User UID is required' });
+        }
+
+        const user = memoryStore.users[uid] || { uid };
+
+        const rawPhone = body.phone || (body.type === 'phone' || body.type === 'mobile' ? body.value : null);
+        if (rawPhone) {
+          const normP = normalizePhone(rawPhone);
+          const existingOwner = memoryStore.identityIndex.phone[normP];
+          if (existingOwner && existingOwner !== uid) {
+            return sendJson(res, 409, {
+              ok: false,
+              conflict: 'phone',
+              conflictingUid: existingOwner,
+              error: 'This phone number is already linked to an existing account. Please log in to your existing account.'
+            });
+          }
+          user.phone = normP;
+          user.phoneVerified = true;
+          memoryStore.identityIndex.phone[normP] = uid;
+        }
+
+        const rawEmail = body.email || (body.type === 'email' ? body.value : null);
+        if (rawEmail) {
+          const normE = normalizeEmail(rawEmail);
+          const existingOwner = memoryStore.identityIndex.email[normE];
+          if (existingOwner && existingOwner !== uid) {
+            return sendJson(res, 409, {
+              ok: false,
+              conflict: 'email',
+              conflictingUid: existingOwner,
+              error: 'This email is already linked to an existing account. Please log in to your existing account.'
+            });
+          }
+          user.email = normE;
+          user.emailVerified = true;
+          memoryStore.identityIndex.email[normE] = uid;
+        }
+
+        user.updatedAt = Date.now();
+        memoryStore.users[uid] = user;
+
+        return sendJson(res, 200, {
+          ok: true,
+          message: 'Credentials successfully linked to account.',
+          user
+        });
+      }
+
+      // GET & POST /api/auth/config - Account Authorization Settings
+      if (apiRoute === '/auth/config' || apiRoute === '/auth_config') {
+        if (req.method === 'GET') {
+          return sendJson(res, 200, { ok: true, config: memoryStore.authConfig });
+        }
+        if (req.method === 'POST') {
+          const body = await parseRequestBody(req);
+          memoryStore.authConfig = {
+            ...memoryStore.authConfig,
+            ...body,
+            updatedAt: Date.now()
+          };
+          return sendJson(res, 200, { ok: true, config: memoryStore.authConfig });
+        }
+      }
+
+      // GET /api/auth/duplicates - Scan and report potential duplicates
+      if (apiRoute === '/auth/duplicates' && req.method === 'GET') {
+        const users = Object.values(memoryStore.users);
+        const tgMap = {};
+        const phoneMap = {};
+        const emailMap = {};
+
+        users.forEach(u => {
+          const tg = normalizeTelegramId(u.telegramId);
+          const ph = normalizePhone(u.phone || u.mobile);
+          const em = normalizeEmail(u.email);
+
+          if (tg) {
+            tgMap[tg] = tgMap[tg] || [];
+            tgMap[tg].push(u);
+          }
+          if (ph) {
+            phoneMap[ph] = phoneMap[ph] || [];
+            phoneMap[ph].push(u);
+          }
+          if (em) {
+            emailMap[em] = emailMap[em] || [];
+            emailMap[em].push(u);
+          }
+        });
+
+        const duplicates = [];
+        Object.entries(tgMap).forEach(([tgId, list]) => {
+          if (list.length > 1) {
+            duplicates.push({ type: 'telegram', identifier: tgId, count: list.length, accounts: list });
+          }
+        });
+        Object.entries(phoneMap).forEach(([phone, list]) => {
+          if (list.length > 1) {
+            duplicates.push({ type: 'phone', identifier: phone, count: list.length, accounts: list });
+          }
+        });
+        Object.entries(emailMap).forEach(([email, list]) => {
+          if (list.length > 1) {
+            duplicates.push({ type: 'email', identifier: email, count: list.length, accounts: list });
+          }
+        });
+
+        return sendJson(res, 200, { ok: true, count: duplicates.length, duplicates });
+      }
+
+      // POST /api/auth/resolve-duplicate - Controlled admin duplicate resolution
+      if (apiRoute === '/auth/resolve-duplicate' && req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        const { action, uid, type, identifier } = body;
+
+        if (!uid || !memoryStore.users[uid]) {
+          return sendJson(res, 404, { ok: false, error: 'Account not found' });
+        }
+
+        const user = memoryStore.users[uid];
+
+        if (action === 'disable') {
+          user.status = 'disabled';
+          user.disabledReason = 'Duplicate account flagged by Admin';
+          user.updatedAt = Date.now();
+          return sendJson(res, 200, { ok: true, message: `Account ${uid} has been disabled.` });
+        }
+
+        if (action === 'unlink') {
+          if (type === 'phone') {
+            const p = normalizePhone(user.phone);
+            delete memoryStore.identityIndex.phone[p];
+            user.phone = '';
+            user.phoneVerified = false;
+          } else if (type === 'email') {
+            const e = normalizeEmail(user.email);
+            delete memoryStore.identityIndex.email[e];
+            user.email = '';
+            user.emailVerified = false;
+          } else if (type === 'telegram') {
+            const t = normalizeTelegramId(user.telegramId);
+            delete memoryStore.identityIndex.telegram[t];
+            user.telegramId = '';
+          }
+          user.updatedAt = Date.now();
+          return sendJson(res, 200, { ok: true, message: `Unlinked ${type} identifier from ${uid}.` });
+        }
+
+        return sendJson(res, 400, { ok: false, error: 'Unsupported resolution action' });
+      }
+
+      // POST /api/auth/migrate-indexes - Safely scan and populate identityIndex from existing players
+      if (apiRoute === '/auth/migrate-indexes' && req.method === 'POST') {
+        const users = Object.values(memoryStore.users);
+        let tgIndexed = 0;
+        let phoneIndexed = 0;
+        let emailIndexed = 0;
+
+        users.forEach(u => {
+          const tg = normalizeTelegramId(u.telegramId);
+          const ph = normalizePhone(u.phone || u.mobile);
+          const em = normalizeEmail(u.email);
+
+          if (tg && !memoryStore.identityIndex.telegram[tg]) {
+            memoryStore.identityIndex.telegram[tg] = u.uid;
+            tgIndexed++;
+          }
+          if (ph && !memoryStore.identityIndex.phone[ph]) {
+            memoryStore.identityIndex.phone[ph] = u.uid;
+            phoneIndexed++;
+          }
+          if (em && !memoryStore.identityIndex.email[em]) {
+            memoryStore.identityIndex.email[em] = u.uid;
+            emailIndexed++;
+          }
+        });
+
+        return sendJson(res, 200, {
+          ok: true,
+          totalUsers: users.length,
+          tgIndexed,
+          phoneIndexed,
+          emailIndexed,
+          message: 'Identity indexes populated successfully.'
+        });
       }
     }
 

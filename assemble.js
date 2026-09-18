@@ -1,7 +1,7 @@
 /**
  * Master Project Assemble Script
  * Compiles both Frontend (Game) and Admin Portal modular pages,
- * synchronizes public/ distribution folder for Vercel deployment, and verifies end-to-end integrity.
+ * and verifies end-to-end integrity.
  */
 
 const { spawnSync } = require('child_process');
@@ -38,7 +38,7 @@ if (adminAssemble.status !== 0) {
 
 console.log('\n================================================================');
 console.log('✅ ALL SYSTEMS COMPILED SUCCESSFULLY!');
-console.log('   - Game: frontend/index.html (dev), public/ (Vercel deployment)');
+console.log('   - Game: frontend/index.html');
 console.log('   - Admin: admin/index.html');
 console.log('   - Backend API: server.js (/api/health, /api/rewards, /api/requests, /api/users)');
 console.log('================================================================\n');

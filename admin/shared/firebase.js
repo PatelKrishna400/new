@@ -13,6 +13,7 @@ const firebaseConfig = {
   appId: "1:1028935905694:web:af5190281ad93c0ebbe68f",
   measurementId: "G-B8KMYEQ0L4"
 };
+window.firebaseConfig = firebaseConfig;
 
 // Global Admin Shared State
 window.adminState = {
@@ -23,6 +24,7 @@ window.adminState = {
   customRequests: [],
   websiteTasks: [],
   telegramTasks: [],
+  levelsConfig: {},
   isFirebaseConnected: false
 };
 
@@ -57,19 +59,233 @@ function initFirebase() {
   }
 }
 
-function setFirebaseOnline(isOnline) {
+function setFirebaseOnline(isOnline, statusText) {
   window.adminState.isFirebaseConnected = isOnline;
   const dot = document.getElementById('firebaseStatusDot');
   const text = document.getElementById('firebaseStatusText');
   if (dot && text) {
     if (isOnline) {
       dot.className = 'status-dot online';
-      text.textContent = 'Cloud Live (RTDB)';
+      text.textContent = statusText || 'Cloud Live (RTDB)';
     } else {
       dot.className = 'status-dot';
-      text.textContent = 'Disconnected / Offline';
+      text.textContent = statusText || 'Disconnected / Offline';
     }
   }
+}
+
+let hasShownRulesWarning = false;
+function onFirebasePermissionError(error, nodePath) {
+  console.warn(`[Firebase RTDB] Read error on ${nodePath}:`, error ? error.message : '');
+  setFirebaseOnline(false, '⚠️ Rules Denied (Check Console)');
+  if (!hasShownRulesWarning) {
+    hasShownRulesWarning = true;
+    showFirebaseRulesWarningBanner();
+  }
+  loadFallbackDataSources();
+}
+
+function clearFirebaseRulesWarningBanner() {
+  const banner = document.getElementById('firebaseRulesWarningBanner');
+  if (banner) banner.remove();
+  setFirebaseOnline(true, 'Cloud Live (RTDB)');
+}
+
+function showFirebaseRulesWarningBanner() {
+  if (document.getElementById('firebaseRulesWarningBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'firebaseRulesWarningBanner';
+  banner.style.cssText = 'background: #fffbeb; border-bottom: 2px solid #f59e0b; color: #92400e; padding: 10px 18px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 99999; position: sticky; top: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08);';
+  banner.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+      <span style="font-size: 20px; flex-shrink: 0;">⚠️</span>
+      <div>
+        <strong>Firebase Security Rules Locked:</strong> 
+        Firebase RTDB returned <em>Permission Denied</em>. Please publish the contents of <code>database.rules.json</code> in your <strong>Firebase Console → Realtime Database → Rules</strong> tab.
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+      <button type="button" onclick="copyFirebaseRulesToClipboard()" style="background: #f59e0b; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+        📋 Copy Rules JSON
+      </button>
+      <a href="https://console.firebase.google.com/project/tap-game-80070/database/tap-game-80070-default-rtdb/rules" target="_blank" rel="noopener noreferrer" style="background: #0284c7; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+        Open Firebase Console ↗
+      </a>
+      <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 18px; color: #92400e; cursor: pointer; padding: 0 4px;" title="Dismiss">&times;</button>
+    </div>
+  `;
+  document.body.prepend(banner);
+}
+
+function copyFirebaseRulesToClipboard() {
+  const rules = {
+    "rules": {
+      "players": {
+        ".read": true,
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true || root.child('whitelist').child(auth.uid).exists())",
+          ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+        }
+      },
+      "users": {
+        ".read": true,
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
+        }
+      },
+      "leaderboard": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null"
+        }
+      },
+      "mega_rewards": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "reward_requests": {
+        ".read": true,
+        ".write": "auth != null",
+        "$reqId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      },
+      "ads_direct_clicks": {
+        ".read": true,
+        ".write": "auth != null",
+        "$clickId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      },
+      "suggestions": {
+        ".read": true,
+        ".write": "auth != null",
+        "$sugId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      },
+      "website_tasks_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "telegram_tasks_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "monthly_competition": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "season": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "ads_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "whitelist": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null"
+        }
+      },
+      "admin_users": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "game_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "levels_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "fuel_cells_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "activity_log": {
+        ".read": true,
+        ".write": "auth != null",
+        ".indexOn": ["timestamp"]
+      },
+      ".info": {
+        ".read": true
+      }
+    }
+  };
+  const jsonStr = JSON.stringify(rules, null, 2);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(jsonStr).then(() => {
+      alert('📋 Firebase Security Rules copied to clipboard!\n\nOpen Firebase Console → Realtime Database → Rules, paste this JSON and click "Publish".');
+    }).catch(() => {
+      prompt('Copy these rules and paste into Firebase Console → Realtime Database → Rules:', jsonStr);
+    });
+  } else {
+    prompt('Copy these rules and paste into Firebase Console → Realtime Database → Rules:', jsonStr);
+  }
+}
+window.copyFirebaseRulesToClipboard = copyFirebaseRulesToClipboard;
+
+async function loadFallbackDataSources() {
+  // 1. Try local storage user state
+  try {
+    const localSave = localStorage.getItem('ENERGY_TAP_SAVE_STATE_V5');
+    if (localSave && (!window.adminState.users || window.adminState.users.length === 0)) {
+      const parsed = JSON.parse(localSave);
+      const uid = localStorage.getItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5') || 'local_player';
+      if (typeof parsePlayerRecord === 'function') {
+        const u = parsePlayerRecord(uid, parsed);
+        window.adminState.users = [u];
+        dispatchAdminEvent('usersUpdated');
+      }
+    }
+  } catch (e) {}
+
+  // 2. Try backend API (/api/users, /api/requests, /api/rewards)
+  try {
+    const res = await fetch('/api/users');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.users && data.users.length > 0) {
+        if (typeof parsePlayerRecord === 'function') {
+          window.adminState.users = data.users.map(u => parsePlayerRecord(u.uid, u));
+        } else {
+          window.adminState.users = data.users;
+        }
+        dispatchAdminEvent('usersUpdated');
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const res = await fetch('/api/requests');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.requests && data.requests.length > 0) {
+        window.adminState.requests = data.requests;
+        dispatchAdminEvent('requestsUpdated');
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const res = await fetch('/api/rewards');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.rewards && data.rewards.length > 0) {
+        window.adminState.rewards = data.rewards;
+        dispatchAdminEvent('rewardsUpdated');
+      }
+    }
+  } catch (e) {}
 }
 
 function listenToFirebase() {
@@ -159,7 +375,10 @@ function listenToFirebase() {
       adsButtonCount: adsCount,
       adsWatched: adsCount,
       tasksCount: monthlyDone + webDone + tgDone,
-      lastActive: pl.lastActive || data.lastActive || new Date().toISOString(),
+      referralCount: Number(pl.referralCount || pl.referralsCount || (pl.referrals ? Object.keys(pl.referrals).length : 0)),
+      status: (pl.status || pl.accountStatus || 'active').toLowerCase(),
+      joinedAt: pl.createdAt || pl.joinedAt || pl.registrationDate || data.createdAt || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
+      lastActive: pl.lastActive || data.lastActive || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
       tasksState: tasksObj,
       goal: goalObj,
       goalState: goalStateObj,
@@ -233,7 +452,8 @@ function listenToFirebase() {
     Object.assign(playersCache, val);
     syncAllUsersFromCaches();
     isInitialUsersLoaded = true;
-  });
+    clearFirebaseRulesWarningBanner();
+  }, err => onFirebasePermissionError(err, '/players'));
 
   // Real-time listener for /users (legacy or secondary node)
   db.ref('/users').on('value', snapshot => {
@@ -242,7 +462,8 @@ function listenToFirebase() {
     Object.assign(legacyUsersCache, val);
     syncAllUsersFromCaches();
     isInitialUsersLoaded = true;
-  });
+    clearFirebaseRulesWarningBanner();
+  }, err => onFirebasePermissionError(err, '/users'));
 
   // Child listeners to ensure instantaneous feedback on additions & updates
   db.ref('/players').on('child_added', snapshot => {
@@ -257,7 +478,7 @@ function listenToFirebase() {
         syncAllUsersFromCaches();
       }
     }
-  });
+  }, err => onFirebasePermissionError(err, '/players child_added'));
 
   db.ref('/players').on('child_changed', snapshot => {
     const uid = snapshot.key;
@@ -266,7 +487,7 @@ function listenToFirebase() {
       playersCache[uid] = val;
       syncAllUsersFromCaches();
     }
-  });
+  }, err => onFirebasePermissionError(err, '/players child_changed'));
 
   db.ref('/players').on('child_removed', snapshot => {
     const uid = snapshot.key;
@@ -275,7 +496,7 @@ function listenToFirebase() {
       knownUserUids.delete(uid);
       syncAllUsersFromCaches();
     }
-  });
+  }, err => onFirebasePermissionError(err, '/players child_removed'));
 
   // 2. Mega Rewards
   db.ref('/mega_rewards').on('value', snapshot => {
@@ -287,8 +508,9 @@ function listenToFirebase() {
       list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
     }
     window.adminState.rewards = list;
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('rewardsUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/mega_rewards'));
 
   // 3. Reward Requests
   db.ref('/reward_requests').on('value', snapshot => {
@@ -300,8 +522,9 @@ function listenToFirebase() {
       });
     }
     window.adminState.requests = list.reverse();
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('requestsUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/reward_requests'));
 
   // 4. Website Tasks Config
   db.ref('/website_tasks_config').on('value', snapshot => {
@@ -314,8 +537,9 @@ function listenToFirebase() {
     }
     window.adminState.websiteTasks = list;
     try { localStorage.setItem('ENERGY_TAP_WEB_TASKS', JSON.stringify(list)); } catch(e){}
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('websiteTasksUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/website_tasks_config'));
 
   // 5. Telegram Tasks Config
   db.ref('/telegram_tasks_config').on('value', snapshot => {
@@ -328,26 +552,29 @@ function listenToFirebase() {
     }
     window.adminState.telegramTasks = list;
     try { localStorage.setItem('ENERGY_TAP_TG_TASKS', JSON.stringify(list)); } catch(e){}
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('telegramTasksUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/telegram_tasks_config'));
 
   // 6. Monthly Competition Config (/monthly_competition)
   db.ref('/monthly_competition').on('value', snapshot => {
     const val = snapshot.val();
     if (val) {
       window.adminState.monthlyCompetition = val;
+      clearFirebaseRulesWarningBanner();
       dispatchAdminEvent('monthlyCompetitionUpdated');
     }
-  });
+  }, err => onFirebasePermissionError(err, '/monthly_competition'));
 
   // 7. Ads Configuration (/ads_config)
   db.ref('/ads_config').on('value', snapshot => {
     const val = snapshot.val();
     if (val) {
       window.adminState.adsConfig = val;
+      clearFirebaseRulesWarningBanner();
       dispatchAdminEvent('adsConfigUpdated');
     }
-  });
+  }, err => onFirebasePermissionError(err, '/ads_config'));
 
   // 8. Direct Link Ads Clicks (/ads_direct_clicks)
   db.ref('/ads_direct_clicks').on('value', snapshot => {
@@ -357,17 +584,20 @@ function listenToFirebase() {
       Object.keys(val).forEach(k => list.push({ id: k, ...val[k] }));
     }
     window.adminState.directClicks = list;
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('directClicksUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/ads_direct_clicks'));
 
   // 9. Ads Analytics (/ads_analytics)
   db.ref('/ads_analytics').on('value', snapshot => {
     const val = snapshot.val();
     if (val) {
       window.adminState.adsAnalytics = val;
+      clearFirebaseRulesWarningBanner();
       dispatchAdminEvent('adsAnalyticsUpdated');
     }
-  });
+  }, err => onFirebasePermissionError(err, '/ads_analytics'));
+
   // 10. Admin Users (/admin_users) - Strictly authorized admins (No auto-seeding)
   db.ref('/admin_users').on('value', snapshot => {
     const val = snapshot.val();
@@ -376,8 +606,9 @@ function listenToFirebase() {
       list = Object.keys(val).map(k => ({ username: k, ...val[k] }));
     }
     window.adminState.adminUsers = list;
+    clearFirebaseRulesWarningBanner();
     dispatchAdminEvent('adminUsersUpdated');
-  });
+  }, err => onFirebasePermissionError(err, '/admin_users'));
 
   // 11. Global Website & Game Config (/game_config) - Pure editable Firebase connection (No auto-seeding)
   db.ref('/game_config').on('value', snapshot => {
@@ -387,9 +618,267 @@ function listenToFirebase() {
     } else {
       window.adminState.gameConfig = {};
     }
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('gameConfigUpdated');
+  }, err => onFirebasePermissionError(err, '/game_config'));
+
+  // 12. Level Progression Configuration (/levels_config)
+  db.ref('/levels_config').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val && typeof val === 'object') {
+      window.adminState.levelsConfig = val;
+    } else {
+      window.adminState.levelsConfig = {};
+    }
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('levelsConfigUpdated');
+  }, err => onFirebasePermissionError(err, '/levels_config'));
+
+  // 13. Live Activity & Audit Log (/activity_log)
+  db.ref('/activity_log').limitToLast(60).on('value', snapshot => {
+    const val = snapshot.val();
+    const list = [];
+    if (val) {
+      Object.keys(val).forEach(k => list.push({ id: k, ...val[k] }));
+    }
+    window.adminState.activities = list.reverse();
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('activitiesUpdated');
+  }, err => onFirebasePermissionError(err, '/activity_log'));
+
+  // 14. Energy Fuel Cells Configuration (/fuel_cells_config)
+  db.ref('/fuel_cells_config').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val && typeof val === 'object') {
+      window.adminState.fuelCellsConfig = val;
+    } else {
+      window.adminState.fuelCellsConfig = null;
+    }
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('fuelCellsConfigUpdated');
+  }, err => onFirebasePermissionError(err, '/fuel_cells_config'));
+}
+
+function saveFuelCellsConfig(configObj) {
+  if (!db) return Promise.reject(new Error('Firebase not connected'));
+  return db.ref('/fuel_cells_config').set(configObj).then(() => {
+    window.adminState.fuelCellsConfig = configObj;
+    if (typeof logActivity === 'function') {
+      logActivity('Fuel Shop Updated', 'Admin updated energy fuel cell pricing & multipliers', '🔋');
+    }
+  });
+}
+window.saveFuelCellsConfig = saveFuelCellsConfig;
+
+// Activity Logger
+function logActivity(type, title, details = '') {
+  if (!db) return;
+  const item = {
+    type: type || 'admin_action',
+    title: title || 'Admin Action',
+    details: typeof details === 'object' ? JSON.stringify(details) : String(details || ''),
+    timestamp: Date.now()
+  };
+  db.ref('/activity_log').push(item).catch(() => {});
+}
+window.logActivity = logActivity;
+
+// Aggregated Real-time Metric Engine
+function calculateAggregatedMetrics() {
+  const users = window.adminState.users || [];
+  const requests = window.adminState.requests || [];
+  const levels = window.adminState.levelsConfig || {};
+  const webTasks = window.adminState.websiteTasks || [];
+  const tgTasks = window.adminState.telegramTasks || [];
+
+  const now = Date.now();
+  const ACTIVE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes window for online
+
+  let totalCoins = 0;
+  let totalXP = 0;
+  let totalKeys = 0;
+  let totalTickets = 0;
+  let totalEggs = 0;
+  let totalEnergy = 0;
+  let totalAdViews = 0;
+  let totalCompletedTasks = 0;
+  let totalReferrals = 0;
+  let onlineUsers = 0;
+
+  users.forEach(u => {
+    totalCoins += Number(u.coins || 0);
+    totalXP += Number(u.xp || 0);
+    totalKeys += Number(u.chestKeys || 0);
+    totalTickets += Number(u.chestTickets || 0);
+    totalEggs += Number(u.eggs || 0);
+    totalEnergy += Number(u.currentEnergy || 0);
+    totalAdViews += Number(u.adsWatched || u.adsButtonCount || 0);
+    totalCompletedTasks += (Number(u.dailyTasksDone || 0) + Number(u.webTasksDone || 0) + Number(u.tgDone || 0));
+    totalReferrals += Number(u.referralCount || u.referrals || 0);
+
+    const lastActiveTs = u.lastActive ? new Date(u.lastActive).getTime() : 0;
+    if (lastActiveTs && (now - lastActiveTs) <= ACTIVE_WINDOW_MS) {
+      onlineUsers++;
+    }
+  });
+
+  const pendingWithdrawals = requests.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
+  const completedWithdrawals = requests.filter(r => {
+    const s = (r.status || '').toLowerCase();
+    return s === 'delivered' || s === 'completed' || s === 'approved';
+  }).length;
+  const rejectedWithdrawals = requests.filter(r => (r.status || '').toLowerCase() === 'rejected').length;
+
+  return {
+    totalUsers: users.length,
+    onlineUsers: onlineUsers,
+    totalCoins: totalCoins,
+    totalXP: totalXP,
+    totalKeys: totalKeys,
+    totalTickets: totalTickets,
+    totalEggs: totalEggs,
+    totalEnergy: totalEnergy,
+    totalWithdrawals: requests.length,
+    pendingWithdrawals: pendingWithdrawals,
+    completedWithdrawals: completedWithdrawals,
+    rejectedWithdrawals: rejectedWithdrawals,
+    totalReferrals: totalReferrals,
+    totalAdViews: totalAdViews,
+    totalTasks: webTasks.length + tgTasks.length,
+    totalCompletedTasks: totalCompletedTasks,
+    totalLevels: Object.keys(levels).length || 100
+  };
+}
+window.calculateAggregatedMetrics = calculateAggregatedMetrics;
+
+// --- USER CRUD OPERATIONS ---
+function saveUserToFirebase(uid, updateFields) {
+  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
+  const updates = {};
+  Object.keys(updateFields).forEach(k => {
+    updates[`/players/${uid}/player/${k}`] = updateFields[k];
+  });
+  updates[`/players/${uid}/updatedAt`] = Date.now();
+  return db.ref().update(updates).then(() => {
+    logActivity('user_edit', `Updated player: ${updateFields.username || updateFields.name || uid}`, updateFields);
+    dispatchAdminEvent('userSaved');
+  });
+}
+window.saveUserToFirebase = saveUserToFirebase;
+
+function toggleUserStatus(uid, newStatus) {
+  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
+  return db.ref(`/players/${uid}/player/status`).set(newStatus).then(() => {
+    logActivity('user_status', `Player ${uid} status set to ${newStatus.toUpperCase()}`);
+    dispatchAdminEvent('userStatusChanged');
+  });
+}
+window.toggleUserStatus = toggleUserStatus;
+
+function deleteUserFromFirebase(uid) {
+  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
+  const updates = {};
+  updates[`/players/${uid}`] = null;
+  updates[`/leaderboard/${uid}`] = null;
+  return db.ref().update(updates).then(() => {
+    logActivity('user_delete', `Deleted player: ${uid}`);
+    dispatchAdminEvent('userDeleted');
+  });
+}
+window.deleteUserFromFirebase = deleteUserFromFirebase;
+
+// --- WITHDRAWAL & ORDER OPERATIONS ---
+function updateWithdrawalStatus(reqId, newStatus, adminNotes = '') {
+  if (!db || !reqId) return Promise.reject(new Error('Invalid parameters'));
+  const updates = {
+    status: newStatus,
+    updatedAt: Date.now()
+  };
+  if (adminNotes) updates.adminNotes = adminNotes;
+  return db.ref(`/reward_requests/${reqId}`).update(updates).then(() => {
+    logActivity('withdrawal', `Withdrawal order #${reqId.substring(0, 8)} set to ${newStatus.toUpperCase()}`);
+    dispatchAdminEvent('requestStatusChanged');
+  });
+}
+window.updateWithdrawalStatus = updateWithdrawalStatus;
+
+// --- TASKS OPERATIONS ---
+function saveTaskToFirebase(taskType, taskObj) {
+  if (!db || !taskObj) return Promise.reject(new Error('Invalid parameters'));
+  const node = taskType === 'telegram' ? '/telegram_tasks_config' : '/website_tasks_config';
+  const taskId = taskObj.id || ('task_' + Date.now().toString(36));
+  taskObj.id = taskId;
+  taskObj.updatedAt = Date.now();
+  return db.ref(`${node}/${taskId}`).set(taskObj).then(() => {
+    logActivity('task_save', `Saved ${taskType} task: ${taskObj.title || taskId}`);
+    dispatchAdminEvent('tasksConfigSaved');
+  });
+}
+window.saveTaskToFirebase = saveTaskToFirebase;
+
+function deleteTaskFromFirebase(taskType, taskId) {
+  if (!db || !taskId) return Promise.reject(new Error('Invalid parameters'));
+  const node = taskType === 'telegram' ? '/telegram_tasks_config' : '/website_tasks_config';
+  return db.ref(`${node}/${taskId}`).remove().then(() => {
+    logActivity('task_delete', `Deleted ${taskType} task: ${taskId}`);
+    dispatchAdminEvent('tasksConfigSaved');
+  });
+}
+window.deleteTaskFromFirebase = deleteTaskFromFirebase;
+
+// --- LEVELS OPERATIONS ---
+function saveLevelConfig(lvl, cfg) {
+  if (!db) return Promise.reject(new Error('Firebase DB not connected'));
+  const levelNum = Math.max(1, parseInt(lvl, 10) || 1);
+  return db.ref(`/levels_config/${levelNum}`).set({
+    ...cfg,
+    level: levelNum,
+    updatedAt: Date.now()
+  }).then(() => {
+    logActivity('level_save', `Saved Level ${levelNum} configuration`);
+    dispatchAdminEvent('levelsConfigUpdated');
+  });
+}
+
+function toggleLevelLock(lvl, isLocked) {
+  if (!db) return Promise.reject(new Error('Firebase DB not connected'));
+  const levelNum = Math.max(1, parseInt(lvl, 10) || 1);
+  return db.ref(`/levels_config/${levelNum}/isLocked`).set(!!isLocked).then(() => {
+    logActivity('level_lock', `Level ${levelNum} is now ${isLocked ? 'LOCKED 🔒' : 'UNLOCKED 🔓'}`);
+    dispatchAdminEvent('levelsConfigUpdated');
+  });
+}
+
+function saveAllLevelsConfig(allConfigs) {
+  if (!db) return Promise.reject(new Error('Firebase DB not connected'));
+  return db.ref('/levels_config').set(allConfigs).then(() => {
+    logActivity('level_save_all', 'Saved batch level configurations');
+    dispatchAdminEvent('levelsConfigUpdated');
+  });
+}
+
+window.saveLevelConfig = saveLevelConfig;
+window.toggleLevelLock = toggleLevelLock;
+window.saveAllLevelsConfig = saveAllLevelsConfig;
+
+// --- GLOBAL GAME CONFIG OPERATIONS ---
+function saveGlobalGameConfig(cfg) {
+  if (!db) return Promise.reject(new Error('Firebase DB not connected'));
+  return db.ref('/game_config').set({
+    ...cfg,
+    updatedAt: Date.now()
+  }).then(() => {
+    logActivity('game_config', 'Updated global game settings in Firebase');
     dispatchAdminEvent('gameConfigUpdated');
   });
 }
+window.saveGlobalGameConfig = saveGlobalGameConfig;
+
+function firebaseAuthSignIn(email, password) {
+  if (!auth) return Promise.reject(new Error('Firebase Auth not initialized'));
+  return auth.signInWithEmailAndPassword(email, password);
+}
+window.firebaseAuthSignIn = firebaseAuthSignIn;
 
 function dispatchAdminEvent(eventName) {
   window.dispatchEvent(new CustomEvent(eventName, { detail: window.adminState }));

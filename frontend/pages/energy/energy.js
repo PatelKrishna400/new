@@ -224,10 +224,10 @@ function handleFuelAction(fuelType) {
     if (gameState.energyGenerator.ratePerSec === undefined) {
       gameState.energyGenerator.ratePerSec = gameState.energyGenerator.ratePerMin || 0.01;
     }
-    gameState.energyGenerator.ratePerSec = +(gameState.energyGenerator.ratePerSec + 0.01).toFixed(2);
+    gameState.energyGenerator.ratePerSec = +(gameState.energyGenerator.ratePerSec + 0.001).toFixed(4);
     gameState.energyGenerator.ratePerMin = gameState.energyGenerator.ratePerSec;
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🔥 Red Fuel activated: +0.01 EP/Sec Rate increased! (Current: +${gameState.energyGenerator.ratePerSec}/s)`);
+      showFloatingToast(`🔥 Red Fuel activated: +0.001 EP/Sec Rate increased! (Current: +${gameState.energyGenerator.ratePerSec}/s)`);
     }
   }
 
@@ -439,7 +439,7 @@ function updateEnergyUI() {
     { type: 'darkgreen', btnId: 'btnUseDarkGreenFuel', textId: 'btnDarkGreenText', defaultColor: 'darkgreen-btn', label: '⚡ Use Fuel (+1m)' },
     { type: 'yellow', btnId: 'btnYellowAd', textId: 'btnYellowText', defaultColor: 'yellow-btn', label: '⚡ Use Fuel (+15m)' },
     { type: 'orange', btnId: 'btnOrangeAd', textId: 'btnOrangeText', defaultColor: 'orange-btn', label: '⚡ Use Fuel (+30m)' },
-    { type: 'red', btnId: 'btnRedAd', textId: 'btnRedText', defaultColor: 'red-btn', label: '⚡ Use Fuel (+0.01/s)' }
+    { type: 'red', btnId: 'btnRedAd', textId: 'btnRedText', defaultColor: 'red-btn', label: '⚡ Use Fuel (+0.001/s)' }
   ];
 
   standardFuels.forEach(item => {
@@ -544,7 +544,7 @@ function getFuelDisplayName(fuelType) {
     case 'darkgreen': return 'Dark Green Fuel (+1m)';
     case 'yellow': return 'Yellow Fuel (+15m)';
     case 'orange': return 'Orange Fuel (+30m)';
-    case 'red': return 'Red Fuel (+0.01 Rate)';
+    case 'red': return 'Red Fuel (+0.001 Rate)';
     case 'pink': return 'Pink Boost Fuel (*2)';
     case 'purple': return 'Purple Boost Fuel (*5)';
     default: return 'Fuel';
