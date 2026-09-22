@@ -5,7 +5,7 @@
   <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
     <div class="scope-badge-wrap">
       <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
-      <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong> &amp; <strong>/website_tasks_config</strong></span>
+      <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong>, <strong>/website_tasks_config</strong> &amp; <strong>/monthly_tasks_config</strong></span>
     </div>
     <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
       <div>
@@ -35,7 +35,8 @@
       <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
     </button>
     <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
-      <span>🏆 30-Day Competition</span>
+      <span>🏆 30-Day Monthly Quests</span>
+      <span class="task-tab-badge" id="adminMonthlyTasksCountBadge">0</span>
     </button>
   </div>
 
@@ -170,6 +171,38 @@
         </div>
       </div>
     </div>
+
+    <!-- MONTHLY QUESTS EDITOR & MANAGER -->
+    <div class="minimal-card" style="margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="minimal-title">🎴 Monthly Quests &amp; Quotas Editor</h3>
+            <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+              <span>Info</span> <span class="arrow-icon">▸</span>
+            </button>
+          </div>
+          <div class="collapsible-text-body">
+            <p class="minimal-subtitle">Configure the monthly quests players must achieve to claim Scratch Cards during the 30-day cycle. Stored in Firebase at <code>/monthly_tasks_config</code>.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onclick="openNewMonthlyTaskModal()" class="btn-minimal-primary">
+            <span>➕</span>
+            <span>Add Monthly Quest</span>
+          </button>
+          <button type="button" onclick="saveMonthlyTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+            <span>💾</span>
+            <span>Save to Firebase</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Tasks Container Grid -->
+    <div class="tasks-grid-container" id="monthlyTasksContainer">
+      <!-- Injected dynamically via JS -->
+    </div>
   </div>
 
   <!-- MODAL: ADD NEW TELEGRAM TASK -->
@@ -190,8 +223,8 @@
           <input type="url" id="inpNewTgLink" class="minimal-input" placeholder="https://t.me/energy_tap_official">
         </div>
         <div class="minimal-form-group">
-          <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
-          <input type="number" id="inpNewTgCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+          <label class="minimal-form-label">Reward (Coins 🪙)</label>
+          <input type="number" id="inpNewTgCoins" class="minimal-input" value="100" min="1" max="100000" style="color: #f59e0b; font-weight: 800; font-size: 15px;">
         </div>
       </div>
 
@@ -235,19 +268,81 @@
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="minimal-form-group">
-            <label class="minimal-form-label">Reward Coins 🪙</label>
-            <input type="number" id="inpNewWebCoins" class="minimal-input" value="1500" min="0">
+            <label class="minimal-form-label">Entry Cost (Coins 🪙)</label>
+            <input type="number" id="inpNewWebCoins" class="minimal-input" value="1000" min="0">
           </div>
           <div class="minimal-form-group">
             <label class="minimal-form-label">Reward Diamonds 💎</label>
-            <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="15" min="0">
+            <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="100" min="0">
           </div>
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Tag Badge</label>
+          <input type="text" id="inpNewWebTag" class="minimal-input" value="SPONSOR QUEST" placeholder="e.g. SPONSOR QUEST">
         </div>
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
         <button type="button" class="btn-minimal-secondary" onclick="closeNewWebsiteTaskModal()">Cancel</button>
         <button type="button" class="btn-minimal-primary" onclick="confirmAddWebsiteTask()">Create Quest</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD NEW MONTHLY QUEST -->
+  <div class="modal-overlay" id="newMonthlyTaskModal" onclick="closeNewMonthlyTaskModal()">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 520px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">🏆 Add New Monthly Quest</h3>
+        <button type="button" onclick="closeNewMonthlyTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Quest Title</label>
+          <input type="text" id="inpNewMonthlyTitle" class="minimal-input" placeholder="e.g. Tap 15,000 Times">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Quest Action Type</label>
+            <select id="inpNewMonthlyType" class="minimal-input" style="font-weight: 700;">
+              <option value="tap">Reactor Taps (tap)</option>
+              <option value="fuel_green">Green Fuel Used (fuel_green)</option>
+              <option value="fuel_yellow_1">Yellow Fuel Used (fuel_yellow_1)</option>
+              <option value="fuel_orange">Orange Fuel Used (fuel_orange)</option>
+              <option value="fuel_red">Red Fuel Used (fuel_red)</option>
+              <option value="fuel_pink">Pink Fuel Used (fuel_pink)</option>
+              <option value="fuel_purple">Purple Fuel Used (fuel_purple)</option>
+              <option value="spin">Wheel Spins (spin)</option>
+              <option value="chest">Chests Opened (chest)</option>
+              <option value="scratch">Cards Scratched (scratch)</option>
+              <option value="egg">Egg Coins Used (egg)</option>
+            </select>
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Target Goal Amount</label>
+            <input type="number" id="inpNewMonthlyTarget" class="minimal-input" value="1000" min="1" style="font-weight: 800;">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
+            <input type="number" id="inpNewMonthlyCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+          </div>
+          <div class="minimal-form-group">
+            <label class="minimal-form-label">Tag / Badge Text</label>
+            <input type="text" id="inpNewMonthlyTag" class="minimal-input" value="MONTHLY QUEST">
+          </div>
+        </div>
+        <div class="minimal-form-group">
+          <label class="minimal-form-label">Quest Description / Guide</label>
+          <textarea id="inpNewMonthlyDesc" rows="2" class="minimal-input" placeholder="Complete the objective to win Scratch Cards this cycle."></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+        <button type="button" class="btn-minimal-secondary" onclick="closeNewMonthlyTaskModal()">Cancel</button>
+        <button type="button" class="btn-minimal-primary" onclick="confirmAddMonthlyTask()">Create Quest</button>
       </div>
     </div>
   </div>

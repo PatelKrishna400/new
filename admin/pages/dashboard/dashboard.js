@@ -343,15 +343,69 @@ function renderRealtimeActivityFeed() {
             </div>
           </div>
         </div>
-        <div style="text-align: right; flex-shrink: 0; color: #64748b; font-size: 11px; font-family: monospace;">
-          <div>${timeStr}</div>
-          <div style="font-size: 10px; color: #475569;">${dateStr}</div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+          <div style="text-align: right; color: #64748b; font-size: 11px; font-family: monospace;">
+            <div>${timeStr}</div>
+            <div style="font-size: 10px; color: #475569;">${dateStr}</div>
+          </div>
+          ${act.id ? `
+            <button type="button" onclick="deleteActivity('${act.id}')" title="Delete Activity from Firebase" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; color: #ef4444; cursor: pointer; padding: 4px 7px; font-size: 11.5px; transition: all 0.2s ease;">
+              🗑️
+            </button>
+          ` : ''}
         </div>
       </div>
     `;
   }).join('');
 }
 window.renderRealtimeActivityFeed = renderRealtimeActivityFeed;
+
+/**
+ * Delete a single activity log item from Firebase
+ */
+function deleteActivity(actId) {
+  if (!actId) return;
+  if (!confirm('Are you sure you want to delete this activity log from Firebase?')) return;
+  if (typeof window.deleteActivityFromFirebase === 'function') {
+    window.deleteActivityFromFirebase(actId)
+      .then(() => {
+        renderRealtimeActivityFeed();
+      })
+      .catch(err => alert('Error deleting activity: ' + err.message));
+  } else {
+    const db = window.getDb ? window.getDb() : null;
+    if (db) {
+      db.ref('/activity_log/' + actId).remove().then(() => {
+        renderRealtimeActivityFeed();
+      }).catch(err => alert(err.message));
+    }
+  }
+}
+window.deleteActivity = deleteActivity;
+
+/**
+ * Clear all activity logs from Firebase
+ */
+function clearAllActivities() {
+  if (!confirm('⚠️ Are you sure you want to CLEAR ALL activity logs from Firebase?\nThis will permanently delete all activity log history.')) return;
+  if (typeof window.clearAllActivitiesFromFirebase === 'function') {
+    window.clearAllActivitiesFromFirebase()
+      .then(() => {
+        alert('✅ All activity logs cleared from Firebase.');
+        renderRealtimeActivityFeed();
+      })
+      .catch(err => alert('Error clearing activity logs: ' + err.message));
+  } else {
+    const db = window.getDb ? window.getDb() : null;
+    if (db) {
+      db.ref('/activity_log').remove().then(() => {
+        alert('✅ All activity logs cleared.');
+        renderRealtimeActivityFeed();
+      }).catch(err => alert(err.message));
+    }
+  }
+}
+window.clearAllActivities = clearAllActivities;
 
 /**
  * Toggle between 'monthly' and 'yearly' mode

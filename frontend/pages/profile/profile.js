@@ -13,7 +13,7 @@
 
 // Avatar Presets for Profile Customization
 const AVATAR_PRESETS = [
-  { id: 'alex', name: 'Alex Vance', emoji: '⚡', grad1: '#3b82f6', grad2: '#1d4ed8', jacket: '#1e293b', shirt: '#2563eb' },
+  { id: 'alex', name: 'Commander', emoji: '⚡', grad1: '#3b82f6', grad2: '#1d4ed8', jacket: '#1e293b', shirt: '#2563eb' },
   { id: 'neo', name: 'Neo Cyber', emoji: '🟢', grad1: '#10b981', grad2: '#047857', jacket: '#0f291e', shirt: '#059669' },
   { id: 'nova', name: 'Solar Nova', emoji: '🟡', grad1: '#f59e0b', grad2: '#d97706', jacket: '#291e0a', shirt: '#d97706' },
   { id: 'valkyrie', name: 'Valkyrie', emoji: '🟣', grad1: '#ec4899', grad2: '#be185d', jacket: '#2d1225', shirt: '#db2777' },
@@ -131,7 +131,7 @@ window.openEditProfileModal = function() {
         <label style="font-size: 12px; font-weight: 700; color: #94a3b8;">Telegram Handle</label>
         <div style="position: relative; display: flex; align-items: center;">
           <span style="position: absolute; left: 14px; color: #0284c7; font-weight: 800;">@</span>
-          <input type="text" id="editPlayerHandleInput" value="${gameState.player.handle || 'alex_blue'}" style="width: 100%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 10px 14px 10px 32px; font-family: var(--font-primary); font-size: 14px; font-weight: 700; color: #38bdf8; outline: none;">
+          <input type="text" id="editPlayerHandleInput" value="${gameState.player.handle || 'player'}" style="width: 100%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 10px 14px 10px 32px; font-family: var(--font-primary); font-size: 14px; font-weight: 700; color: #38bdf8; outline: none;">
         </div>
       </div>
 
@@ -192,7 +192,7 @@ window.saveProfileData = async function() {
   const saveBtn = document.getElementById('btnSaveProfileData');
   
   const newName = nameInput ? nameInput.value.trim() : gameState.player.name;
-  const newHandle = handleInput ? handleInput.value.trim().replace(/^@/, '') : (gameState.player.handle || 'alex_blue');
+  const newHandle = handleInput ? handleInput.value.trim().replace(/^@/, '') : (gameState.player.handle || 'player');
 
   // Prevent duplicate user creation by validating unique credentials against Firebase
   if (window.firebaseSync && typeof window.firebaseSync.validateUniqueCredentials === 'function') {
@@ -332,9 +332,15 @@ window.updateShopUI = function() {
   const eggsEl = document.getElementById('shopOwnedEggs');
   if (eggsEl) eggsEl.textContent = `${formatNumber(gameState.player.eggs || 0)} Owned`;
 
+  const energyEl = document.getElementById('shopOwnedEnergy');
+  if (energyEl) {
+    const curEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+    energyEl.textContent = `${formatNumber(curEnergy)} Energy`;
+  }
+
   // Fuel Depot Inventory & Progressive Ad Counts
-  const fuelKeys = ['green', 'darkgreen', 'yellow', 'orange', 'red', 'pink', 'purple'];
-  const reqAdsMap = { darkgreen: 1, green: 2, yellow: 2, orange: 3, red: 5, pink: 5, purple: 5 };
+  const fuelKeys = ['green', 'darkgreen', 'yellow', 'orange', 'red', 'darkred', 'pink', 'purple'];
+  const reqAdsMap = { darkgreen: 1, green: 2, yellow: 2, orange: 3, red: 5, darkred: 5, pink: 5, purple: 5 };
   fuelKeys.forEach(ft => {
     const el = document.getElementById(`shopOwnedFuel_${ft}`);
     if (el) {
@@ -356,8 +362,11 @@ window.updateShopUI = function() {
     }
   });
 
-  if (typeof window.renderFuelShopTab === 'function') {
-    window.renderFuelShopTab();
+  if (typeof window.renderAllFuelShopCards === 'function') {
+    window.renderAllFuelShopCards();
+  } else {
+    if (typeof window.renderDarkGreenShopCard === 'function') window.renderDarkGreenShopCard();
+    if (typeof window.renderFuelShopTab === 'function') window.renderFuelShopTab();
   }
 
   // Daily Free Supply Drop Status
@@ -428,26 +437,30 @@ window.buyReactorUpgrade = function(type) {
   }
 };
 
-window.buyPassItem = function(itemType) {
+window.buyPassItem = function(itemType, costOverride) {
   const PASS_PRICES = {
-    spinTicket: { cost: 25, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    ticket: { cost: 25, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    chestKey: { cost: 50, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    key: { cost: 50, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    scratchCard: { cost: 35, name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' },
-    egg: { cost: 75, name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' }
+    spinTicket: { cost: 100, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
+    ticket: { cost: 100, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
+    chestKey: { cost: 100, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
+    key: { cost: 100, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
+    scratchCard: { cost: 100, name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' },
+    egg: { cost: 100, name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' }
   };
 
   const item = PASS_PRICES[itemType];
   if (!item) return;
 
-  if (gameState.player.coins < item.cost) {
-    showShopToast(`Need ${item.cost} Coins for ${item.name}!`, '⚠️');
+  const cost = (costOverride !== undefined && costOverride !== null && Number(costOverride) > 0)
+    ? Number(costOverride)
+    : item.cost;
+
+  if (gameState.player.coins < cost) {
+    showShopToast(`Need ${cost} Coins for ${item.name}!`, '⚠️');
     if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(0.5);
     return;
   }
 
-  gameState.player.coins -= item.cost;
+  gameState.player.coins -= cost;
   gameState.player[item.field] = (gameState.player[item.field] || 0) + 1;
 
   // If item corresponds to active level goal target, advance goal progress
@@ -478,30 +491,43 @@ window.buyPassItem = function(itemType) {
   }
 };
 
-// Buy Passes & Vault Items with 200 Blue Coins (1 Key = 200 Blue, 1 Ticket = 200 Blue, 1 Egg = 200 Blue)
-window.buyItemWithBlueCoins = function(itemType, cost = 200) {
+// Buy Passes & Vault Items with Blue Coins (1 Key = 500 Blue, 1 Ticket = 500 Blue, 1 Card = 500 Blue)
+window.buyItemWithBlueCoins = function(itemType, cost) {
+  const DEFAULT_BLUE_COSTS = {
+    key: 500,
+    chestKey: 500,
+    ticket: 500,
+    spinTicket: 500,
+    scratchCard: 500,
+    card: 500,
+    egg: 100
+  };
+
   const BLUE_PASS_ITEMS = {
     key: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
     chestKey: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
     ticket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
     spinTicket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
     egg: { name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' },
-    scratchCard: { name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' }
+    scratchCard: { name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' },
+    card: { name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' }
   };
 
   const item = BLUE_PASS_ITEMS[itemType];
   if (!item) return;
 
+  const finalCost = (cost !== undefined && cost !== null && Number(cost) > 0) ? Number(cost) : (DEFAULT_BLUE_COSTS[itemType] || 500);
+
   const currentBlue = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
 
-  if (currentBlue < cost) {
+  if (currentBlue < finalCost) {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${cost} Blue Coins! (Have ${currentBlue})`, '💎');
+    showShopToast(`⚠️ Need ${finalCost} Blue Coins! (Have ${currentBlue})`, '🔷');
     return;
   }
 
   // Deduct Blue Coins
-  gameState.player.blueCoins = Math.max(0, currentBlue - cost);
+  gameState.player.blueCoins = Math.max(0, currentBlue - finalCost);
   if (gameState.player.diamonds !== undefined) {
     gameState.player.diamonds = gameState.player.blueCoins;
   }
@@ -520,7 +546,7 @@ window.buyItemWithBlueCoins = function(itemType, cost = 200) {
     sfx.playTapSound(1.5);
   }
 
-  showShopToast(`🎉 +1 ${item.name} purchased for ${cost} Blue Coins!`, item.icon);
+  showShopToast(`🎉 +1 ${item.name} purchased for ${finalCost} Blue Coins!`, item.icon);
 
   if (typeof updateUI === 'function') updateUI();
   if (typeof updateShopUI === 'function') updateShopUI();
@@ -543,21 +569,183 @@ window.buyFuelInShop = function(fuelType, price, currency) {
   }
 };
 
+// Watch 1 Ad to win +10 Reactor Energy
+window.claimAdForEnergy = function() {
+  const doReward = () => {
+    const gain = 10;
+    gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + gain;
+    gameState.player.energy = (gameState.player.energy || 0) + gain;
+
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
+    }
+
+    const curEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+
+    // Winning celebration modal popup
+    const sheetTitle = document.getElementById('sheetTitle');
+    const sheetContent = document.getElementById('sheetContent');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    if (sheetTitle && sheetContent && modalBackdrop) {
+      sheetTitle.textContent = '🎉 10 ENERGY WON!';
+      sheetContent.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; gap: 14px; text-align: center;">
+          <div style="font-size: 54px; animation: bounceGlow 1.2s infinite alternate;">⚡</div>
+          <h3 style="font-size: 22px; font-weight: 800; color: #fbbf24;">You Won +10 Energy!</h3>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 290px;">
+            You watched 1 sponsored ad and supercharged your reactor core with free energy!
+          </p>
+          <div style="background: rgba(245, 158, 11, 0.15); border: 1.5px solid #f59e0b; border-radius: 14px; padding: 14px 20px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span style="font-size: 28px;">⚡</span>
+            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+              <span style="font-size: 18px; font-weight: 800; color: #fde047;">+10 Reactor Energy</span>
+              <span style="font-size: 11px; color: #fbbf24; font-weight: 700;">Current Core: ${curEnergy.toLocaleString()} Energy</span>
+            </div>
+          </div>
+          <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">Awesome! Continue Tapping ⚡</button>
+        </div>
+      `;
+      modalBackdrop.classList.add('open');
+    }
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎉 You Won +10 Energy via Ad!');
+    }
+    showShopToast(`⚡ +10 Energy Won! Core: ${curEnergy.toLocaleString()}`, '⚡');
+
+    updateShopUI();
+    updateUI();
+    if (typeof updateProfileUI === 'function') updateProfileUI();
+    if (typeof updateHomeUI === 'function') updateHomeUI();
+    if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof saveGame === 'function') saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward, {
+      adTitle: '⚡ 10 Reactor Energy Win',
+      adDesc: 'Watch 1 quick ad to win +10 Reactor Energy!'
+    });
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('energy', '10 Energy Booster Ad', 'Watch 1 ad to win +10 Energy', doReward);
+  } else {
+    doReward();
+  }
+};
+
+// Cyber Dragon Egg Option 1: Watch 1 Ad -> +10 Eggs
+window.buyEggsWithAd = function() {
+  const doReward = () => {
+    gameState.player.eggs = (gameState.player.eggs || 0) + 10;
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
+    }
+    showShopToast(`🥚 +10 Cyber Dragon Eggs added to vault!`, '🥚');
+    updateUI();
+    updateShopUI();
+    updateProfileUI();
+    if (typeof updateEggUI === 'function') updateEggUI();
+    if (typeof saveGame === 'function') saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward);
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation('egg', '10 Cyber Eggs Ad', 'Watch 1 ad for +10 Eggs', doReward);
+  } else {
+    doReward();
+  }
+};
+
+// Cyber Dragon Egg Option 2: 5 Diamonds -> +10 Eggs
+window.buyEggsWithDiamonds = function(cost = 5) {
+  const diamonds = gameState.player.diamonds !== undefined ? gameState.player.diamonds : (gameState.player.blueCoins || 0);
+  if (diamonds < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+    showShopToast(`⚠️ Need ${cost} Diamonds! (Have ${diamonds})`, '💎');
+    return;
+  }
+
+  // Deduct diamonds
+  if (gameState.player.diamonds !== undefined) {
+    gameState.player.diamonds = Math.max(0, gameState.player.diamonds - cost);
+  }
+  if (gameState.player.blueCoins !== undefined) {
+    gameState.player.blueCoins = Math.max(0, gameState.player.blueCoins - cost);
+  }
+
+  gameState.player.eggs = (gameState.player.eggs || 0) + 10;
+
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  }
+  showShopToast(`🎉 +10 Cyber Dragon Eggs bought for ${cost} Diamonds!`, '🥚');
+
+  updateUI();
+  updateShopUI();
+  updateProfileUI();
+  if (typeof updateEggUI === 'function') updateEggUI();
+  if (typeof saveGame === 'function') saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// Cyber Dragon Egg Option 2 (New): 100 Blue Coins -> +20 Eggs
+window.buyEggsWithBlueCoins = function(cost = 100, count = 20) {
+  const currentBlue = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
+  if (currentBlue < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+    showShopToast(`⚠️ Need ${cost} Blue Coins! (Have ${currentBlue})`, '🔷');
+    return;
+  }
+
+  // Deduct Blue Coins
+  gameState.player.blueCoins = Math.max(0, currentBlue - cost);
+  if (gameState.player.diamonds !== undefined) {
+    gameState.player.diamonds = gameState.player.blueCoins;
+  }
+
+  gameState.player.eggs = (gameState.player.eggs || 0) + count;
+
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  } else if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(1.5);
+  }
+  showShopToast(`🎉 +${count} Cyber Dragon Eggs bought for ${cost} Blue Coins!`, '🥚');
+
+  updateUI();
+  updateShopUI();
+  updateProfileUI();
+  if (typeof updateEggUI === 'function') updateEggUI();
+  if (typeof saveGame === 'function') saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
 // ==========================================================================
-// ENERGY FUEL CELL SHOP: 6-COLOR HORIZONTAL TABS & DYNAMIC MULTIPLIER ENGINE
+// ENERGY FUEL CELL SHOP: 7-COLOR HORIZONTAL TABS & DYNAMIC MULTIPLIER ENGINE
+// Exact Order: Green -> Yellow -> Orange -> Pink -> Purple -> Red -> Dark Red
+// Plus Dark Green Fuel 3 Purchase Options (1 Ad, 100 Blue, 10 Diamonds for 10)
 // ==========================================================================
 let currentSelectedFuelColor = 'green';
 let isFuelPurchaseInProgress = false;
 
-// Default configuration with exact base prices and multipliers
+// Default configuration with base prices and exact multipliers
 const DEFAULT_FUEL_CELLS_CONFIG = {
   basePrices: {
-    ad: 1,           // 1 Ad for Green
-    blueCoin: 10,    // 10 Blue Coins for Green
-    goldCoin: 1,     // 1 Gold Coin for Green
-    diamond: 10,     // 10 Diamonds (Section 5)
-    coinPack: 150,   // 150 Coins (Section 5)
-    bluePack: 75     // 75 Blue Coins (Section 5)
+    blueCoin: 150,   // Base: 150 Blue Coins
+    goldCoin: 125,   // Base: 125 Gold Coins
+    diamond: 25,     // Base: 25 Diamonds
+    ad: 1            // Base: 1 Ad
   },
   multipliers: {
     green: 1,
@@ -565,44 +753,71 @@ const DEFAULT_FUEL_CELLS_CONFIG = {
     orange: 2.5,
     pink: 7,
     purple: 8.5,
-    red: 5
+    red: 5,
+    darkred: 6.5
+  },
+  darkGreenOptions: {
+    blueCoin: 100,
+    goldCoin: 500,
+    diamond: 10,
+    diamondRewardCells: 10
   },
   meta: {
+    darkgreen: {
+      name: 'Dark Green Fuel Cell',
+      icon: '🔋',
+      badge: 'STARTER PACK',
+      effect: '+1 Minute generator timer boost',
+      color: '#059669'
+    },
     green: {
       name: 'Green Fuel Cell',
       icon: '🌿',
+      badge: '×1 MULTIPLIER',
       effect: '+5 Minutes generator timer boost',
       color: '#10b981'
     },
     yellow: {
       name: 'Yellow Fuel Cell',
       icon: '⚡',
+      badge: '×1.5 MULTIPLIER',
       effect: '+15 Minutes generator timer boost',
       color: '#f59e0b'
     },
     orange: {
       name: 'Orange Fuel Cell',
       icon: '🔥',
+      badge: '×2.5 MULTIPLIER',
       effect: '+30 Minutes generator timer boost',
       color: '#f97316'
     },
     pink: {
       name: 'Pink Boost Fuel',
       icon: '🌸',
+      badge: '×7 BOOST',
       effect: '2x speed generator boost for 10 min',
       color: '#ec4899'
     },
     purple: {
       name: 'Purple Boost Fuel',
       icon: '🔮',
+      badge: '×8.5 BOOST',
       effect: '5x speed generator boost for 10 min',
       color: '#a855f7'
     },
     red: {
       name: 'Red Fuel Cell',
       icon: '💎',
+      badge: '×5 RATE',
       effect: '+0.001 EP/Sec rate permanent boost',
       color: '#ef4444'
+    },
+    darkred: {
+      name: 'Dark Red Fuel Cell',
+      icon: '🔴',
+      badge: '×6.5 TURBO',
+      effect: '30s generator operating at 0.01 EP/s rate',
+      color: '#b91c1c'
     }
   }
 };
@@ -620,30 +835,23 @@ function getFuelCellPricing(color) {
   const mult = (cfg.multipliers && cfg.multipliers[color]) !== undefined ? cfg.multipliers[color] : (DEFAULT_FUEL_CELLS_CONFIG.multipliers[color] || 1);
   const base = cfg.basePrices || DEFAULT_FUEL_CELLS_CONFIG.basePrices;
 
-  // Primary Prices (Base Green: 1 Ad, 10 Blue, 1 Gold Coin)
-  // Round up fractional ads and gold coins so integer payments are clean
-  const adCost = Math.max(1, Math.ceil(base.ad * mult));
-  const blueCost = Math.max(1, Math.round(base.blueCoin * mult));
-  const goldCost = Math.max(1, Math.ceil(base.goldCoin * mult));
-
-  // Alternative / Bulk Prices (Base: 10 Diamond, 150 Coin, 75 Blue)
-  const diamondCost = Math.max(1, Math.round(base.diamond * mult));
-  const coinPackCost = Math.max(1, Math.round(base.coinPack * mult));
-  const bluePackCost = Math.max(1, Math.round(base.bluePack * mult));
+  // Final Cost = Base Cost * Fuel Multiplier (rounded to whole number integer)
+  const blueCost = Math.max(1, Math.round((base.blueCoin !== undefined ? base.blueCoin : 150) * mult));
+  const goldCost = Math.max(1, Math.round((base.goldCoin !== undefined ? base.goldCoin : 125) * mult));
+  const diamondCost = Math.max(1, Math.round((base.diamond !== undefined ? base.diamond : 25) * mult));
+  const adCost = Math.max(1, Math.ceil((base.ad || 1) * (mult >= 5 ? 2 : 1)));
 
   return {
     multiplier: mult,
-    adCost,
     blueCost,
     goldCost,
     diamondCost,
-    coinPackCost,
-    bluePackCost
+    adCost
   };
 }
 
 function switchFuelTab(color) {
-  const allowed = ['green', 'yellow', 'orange', 'pink', 'purple', 'red'];
+  const allowed = ['green', 'yellow', 'orange', 'pink', 'purple', 'red', 'darkred'];
   if (!allowed.includes(color)) color = 'green';
   currentSelectedFuelColor = color;
 
@@ -661,112 +869,111 @@ function switchFuelTab(color) {
 }
 window.switchFuelTab = switchFuelTab;
 
-function renderFuelShopTab() {
-  const cardContainer = document.getElementById('fuelActiveCard');
-  if (!cardContainer) return;
+// ==========================================================================
+// RENDER ALL 8 FUEL CELL CARDS VERTICALLY (Pure Currencies: Blue, Gold, Diamonds • ZERO ADS)
+// Order: Dark Green -> Green -> Yellow -> Orange -> Pink -> Purple -> Red -> Dark Red
+// ==========================================================================
+function renderAllFuelShopCards() {
+  const listContainer = document.getElementById('fuelShopCardsList');
+  if (!listContainer) return;
 
-  const color = currentSelectedFuelColor;
+  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'pink', 'purple', 'red', 'darkred'];
   const cfg = getFuelCellsConfig();
-  const meta = (cfg.meta && cfg.meta[color]) || DEFAULT_FUEL_CELLS_CONFIG.meta[color] || {
-    name: `${color.toUpperCase()} Fuel Cell`,
-    icon: '🔋',
-    effect: 'Energy reactor fuel cell boost',
-    color: '#10b981'
-  };
+  const dgOpts = (cfg && cfg.darkGreenOptions) || DEFAULT_FUEL_CELLS_CONFIG.darkGreenOptions;
 
-  const pricing = getFuelCellPricing(color);
-  const ownedCount = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[color]) || 0;
+  let html = '';
 
-  // Check progressive ad watch progress if any
-  const adProgress = (gameState.shopAdWatchProgress && gameState.shopAdWatchProgress[color]) || 0;
-  const adLabelText = (adProgress > 0 && adProgress < pricing.adCost) 
-    ? `${adProgress}/${pricing.adCost} Ads` 
-    : (pricing.adCost === 1 ? '1 Ad' : `${pricing.adCost} Ads`);
+  fuelKeys.forEach(color => {
+    const meta = (cfg.meta && cfg.meta[color]) || DEFAULT_FUEL_CELLS_CONFIG.meta[color] || {
+      name: `${color.toUpperCase()} Fuel Cell`,
+      icon: '🔋',
+      badge: 'BOOST',
+      effect: 'Energy reactor fuel cell boost',
+      color: '#10b981'
+    };
 
-  cardContainer.style.borderColor = `${meta.color}55`;
-  cardContainer.style.boxShadow = `0 10px 30px rgba(0,0,0,0.5), 0 0 20px ${meta.color}25, inset 0 1px 0 rgba(255,255,255,0.15)`;
+    const ownedCount = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[color]) || 0;
 
-  cardContainer.innerHTML = `
-    <div class="fuel-card-header">
-      <div class="fuel-header-left">
-        <div class="fuel-hero-icon" style="background: linear-gradient(135deg, ${meta.color}33, ${meta.color}15); border: 1.5px solid ${meta.color}; color: ${meta.color};">
-          <span>${meta.icon}</span>
-        </div>
-        <div>
-          <div class="fuel-hero-title-row">
-            <h4 class="fuel-hero-title" style="color: ${meta.color};">${meta.name}</h4>
-            <span class="fuel-hero-multiplier-badge">×${pricing.multiplier}</span>
+    let blueCost, goldCost, diamondCost, diamondGainText, multiplierBadge;
+
+    if (color === 'darkgreen') {
+      multiplierBadge = meta.badge || 'STARTER PACK';
+      blueCost = dgOpts.blueCoin || 100;
+      goldCost = dgOpts.goldCoin || 500;
+      diamondCost = dgOpts.diamond || 10;
+      diamondGainText = `+${dgOpts.diamondRewardCells || 10} Cells!`;
+    } else {
+      const pricing = getFuelCellPricing(color);
+      multiplierBadge = meta.badge || `×${pricing.multiplier} MULTIPLIER`;
+      blueCost = pricing.blueCost;
+      goldCost = pricing.goldCost;
+      diamondCost = pricing.diamondCost;
+      diamondGainText = '+1 Cell';
+    }
+
+    const colorHex = meta.color || '#10b981';
+
+    html += `
+      <div class="fuel-shop-card fuel-card-${color}" style="border-color: ${colorHex}55; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px ${colorHex}22; background: linear-gradient(180deg, ${colorHex}15 0%, rgba(10, 16, 32, 0.95) 100%);">
+        <div class="fuel-card-header">
+          <div class="fuel-header-left">
+            <div class="fuel-hero-icon" style="background: linear-gradient(135deg, ${colorHex}44, ${colorHex}18); border: 1.5px solid ${colorHex}; color: ${colorHex};">
+              <span>${meta.icon}</span>
+            </div>
+            <div>
+              <div class="fuel-hero-title-row">
+                <h4 class="fuel-hero-title" style="color: ${colorHex};">${meta.name}</h4>
+                <span class="fuel-hero-multiplier-badge" style="border-color: ${colorHex}66; color: #fff; background: ${colorHex}2b;">${multiplierBadge}</span>
+              </div>
+              <p class="fuel-hero-desc">${meta.effect}</p>
+            </div>
           </div>
-          <p class="fuel-hero-desc">${meta.effect}</p>
+          <div class="fuel-inventory-badge" style="border-color: ${colorHex}66; color: ${colorHex};">
+            ${formatNumber(ownedCount)} Cells Owned
+          </div>
+        </div>
+
+        <div>
+          <div class="fuel-pricing-section-title">
+            <span>⚡ Instant Purchase (Zero Ads)</span>
+          </div>
+          <div class="fuel-pricing-grid">
+            <!-- Option 1: Blue Coins -->
+            <button type="button" class="fuel-buy-btn fuel-btn-blue" onclick="purchaseFuelCell('${color}', 'blueCoin')" title="Buy ${meta.name} with ${formatNumber(blueCost)} Blue Coins">
+              <span class="fuel-btn-icon">🔷</span>
+              <span class="fuel-btn-cost">${formatNumber(blueCost)}</span>
+              <span class="fuel-btn-label">Blue Coins</span>
+              <span class="method-gain" style="color: ${colorHex};">+1 Cell</span>
+            </button>
+
+            <!-- Option 2: Gold Coins -->
+            <button type="button" class="fuel-buy-btn fuel-btn-gold" onclick="purchaseFuelCell('${color}', 'goldCoin')" title="Buy ${meta.name} with ${formatNumber(goldCost)} Gold Coins">
+              <span class="fuel-btn-icon">🪙</span>
+              <span class="fuel-btn-cost">${formatNumber(goldCost)}</span>
+              <span class="fuel-btn-label">Gold Coins</span>
+              <span class="method-gain" style="color: ${colorHex};">+1 Cell</span>
+            </button>
+
+            <!-- Option 3: Diamonds -->
+            <button type="button" class="fuel-buy-btn fuel-btn-diamond" onclick="purchaseFuelCell('${color}', 'diamond')" title="Buy ${meta.name} with ${formatNumber(diamondCost)} Diamonds">
+              <span class="fuel-btn-icon">💎</span>
+              <span class="fuel-btn-cost">${formatNumber(diamondCost)}</span>
+              <span class="fuel-btn-label">Diamonds</span>
+              <span class="method-gain" style="color: #38bdf8; font-weight: 800;">${diamondGainText}</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div class="fuel-inventory-badge" style="border-color: ${meta.color}66; color: ${meta.color};">
-        ${formatNumber(ownedCount)} Cells Owned
-      </div>
-    </div>
+    `;
+  });
 
-    <!-- Section 2 & 4: Primary Purchase Options (Ad, Blue Coin, Gold Coin) -->
-    <div>
-      <div class="fuel-pricing-section-title">
-        <span>⚡ Base Price Options (×${pricing.multiplier})</span>
-      </div>
-      <div class="fuel-pricing-grid">
-        <!-- Option 1: Watch Ad -->
-        <button type="button" class="fuel-buy-btn fuel-btn-ad" onclick="purchaseFuelCell('${color}', 'ad')" title="Watch Ad for Fuel Cell">
-          <span class="fuel-btn-icon">🎬</span>
-          <span class="fuel-btn-cost">${adLabelText}</span>
-          <span class="fuel-btn-label">Watch Ad</span>
-        </button>
-
-        <!-- Option 2: Blue Coins -->
-        <button type="button" class="fuel-buy-btn fuel-btn-blue" onclick="purchaseFuelCell('${color}', 'blueCoin')" title="Buy with ${pricing.blueCost} Blue Coins">
-          <span class="fuel-btn-icon">🔷</span>
-          <span class="fuel-btn-cost">${formatNumber(pricing.blueCost)}</span>
-          <span class="fuel-btn-label">Blue Coins</span>
-        </button>
-
-        <!-- Option 3: Gold Coins -->
-        <button type="button" class="fuel-buy-btn fuel-btn-gold" onclick="purchaseFuelCell('${color}', 'goldCoin')" title="Buy with ${pricing.goldCost} Gold Coins">
-          <span class="fuel-btn-icon">🪙</span>
-          <span class="fuel-btn-cost">${formatNumber(pricing.goldCost)}</span>
-          <span class="fuel-btn-label">Gold Coins</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Section 5: Alternative / Bulk Vault Options (Diamond, Coin Pack, Blue Pack) -->
-    <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 10px;">
-      <div class="fuel-pricing-section-title">
-        <span>💎 Alternative / Vault Options (×${pricing.multiplier})</span>
-      </div>
-      <div class="fuel-pricing-grid">
-        <!-- Option 4: Diamonds (10 * Multiplier) -->
-        <button type="button" class="fuel-buy-btn fuel-btn-diamond" onclick="purchaseFuelCell('${color}', 'diamond')" title="Buy with ${pricing.diamondCost} Diamonds">
-          <span class="fuel-btn-icon">💎</span>
-          <span class="fuel-btn-cost">${formatNumber(pricing.diamondCost)}</span>
-          <span class="fuel-btn-label">Diamonds</span>
-        </button>
-
-        <!-- Option 5: 150x Coin Pack (150 * Multiplier) -->
-        <button type="button" class="fuel-buy-btn fuel-btn-gold" onclick="purchaseFuelCell('${color}', 'coinPack')" title="Buy with ${pricing.coinPackCost} Regular Coins">
-          <span class="fuel-btn-icon">🪙</span>
-          <span class="fuel-btn-cost">${formatNumber(pricing.coinPackCost)}</span>
-          <span class="fuel-btn-label">150× Coins</span>
-        </button>
-
-        <!-- Option 6: 75x Blue Pack (75 * Multiplier) -->
-        <button type="button" class="fuel-buy-btn fuel-btn-blue" onclick="purchaseFuelCell('${color}', 'bluePack')" title="Buy with ${pricing.bluePackCost} Blue Coins">
-          <span class="fuel-btn-icon">🔷</span>
-          <span class="fuel-btn-cost">${formatNumber(pricing.bluePackCost)}</span>
-          <span class="fuel-btn-label">75× Blue</span>
-        </button>
-      </div>
-    </div>
-  `;
+  listContainer.innerHTML = html;
 }
-window.renderFuelShopTab = renderFuelShopTab;
+window.renderAllFuelShopCards = renderAllFuelShopCards;
+window.renderDarkGreenShopCard = renderAllFuelShopCards;
+window.renderFuelShopTab = renderAllFuelShopCards;
 
-// Comprehensive Fuel Purchase Handler with Concurrency Protection & Atomic Cloud Sync
+// Comprehensive Fuel Purchase Handler with Concurrency Protection & Pure Currency (Zero Ads)
 async function purchaseFuelCell(color, method) {
   if (isFuelPurchaseInProgress) return;
   isFuelPurchaseInProgress = true;
@@ -775,55 +982,84 @@ async function purchaseFuelCell(color, method) {
     setTimeout(() => { isFuelPurchaseInProgress = false; }, 350);
   };
 
-  const pricing = getFuelCellPricing(color);
   const cfg = getFuelCellsConfig();
   const meta = (cfg.meta && cfg.meta[color]) || DEFAULT_FUEL_CELLS_CONFIG.meta[color] || { name: `${color.toUpperCase()} Fuel Cell` };
+
+  // Ads are completely disabled for buying fuel
+  if (method === 'ad') {
+    showShopToast('🚫 Fuel cells cannot be purchased with ads. Use Blue Coins, Gold Coins, or Diamonds!', '⚠️');
+    resetLock();
+    return;
+  }
 
   // Make sure fuelCells object exists
   if (!gameState.energyGenerator) gameState.energyGenerator = {};
   if (!gameState.energyGenerator.fuelCells) {
-    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
   }
   if (!gameState.player) gameState.player = {};
 
-  // 1. WATCH AD METHOD
-  if (method === 'ad') {
-    const totalAdsRequired = pricing.adCost;
-    if (!gameState.shopAdWatchProgress) gameState.shopAdWatchProgress = {};
-    const currentProgress = (gameState.shopAdWatchProgress[color] || 0) + 1;
+  // 1. DARK GREEN FUEL (Special Fixed Deals)
+  if (color === 'darkgreen') {
+    const dgOpts = (cfg && cfg.darkGreenOptions) || DEFAULT_FUEL_CELLS_CONFIG.darkGreenOptions;
 
-    const onAdWatchedSuccess = () => {
-      gameState.player.adsWatchedCount = (gameState.player.adsWatchedCount || 0) + 1;
-
-      if (currentProgress < totalAdsRequired) {
-        gameState.shopAdWatchProgress[color] = currentProgress;
-        const remaining = totalAdsRequired - currentProgress;
-        if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(1.3);
-        showShopToast(`🎬 Ad ${currentProgress}/${totalAdsRequired} watched! Need ${remaining} more for +1 ${meta.name}.`, '⏳');
-      } else {
-        // Complete!
-        gameState.shopAdWatchProgress[color] = 0;
-        gameState.energyGenerator.fuelCells[color] = (gameState.energyGenerator.fuelCells[color] || 0) + 1;
-        if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
-        showShopToast(`🎉 +1 ${meta.name} Unlocked & Added to Energy Depot!`, '🔋');
+    // Dark Green Option 1: Spend 100 Blue Coins -> Receive 1 Fuel Cell
+    if (method === 'blueCoin') {
+      const cost = dgOpts.blueCoin || 100;
+      const current = gameState.player.blueCoins || 0;
+      if (current < cost) {
+        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+        showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '🔷');
+        resetLock();
+        return;
       }
-
-      finishFuelTransaction();
+      gameState.player.blueCoins -= cost;
+      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Blue Coins`, 1);
       resetLock();
-    };
-
-    if (typeof window.showRewardedAd === 'function') {
-      window.showRewardedAd(onAdWatchedSuccess, {
-        adTitle: `Unlock ${meta.name}`,
-        adDesc: `Watch ad to unlock fuel cell (${currentProgress}/${totalAdsRequired})`
-      });
-    } else {
-      onAdWatchedSuccess();
+      return;
     }
+
+    // Dark Green Option 2: Spend 500 Gold Coins -> Receive 1 Fuel Cell
+    if (method === 'goldCoin') {
+      const cost = dgOpts.goldCoin || 500;
+      const current = gameState.player.coins || 0;
+      if (current < cost) {
+        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+        showShopToast(`⚠️ Need ${formatNumber(cost)} Gold Coins! (Have ${formatNumber(current)})`, '🪙');
+        resetLock();
+        return;
+      }
+      gameState.player.coins -= cost;
+      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Gold Coins`, 1);
+      resetLock();
+      return;
+    }
+
+    // Dark Green Option 3: Spend 10 Diamonds -> Receive 10 Fuel Cells
+    if (method === 'diamond') {
+      const cost = dgOpts.diamond || 10;
+      const rewardCells = dgOpts.diamondRewardCells || 10;
+      const current = gameState.player.diamonds || 0;
+      if (current < cost) {
+        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+        showShopToast(`⚠️ Need ${formatNumber(cost)} Diamonds! (Have ${formatNumber(current)})`, '💎');
+        resetLock();
+        return;
+      }
+      gameState.player.diamonds -= cost;
+      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Diamonds`, rewardCells);
+      resetLock();
+      return;
+    }
+
+    resetLock();
     return;
   }
 
-  // 2. BLUE COIN METHOD (Primary Base 10)
+  // 2. MULTIPLIER FUEL COLORS (Green, Yellow, Orange, Pink, Purple, Red, Dark Red)
+  const pricing = getFuelCellPricing(color);
+
+  // Option 1: Blue Coins
   if (method === 'blueCoin') {
     const cost = pricing.blueCost;
     const current = gameState.player.blueCoins || 0;
@@ -834,12 +1070,12 @@ async function purchaseFuelCell(color, method) {
       return;
     }
     gameState.player.blueCoins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${cost} Blue Coins`);
+    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Blue Coins`, 1);
     resetLock();
     return;
   }
 
-  // 3. GOLD COIN METHOD (Primary Base 1)
+  // Option 2: Gold Coins
   if (method === 'goldCoin') {
     const cost = pricing.goldCost;
     const current = gameState.player.coins || 0;
@@ -850,12 +1086,12 @@ async function purchaseFuelCell(color, method) {
       return;
     }
     gameState.player.coins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${cost} Gold Coins`);
+    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Gold Coins`, 1);
     resetLock();
     return;
   }
 
-  // 4. DIAMOND METHOD (Base 10)
+  // Option 3: Diamonds
   if (method === 'diamond') {
     const cost = pricing.diamondCost;
     const current = gameState.player.diamonds || 0;
@@ -866,39 +1102,7 @@ async function purchaseFuelCell(color, method) {
       return;
     }
     gameState.player.diamonds -= cost;
-    awardFuelCellAndSave(color, meta.name, `${cost} Diamonds`);
-    resetLock();
-    return;
-  }
-
-  // 5. COIN PACK METHOD (Base 150)
-  if (method === 'coinPack') {
-    const cost = pricing.coinPackCost;
-    const current = gameState.player.coins || 0;
-    if (current < cost) {
-      if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Coins! (Have ${formatNumber(current)})`, '🪙');
-      resetLock();
-      return;
-    }
-    gameState.player.coins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Coins`);
-    resetLock();
-    return;
-  }
-
-  // 6. BLUE PACK METHOD (Base 75)
-  if (method === 'bluePack') {
-    const cost = pricing.bluePackCost;
-    const current = gameState.player.blueCoins || 0;
-    if (current < cost) {
-      if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '🔷');
-      resetLock();
-      return;
-    }
-    gameState.player.blueCoins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Blue Coins`);
+    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Diamonds`, 1);
     resetLock();
     return;
   }
@@ -907,18 +1111,22 @@ async function purchaseFuelCell(color, method) {
 }
 window.purchaseFuelCell = purchaseFuelCell;
 
-function awardFuelCellAndSave(color, fuelName, spentDetails) {
-  gameState.energyGenerator.fuelCells[color] = (gameState.energyGenerator.fuelCells[color] || 0) + 1;
+function awardFuelCellAndSave(color, fuelName, spentDetails, count = 1) {
+  if (!gameState.energyGenerator) gameState.energyGenerator = {};
+  if (!gameState.energyGenerator.fuelCells) gameState.energyGenerator.fuelCells = {};
+  gameState.energyGenerator.fuelCells[color] = (gameState.energyGenerator.fuelCells[color] || 0) + count;
 
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();
   }
-  showShopToast(`🎉 +1 ${fuelName} Purchased for ${spentDetails}!`, '🔋');
+  const countLabel = count > 1 ? `+${count}` : `+1`;
+  showShopToast(`🎉 ${countLabel} ${fuelName} Purchased for ${spentDetails}!`, '🔋');
 
   finishFuelTransaction();
 }
 
 function finishFuelTransaction() {
+  if (typeof renderDarkGreenShopCard === 'function') renderDarkGreenShopCard();
   renderFuelShopTab();
   updateShopUI();
   if (typeof updateProfileUI === 'function') updateProfileUI();
@@ -931,6 +1139,7 @@ function finishFuelTransaction() {
     window.firebaseSync.saveToCloudImmediate();
   }
 }
+
 
 // Backwards-compatible wrappers
 window.buyFuelWithAds = function(fuelType) {
@@ -1183,9 +1392,9 @@ window.shareToTelegram = function(link) {
 // MASTER PROFILE UI UPDATER
 // ==========================================================================
 function updateProfileUI() {
-  if (DOM.profileDisplayName) DOM.profileDisplayName.textContent = gameState.player.name;
-  if (DOM.playerUsername) DOM.playerUsername.textContent = gameState.player.name;
-  if (DOM.profileHandle) DOM.profileHandle.innerHTML = `<span class="handle-at">@</span> ${gameState.player.handle || 'alex_blue'}`;
+  if (DOM.profileDisplayName) DOM.profileDisplayName.textContent = gameState.player.name || 'Player';
+  if (DOM.playerUsername) DOM.playerUsername.textContent = gameState.player.name || 'Player';
+  if (DOM.profileHandle) DOM.profileHandle.innerHTML = `<span class="handle-at">@</span> ${gameState.player.handle || 'player'}`;
   if (DOM.profileCoinBalance) DOM.profileCoinBalance.textContent = formatNumber(gameState.player.coins);
   if (DOM.profileEnergyPool) DOM.profileEnergyPool.textContent = formatNumber(Math.floor(gameState.reactor.currentEnergy || 0));
 
@@ -1205,7 +1414,7 @@ function updateProfileUI() {
   const promoCodeEl = document.getElementById('myPromoCodeText');
   if (promoCodeEl) {
     if (!gameState.player.promoCode) {
-      gameState.player.promoCode = generatePromoCodeForPlayer(gameState.player.name);
+      gameState.player.promoCode = generatePromoCodeForPlayer(gameState.player.name || 'Player');
     }
     promoCodeEl.textContent = gameState.player.promoCode;
   }
@@ -1218,10 +1427,10 @@ function updateProfileUI() {
   if (cardCodeEl) cardCodeEl.textContent = gameState.player.profileCode || 'ET-000000';
 
   const userValEl = document.getElementById('profileUsernameVal');
-  if (userValEl) userValEl.textContent = gameState.player.name || 'Alex Vance';
+  if (userValEl) userValEl.textContent = gameState.player.name || 'Player';
 
   const tgValEl = document.getElementById('profileTelegramVal');
-  if (tgValEl) tgValEl.textContent = gameState.player.telegram || `@${gameState.player.handle || 'alex_blue'}`;
+  if (tgValEl) tgValEl.textContent = gameState.player.telegram || `@${gameState.player.handle || 'player'}`;
 
   const tgIdBadge = document.getElementById('profileTelegramIdBadge');
   if (tgIdBadge) {
@@ -1360,7 +1569,7 @@ window.openAccountSecurityModal = function() {
       <!-- Username Field -->
       <div style="display: flex; flex-direction: column; gap: 4px;">
         <label style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Username</label>
-        <input type="text" id="secInputUsername" value="${currentName}" placeholder="e.g. Alex Vance" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 700; color: #fff; outline: none;">
+        <input type="text" id="secInputUsername" value="${currentName}" placeholder="e.g. Your Name" style="background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 700; color: #fff; outline: none;">
       </div>
 
       <!-- Telegram Link Field -->
@@ -2344,7 +2553,7 @@ window.buyTapPowerWithBlueCoins = function(amount) {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
       sfx.playErrorSound();
     }
-    showShopToast(`⚠️ Need ${amount} Blue Coins! (You have ${currentBlue})`, '💎');
+    showShopToast(`⚠️ Need ${amount} Blue Coins! (You have ${currentBlue})`, '🔷');
     return;
   }
 
@@ -2373,7 +2582,7 @@ window.buyTapPowerWithBlueCoins = function(amount) {
     const delivery = {
       contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
       address: `In-Game Tap Power (+${amount})`,
-      notes: `Player upgraded tap power with ${amount} diamonds in Shop.`
+      notes: `Player upgraded tap power with ${amount} blue coins in Shop.`
     };
     window.firebaseSync.submitRewardRequest(item, delivery).catch(console.warn);
   }
@@ -2384,7 +2593,7 @@ window.buyTapPowerWithBlueCoins = function(amount) {
   }
 
   // Toast feedback
-  showShopToast(`⚡ +${amount} Tap Power Added! (Cost: ${amount} 💎)`, '⚡');
+  showShopToast(`⚡ +${amount} Tap Power Added! (Cost: ${amount} 🔷)`, '⚡');
 
   // Synchronize UI across all tabs
   updateBlueTabUI();
@@ -2409,7 +2618,7 @@ window.buyMaxTapPowerWithBlueCoins = function() {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
       sfx.playErrorSound();
     }
-    showShopToast('⚠️ You need at least 1 Blue Coin to buy Tap Power!', '💎');
+    showShopToast('⚠️ You need at least 1 Blue Coin to buy Tap Power!', '🔷');
     return;
   }
 
@@ -2425,7 +2634,7 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
       if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
         sfx.playErrorSound();
       }
-      showShopToast(`⚠️ Need ${cost} Blue Coins to activate!`, '💎');
+      showShopToast(`⚠️ Need ${cost} Blue Coins to activate!`, '🔷');
       return;
     }
     gameState.player.diamonds = Math.max(0, currentBlue - cost);
@@ -2443,12 +2652,12 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
         cashValue: `$${(cost * 0.05).toFixed(2)}`,
         category: 'quantum-taps',
         categoryName: 'Quantum Boost',
-        categoryIcon: '💎'
+        categoryIcon: '🔷'
       };
       const delivery = {
         contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
         address: `In-Game Quantum Taps (+${count} Taps)`,
-        notes: `Player activated ${count} blue taps using ${cost} diamonds.`
+        notes: `Player activated ${count} blue taps using ${cost} blue coins.`
       };
       window.firebaseSync.submitRewardRequest(item, delivery).catch(console.warn);
     }
@@ -2461,7 +2670,7 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
     sfx.playLevelUpSound();
   }
 
-  showShopToast(`💎 ${count} Blue Taps Activated! (1 Tap = 1 💎)`, '⚡');
+  showShopToast(`🔷 ${count} Blue Taps Activated! (1 Tap = 1 🔷)`, '⚡');
 
   updateBlueTabUI();
   if (typeof updateUI === 'function') updateUI();
@@ -2505,7 +2714,7 @@ window.claimDailyBlueCoinDrop = function() {
     sfx.playLevelUpSound();
   }
 
-  showShopToast('🎁 +15 Blue Coins Claimed!', '💎');
+  showShopToast('🎁 +15 Blue Coins Claimed!', '🔷');
 
   if (btn) {
     btn.textContent = 'Claimed ✓';
@@ -2538,7 +2747,7 @@ window.synthesizeGoldToBlueInTab = function() {
     sfx.playLevelUpSound();
   }
 
-  showShopToast('💎 Synthesized 25 Blue Coins for 5K Gold!', '🔄');
+  showShopToast('🔷 Synthesized 25 Blue Coins for 5K Gold!', '🔄');
 
   updateBlueTabUI();
   updateShopUI();
@@ -2561,7 +2770,7 @@ window.watchAdForBlueCoins = function() {
       if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
         sfx.playLevelUpSound();
       }
-      showShopToast('💎 +50 Blue Coins Unlocked!', '🎬');
+      showShopToast('🔷 +50 Blue Coins Unlocked!', '🎬');
       updateBlueTabUI();
       if (typeof updateUI === 'function') updateUI();
       if (typeof saveGame === 'function') saveGame();
@@ -2574,7 +2783,7 @@ window.watchAdForBlueCoins = function() {
     if (gameState.player.blueCoins !== undefined) {
       gameState.player.blueCoins = gameState.player.diamonds;
     }
-    showShopToast('💎 +50 Blue Coins Unlocked!', '🎬');
+    showShopToast('🔷 +50 Blue Coins Unlocked!', '🎬');
     updateBlueTabUI();
     if (typeof updateUI === 'function') updateUI();
     if (typeof saveGame === 'function') saveGame();

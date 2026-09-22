@@ -606,6 +606,24 @@ const footerContent = `
         if (typeof window.renderWebsiteTasksUI === 'function') {
           window.renderWebsiteTasksUI();
         }
+        if (typeof window.renderMonthlyTasksUI === 'function') {
+          window.renderMonthlyTasksUI();
+        }
+      } else if (normTarget === 'users') {
+        if (typeof window.renderUsersTable === 'function') window.renderUsersTable();
+        if (typeof window.updateDuplicateCountBadge === 'function') window.updateDuplicateCountBadge();
+      } else if (normTarget === 'megaadd') {
+        if (typeof window.renderRewardsCatalog === 'function') window.renderRewardsCatalog();
+        if (typeof window.renderCustomRequestsTable === 'function') window.renderCustomRequestsTable();
+      } else if (normTarget === 'megarequest') {
+        if (typeof window.renderRequestsTable === 'function') window.renderRequestsTable();
+      } else if (normTarget === 'adsmanage') {
+        if (typeof window.initAdsManagePage === 'function') window.initAdsManagePage();
+      } else if (normTarget === 'firebasemanage') {
+        if (typeof window.initFirebaseManagePage === 'function') window.initFirebaseManagePage();
+      } else if (normTarget === 'dashboard') {
+        if (typeof window.updateDashboardMetrics === 'function') window.updateDashboardMetrics();
+        if (typeof window.refreshDashboardAnalytics === 'function') window.refreshDashboardAnalytics();
       }
 
       // Auto close sidebar drawer on mobile
@@ -694,6 +712,7 @@ const footerContent = `
           level: Number(document.getElementById('editModalLevel')?.value) || 0,
           xp: Number(document.getElementById('editModalXp')?.value) || 0,
           energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
+          currentEnergy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
           blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
@@ -712,10 +731,14 @@ const footerContent = `
           } else {
             await Promise.all([
               db.ref('/players/' + uid + '/player').update(updates),
+              db.ref('/players/' + uid + '/reactor/currentEnergy').set(updates.energy),
               db.ref('/players/' + uid + '/goal/level').set(goalLevel),
               db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel),
+              db.ref('/players/' + uid + '/progression/activeLevel').set(updates.level || 1),
               db.ref('/players/' + uid + '/status').set(status),
-              db.ref('/players/' + uid + '/player/status').set(status)
+              db.ref('/players/' + uid + '/player/status').set(status),
+              db.ref('/players/' + uid + '/resetVersion').set(7),
+              db.ref('/players/' + uid + '/updatedAt').set(Date.now())
             ]);
             if (typeof window.logActivity === 'function') {
               window.logActivity('Player Updated', 'Admin updated user data for ' + uid, '👤');
@@ -723,6 +746,7 @@ const footerContent = `
           }
           alert('✅ Player data successfully updated in Firebase!');
           closeUserEditModal();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
         } catch (err) {
           alert('Error saving player: ' + err.message);
         }
@@ -766,13 +790,24 @@ const footerContent = `
       requireAdminPassword(() => {
         const uid = window.currentEditingUserUid;
         if (!uid) return;
-        const db = window.getDb ? window.getDb() : null;
-        if (!db) return;
-        if (!confirm('Permanently delete this player account from Firebase?')) return;
-        db.ref('/players/' + uid).remove().then(() => {
-          alert('Player deleted.');
-          closeUserEditModal();
-        });
+        if (typeof window.confirmDeleteUser === 'function') {
+          window.confirmDeleteUser(uid);
+        } else if (typeof window.deleteUserFromFirebase === 'function') {
+          if (!confirm('⚠️ Permanently delete this player account and activity from Firebase?')) return;
+          window.deleteUserFromFirebase(uid).then(() => {
+            alert('✅ Player account and activity deleted from Firebase.');
+            closeUserEditModal();
+            if (typeof renderUsersTable === 'function') renderUsersTable();
+          }).catch(err => alert('Error: ' + err.message));
+        } else {
+          const db = window.getDb ? window.getDb() : null;
+          if (!db) return;
+          if (!confirm('Permanently delete this player account from Firebase?')) return;
+          db.ref('/players/' + uid).remove().then(() => {
+            alert('Player deleted.');
+            closeUserEditModal();
+          });
+        }
       });
     }
     window.removeUserFromModal = removeUserFromModal;

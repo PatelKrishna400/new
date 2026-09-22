@@ -3,20 +3,63 @@
 // Levels 1 to 100 configured via Firebase (/levels_config) and Admin Portal
 // ==========================================================================
 
-// Deterministic baseline level configuration generator
+// Deterministic pseudo-random seed cache per level for natural variation (Levels 1 to 500)
+const GOAL_TARGETS_CACHE = [];
+
+function getDeterministicGoalTargets(lvl) {
+  const l = Math.max(1, Math.min(500, parseInt(lvl, 10) || 1));
+  if (GOAL_TARGETS_CACHE[l]) return GOAL_TARGETS_CACHE[l];
+
+  if (GOAL_TARGETS_CACHE.length === 0) {
+    GOAL_TARGETS_CACHE[1] = { cards: 20, keys: 50, tickets: 35 };
+    for (let i = 2; i < 500; i++) {
+      const progress = (i - 1) / 499;
+      // Exponential scaling from 1 to 10,000x
+      const mult = Math.pow(10000, progress);
+
+      // Deterministic fixed pseudo-random factor between -0.02 and +0.02
+      const rCards = (Math.sin(i * 12.9898) * 43758.5453) % 1;
+      const rKeys = (Math.sin(i * 78.233) * 43758.5453) % 1;
+      const rTickets = (Math.sin(i * 45.164) * 43758.5453) % 1;
+
+      const jCards = 1 + (Math.abs(rCards) * 0.04 - 0.02);
+      const jKeys = 1 + (Math.abs(rKeys) * 0.04 - 0.02);
+      const jTickets = 1 + (Math.abs(rTickets) * 0.04 - 0.02);
+
+      let c = Math.round(20 * mult * jCards);
+      let k = Math.round(50 * mult * jKeys);
+      let t = Math.round(35 * mult * jTickets);
+
+      // Ensure monotonically non-decreasing progression up to level 500
+      c = Math.max(GOAL_TARGETS_CACHE[i - 1].cards, Math.min(200000, c));
+      k = Math.max(GOAL_TARGETS_CACHE[i - 1].keys, Math.min(500000, k));
+      t = Math.max(GOAL_TARGETS_CACHE[i - 1].tickets, Math.min(350000, t));
+
+      GOAL_TARGETS_CACHE[i] = { cards: c, keys: k, tickets: t };
+    }
+    GOAL_TARGETS_CACHE[500] = { cards: 200000, keys: 500000, tickets: 350000 };
+  }
+
+  return GOAL_TARGETS_CACHE[l] || { cards: 20, keys: 50, tickets: 35 };
+}
+
+// Dark Green Fuel scaling formula for XP page: Level 1 = 1, Level 100 = 20
+// Progressive calculation: 100 levels / 20 steps = 5 levels per +1 fuel cell
+function calculateLevelDarkGreenFuel(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  return Math.max(1, Math.min(20, Math.ceil(l / 5)));
+}
+
+// Baseline level configuration generator (Levels 1 to 500)
 function generateDefaultLevelConfig(lvl) {
   const l = Math.max(1, parseInt(lvl, 10) || 1);
-  let cards = 20;
-  let keys = 50;
-  let tickets = 35;
-  if (l > 1) {
-    cards = 20 + (l - 1) * 6 + (((l - 1) * 11) % 15);
-    keys = 50 + (l - 1) * 9 + (((l - 1) * 17) % 20);
-    tickets = 35 + (l - 1) * 7 + (((l - 1) * 13) % 18);
-  }
+  const targets = getDeterministicGoalTargets(l);
   const xpRequired = l * 1000;
   let rewardQty = 1;
-  if (l > 75) rewardQty = 5;
+  if (l > 350) rewardQty = 20;
+  else if (l > 200) rewardQty = 12;
+  else if (l > 100) rewardQty = 8;
+  else if (l > 75) rewardQty = 5;
   else if (l > 50) rewardQty = 4;
   else if (l > 25) rewardQty = 3;
   else if (l > 10) rewardQty = 2;
@@ -27,9 +70,9 @@ function generateDefaultLevelConfig(lvl) {
     isLocked: false,
     xpRequired: xpRequired,
     targets: {
-      cards: cards,
-      keys: keys,
-      tickets: tickets
+      cards: targets.cards,
+      keys: targets.keys,
+      tickets: targets.tickets
     },
     rewards: {
       coins: l * 25,
@@ -37,7 +80,7 @@ function generateDefaultLevelConfig(lvl) {
       cards: rewardQty,
       keys: rewardQty,
       tickets: rewardQty,
-      fuel: 5
+      fuel: calculateLevelDarkGreenFuel(l)
     }
   };
 }
@@ -115,12 +158,16 @@ function getActiveLevel() {
 }
 
 // Global Exports
-window.generateDefaultLevelConfig = generateDefaultLevelConfig;
-window.getLevelConfig = getLevelConfig;
-window.getLevelRequiredXP = getLevelRequiredXP;
-window.isLevelUnlocked = isLevelUnlocked;
-window.isLevelCompleted = isLevelCompleted;
-window.getActiveLevel = getActiveLevel;
+if (typeof window !== 'undefined') {
+  window.getDeterministicGoalTargets = getDeterministicGoalTargets;
+  window.calculateLevelDarkGreenFuel = calculateLevelDarkGreenFuel;
+  window.generateDefaultLevelConfig = generateDefaultLevelConfig;
+  window.getLevelConfig = getLevelConfig;
+  window.getLevelRequiredXP = getLevelRequiredXP;
+  window.isLevelUnlocked = isLevelUnlocked;
+  window.isLevelCompleted = isLevelCompleted;
+  window.getActiveLevel = getActiveLevel;
+}
 
 // Combo Multiplier Calculator
 function getComboMultiplier(tapCount) {
@@ -168,8 +215,8 @@ const gameState = {
     openedWebsite: {}
   },
   player: {
-    name: 'Alex Vance',
-    handle: 'alex_blue',
+    name: 'Player',
+    handle: 'player',
     profileCode: '',
     telegram: '',
     mobile: '',
@@ -177,7 +224,7 @@ const gameState = {
     emailVerified: false,
     tier: 'BRONZE',
     level: 1,
-    maxLevel: 100,
+    maxLevel: 500,
     coins: 0,
     blueCoins: 0,
     diamonds: 0,
@@ -190,7 +237,8 @@ const gameState = {
     scratchCards: 0,
     eggs: 0,
     adsWatchedCount: 0,
-    websiteTasksCompleted: 0
+    websiteTasksCompleted: 0,
+    status: 'active'
   },
   goal: {
     level: 1,
@@ -216,8 +264,9 @@ const gameState = {
   energyGenerator: {
     epTotal: 0,
     remainingSeconds: 0,
-    ratePerSec: 0.01,
-    ratePerMin: 0.01,
+    darkRedRemainingSeconds: 0,
+    ratePerSec: 0.001,
+    ratePerMin: 0.001,
     isActive: false,
     timerInterval: null,
     lastTickTime: Date.now(),
@@ -228,6 +277,7 @@ const gameState = {
       yellow: 0,
       orange: 0,
       red: 0,
+      darkred: 0,
       pink: 0,
       purple: 0
     },
@@ -237,6 +287,7 @@ const gameState = {
       yellow: 0,
       orange: 0,
       red: 0,
+      darkred: 0,
       pink: 0,
       purple: 0
     },
@@ -291,6 +342,7 @@ const gameState = {
     fuel_yellow: 0,
     fuel_orange: 0,
     fuel_red: 0,
+    fuel_darkred: 0,
     fuel_pink: 0,
     fuel_purple: 0,
     fuel_darkgreen: 0,
@@ -401,18 +453,23 @@ function loadSavedGame() {
         gameState.reactor.maxEnergy = 1000;
       }
 
-      // Ensure energyGenerator defaults for Dark Green, Pink and Purple fuels & boosts
+      // Ensure energyGenerator defaults for Dark Green, Dark Red, Pink and Purple fuels & boosts
+      if (gameState.energyGenerator.darkRedRemainingSeconds === undefined) {
+        gameState.energyGenerator.darkRedRemainingSeconds = 0;
+      }
       if (!gameState.energyGenerator.fuelCells) {
-        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
       } else {
         if (gameState.energyGenerator.fuelCells.darkgreen === undefined) gameState.energyGenerator.fuelCells.darkgreen = 0;
+        if (gameState.energyGenerator.fuelCells.darkred === undefined) gameState.energyGenerator.fuelCells.darkred = 0;
         if (gameState.energyGenerator.fuelCells.pink === undefined) gameState.energyGenerator.fuelCells.pink = 0;
         if (gameState.energyGenerator.fuelCells.purple === undefined) gameState.energyGenerator.fuelCells.purple = 0;
       }
       if (!gameState.energyGenerator.consumed) {
-        gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
       } else {
         if (gameState.energyGenerator.consumed.darkgreen === undefined) gameState.energyGenerator.consumed.darkgreen = 0;
+        if (gameState.energyGenerator.consumed.darkred === undefined) gameState.energyGenerator.consumed.darkred = 0;
         if (gameState.energyGenerator.consumed.pink === undefined) gameState.energyGenerator.consumed.pink = 0;
         if (gameState.energyGenerator.consumed.purple === undefined) gameState.energyGenerator.consumed.purple = 0;
       }
@@ -431,6 +488,12 @@ function loadSavedGame() {
       }
       if (!gameState.energyGenerator.lastTickTime) {
         gameState.energyGenerator.lastTickTime = Date.now();
+      }
+      if (!gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerSec === 0.01) {
+        gameState.energyGenerator.ratePerSec = 0.001;
+      }
+      if (!gameState.energyGenerator.ratePerMin || gameState.energyGenerator.ratePerMin === 0.01) {
+        gameState.energyGenerator.ratePerMin = 0.001;
       }
 
       // Ensure tasksState has all subtabs initialized
@@ -534,8 +597,8 @@ function resetAllDataToZero() {
   gameState.energyGenerator.isActive = false;
   gameState.energyGenerator.lastTickTime = now;
   gameState.energyGenerator.lastSavedTime = now;
-  gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-  gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+  gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
+  gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
   gameState.energyGenerator.boosts = {
     pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
     purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
@@ -568,6 +631,7 @@ function resetAllDataToZero() {
     fuel_yellow: 0,
     fuel_orange: 0,
     fuel_red: 0,
+    fuel_darkred: 0,
     fuel_pink: 0,
     fuel_purple: 0,
     fuel_darkgreen: 0,
@@ -640,6 +704,7 @@ function checkDailyStatsDate() {
   if (gameState.dailyStats.fuel_yellow === undefined) gameState.dailyStats.fuel_yellow = 0;
   if (gameState.dailyStats.fuel_orange === undefined) gameState.dailyStats.fuel_orange = 0;
   if (gameState.dailyStats.fuel_red === undefined) gameState.dailyStats.fuel_red = 0;
+  if (gameState.dailyStats.fuel_darkred === undefined) gameState.dailyStats.fuel_darkred = 0;
   if (gameState.dailyStats.fuel_pink === undefined) gameState.dailyStats.fuel_pink = 0;
   if (gameState.dailyStats.fuel_purple === undefined) gameState.dailyStats.fuel_purple = 0;
   if (gameState.dailyStats.fuel_darkgreen === undefined) gameState.dailyStats.fuel_darkgreen = 0;
@@ -775,8 +840,8 @@ function saveGame() {
     energyGenerator: {
       epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
       remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
-      ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
-      ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+      ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
+      ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
       lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
       lastSavedTime: Date.now(),
       fuelCells: gameState.energyGenerator.fuelCells,
@@ -808,7 +873,7 @@ function canClaimActiveLevel() {
   return itemsComplete;
 }
 
-function completeActiveLevel(targetLvl) {
+function completeActiveLevel(targetLvl, options = {}) {
   const activeLvl = getActiveLevel();
   const lvlToComplete = targetLvl || activeLvl;
   const cfg = getLevelConfig(lvlToComplete);
@@ -829,24 +894,33 @@ function completeActiveLevel(targetLvl) {
   gameState.goalState.claimedGoals[lvlToComplete] = true;
 
   // Award level rewards
-  const rewards = cfg.rewards;
-  gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || 0);
-  gameState.player.xp = (gameState.player.xp || 0) + (rewards.xpBonus || 0);
-  gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 0);
-  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 0);
-  gameState.player.scratchCards = (gameState.player.scratchCards || 0) + (rewards.cards || 0);
-  if (rewards.fuel) {
+  let awardedRewards = {};
+  if (options.source === 'xp') {
+    // XP PAGE: Reward is Dark Green Fuel ONLY!
+    const darkGreenFuel = typeof calculateLevelDarkGreenFuel === 'function'
+      ? calculateLevelDarkGreenFuel(lvlToComplete)
+      : Math.max(1, Math.min(20, Math.ceil(lvlToComplete / 5)));
     if (!gameState.energyGenerator.fuelCells) {
       gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
     }
-    gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + rewards.fuel;
+    gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
+    awardedRewards = { fuel: darkGreenFuel };
+  } else {
+    // GOAL / HOME: Standard emoji milestone rewards
+    const rewards = cfg.rewards || {};
+    gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || 0);
+    gameState.player.xp = (gameState.player.xp || 0) + (rewards.xpBonus || 0);
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 0);
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 0);
+    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + (rewards.cards || 0);
+    awardedRewards = rewards;
   }
 
   // Advance to next level if available and not locked by admin
   const nextLvl = lvlToComplete + 1;
   const nextCfg = getLevelConfig(nextLvl);
 
-  if (nextLvl <= 100) {
+  if (nextLvl <= 500) {
     gameState.progression.activeLevel = nextLvl;
     gameState.progression.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     gameState.progression.levelXp = 0;
@@ -880,7 +954,7 @@ function completeActiveLevel(targetLvl) {
     window.firebaseSync.saveToCloudImmediate();
   }
 
-  return { success: true, activeLevel: gameState.progression.activeLevel, rewards };
+  return { success: true, activeLevel: gameState.progression.activeLevel, rewards: awardedRewards };
 }
 
 window.canClaimActiveLevel = canClaimActiveLevel;
@@ -959,17 +1033,24 @@ function formatNumber(num) {
 }
 
 function formatTimerDisplay() {
-  const secs = gameState.energyGenerator.remainingSeconds;
-  const h = Math.floor(secs / 3600);
-  const m = Math.floor((secs % 3600) / 60);
-  const s = Math.floor(secs % 60);
+  const drSecs = (gameState.energyGenerator && gameState.energyGenerator.darkRedRemainingSeconds) || 0;
+  const stdSecs = (gameState.energyGenerator && gameState.energyGenerator.remainingSeconds) || 0;
+  const totalSecs = drSecs + stdSecs;
+  const displaySecs = drSecs > 0 ? drSecs : stdSecs;
+  const h = Math.floor(displaySecs / 3600);
+  const m = Math.floor((displaySecs % 3600) / 60);
+  const s = Math.floor(displaySecs % 60);
   const hh = String(h).padStart(2, '0');
   const mm = String(m).padStart(2, '0');
   const ss = String(s).padStart(2, '0');
   
   if (DOM.fuelTimerVal) {
-    if (secs > 0) {
-      DOM.fuelTimerVal.textContent = h > 0 ? `${hh}h ${mm}m` : `${mm}m ${ss}s`;
+    if (totalSecs > 0) {
+      if (drSecs > 0) {
+        DOM.fuelTimerVal.textContent = `${mm}m ${ss}s`;
+      } else {
+        DOM.fuelTimerVal.textContent = h > 0 ? `${hh}h ${mm}m` : `${mm}m ${ss}s`;
+      }
       if (DOM.energyGaugeWrapper) DOM.energyGaugeWrapper.classList.add('active-generating');
     } else {
       DOM.fuelTimerVal.textContent = '00h 00m';
@@ -1108,10 +1189,12 @@ const DOM = {
   yellowCellCount: document.getElementById('yellowCellCount'),
   orangeCellCount: document.getElementById('orangeCellCount'),
   redCellCount: document.getElementById('redCellCount'),
+  darkredCellCount: document.getElementById('darkredCellCount'),
   pinkCellCount: document.getElementById('pinkCellCount'),
   purpleCellCount: document.getElementById('purpleCellCount'),
   btnUseGreenFuel: document.getElementById('btnUseGreenFuel'),
   btnUseDarkGreenFuel: document.getElementById('btnUseDarkGreenFuel'),
+  btnUseDarkRedFuel: document.getElementById('btnUseDarkRedFuel'),
   
   // Streak & Ad Rewards Pages
   pageStreak: document.getElementById('pageStreak'),
@@ -1143,6 +1226,8 @@ const DOM = {
 if (typeof window !== 'undefined') {
   window.gameState = gameState;
   window.DOM = DOM;
+  window.getDeterministicGoalTargets = getDeterministicGoalTargets;
+  window.calculateLevelDarkGreenFuel = calculateLevelDarkGreenFuel;
   window.generateDefaultLevelConfig = generateDefaultLevelConfig;
   window.getLevelConfig = getLevelConfig;
   window.getLevelRequiredXP = getLevelRequiredXP;
@@ -1157,6 +1242,8 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     gameState,
     DOM,
+    getDeterministicGoalTargets,
+    calculateLevelDarkGreenFuel,
     generateDefaultLevelConfig,
     getLevelConfig,
     getLevelRequiredXP,

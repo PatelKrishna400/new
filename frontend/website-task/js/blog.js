@@ -620,7 +620,7 @@ class BlogController {
       <div class="ad-task-card" id="card_${adId}">
         <div class="ad-header-row">
           <span class="ad-tag-badge">⚡ SPONSORED AD TASK #${slotNum}</span>
-          <span class="ad-reward-pill">💎 +${adConfig.reward || 50} Blue Coins</span>
+          <span class="ad-reward-pill">🔷 +${adConfig.reward || 50} Blue Coins</span>
         </div>
         <h4 class="ad-title">${adConfig.title || 'Official Sponsor Task'}</h4>
         <p class="ad-desc">${adConfig.description || 'Visit direct sponsor link and view destination to earn your reward.'}</p>

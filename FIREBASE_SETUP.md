@@ -6,10 +6,10 @@ This document outlines the complete Firebase Realtime Database setup, security r
 
 ## 1. Firebase Project Information
 
-- **Project ID**: `tap-game-80070`
-- **Database URL**: `https://tap-game-80070-default-rtdb.firebaseio.com`
-- **Auth Domain**: `tap-game-80070.firebaseapp.com`
-- **Storage Bucket**: `tap-game-80070.firebasestorage.app`
+- **Project ID**: `tab-energy`
+- **Database URL**: `https://tab-energy-default-rtdb.firebaseio.com`
+- **Auth Domain**: `tab-energy.firebaseapp.com`
+- **Storage Bucket**: `tab-energy.firebasestorage.app`
 
 ---
 
@@ -52,7 +52,7 @@ This document outlines the complete Firebase Realtime Database setup, security r
 ## 3. How to Apply Secure Database Rules in Firebase Console
 
 1. Open the [Firebase Console](https://console.firebase.google.com/).
-2. Select the **`tap-game-80070`** project.
+2. Select the **`tab-energy`** project.
 3. In the left navigation menu under **Build**, click **Realtime Database**.
 4. Click on the **Rules** tab at the top.
 5. Copy and paste the contents of `database.rules.json`:
@@ -92,9 +92,6 @@ This document outlines the complete Firebase Realtime Database setup, security r
       "$uid": {
         ".write": true
       }
-    },
-    ".info": {
-      ".read": true
     }
   }
 }

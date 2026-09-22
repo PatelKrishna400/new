@@ -9,14 +9,14 @@
 
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDnujl5_iBlSzwDfjCLA7sFQ7zW1DxROic",
-  authDomain: "tap-game-80070.firebaseapp.com",
-  databaseURL: "https://tap-game-80070-default-rtdb.firebaseio.com",
-  projectId: "tap-game-80070",
-  storageBucket: "tap-game-80070.firebasestorage.app",
-  messagingSenderId: "1028935905694",
-  appId: "1:1028935905694:web:af5190281ad93c0ebbe68f",
-  measurementId: "G-B8KMYEQ0L4"
+  apiKey: "AIzaSyBEDvJ0aJ4rOG8ic01A6MmZZFXJP040PF4",
+  authDomain: "tab-energy.firebaseapp.com",
+  databaseURL: "https://tab-energy-default-rtdb.firebaseio.com",
+  projectId: "tab-energy",
+  storageBucket: "tab-energy.firebasestorage.app",
+  messagingSenderId: "456623440624",
+  appId: "1:456623440624:web:a6653b5ed207134a427835",
+  measurementId: "G-XDR8XWMF9R"
 };
 window.firebaseConfig = firebaseConfig;
 
@@ -32,6 +32,7 @@ class FirebaseSyncService {
     this.isAuthenticated = false;
     this.authPromise = null;
     this.saveTimeout = null;
+    this.isPermanentlyDeleted = false;
     this.syncStatus = 'connecting'; // 'connecting' | 'synced' | 'saving' | 'offline' | 'auth_required'
     this.authConfig = {
       telegramAuth: true,
@@ -42,6 +43,10 @@ class FirebaseSyncService {
       oneEmailPerAccount: true,
       accountLinking: true
     };
+
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true') {
+      this.isPermanentlyDeleted = true;
+    }
 
     this.init();
   }
@@ -69,6 +74,19 @@ class FirebaseSyncService {
         this.database = firebase.database();
         this.auth = firebase.auth();
 
+        // Immediately load cached public tasks & configs to allow instant display
+        this.loadCachedWebsiteTasks();
+        this.loadCachedTelegramTasks();
+        this.loadCachedMonthlyTasks();
+        this.loadCachedGameConfig();
+
+        // Immediately attach public real-time task config listeners (does not require player auth)
+        this.listenToWebsiteTasks();
+        this.listenToTelegramTasks();
+        this.listenToMonthlyTasks();
+        this.listenToGameConfig();
+        this.listenToMonthlyCompetition();
+
         // Listen for Authentication state changes (Authentication required for all user data store)
         this.auth.onAuthStateChanged((user) => {
           if (user) {
@@ -85,6 +103,7 @@ class FirebaseSyncService {
             this.listenToMegaRewards();
             this.listenToWebsiteTasks();
             this.listenToTelegramTasks();
+            this.listenToMonthlyTasks();
             this.listenToUser();
             this.listenToSeason();
             this.listenToMonthlyCompetition();
@@ -360,6 +379,9 @@ class FirebaseSyncService {
       if (cloudData.player && typeof gameState !== 'undefined' && gameState.player) {
         if (gameState.player.level !== cloudData.player.level) {
           gameState.player.level = cloudData.player.level || 0;
+          if (gameState.progression) {
+            gameState.progression.activeLevel = Math.max(1, gameState.player.level);
+          }
           hasChanged = true;
         }
         if (gameState.player.coins !== cloudData.player.coins) {
@@ -392,6 +414,41 @@ class FirebaseSyncService {
         }
         if (cloudData.player.xp !== undefined && gameState.player.xp !== cloudData.player.xp) {
           gameState.player.xp = cloudData.player.xp || 0;
+          hasChanged = true;
+        }
+        const cloudStatus = (cloudData.player && cloudData.player.status) || cloudData.status;
+        if (cloudStatus !== undefined && gameState.player.status !== cloudStatus) {
+          gameState.player.status = cloudStatus;
+          hasChanged = true;
+        }
+      }
+
+      // Sync reactor currentEnergy from Admin edits
+      const cloudEnergy = (cloudData.reactor && cloudData.reactor.currentEnergy !== undefined)
+        ? cloudData.reactor.currentEnergy
+        : (cloudData.player && (cloudData.player.currentEnergy !== undefined ? cloudData.player.currentEnergy : cloudData.player.energy));
+      if (cloudEnergy !== undefined && gameState.reactor && gameState.reactor.currentEnergy !== cloudEnergy) {
+        gameState.reactor.currentEnergy = Number(cloudEnergy) || 0;
+        hasChanged = true;
+      }
+
+      // Sync Energy Generator Fuel Cells if updated by Admin
+      if (cloudData.energyGenerator && cloudData.energyGenerator.fuelCells && gameState.energyGenerator) {
+        if (!gameState.energyGenerator.fuelCells) gameState.energyGenerator.fuelCells = {};
+        let fuelDiff = false;
+        Object.keys(cloudData.energyGenerator.fuelCells).forEach(fc => {
+          if (gameState.energyGenerator.fuelCells[fc] !== cloudData.energyGenerator.fuelCells[fc]) {
+            gameState.energyGenerator.fuelCells[fc] = Number(cloudData.energyGenerator.fuelCells[fc]) || 0;
+            fuelDiff = true;
+          }
+        });
+        if (fuelDiff) hasChanged = true;
+      }
+
+      if (cloudData.energyGenerator && cloudData.energyGenerator.darkRedRemainingSeconds !== undefined && gameState.energyGenerator) {
+        const cloudDr = Number(cloudData.energyGenerator.darkRedRemainingSeconds) || 0;
+        if (gameState.energyGenerator.darkRedRemainingSeconds !== cloudDr) {
+          gameState.energyGenerator.darkRedRemainingSeconds = cloudDr;
           hasChanged = true;
         }
       }
@@ -437,6 +494,16 @@ class FirebaseSyncService {
           gameState.tasksState.claimedDaily = cloudData.tasksState.claimedDaily || {};
           hasChanged = true;
         }
+        if (cloudData.tasksState.claimedTelegram && JSON.stringify(gameState.tasksState.claimedTelegram || {}) !== JSON.stringify(cloudData.tasksState.claimedTelegram || {})) {
+          gameState.tasksState.claimedTelegram = cloudData.tasksState.claimedTelegram || {};
+          hasChanged = true;
+        }
+        if (cloudData.tasksState.claimedWebsite && JSON.stringify(gameState.tasksState.claimedWebsite || {}) !== JSON.stringify(cloudData.tasksState.claimedWebsite || {})) {
+          gameState.tasksState.claimedWebsite = cloudData.tasksState.claimedWebsite || {};
+          hasChanged = true;
+        }
+      }
+
       if (cloudData.progression && typeof gameState !== 'undefined' && gameState.progression) {
         if (JSON.stringify(gameState.progression) !== JSON.stringify(cloudData.progression)) {
           gameState.progression = Object.assign(gameState.progression, cloudData.progression);
@@ -459,6 +526,11 @@ class FirebaseSyncService {
       if (hasChanged) {
         if (typeof saveGame === 'function') saveGame();
         if (typeof updateUI === 'function') updateUI();
+        if (typeof updateShopUI === 'function') updateShopUI();
+        if (typeof updateProfileUI === 'function') updateProfileUI();
+        if (typeof updateEnergyUI === 'function') updateEnergyUI();
+        if (typeof renderDarkGreenShopCard === 'function') renderDarkGreenShopCard();
+        if (typeof renderFuelShopTab === 'function') renderFuelShopTab();
         if (typeof renderTasksList === 'function') renderTasksList();
         if (typeof renderLevelsList === 'function') renderLevelsList();
         if (typeof renderGoalsList === 'function') renderGoalsList();
@@ -766,8 +838,14 @@ class FirebaseSyncService {
           localStorage.setItem('ENERGY_TAP_FUEL_CONFIG', JSON.stringify(val));
         } catch(e) {}
       }
+      if (typeof window.renderDarkGreenShopCard === 'function') {
+        window.renderDarkGreenShopCard();
+      }
       if (typeof window.renderFuelShopTab === 'function') {
         window.renderFuelShopTab();
+      }
+      if (typeof window.updateShopUI === 'function') {
+        window.updateShopUI();
       }
     });
   }
@@ -834,8 +912,9 @@ class FirebaseSyncService {
         energyGenerator: {
           epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
           remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
-          ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
-          ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.01,
+          darkRedRemainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.darkRedRemainingSeconds || 0)),
+          ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
+          ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
           lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
           lastSavedTime: Date.now(),
           fuelCells: gameState.energyGenerator.fuelCells,
@@ -874,8 +953,8 @@ class FirebaseSyncService {
     this.ensureAuthenticated().then(() => {
       if (!this.userId) return;
       const leaderboardPayload = {
-        name: gameState.player.name || 'Alex Vance',
-        handle: gameState.player.handle || 'alex_blue',
+        name: gameState.player.name || 'Player',
+        handle: gameState.player.handle || 'player',
         level: Number(gameState.player.level || 0),
         coins: Number(gameState.player.coins || 0),
         energyTaps: Number(gameState.reactor.energyTaps || 0),
@@ -1099,7 +1178,7 @@ class FirebaseSyncService {
     console.log(`🆕 Registering Telegram ID ${tgId} as primary account identity for UID: ${this.userId}`);
     gameState.player.telegramId = tgId;
     if (tgUsername) gameState.player.telegram = `@${tgUsername}`;
-    if (fullName && (!gameState.player.name || gameState.player.name === 'Alex Vance')) {
+    if (fullName && (!gameState.player.name || gameState.player.name === 'Alex Vance' || gameState.player.name === 'Player')) {
       gameState.player.name = fullName;
     }
 
@@ -1166,13 +1245,15 @@ class FirebaseSyncService {
         window.cloudWebsiteTasks = rawList.filter(Boolean);
         try {
           localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(window.cloudWebsiteTasks));
+          localStorage.setItem('ENERGY_TAP_WEB_TASKS', JSON.stringify(window.cloudWebsiteTasks));
         } catch (e) {}
-        console.log(`🌐 Received ${window.cloudWebsiteTasks.length} website tasks from cloud.`);
+        console.log(`🌐 Received ${window.cloudWebsiteTasks.length} website tasks from cloud (/website_tasks_config).`);
       } else {
         // Admin deleted or cleared all website tasks
         window.cloudWebsiteTasks = [];
         try {
           localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', '[]');
+          localStorage.setItem('ENERGY_TAP_WEB_TASKS', '[]');
         } catch (e) {}
         console.log('🌐 Website tasks cleared from cloud.');
       }
@@ -1190,7 +1271,7 @@ class FirebaseSyncService {
 
   loadCachedWebsiteTasks() {
     try {
-      const cached = localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1');
+      const cached = localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_WEB_TASKS');
       if (cached) {
         window.cloudWebsiteTasks = JSON.parse(cached);
         return;
@@ -1216,13 +1297,15 @@ class FirebaseSyncService {
         window.cloudTelegramTasks = rawList.filter(Boolean);
         try {
           localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(window.cloudTelegramTasks));
+          localStorage.setItem('ENERGY_TAP_TG_TASKS', JSON.stringify(window.cloudTelegramTasks));
         } catch (e) {}
-        console.log(`✈️ Received ${window.cloudTelegramTasks.length} telegram tasks from cloud.`);
+        console.log(`✈️ Received ${window.cloudTelegramTasks.length} telegram tasks from cloud (/telegram_tasks_config).`);
       } else {
         // Admin deleted or cleared all telegram tasks
         window.cloudTelegramTasks = [];
         try {
           localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', '[]');
+          localStorage.setItem('ENERGY_TAP_TG_TASKS', '[]');
         } catch (e) {}
         console.log('✈️ Telegram tasks cleared from cloud.');
       }
@@ -1240,13 +1323,62 @@ class FirebaseSyncService {
 
   loadCachedTelegramTasks() {
     try {
-      const cached = localStorage.getItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1');
+      const cached = localStorage.getItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_TG_TASKS');
       if (cached) {
         window.cloudTelegramTasks = JSON.parse(cached);
         return;
       }
     } catch (e) {}
     window.cloudTelegramTasks = null;
+  }
+
+  // ==========================================================================
+  // MONTHLY TASKS REAL-TIME CONFIG LISTENER (/monthly_tasks_config)
+  // ==========================================================================
+  listenToMonthlyTasks() {
+    if (!this.database) {
+      this.loadCachedMonthlyTasks();
+      return;
+    }
+
+    const tasksRef = this.database.ref('/monthly_tasks_config');
+    tasksRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const rawList = Array.isArray(data) ? data : Object.values(data);
+        window.cloudMonthlyTasks = rawList.filter(Boolean);
+        try {
+          localStorage.setItem('ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1', JSON.stringify(window.cloudMonthlyTasks));
+        } catch (e) {}
+        console.log(`🏆 Received ${window.cloudMonthlyTasks.length} monthly tasks from cloud (/monthly_tasks_config).`);
+      } else {
+        window.cloudMonthlyTasks = null;
+        try {
+          localStorage.removeItem('ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1');
+        } catch (e) {}
+        console.log('🏆 Monthly tasks reset to default.');
+      }
+
+      // Re-render tasks list if tasks page is active
+      if (typeof window.renderTasksList === 'function') {
+        window.renderTasksList();
+      }
+      window.dispatchEvent(new CustomEvent('monthlyTasksUpdated', { detail: window.cloudMonthlyTasks }));
+    }, (err) => {
+      console.warn('Could not fetch cloud monthly tasks, using local cache:', err);
+      this.loadCachedMonthlyTasks();
+    });
+  }
+
+  loadCachedMonthlyTasks() {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1');
+      if (cached) {
+        window.cloudMonthlyTasks = JSON.parse(cached);
+        return;
+      }
+    } catch (e) {}
+    window.cloudMonthlyTasks = null;
   }
 
   // ==========================================================================
@@ -1339,7 +1471,7 @@ class FirebaseSyncService {
       const playerName = (gameState.player && (gameState.player.name || gameState.player.username)) || 'Player';
       const playerHandle = (gameState.player && gameState.player.handle) 
         ? (gameState.player.handle.startsWith('@') ? gameState.player.handle : '@' + gameState.player.handle) 
-        : (gameState.player && gameState.player.telegram ? gameState.player.telegram : '@alex_blue');
+        : (gameState.player && gameState.player.telegram ? gameState.player.telegram : '@player');
       const shipDetails = (deliveryInfo && (deliveryInfo.address || deliveryInfo.contact)) || 'In-App Direct';
 
       const payload = {

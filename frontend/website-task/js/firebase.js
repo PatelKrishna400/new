@@ -6,25 +6,25 @@
    ========================================================================== */
 
 const firebaseConfigPrimary = {
-  apiKey: "AIzaSyDnujl5_iBlSzwDfjCLA7sFQ7zW1DxROic",
-  authDomain: "tap-game-80070.firebaseapp.com",
-  databaseURL: "https://tap-game-80070-default-rtdb.firebaseio.com",
-  projectId: "tap-game-80070",
-  storageBucket: "tap-game-80070.firebasestorage.app",
-  messagingSenderId: "1028935905694",
-  appId: "1:1028935905694:web:af51902893c0ebbe68f",
-  measurementId: "G-B8KMYEQ0L4"
+  apiKey: "AIzaSyBEDvJ0aJ4rOG8ic01A6MmZZFXJP040PF4",
+  authDomain: "tab-energy.firebaseapp.com",
+  databaseURL: "https://tab-energy-default-rtdb.firebaseio.com",
+  projectId: "tab-energy",
+  storageBucket: "tab-energy.firebasestorage.app",
+  messagingSenderId: "456623440624",
+  appId: "1:456623440624:web:a6653b5ed207134a427835",
+  measurementId: "G-XDR8XWMF9R"
 };
 
 const firebaseConfigFallback = {
-  apiKey: "AIzaSyDnUl5_iBlSzwDfjCLA3fQ7Fz1WxROic",
-  authDomain: "tap-game-80070.firebaseapp.com",
-  databaseURL: "https://tap-game-80070-default-rtdb.firebaseio.com",
-  projectId: "tap-game-80070",
-  storageBucket: "tap-game-80070.firebasestorage.app",
-  messagingSenderId: "1028935905694",
-  appId: "1:1028935905694:web:af51902893c0ebbe68f",
-  measurementId: "G-B8KMYEQ0L4"
+  apiKey: "AIzaSyBEDvJ0aJ4rOG8ic01A6MmZZFXJP040PF4",
+  authDomain: "tab-energy.firebaseapp.com",
+  databaseURL: "https://tab-energy-default-rtdb.firebaseio.com",
+  projectId: "tab-energy",
+  storageBucket: "tab-energy.firebasestorage.app",
+  messagingSenderId: "456623440624",
+  appId: "1:456623440624:web:a6653b5ed207134a427835",
+  measurementId: "G-XDR8XWMF9R"
 };
 
 class FirebaseService {

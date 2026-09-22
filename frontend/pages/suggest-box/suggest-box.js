@@ -27,7 +27,7 @@ function prefillSuggestUserName() {
         name = gameState.player.name;
       }
     }
-    userInput.value = name || 'Alex Vance';
+    userInput.value = name || 'Player';
   }
 }
 

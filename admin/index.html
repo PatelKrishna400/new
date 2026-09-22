@@ -1142,10 +1142,18 @@
               <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
                 💰 Virtual Currency Balances
               </h4>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                 <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
                   <div style="font-size: 10px; font-weight: 800; color: #b45309;">COINS 🪙</div>
                   <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #0284c7;">BLUE COINS 🔷</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailBlueCoins">0</div>
+                </div>
+                <div style="padding: 10px; background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.3); border-radius: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
                 </div>
                 <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
                   <div style="font-size: 10px; font-weight: 800; color: #0891b2;">XP ACCUMULATED ⭐</div>
@@ -1241,18 +1249,22 @@
                 </div>
               </div>
       
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
                 <div class="form-group">
                   <label class="form-label" style="font-size: 11px; font-weight: 700; color: #334155;">Starting Level</label>
-                  <input type="number" id="inpAddLevel" value="1" min="1" max="100" class="form-input">
+                  <input type="number" id="inpAddLevel" value="1" min="1" max="500" class="form-input">
                 </div>
                 <div class="form-group">
                   <label class="form-label" style="font-size: 11px; font-weight: 700; color: #ca8a04;">Coins 🪙</label>
                   <input type="number" id="inpAddCoins" value="2500" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
                 </div>
                 <div class="form-group">
-                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Diamonds 💎</label>
-                  <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Blue Coins 🔷</label>
+                  <input type="number" id="inpAddBlueCoins" value="100" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0891b2;">Diamonds 💎</label>
+                  <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0891b2;">
                 </div>
               </div>
       
@@ -1525,7 +1537,7 @@
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
           <div class="scope-badge-wrap">
             <span class="scope-pill-global">🌐 Global Static Data — Same for All Players</span>
-            <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong> &amp; <strong>/website_tasks_config</strong></span>
+            <span class="firebase-path-pill">Paths: <strong>/telegram_tasks_config</strong>, <strong>/website_tasks_config</strong> &amp; <strong>/monthly_tasks_config</strong></span>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
             <div>
@@ -1555,7 +1567,8 @@
             <span class="task-tab-badge" id="adminWebTasksCountBadge">0</span>
           </button>
           <button type="button" class="task-subtab-btn" id="btnSubtabDaily" onclick="switchAdminTaskSubtab('daily')">
-            <span>🏆 30-Day Competition</span>
+            <span>🏆 30-Day Monthly Quests</span>
+            <span class="task-tab-badge" id="adminMonthlyTasksCountBadge">0</span>
           </button>
         </div>
       
@@ -1690,6 +1703,38 @@
               </div>
             </div>
           </div>
+      
+          <!-- MONTHLY QUESTS EDITOR & MANAGER -->
+          <div class="minimal-card" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="minimal-title">🎴 Monthly Quests &amp; Quotas Editor</h3>
+                  <button type="button" class="expand-text-toggle" onclick="toggleExpandText(this)" aria-label="Toggle details">
+                    <span>Info</span> <span class="arrow-icon">▸</span>
+                  </button>
+                </div>
+                <div class="collapsible-text-body">
+                  <p class="minimal-subtitle">Configure the monthly quests players must achieve to claim Scratch Cards during the 30-day cycle. Stored in Firebase at <code>/monthly_tasks_config</code>.</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="openNewMonthlyTaskModal()" class="btn-minimal-primary">
+                  <span>➕</span>
+                  <span>Add Monthly Quest</span>
+                </button>
+                <button type="button" onclick="saveMonthlyTasksToFirebase()" class="btn-minimal-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+                  <span>💾</span>
+                  <span>Save to Firebase</span>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Monthly Tasks Container Grid -->
+          <div class="tasks-grid-container" id="monthlyTasksContainer">
+            <!-- Injected dynamically via JS -->
+          </div>
         </div>
       
         <!-- MODAL: ADD NEW TELEGRAM TASK -->
@@ -1710,8 +1755,8 @@
                 <input type="url" id="inpNewTgLink" class="minimal-input" placeholder="https://t.me/energy_tap_official">
               </div>
               <div class="minimal-form-group">
-                <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
-                <input type="number" id="inpNewTgCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+                <label class="minimal-form-label">Reward (Coins 🪙)</label>
+                <input type="number" id="inpNewTgCoins" class="minimal-input" value="100" min="1" max="100000" style="color: #f59e0b; font-weight: 800; font-size: 15px;">
               </div>
             </div>
       
@@ -1755,19 +1800,81 @@
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="minimal-form-group">
-                  <label class="minimal-form-label">Reward Coins 🪙</label>
-                  <input type="number" id="inpNewWebCoins" class="minimal-input" value="1500" min="0">
+                  <label class="minimal-form-label">Entry Cost (Coins 🪙)</label>
+                  <input type="number" id="inpNewWebCoins" class="minimal-input" value="1000" min="0">
                 </div>
                 <div class="minimal-form-group">
                   <label class="minimal-form-label">Reward Diamonds 💎</label>
-                  <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="15" min="0">
+                  <input type="number" id="inpNewWebDiamonds" class="minimal-input" value="100" min="0">
                 </div>
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Tag Badge</label>
+                <input type="text" id="inpNewWebTag" class="minimal-input" value="SPONSOR QUEST" placeholder="e.g. SPONSOR QUEST">
               </div>
             </div>
       
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
               <button type="button" class="btn-minimal-secondary" onclick="closeNewWebsiteTaskModal()">Cancel</button>
               <button type="button" class="btn-minimal-primary" onclick="confirmAddWebsiteTask()">Create Quest</button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- MODAL: ADD NEW MONTHLY QUEST -->
+        <div class="modal-overlay" id="newMonthlyTaskModal" onclick="closeNewMonthlyTaskModal()">
+          <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 520px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 14px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">🏆 Add New Monthly Quest</h3>
+              <button type="button" onclick="closeNewMonthlyTaskModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+      
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Quest Title</label>
+                <input type="text" id="inpNewMonthlyTitle" class="minimal-input" placeholder="e.g. Tap 15,000 Times">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Quest Action Type</label>
+                  <select id="inpNewMonthlyType" class="minimal-input" style="font-weight: 700;">
+                    <option value="tap">Reactor Taps (tap)</option>
+                    <option value="fuel_green">Green Fuel Used (fuel_green)</option>
+                    <option value="fuel_yellow_1">Yellow Fuel Used (fuel_yellow_1)</option>
+                    <option value="fuel_orange">Orange Fuel Used (fuel_orange)</option>
+                    <option value="fuel_red">Red Fuel Used (fuel_red)</option>
+                    <option value="fuel_pink">Pink Fuel Used (fuel_pink)</option>
+                    <option value="fuel_purple">Purple Fuel Used (fuel_purple)</option>
+                    <option value="spin">Wheel Spins (spin)</option>
+                    <option value="chest">Chests Opened (chest)</option>
+                    <option value="scratch">Cards Scratched (scratch)</option>
+                    <option value="egg">Egg Coins Used (egg)</option>
+                  </select>
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Target Goal Amount</label>
+                  <input type="number" id="inpNewMonthlyTarget" class="minimal-input" value="1000" min="1" style="font-weight: 800;">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Reward (Scratch Cards 🎴)</label>
+                  <input type="number" id="inpNewMonthlyCards" class="minimal-input" value="1" min="1" max="50" style="color: #db2777; font-weight: 800; font-size: 15px;">
+                </div>
+                <div class="minimal-form-group">
+                  <label class="minimal-form-label">Tag / Badge Text</label>
+                  <input type="text" id="inpNewMonthlyTag" class="minimal-input" value="MONTHLY QUEST">
+                </div>
+              </div>
+              <div class="minimal-form-group">
+                <label class="minimal-form-label">Quest Description / Guide</label>
+                <textarea id="inpNewMonthlyDesc" rows="2" class="minimal-input" placeholder="Complete the objective to win Scratch Cards this cycle."></textarea>
+              </div>
+            </div>
+      
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
+              <button type="button" class="btn-minimal-secondary" onclick="closeNewMonthlyTaskModal()">Cancel</button>
+              <button type="button" class="btn-minimal-primary" onclick="confirmAddMonthlyTask()">Create Quest</button>
             </div>
           </div>
         </div>
@@ -2722,11 +2829,11 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; font-size: 12px;">
             <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
               <span style="color: #64748b; font-weight: 600;">Database URL:</span>
-              <code style="color: #0284c7; font-weight: 700;">https://tap-game-80070-default-rtdb.firebaseio.com</code>
+              <code style="color: #0284c7; font-weight: 700;">https://tab-energy-default-rtdb.firebaseio.com</code>
             </div>
             <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
               <span style="color: #64748b; font-weight: 600;">Project ID:</span>
-              <code style="color: #0284c7; font-weight: 700;">tap-game-80070</code>
+              <code style="color: #0284c7; font-weight: 700;">tab-energy</code>
             </div>
           </div>
         </div>
@@ -2767,15 +2874,15 @@
               </div>
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">🔷 Blue Coins</label>
-                <input type="number" id="cfgFuelBaseBlue" class="form-input" min="1" value="10" style="font-weight: 800; color: #0284c7;">
+                <input type="number" id="cfgFuelBaseBlue" class="form-input" min="1" value="150" style="font-weight: 800; color: #0284c7;">
               </div>
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">🪙 Gold Coin</label>
-                <input type="number" id="cfgFuelBaseGold" class="form-input" min="1" value="1" style="font-weight: 800; color: #ca8a04;">
+                <input type="number" id="cfgFuelBaseGold" class="form-input" min="1" value="125" style="font-weight: 800; color: #ca8a04;">
               </div>
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">💎 Diamonds</label>
-                <input type="number" id="cfgFuelBaseDiamond" class="form-input" min="1" value="10" style="font-weight: 800; color: #06b6d4;">
+                <input type="number" id="cfgFuelBaseDiamond" class="form-input" min="1" value="25" style="font-weight: 800; color: #06b6d4;">
               </div>
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">🪙 150× Coin Pack</label>
@@ -2817,6 +2924,10 @@
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px; color: #ef4444;">🔴 Red Multiplier</label>
                 <input type="number" id="cfgFuelMultRed" class="form-input" step="0.1" value="5.0" style="font-weight: 800; color: #ef4444;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; color: #b91c1c;">🔴 Dark Red Multiplier</label>
+                <input type="number" id="cfgFuelMultDarkRed" class="form-input" step="0.1" value="6.5" style="font-weight: 800; color: #b91c1c;">
               </div>
             </div>
           </div>
@@ -3327,6 +3438,24 @@
         if (typeof window.renderWebsiteTasksUI === 'function') {
           window.renderWebsiteTasksUI();
         }
+        if (typeof window.renderMonthlyTasksUI === 'function') {
+          window.renderMonthlyTasksUI();
+        }
+      } else if (normTarget === 'users') {
+        if (typeof window.renderUsersTable === 'function') window.renderUsersTable();
+        if (typeof window.updateDuplicateCountBadge === 'function') window.updateDuplicateCountBadge();
+      } else if (normTarget === 'megaadd') {
+        if (typeof window.renderRewardsCatalog === 'function') window.renderRewardsCatalog();
+        if (typeof window.renderCustomRequestsTable === 'function') window.renderCustomRequestsTable();
+      } else if (normTarget === 'megarequest') {
+        if (typeof window.renderRequestsTable === 'function') window.renderRequestsTable();
+      } else if (normTarget === 'adsmanage') {
+        if (typeof window.initAdsManagePage === 'function') window.initAdsManagePage();
+      } else if (normTarget === 'firebasemanage') {
+        if (typeof window.initFirebaseManagePage === 'function') window.initFirebaseManagePage();
+      } else if (normTarget === 'dashboard') {
+        if (typeof window.updateDashboardMetrics === 'function') window.updateDashboardMetrics();
+        if (typeof window.refreshDashboardAnalytics === 'function') window.refreshDashboardAnalytics();
       }
 
       // Auto close sidebar drawer on mobile
@@ -3415,6 +3544,7 @@
           level: Number(document.getElementById('editModalLevel')?.value) || 0,
           xp: Number(document.getElementById('editModalXp')?.value) || 0,
           energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
+          currentEnergy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
           blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
@@ -3433,10 +3563,14 @@
           } else {
             await Promise.all([
               db.ref('/players/' + uid + '/player').update(updates),
+              db.ref('/players/' + uid + '/reactor/currentEnergy').set(updates.energy),
               db.ref('/players/' + uid + '/goal/level').set(goalLevel),
               db.ref('/players/' + uid + '/goalState/currentLevel').set(goalLevel),
+              db.ref('/players/' + uid + '/progression/activeLevel').set(updates.level || 1),
               db.ref('/players/' + uid + '/status').set(status),
-              db.ref('/players/' + uid + '/player/status').set(status)
+              db.ref('/players/' + uid + '/player/status').set(status),
+              db.ref('/players/' + uid + '/resetVersion').set(7),
+              db.ref('/players/' + uid + '/updatedAt').set(Date.now())
             ]);
             if (typeof window.logActivity === 'function') {
               window.logActivity('Player Updated', 'Admin updated user data for ' + uid, '👤');
@@ -3444,6 +3578,7 @@
           }
           alert('✅ Player data successfully updated in Firebase!');
           closeUserEditModal();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
         } catch (err) {
           alert('Error saving player: ' + err.message);
         }

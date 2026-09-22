@@ -4,14 +4,14 @@
    ========================================================================== */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDnujl5_iBlSzwDfjCLA7sFQ7zW1DxROic",
-  authDomain: "tap-game-80070.firebaseapp.com",
-  databaseURL: "https://tap-game-80070-default-rtdb.firebaseio.com",
-  projectId: "tap-game-80070",
-  storageBucket: "tap-game-80070.firebasestorage.app",
-  messagingSenderId: "1028935905694",
-  appId: "1:1028935905694:web:af5190281ad93c0ebbe68f",
-  measurementId: "G-B8KMYEQ0L4"
+  apiKey: "AIzaSyBEDvJ0aJ4rOG8ic01A6MmZZFXJP040PF4",
+  authDomain: "tab-energy.firebaseapp.com",
+  databaseURL: "https://tab-energy-default-rtdb.firebaseio.com",
+  projectId: "tab-energy",
+  storageBucket: "tab-energy.firebasestorage.app",
+  messagingSenderId: "456623440624",
+  appId: "1:456623440624:web:a6653b5ed207134a427835",
+  measurementId: "G-XDR8XWMF9R"
 };
 window.firebaseConfig = firebaseConfig;
 
@@ -24,6 +24,7 @@ window.adminState = {
   customRequests: [],
   websiteTasks: [],
   telegramTasks: [],
+  monthlyTasks: [],
   levelsConfig: {},
   isFirebaseConnected: false
 };
@@ -108,7 +109,7 @@ function showFirebaseRulesWarningBanner() {
       <button type="button" onclick="copyFirebaseRulesToClipboard()" style="background: #f59e0b; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
         📋 Copy Rules JSON
       </button>
-      <a href="https://console.firebase.google.com/project/tap-game-80070/database/tap-game-80070-default-rtdb/rules" target="_blank" rel="noopener noreferrer" style="background: #0284c7; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+      <a href="https://console.firebase.google.com/project/tab-energy/database/tab-energy-default-rtdb/rules" target="_blank" rel="noopener noreferrer" style="background: #0284c7; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px;">
         Open Firebase Console ↗
       </a>
       <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 18px; color: #92400e; cursor: pointer; padding: 0 4px;" title="Dismiss">&times;</button>
@@ -174,6 +175,10 @@ function copyFirebaseRulesToClipboard() {
         ".write": "auth != null"
       },
       "telegram_tasks_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "monthly_tasks_config": {
         ".read": true,
         ".write": "auth != null"
       },
@@ -556,6 +561,21 @@ function listenToFirebase() {
     dispatchAdminEvent('telegramTasksUpdated');
   }, err => onFirebasePermissionError(err, '/telegram_tasks_config'));
 
+  // 5b. Monthly Tasks Config (/monthly_tasks_config)
+  db.ref('/monthly_tasks_config').on('value', snapshot => {
+    const val = snapshot.val();
+    let list = [];
+    if (val && Array.isArray(val)) {
+      list = val.filter(Boolean);
+    } else if (val && typeof val === 'object') {
+      list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+    }
+    window.adminState.monthlyTasks = list;
+    try { localStorage.setItem('ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1', JSON.stringify(list)); } catch(e){}
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('monthlyTasksUpdated');
+  }, err => onFirebasePermissionError(err, '/monthly_tasks_config'));
+
   // 6. Monthly Competition Config (/monthly_competition)
   db.ref('/monthly_competition').on('value', snapshot => {
     const val = snapshot.val();
@@ -752,15 +772,33 @@ function calculateAggregatedMetrics() {
 window.calculateAggregatedMetrics = calculateAggregatedMetrics;
 
 // --- USER CRUD OPERATIONS ---
-function saveUserToFirebase(uid, updateFields) {
+function saveUserToFirebase(uid, updateFields, goalLevel, status) {
   if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
   const updates = {};
-  Object.keys(updateFields).forEach(k => {
-    updates[`/players/${uid}/player/${k}`] = updateFields[k];
-  });
+  if (updateFields && typeof updateFields === 'object') {
+    Object.keys(updateFields).forEach(k => {
+      updates[`/players/${uid}/player/${k}`] = updateFields[k];
+    });
+    if (updateFields.energy !== undefined || updateFields.currentEnergy !== undefined) {
+      const en = Number(updateFields.currentEnergy !== undefined ? updateFields.currentEnergy : updateFields.energy) || 0;
+      updates[`/players/${uid}/reactor/currentEnergy`] = en;
+    }
+    if (updateFields.level !== undefined) {
+      updates[`/players/${uid}/progression/activeLevel`] = Number(updateFields.level) || 1;
+    }
+  }
+  if (goalLevel !== undefined && goalLevel !== null) {
+    updates[`/players/${uid}/goal/level`] = Number(goalLevel) || 0;
+    updates[`/players/${uid}/goalState/currentLevel`] = Number(goalLevel) || 0;
+  }
+  if (status !== undefined && status !== null) {
+    updates[`/players/${uid}/status`] = status;
+    updates[`/players/${uid}/player/status`] = status;
+  }
+  updates[`/players/${uid}/resetVersion`] = 7;
   updates[`/players/${uid}/updatedAt`] = Date.now();
   return db.ref().update(updates).then(() => {
-    logActivity('user_edit', `Updated player: ${updateFields.username || updateFields.name || uid}`, updateFields);
+    logActivity('user_edit', `Updated player: ${(updateFields && (updateFields.username || updateFields.name)) || uid}`, updateFields);
     dispatchAdminEvent('userSaved');
   });
 }
@@ -775,13 +813,110 @@ function toggleUserStatus(uid, newStatus) {
 }
 window.toggleUserStatus = toggleUserStatus;
 
+function deleteActivityFromFirebase(activityId) {
+  if (!db || !activityId) return Promise.reject(new Error('Invalid activity ID'));
+  return db.ref(`/activity_log/${activityId}`).remove().then(() => {
+    if (window.adminState && window.adminState.activities) {
+      window.adminState.activities = window.adminState.activities.filter(a => a.id !== activityId);
+    }
+    dispatchAdminEvent('activitiesUpdated');
+  });
+}
+window.deleteActivityFromFirebase = deleteActivityFromFirebase;
+
+function clearAllActivitiesFromFirebase() {
+  if (!db) return Promise.reject(new Error('Database not initialized'));
+  return db.ref('/activity_log').remove().then(() => {
+    if (window.adminState) {
+      window.adminState.activities = [];
+    }
+    dispatchAdminEvent('activitiesUpdated');
+  });
+}
+window.clearAllActivitiesFromFirebase = clearAllActivitiesFromFirebase;
+
 function deleteUserFromFirebase(uid) {
   if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
+
+  const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+  const player = users.find(u => u.uid === uid || u.id === uid) || {};
+  const playerName = player.name || player.username || uid;
+
   const updates = {};
   updates[`/players/${uid}`] = null;
+  updates[`/users/${uid}`] = null;
   updates[`/leaderboard/${uid}`] = null;
+  updates[`/whitelist/${uid}`] = null;
+
+  // Set permanent tombstone in /deleted_users so user panel locks out and halts sync
+  updates[`/deleted_users/${uid}`] = {
+    deletedAt: Date.now(),
+    reason: 'Account and data permanently deleted by admin',
+    uid: uid
+  };
+
+  // Clean identityIndex if player has known telegram, phone, email
+  if (player.telegramId || player.telegram) {
+    const tgKey = String(player.telegramId || player.telegram).replace(/[^a-zA-Z0-9_]/g, '');
+    if (tgKey) updates[`/identityIndex/telegram/${tgKey}`] = null;
+  }
+  if (player.phone) {
+    const cleanPhone = String(player.phone).replace(/\D/g, '');
+    if (cleanPhone) updates[`/identityIndex/phone/${cleanPhone}`] = null;
+  }
+  if (player.email) {
+    const safeEmail = String(player.email).replace(/[.#$\[\]]/g, '_');
+    if (safeEmail) updates[`/identityIndex/email/${safeEmail}`] = null;
+  }
+
+  // Clean up any reward requests for this user
+  if (window.adminState && window.adminState.rewardRequests) {
+    window.adminState.rewardRequests.forEach(req => {
+      if (req.userId === uid || req.uid === uid) {
+        updates[`/reward_requests/${req.id}`] = null;
+      }
+    });
+  }
+
+  // Clean up any activity log entries referencing this player
+  if (window.adminState && window.adminState.activities) {
+    window.adminState.activities.forEach(act => {
+      const actStr = JSON.stringify(act);
+      if (act.id && (actStr.includes(uid) || (playerName && actStr.includes(playerName)))) {
+        updates[`/activity_log/${act.id}`] = null;
+      }
+    });
+  }
+
   return db.ref().update(updates).then(() => {
-    logActivity('user_delete', `Deleted player: ${uid}`);
+    // Also scan identityIndex to ensure no orphaned mappings point to this user
+    db.ref('/identityIndex').once('value').then(idxSnap => {
+      const idxVal = idxSnap.val();
+      if (idxVal) {
+        const idxUpdates = {};
+        ['telegram', 'phone', 'email'].forEach(type => {
+          if (idxVal[type]) {
+            Object.keys(idxVal[type]).forEach(k => {
+              if (idxVal[type][k] === uid) {
+                idxUpdates[`/identityIndex/${type}/${k}`] = null;
+              }
+            });
+          }
+        });
+        if (Object.keys(idxUpdates).length > 0) {
+          db.ref().update(idxUpdates).catch(() => {});
+        }
+      }
+    }).catch(() => {});
+
+    // Log deletion activity in Firebase
+    logActivity('user_delete', `Deleted player: ${playerName} & purged data from Firebase`, { uid, deletedAt: Date.now() });
+
+    // Update local state
+    if (window.adminState && window.adminState.users) {
+      window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
+    }
+
     dispatchAdminEvent('userDeleted');
   });
 }
@@ -805,7 +940,7 @@ window.updateWithdrawalStatus = updateWithdrawalStatus;
 // --- TASKS OPERATIONS ---
 function saveTaskToFirebase(taskType, taskObj) {
   if (!db || !taskObj) return Promise.reject(new Error('Invalid parameters'));
-  const node = taskType === 'telegram' ? '/telegram_tasks_config' : '/website_tasks_config';
+  const node = taskType === 'telegram' ? '/telegram_tasks_config' : (taskType === 'monthly' ? '/monthly_tasks_config' : '/website_tasks_config');
   const taskId = taskObj.id || ('task_' + Date.now().toString(36));
   taskObj.id = taskId;
   taskObj.updatedAt = Date.now();
@@ -818,7 +953,7 @@ window.saveTaskToFirebase = saveTaskToFirebase;
 
 function deleteTaskFromFirebase(taskType, taskId) {
   if (!db || !taskId) return Promise.reject(new Error('Invalid parameters'));
-  const node = taskType === 'telegram' ? '/telegram_tasks_config' : '/website_tasks_config';
+  const node = taskType === 'telegram' ? '/telegram_tasks_config' : (taskType === 'monthly' ? '/monthly_tasks_config' : '/website_tasks_config');
   return db.ref(`${node}/${taskId}`).remove().then(() => {
     logActivity('task_delete', `Deleted ${taskType} task: ${taskId}`);
     dispatchAdminEvent('tasksConfigSaved');

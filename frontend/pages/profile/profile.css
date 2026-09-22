@@ -2854,11 +2854,25 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(168, 85, 247, 0.25) !important;
 }
 
+.fuel-border-darkred {
+  border: 2px solid #b91c1c !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 12px rgba(185, 28, 28, 0.35) !important;
+}
+
 /* ==========================================================================
    KEYS, TICKETS & VAULT PASSES STYLES
    ========================================================================== */
 .pass-shop-card {
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.border-energy {
+  border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.75) 100%) !important;
+}
+.border-energy:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 16px rgba(245, 158, 11, 0.35) !important;
 }
 
 .border-key {
@@ -3180,7 +3194,61 @@
 .fuel-color-tab[data-color="red"].active .tab-name { color: #f87171; }
 .fuel-color-tab[data-color="red"].active .tab-multiplier { color: #fecaca; }
 
-/* Active Fuel Card */
+.fuel-color-tab[data-color="darkred"].active {
+  border-color: #b91c1c;
+  background: linear-gradient(180deg, rgba(185, 28, 28, 0.28) 0%, rgba(185, 28, 28, 0.1) 100%);
+  box-shadow: 0 0 14px rgba(185, 28, 28, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.fuel-color-tab[data-color="darkred"].active .tab-name { color: #f87171; }
+.fuel-color-tab[data-color="darkred"].active .tab-multiplier { color: #fca5a5; }
+
+/* Vertical Fuel Shop List & Cards */
+.fuel-shop-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.fuel-shop-card {
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.fuel-shop-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Dark Green Shop Section Card (Compatibility) */
+.darkgreen-shop-card {
+  background: linear-gradient(180deg, rgba(4, 78, 55, 0.28) 0%, rgba(6, 30, 22, 0.45) 100%), rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(5, 150, 105, 0.4);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+}
+.darkgreen-shop-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 22px rgba(16, 185, 129, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.darkgreen-shop-card .fuel-buy-btn {
+  background: rgba(10, 26, 20, 0.85);
+}
+
+/* Active Fuel Card (Compatibility) */
 .fuel-active-card {
   background: linear-gradient(180deg, rgba(16, 27, 54, 0.94) 0%, rgba(8, 14, 30, 0.98) 100%);
   border: 1.5px solid rgba(255, 255, 255, 0.14);

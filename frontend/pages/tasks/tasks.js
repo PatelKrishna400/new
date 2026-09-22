@@ -293,193 +293,226 @@ const MONTHLY_TASKS = [
 // Backwards compatibility alias
 const DAILY_TASKS = MONTHLY_TASKS;
 
-const TELEGRAM_TASKS = [
-  {
-    id: 'tg1',
-    title: 'Join Channel: Earn to ads',
-    rewardText: '1 Key for Chest',
-    rewardKeys: 1,
-    desc: 'Join @Earn_to_ads official Telegram channel to win 1 Key for Chest',
-    notes: 'Join the official @Earn_to_ads Telegram announcements channel. Stay up to date with new event drops, promo codes, and special community gifts.',
-    tip: 'Tip: Make sure you remain in the channel to continue receiving partner bonuses.',
-    iconType: 'plane',
-    btnText: 'Join Channel',
-    url: 'https://t.me/Earn_to_ads',
-    colorClass: 'task-blue',
-    iconClass: 'task-icon-blue',
-    accentClass: 'task-tab-accent-blue',
-    liquidTheme: 'liquid-blue',
-    tagClass: 'tag-blue',
-    tagText: 'TELEGRAM'
-  },
-  {
-    id: 'tg2',
-    title: 'Join Bot: Prover Svoi Akk',
-    rewardText: '1 Key for Chest',
-    rewardKeys: 1,
-    desc: 'Launch and start @prover_svoiakk_bot on Telegram to win 1 Key for Chest',
-    notes: 'Launch and start our verified partner Telegram bot @prover_svoiakk_bot. Tap start inside Telegram to claim your free Mystery Chest Key.',
-    tip: 'Tip: Tap the button below to launch the bot directly in Telegram.',
-    iconType: 'bot',
-    btnText: 'Join Bot',
-    url: 'https://t.me/prover_svoiakk_bot',
-    colorClass: 'task-blue',
-    iconClass: 'task-icon-blue',
-    accentClass: 'task-tab-accent-blue',
-    liquidTheme: 'liquid-blue',
-    tagClass: 'tag-blue',
-    tagText: 'TELEGRAM BOT'
-  },
-  {
-    id: 'tg3',
-    title: 'Join Bot: Stars One Click',
-    rewardText: '2 Keys for Chest',
-    rewardKeys: 2,
-    desc: 'Launch and start @stars_oneklic_bot on Telegram to win 2 Keys for Chest',
-    notes: 'Launch and start @stars_oneklic_bot on Telegram. Discover one-click Telegram stars and immediately claim 2 Mystery Chest Keys!',
-    tip: 'Tip: Double key reward—unlock 2 mystery chests back-to-back!',
-    iconType: 'bot',
-    btnText: 'Join Bot',
-    url: 'https://t.me/stars_oneklic_bot',
-    colorClass: 'task-blue',
-    iconClass: 'task-icon-blue',
-    accentClass: 'task-tab-accent-blue',
-    liquidTheme: 'liquid-blue',
-    tagClass: 'tag-blue',
-    tagText: 'TELEGRAM BOT'
-  }
-];
+const TELEGRAM_TASKS = [];
+const WEBSITE_TASKS = [];
 
-const WEBSITE_TASKS = [
+function getMonthlyTasksList() {
+  let list = window.cloudMonthlyTasks;
+  if (!list || !Array.isArray(list)) {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1');
+      if (cached) {
+        list = JSON.parse(cached);
+        if (Array.isArray(list)) window.cloudMonthlyTasks = list;
+      }
+    } catch (e) {}
+  }
+  if (Array.isArray(list) && list.length > 0) {
+    return list
+      .filter(ct => ct && ct.disabled !== true)
+      .map((ct, idx) => {
+        const target = Number(ct.target || 100);
+        const rewardCards = Number(ct.rewardCards || ct.rewardVal || 1);
+        const rewardType = ct.rewardType || 'scratch_card';
+        const rewardText = ct.rewardText || `${rewardCards} Scratch Card${rewardCards > 1 ? 's' : ''}`;
+        const type = ct.type || 'tap';
+
+        let defaultColor = 'task-cyan';
+        let defaultIcon = 'lightning';
+        let defaultAccent = 'task-tab-accent-cyan';
+        let defaultLiquid = 'liquid-cyan';
+        let defaultIconClass = 'task-icon-cyan';
+
+        if (type === 'tap') {
+          defaultColor = 'task-cyan';
+          defaultIcon = 'lightning';
+        } else if (type.startsWith('fuel_')) {
+          const color = type.replace('fuel_', '').split('_')[0];
+          defaultColor = `task-${color}`;
+          defaultAccent = `task-tab-accent-${color}`;
+          defaultLiquid = `liquid-${color}`;
+          defaultIconClass = `task-icon-${color}`;
+          defaultIcon = 'pump';
+        } else if (type === 'spin') {
+          defaultColor = 'task-purple';
+          defaultAccent = 'task-tab-accent-purple';
+          defaultLiquid = 'liquid-purple';
+          defaultIconClass = 'task-icon-purple';
+          defaultIcon = 'wheel';
+        } else if (type === 'chest') {
+          defaultColor = 'task-yellow';
+          defaultAccent = 'task-tab-accent-yellow';
+          defaultLiquid = 'liquid-yellow';
+          defaultIconClass = 'task-icon-yellow';
+          defaultIcon = 'chest';
+        } else if (type === 'scratch') {
+          defaultColor = 'task-pink';
+          defaultAccent = 'task-tab-accent-pink';
+          defaultLiquid = 'liquid-pink';
+          defaultIconClass = 'task-icon-pink';
+          defaultIcon = 'scratch';
+        } else if (type === 'egg') {
+          defaultColor = 'task-green';
+          defaultAccent = 'task-tab-accent-green';
+          defaultLiquid = 'liquid-green';
+          defaultIconClass = 'task-icon-green';
+          defaultIcon = 'egg';
+        }
+
+        return {
+          ...ct,
+          id: ct.id || `m_${idx + 1}`,
+          number: ct.number !== undefined ? ct.number : (idx + 1),
+          title: ct.title || `${idx + 1}. Monthly Quest`,
+          rewardText: rewardText,
+          rewardType: rewardType,
+          rewardVal: rewardCards,
+          desc: ct.desc || `Complete quest to win ${rewardText}`,
+          notes: ct.notes || ct.desc || 'Complete this monthly quest during the 30-day competition cycle.',
+          tip: ct.tip || 'Tip: Work towards this quest daily to claim your prize!',
+          type: type,
+          target: target,
+          iconType: ct.iconType || defaultIcon,
+          colorClass: ct.colorClass || defaultColor,
+          iconClass: ct.iconClass || defaultIconClass,
+          accentClass: ct.accentClass || defaultAccent,
+          liquidTheme: ct.liquidTheme || defaultLiquid,
+          tagClass: ct.tagClass || (ct.colorClass ? ct.colorClass.replace('task-', 'tag-') : 'tag-cyan'),
+          tagText: ct.tagText || 'MONTHLY QUEST'
+        };
+      });
+  }
+  return MONTHLY_TASKS;
+}
+
+const DEFAULT_WEB_TASKS = [
   {
-    id: 'web1',
-    title: 'Visit: Tap Empire Official Web',
-    rewardText: '100 Diamonds 💎',
-    diamondReward: 100,
+    id: 'web_1',
+    title: 'Visit Cyber Energy Portal & Discover Secret PIN',
+    url: 'https://telegram.org',
+    code: '7842',
     costCoins: 1000,
-    code: '4829',
-    desc: 'Unlock with 1,000 Coins, visit official portal, and enter 4-digit secret code to win 100 Diamonds 💎',
-    notes: 'Spend 1,000 Coins to open Tap Empire official website. Search the page for the hidden 4-digit PIN code. Enter the code to claim 100 Diamonds! Wrong code removes the quest.',
-    tip: 'Tip: Look carefully at the banner or footer on the webpage for your 4-digit PIN code.',
+    diamondReward: 100,
+    timer: 15,
+    duration: 15,
+    tagText: 'SPONSOR QUEST',
+    desc: 'Unlock with 1,000 Coins, browse sponsor page, and enter 4-digit code to win 100 Diamonds 💎',
+    notes: 'Spend 1,000 Coins to unlock this sponsor quest. Tap Open Website (link is hidden) to browse the page and find the secret 4-digit PIN. Enter code in Verification to win 100 Diamonds. Caution: Wrong code eliminates the quest!',
+    tip: 'Tip: The secret 4-digit PIN is hidden inside the destination website.',
     iconType: 'globe',
-    btnText: 'Unlock & Visit',
-    url: 'https://tapempire.io',
     colorClass: 'task-cyan',
     iconClass: 'task-icon-cyan',
     accentClass: 'task-tab-accent-cyan',
     liquidTheme: 'liquid-cyan',
-    tagClass: 'tag-cyan',
-    tagText: 'SPONSOR QUEST'
-  },
-  {
-    id: 'web2',
-    title: 'Visit Partner: CoinMarketCap Hub',
-    rewardText: '150 Diamonds 💎',
-    diamondReward: 150,
-    costCoins: 1000,
-    code: '7105',
-    desc: 'Unlock with 1,000 Coins, explore partner hub, and enter 4-digit code to win 150 Diamonds 💎',
-    notes: 'Spend 1,000 Coins to unlock partner site. Browse through the verified hub to find the 4-digit secret key. Accurate verification awards 150 Diamonds!',
-    tip: 'Tip: Copy or memorize the 4 numbers before returning to the game.',
-    iconType: 'globe',
-    btnText: 'Unlock & Visit',
-    url: 'https://coinmarketcap.com',
-    colorClass: 'task-blue',
-    iconClass: 'task-icon-blue',
-    accentClass: 'task-tab-accent-blue',
-    liquidTheme: 'liquid-blue',
-    tagClass: 'tag-blue',
-    tagText: 'PARTNER QUEST'
-  },
-  {
-    id: 'web3',
-    title: 'Visit: Airdrop & Rewards Directory',
-    rewardText: '200 Diamonds 💎',
-    diamondReward: 200,
-    costCoins: 1000,
-    code: '9364',
-    desc: 'Unlock with 1,000 Coins, explore Web3 directory, and enter 4-digit code to win 200 Diamonds 💎',
-    notes: 'Unlock exclusive rewards portal for 1,000 Coins. Locate the 4-digit authorization code and enter it to win 200 Diamonds!',
-    tip: 'Tip: If code is entered incorrectly, the task is eliminated and you must try again.',
-    iconType: 'globe',
-    btnText: 'Unlock & Visit',
-    url: 'https://dappradar.com',
-    colorClass: 'task-purple',
-    iconClass: 'task-icon-purple',
-    accentClass: 'task-tab-accent-purple',
-    liquidTheme: 'liquid-purple',
-    tagClass: 'tag-purple',
-    tagText: 'EXCLUSIVE QUEST'
+    btnText: 'Buy Website Task (1,000 🪙)',
+    disabled: false
   }
 ];
 
 function getWebsiteTasksList() {
-  if (window.cloudWebsiteTasks && Array.isArray(window.cloudWebsiteTasks)) {
-    return window.cloudWebsiteTasks.map(ct => {
-      const def = WEBSITE_TASKS.find(dt => dt.id === ct.id) || {};
-      const cost = ct.costCoins !== undefined ? Number(ct.costCoins) : (def.costCoins !== undefined ? def.costCoins : 1000);
-      const diamonds = ct.diamondReward !== undefined ? Number(ct.diamondReward) : (def.diamondReward || 100);
+  let list = window.cloudWebsiteTasks;
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_WEB_TASKS');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          list = parsed;
+          window.cloudWebsiteTasks = list;
+        }
+      }
+    } catch (e) {}
+  }
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    list = DEFAULT_WEB_TASKS;
+  }
+
+  return list
+    .filter(ct => ct && ct.disabled !== true)
+    .map((ct, idx) => {
+      const cost = ct.costCoins !== undefined ? Number(ct.costCoins) : 1000;
+      const diamonds = ct.diamondReward !== undefined ? Number(ct.diamondReward) : (ct.diamonds ? Number(ct.diamonds) : 100);
+      const tag = ct.tag || ct.tagText || 'SPONSOR QUEST';
       return {
-        ...def,
         ...ct,
+        id: ct.id || `web_${idx + 1}`,
+        title: ct.title || `Website Quest #${idx + 1}`,
         costCoins: cost,
         diamondReward: diamonds,
-        code: ct.code || def.code || '1234',
+        code: (ct.code || '1234').toString().trim(),
+        timer: Number(ct.timer || ct.duration || 15),
+        duration: Number(ct.timer || ct.duration || 15),
         rewardText: `${diamonds} Diamonds 💎`,
-        tagText: ct.tag || ct.tagText || def.tagText || 'SPONSOR QUEST',
-        colorClass: ct.colorClass || def.colorClass || 'task-blue',
-        iconClass: ct.iconClass || def.iconClass || 'task-icon-blue',
-        accentClass: ct.accentClass || def.accentClass || 'task-tab-accent-blue',
-        liquidTheme: ct.liquidTheme || def.liquidTheme || 'liquid-blue',
-        btnText: ct.btnText || 'Unlock & Visit'
+        tagText: tag,
+        tag: tag,
+        desc: ct.desc || `Unlock with ${cost.toLocaleString()} Coins, visit site, and enter 4-digit code to win ${diamonds} Diamonds 💎`,
+        notes: ct.notes || ct.desc || `Spend ${cost.toLocaleString()} Coins to open this website. Enter 4-digit PIN to claim ${diamonds} Diamonds.`,
+        tip: ct.tip || 'Tip: Look carefully on the destination page for your 4-digit secret code.',
+        iconType: ct.iconType || 'globe',
+        colorClass: ct.colorClass || 'task-cyan',
+        iconClass: ct.iconClass || 'task-icon-cyan',
+        accentClass: ct.accentClass || 'task-tab-accent-cyan',
+        liquidTheme: ct.liquidTheme || 'liquid-cyan',
+        btnText: ct.btnText || `Buy Website Task (${cost.toLocaleString()} 🪙)`
       };
     });
-  }
-  return WEBSITE_TASKS;
 }
 
 function getTelegramTasksList() {
-  if (window.cloudTelegramTasks && Array.isArray(window.cloudTelegramTasks)) {
-    return window.cloudTelegramTasks.map(ct => {
-      const def = TELEGRAM_TASKS.find(dt => dt.id === ct.id) || {};
-      const isBot = ct.iconType === 'bot' || (ct.tagText && ct.tagText.includes('BOT'));
-      const cards = Number(ct.rewardCards || ct.scratchCards || 0);
-      const keys = Number(ct.rewardKeys || 0);
-      const diamonds = Number(ct.diamonds || ct.rewardDiamonds || 0);
-      const coins = Number(ct.coins || ct.rewardCoins || 0);
-
-      let rewardText = ct.rewardText;
-      if (!rewardText) {
-        if (cards > 0) rewardText = `${cards} Scratch Card${cards > 1 ? 's' : ''} 🎴`;
-        else if (keys > 0) rewardText = `${keys} Key${keys > 1 ? 's' : ''} for Chest`;
-        else if (diamonds > 0) rewardText = `+${diamonds} Diamonds 💎`;
-        else if (coins > 0) rewardText = `+${coins} Coins 🪙`;
-        else rewardText = '1 Scratch Card 🎴';
+  let list = window.cloudTelegramTasks;
+  if (!list || !Array.isArray(list)) {
+    try {
+      const cached = localStorage.getItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_TG_TASKS');
+      if (cached) {
+        list = JSON.parse(cached);
+        if (Array.isArray(list)) window.cloudTelegramTasks = list;
       }
-
-      return {
-        ...def,
-        ...ct,
-        rewardCards: cards,
-        scratchCards: cards,
-        rewardKeys: keys,
-        rewardDiamonds: diamonds,
-        rewardCoins: coins,
-        rewardText: rewardText,
-        colorClass: ct.colorClass || def.colorClass || 'task-blue',
-        iconClass: ct.iconClass || def.iconClass || 'task-icon-blue',
-        accentClass: ct.accentClass || def.accentClass || 'task-tab-accent-blue',
-        liquidTheme: ct.liquidTheme || def.liquidTheme || 'liquid-blue',
-        tagClass: ct.tagClass || def.tagClass || 'tag-blue',
-        tagText: ct.tagText || (isBot ? 'TELEGRAM BOT' : 'TELEGRAM CHANNEL'),
-        desc: ct.desc || `Join ${ct.title} on Telegram to win ${rewardText}`,
-        notes: ct.notes || `Join and follow instructions to claim your ${rewardText} reward!`,
-        tip: ct.tip || 'Tip: Tap the button below to launch Telegram directly.',
-        btnText: ct.btnText || 'Join'
-      };
-    });
+    } catch (e) {}
   }
-  return TELEGRAM_TASKS;
+  if (Array.isArray(list) && list.length > 0) {
+    return list
+      .filter(ct => ct && ct.disabled !== true)
+      .map((ct, idx) => {
+        const isBot = ct.iconType === 'bot' || (ct.url && ct.url.toLowerCase().includes('bot')) || (ct.tagText && ct.tagText.includes('BOT'));
+        const coins = Number(ct.coins !== undefined ? ct.coins : (ct.rewardCoins !== undefined ? ct.rewardCoins : (ct.rewardCards || ct.scratchCards || ct.rewardKeys || ct.diamonds ? 0 : 100)));
+        const cards = Number(ct.rewardCards || ct.scratchCards || 0);
+        const keys = Number(ct.rewardKeys || 0);
+        const diamonds = Number(ct.diamonds || ct.rewardDiamonds || 0);
+
+        let rewardText = ct.rewardText;
+        if (!rewardText) {
+          if (coins > 0) rewardText = `+${coins.toLocaleString()} Coins 🪙`;
+          else if (cards > 0) rewardText = `${cards} Scratch Card${cards > 1 ? 's' : ''} 🎴`;
+          else if (keys > 0) rewardText = `${keys} Key${keys > 1 ? 's' : ''} for Chest`;
+          else if (diamonds > 0) rewardText = `+${diamonds} Diamonds 💎`;
+          else rewardText = '+100 Coins 🪙';
+        }
+
+        return {
+          ...ct,
+          id: ct.id || `tg_${idx + 1}`,
+          title: ct.title || `Telegram Channel #${idx + 1}`,
+          rewardCards: cards,
+          scratchCards: cards,
+          rewardKeys: keys,
+          rewardDiamonds: diamonds,
+          rewardCoins: coins,
+          rewardText: rewardText,
+          iconType: isBot ? 'bot' : (ct.iconType || 'plane'),
+          colorClass: ct.colorClass || 'task-blue',
+          iconClass: ct.iconClass || 'task-icon-blue',
+          accentClass: ct.accentClass || 'task-tab-accent-blue',
+          liquidTheme: ct.liquidTheme || 'liquid-blue',
+          tagClass: ct.tagClass || 'tag-blue',
+          tagText: ct.tagText || (isBot ? 'TELEGRAM BOT' : 'TELEGRAM CHANNEL'),
+          desc: ct.desc || `Join ${ct.title || 'channel'} on Telegram to win ${rewardText}`,
+          notes: ct.notes || `Join and follow instructions to claim your ${rewardText} reward!`,
+          tip: ct.tip || 'Tip: Tap the button below to launch Telegram directly.',
+          btnText: ct.btnText || (isBot ? 'Join Bot' : 'Join Channel')
+        };
+      });
+  }
+  return [];
 }
 
 // Subtab Switcher
@@ -497,6 +530,12 @@ function switchTaskSubtab(subtabName) {
   const monthlyBanner = document.getElementById('monthlyCompetitionBanner');
   if (monthlyBanner) {
     monthlyBanner.style.display = subtabName === 'daily' ? 'flex' : 'none';
+  }
+
+  // Toggle Website Task Guide Banner: Only visible when on 'website' subtab
+  const websiteGuideBanner = document.getElementById('websiteGuideBanner');
+  if (websiteGuideBanner) {
+    websiteGuideBanner.style.display = subtabName === 'website' ? 'flex' : 'none';
   }
 
   sfx.playTapSound(1);
@@ -626,12 +665,13 @@ function renderTasksList() {
   if (!gameState.tasksState.failedWebsite) gameState.tasksState.failedWebsite = {};
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
 
+  const allMonthlyTasks = getMonthlyTasksList();
   const allWebsiteTasks = getWebsiteTasksList();
   const allTelegramTasks = getTelegramTasksList();
-  const activeDailyTasks = DAILY_TASKS.filter(task => !gameState.tasksState.claimedDaily[task.id]);
-  const activeTelegramTasks = allTelegramTasks.filter(task => !gameState.tasksState.claimedTelegram[task.id]);
+  const activeDailyTasks = allMonthlyTasks.filter(task => !gameState.tasksState.claimedDaily[task.id] && task.disabled !== true);
+  const activeTelegramTasks = allTelegramTasks.filter(task => !gameState.tasksState.claimedTelegram[task.id] && task.disabled !== true);
   const activeWebsiteTasks = allWebsiteTasks.filter(task => 
-    !gameState.tasksState.claimedWebsite[task.id] && !gameState.tasksState.failedWebsite[task.id]
+    !gameState.tasksState.claimedWebsite[task.id] && !gameState.tasksState.failedWebsite[task.id] && task.disabled !== true
   );
 
   if (dailyBadge) {
@@ -651,6 +691,12 @@ function renderTasksList() {
   const monthlyBanner = document.getElementById('monthlyCompetitionBanner');
   if (monthlyBanner) {
     monthlyBanner.style.display = gameState.taskSubtab === 'daily' ? 'flex' : 'none';
+  }
+
+  // Show/Hide Website Guide & How-To-Use Banner: Only visible on Website subtab
+  const webGuideBanner = document.getElementById('websiteGuideBanner');
+  if (webGuideBanner) {
+    webGuideBanner.style.display = gameState.taskSubtab === 'website' ? 'flex' : 'none';
   }
 
   if (gameState.taskSubtab === 'daily') {
@@ -769,8 +815,8 @@ function renderTasksList() {
 
           <!-- Right Action Col -->
           <div class="task-tab-right-col">
-            <button class="task-tab-notes-indicator" onclick="joinTelegramTask('${task.id}', '${task.title}', ${task.rewardKeys}, '${task.url}', event)">
-              <span>${task.btnText}</span>
+            <button class="task-tab-notes-indicator" onclick="joinTelegramTask('${task.id}', event)">
+              <span>${task.btnText || 'Join'}</span>
               <svg class="task-tab-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
@@ -783,7 +829,7 @@ function renderTasksList() {
     container.innerHTML = html;
 
   } else {
-    // Website Tasks Subtab (1,000 Coin unlock, 4-digit code verification, win Diamonds or eliminated)
+    // Website Tasks Subtab (1,000 Coin buy, hidden URL open, 4-digit code verification, win Diamonds or eliminated)
     if (activeWebsiteTasks.length === 0) {
       container.innerHTML = `
         <div class="tasks-empty-complete-card">
@@ -799,20 +845,20 @@ function renderTasksList() {
     activeWebsiteTasks.forEach(task => {
       const webSvg = getTaskIconSvg(task.iconType);
       const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
-      const actionBtnLabel = isAlreadyOpened ? 'Enter PIN 🔑' : 'Open (1K 🪙)';
+      const cost = task.costCoins !== undefined ? Number(task.costCoins) : 1000;
 
       html += `
-        <div class="task-decorated-tab-card ${task.colorClass}" 
+        <div class="task-decorated-tab-card task-web-mode ${task.colorClass || ''}" 
              id="webCard-${task.id}" 
              onclick="openTaskNotesPopup('${task.id}', 'website')" 
              role="button" 
              tabindex="0">
 
           <!-- Left Accent Bar -->
-          <div class="task-tab-accent-bar ${task.accentClass}"></div>
+          <div class="task-tab-accent-bar ${task.accentClass || 'bar-cyan'}"></div>
 
           <!-- 3D Icon Box -->
-          <div class="task-tab-icon-box ${task.iconClass}">
+          <div class="task-tab-icon-box ${task.iconClass || 'box-cyan'}">
             ${webSvg}
           </div>
 
@@ -820,21 +866,29 @@ function renderTasksList() {
           <div class="task-tab-text-info">
             <div class="task-tab-title-row">
               <span class="task-tab-title">${task.title}</span>
-              <span class="task-cat-tag ${task.tagClass}">${task.tagText}</span>
+              <span class="task-cat-tag ${task.tagClass || 'tag-cyan'}">${task.tagText || task.tag || 'Web Quest'}</span>
             </div>
-            <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 1px;">
-              Win +${task.diamondReward || 100} 💎 <span style="color: #facc15;">(Cost: 1,000 🪙)</span>
+            <div class="task-web-reward-subtext">
+              <span class="reward-dia-text">Win +${task.diamondReward || 100} 💎</span>
+              <span class="reward-cost-text">(Cost: ${cost.toLocaleString()} 🪙)</span>
             </div>
           </div>
 
-          <!-- Right Action Col -->
+          <!-- Right Action Col: If not bought, show 1 button: Buy Website Task (1,000 Coins). If bought, show Open (link hidden) and Verification ON -->
           <div class="task-tab-right-col">
-            <button class="task-tab-notes-indicator" onclick="startWebsiteTask('${task.id}', event)">
-              <span>${actionBtnLabel}</span>
-              <svg class="task-tab-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </button>
+            ${!isAlreadyOpened
+              ? `<button class="task-web-btn buy-mode" onclick="buyWebsiteTask('${task.id}', event)" title="Buy Website Task for ${cost.toLocaleString()} Coins">
+                   <span>🪙 Buy Website Task (${cost.toLocaleString()} Coins)</span>
+                 </button>`
+              : `<div class="task-web-actions-row">
+                   <button class="task-web-btn open-mode" onclick="openWebsiteTaskHiddenUrl('${task.id}', event)" title="Open Website (URL hidden)">
+                     <span>Open 🌐</span>
+                   </button>
+                   <button class="task-web-btn verify-mode" onclick="openWebCodeModal('${task.id}', event)" title="Verification ON - Enter 4-Digit Secret PIN">
+                     <span>Verification 🔑</span>
+                   </button>
+                 </div>`
+            }
           </div>
 
         </div>
@@ -859,7 +913,7 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
 
   let task = null;
   if (subtabType === 'daily') {
-    task = DAILY_TASKS.find(t => t.id === taskId);
+    task = getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
   } else if (subtabType === 'telegram') {
     task = getTelegramTasksList().find(t => t.id === taskId);
   } else {
@@ -899,29 +953,23 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
       progVal.textContent = `${currentProgress.toLocaleString()} / ${task.target.toLocaleString()} (${percent}%)`;
     }
     if (progLiquid) {
-      progLiquid.style.width = `${percent}%`;
-    }
-  } else if (subtabType === 'telegram') {
-    if (progVal) {
-      progVal.textContent = '1 Membership Required';
-    }
-    if (progLiquid) {
-      progLiquid.style.width = '50%';
+      progLiquid.style.width = `${Math.max(percent, 2)}%`;
+      progLiquid.className = `task-notes-prog-liquid ${task.liquidTheme || 'liquid-cyan'}`;
     }
   } else {
-    const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
     if (progVal) {
-      progVal.textContent = isAlreadyOpened ? 'Unlocked (Enter 4-Digit PIN)' : '1,000 Coins Unlock Required';
+      progVal.textContent = subtabType === 'website' ? '1-Time Sponsor Quest' : '1-Time Partner Quest';
     }
     if (progLiquid) {
-      progLiquid.style.width = isAlreadyOpened ? '80%' : '25%';
+      progLiquid.style.width = '100%';
+      progLiquid.className = 'task-notes-prog-liquid liquid-blue';
     }
   }
 
-  // 3. Notes Body & Description
+  // 3. Description & Notes
   const descEl = document.getElementById('taskNotesDesc');
   if (descEl) {
-    descEl.innerHTML = `${task.notes || task.desc} ${task.tip ? `<br><br><span style="color: #38bdf8; font-weight: 700;">💡 ${task.tip}</span>` : ''}`;
+    descEl.textContent = task.notes || task.desc || 'Complete quest objectives to earn your reward.';
   }
 
   // 4. Reward & Status Tag
@@ -937,12 +985,19 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
     }
   }
   if (rewardIconEl) {
-    rewardIconEl.textContent = subtabType === 'daily' ? '🎴' : (subtabType === 'website' ? '💎' : '🔑');
+    if (subtabType === 'daily') {
+      rewardIconEl.textContent = '🎴';
+    } else if (subtabType === 'website') {
+      rewardIconEl.textContent = '💎';
+    } else {
+      rewardIconEl.textContent = (task.rewardCards || task.scratchCards) ? '🎴' : (task.rewardKeys ? '🔑' : (task.rewardDiamonds ? '💎' : (task.rewardCoins ? '🪙' : '🎴')));
+    }
   }
   if (statusTag) {
     if (subtabType === 'website') {
       const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
-      statusTag.textContent = isAlreadyOpened ? 'UNLOCKED (PIN READY)' : '1,000 COIN COST';
+      const cost = task.costCoins !== undefined ? Number(task.costCoins) : 1000;
+      statusTag.textContent = isAlreadyOpened ? 'UNLOCKED (PIN READY)' : `${cost.toLocaleString()} COIN COST`;
       statusTag.className = 'reward-ready-tag ' + (isAlreadyOpened ? 'ready' : '');
     } else if (isReadyToClaim) {
       statusTag.textContent = 'READY TO CLAIM';
@@ -976,22 +1031,34 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
         `;
       }
     } else if (subtabType === 'telegram') {
+      const btnText = task.btnText || 'Join Channel';
       actionsWrap.innerHTML = `
-        <button class="notes-nav-btn" onclick="joinTelegramFromNotes('${task.id}', '${task.title}', ${task.rewardKeys}, '${task.url}')">
-          <span>✈️ Open & Claim Key</span>
+        <button class="notes-nav-btn" onclick="joinTelegramFromNotes('${task.id}')">
+          <span>✈️ ${btnText}</span>
         </button>
         <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
       `;
     } else {
       const isAlreadyOpened = gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[task.id];
-      const btnIcon = isAlreadyOpened ? '🔑' : '🌐';
-      const btnTitle = isAlreadyOpened ? 'Enter Secret 4-Digit Code' : 'Open Website (1,000 🪙)';
-      actionsWrap.innerHTML = `
-        <button class="notes-nav-btn" onclick="visitWebsiteFromNotes('${task.id}')" style="background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);">
-          <span>${btnIcon} ${btnTitle}</span>
-        </button>
-        <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
-      `;
+      const cost = task.costCoins !== undefined ? Number(task.costCoins) : 1000;
+      if (isAlreadyOpened) {
+        actionsWrap.innerHTML = `
+          <button class="notes-nav-btn" onclick="closeTaskNotesPopup(); openWebsiteTaskHiddenUrl('${task.id}')" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+            <span>🌐 Open Website</span>
+          </button>
+          <button class="notes-nav-btn" onclick="closeTaskNotesPopup(); openWebCodeModal('${task.id}')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <span>🔑 Enter Verification PIN</span>
+          </button>
+          <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
+        `;
+      } else {
+        actionsWrap.innerHTML = `
+          <button class="notes-nav-btn" onclick="closeTaskNotesPopup(); buyWebsiteTask('${task.id}')" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            <span>🪙 Buy Website Task (${cost.toLocaleString()} Coins)</span>
+          </button>
+          <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
+        `;
+      }
     }
   }
 
@@ -1021,9 +1088,9 @@ function goToTaskFromNotes(targetPage) {
   }
 }
 
-function joinTelegramFromNotes(taskId, title, rewardKeys, url) {
+function joinTelegramFromNotes(taskId) {
   closeTaskNotesPopup();
-  joinTelegramTask(taskId, title, rewardKeys, url);
+  joinTelegramTask(taskId);
 }
 
 function visitWebsiteFromNotes(taskId) {
@@ -1032,11 +1099,11 @@ function visitWebsiteFromNotes(taskId) {
 }
 
 // ==========================================================================
-// WEBSITE QUEST CONTROLLER (1,000 COIN COST, 4-DIGIT PIN & DIAMONDS REWARD)
+// WEBSITE QUEST CONTROLLER (1,000 COIN COST, HIDDEN URL & 4-DIGIT VERIFICATION)
 // ==========================================================================
 let activeVerifyingTaskId = null;
 
-function startWebsiteTask(taskId, event) {
+function buyWebsiteTask(taskId, event) {
   if (event && typeof event.stopPropagation === 'function') {
     event.stopPropagation();
   }
@@ -1046,49 +1113,66 @@ function startWebsiteTask(taskId, event) {
   if (!task) return;
 
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
-  const isAlreadyOpened = gameState.tasksState.openedWebsite[taskId];
-
-  // If already opened, directly open PIN verification modal without charging coins again
-  if (isAlreadyOpened) {
+  if (gameState.tasksState.openedWebsite[taskId]) {
+    // Already purchased, directly open verification modal
     openWebCodeModal(taskId);
     return;
   }
 
-  // Check if player has 1,000 Coins
-  const cost = task.costCoins !== undefined ? task.costCoins : 1000;
+  // Check if player has required Coins (default 1,000)
+  const cost = task.costCoins !== undefined ? Number(task.costCoins) : 1000;
   if ((gameState.player.coins || 0) < cost) {
     sfx.playErrorSound();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⚠️ Insufficient Coins! Need ${cost.toLocaleString()} 🪙 to open task.`);
+      showFloatingToast(`⚠️ Insufficient Coins! Need ${cost.toLocaleString()} 🪙 to buy task.`);
     } else {
-      alert(`Insufficient Coins! You need ${cost.toLocaleString()} Coins to open this website quest.`);
+      alert(`Insufficient Coins! You need ${cost.toLocaleString()} Coins to buy this website quest.`);
     }
     return;
   }
 
-  // Deduct 1,000 Coins
+  // Deduct Coins
   gameState.player.coins -= cost;
   gameState.tasksState.openedWebsite[taskId] = true;
   saveGame();
   updateUI();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🪙 -${cost.toLocaleString()} Coins paid to open quest!`);
+    showFloatingToast(`🪙 -${cost.toLocaleString()} Coins paid! Open & Verification unlocked.`);
   }
   sfx.playBuySound();
 
-  // Open the website link in a new browser tab
-  if (task.url) {
-    window.open(task.url, '_blank');
+  // Re-render tasks list to show Open & Verification buttons
+  renderTasksList();
+}
+
+function openWebsiteTaskHiddenUrl(taskId, event) {
+  if (event && typeof event.stopPropagation === 'function') {
+    event.stopPropagation();
   }
 
-  // Render updated button label ("Enter PIN 🔑")
-  renderTasksList();
+  const allWebsiteTasks = getWebsiteTasksList();
+  const task = allWebsiteTasks.find(t => t.id === taskId);
+  if (!task || !task.url) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚠️ Website link not found.');
+    }
+    return;
+  }
 
-  // Open the 4-digit code verification modal
-  setTimeout(() => {
+  // Securely open hidden link without displaying URL text on page
+  window.open(task.url, '_blank', 'noopener,noreferrer');
+  sfx.playTapSound(1);
+}
+
+function startWebsiteTask(taskId, event) {
+  if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
+  const isAlreadyOpened = gameState.tasksState.openedWebsite[taskId];
+  if (isAlreadyOpened) {
     openWebCodeModal(taskId);
-  }, 400);
+  } else {
+    buyWebsiteTask(taskId, event);
+  }
 }
 
 function openWebCodeModal(taskId) {
@@ -1284,13 +1368,22 @@ function closeWebResultModal(event) {
 window.DAILY_TASKS = DAILY_TASKS;
 window.TELEGRAM_TASKS = TELEGRAM_TASKS;
 window.WEBSITE_TASKS = WEBSITE_TASKS;
+window.getMonthlyTasksList = getMonthlyTasksList;
 window.getWebsiteTasksList = getWebsiteTasksList;
 window.getTelegramTasksList = getTelegramTasksList;
+
+window.addEventListener('monthlyTasksUpdated', () => {
+  if (typeof renderTasksList === 'function') {
+    renderTasksList();
+  }
+});
 window.switchTaskSubtab = switchTaskSubtab;
 window.renderTasksList = renderTasksList;
 window.claimDailyTaskReward = claimDailyTaskReward;
 window.joinTelegramTask = joinTelegramTask;
 window.startWebsiteTask = startWebsiteTask;
+window.buyWebsiteTask = buyWebsiteTask;
+window.openWebsiteTaskHiddenUrl = openWebsiteTaskHiddenUrl;
 window.openWebCodeModal = openWebCodeModal;
 window.closeWebCodeModal = closeWebCodeModal;
 window.revisitWebsiteTaskUrl = revisitWebsiteTaskUrl;
@@ -1330,13 +1423,13 @@ function spawnTaskEmojiBurst(card) {
   card.appendChild(burstWrap);
 }
 
-// Claim Daily Task: Awards 1 Scratch Card, triggers emoji burst, and smoothly removes task tab
+// Claim Daily Task: Awards Scratch Cards, triggers emoji burst, and smoothly removes task tab
 function claimDailyTaskReward(taskId, event) {
   if (event && typeof event.stopPropagation === 'function') {
     event.stopPropagation();
   }
 
-  const task = DAILY_TASKS.find(t => t.id === taskId);
+  const task = getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
   if (!task) return;
 
   const executeClaim = () => {
@@ -1351,18 +1444,19 @@ function claimDailyTaskReward(taskId, event) {
       card.classList.add('task-claimed-exit');
     }
 
-    // 3. Award 1 Scratch Card
+    // 3. Award Scratch Cards
+    const rewardCount = Number(task.rewardCards || task.rewardVal || 1);
     gameState.tasksState.claimedDaily[taskId] = true;
     if (!gameState.tasksState.claimedMonthly) gameState.tasksState.claimedMonthly = {};
     gameState.tasksState.claimedMonthly[taskId] = true;
-    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + rewardCount;
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewardCount;
     if (gameState.goalState && gameState.goalState.levelProgress) {
-      gameState.goalState.levelProgress.cards = (gameState.goalState.levelProgress.cards || 0) + 1;
+      gameState.goalState.levelProgress.cards = (gameState.goalState.levelProgress.cards || 0) + rewardCount;
     }
 
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎴 +1 Scratch Card Claimed!');
+      showFloatingToast(`🎴 +${rewardCount} Scratch Card${rewardCount > 1 ? 's' : ''} Claimed!`);
     }
 
     // 4. Remove from DOM after smooth collapse & sync to Firebase immediately
@@ -1383,10 +1477,14 @@ function claimDailyTaskReward(taskId, event) {
   }
 }
 
-// Join Telegram Task: opens link, awards Keys, bursts emojis, and smoothly removes task tab
+// Join Telegram Task: opens link, awards configured rewards, bursts emojis, and smoothly removes task tab
 function joinTelegramTask(taskId, title, rewardKeys, url, event) {
-  if (event && typeof event.stopPropagation === 'function') {
-    event.stopPropagation();
+  let ev = event;
+  if (title && (typeof title.stopPropagation === 'function' || title.preventDefault)) {
+    ev = title;
+  }
+  if (ev && typeof ev.stopPropagation === 'function') {
+    ev.stopPropagation();
   }
 
   const allTelegramTasks = getTelegramTasksList();
@@ -1394,8 +1492,9 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
   if (!task) return;
 
   // Open the Telegram link
-  if (url) {
-    window.open(url, '_blank');
+  const targetUrl = task.url || (typeof url === 'string' ? url : null);
+  if (targetUrl) {
+    window.open(targetUrl, '_blank');
   }
 
   const card = document.getElementById(`tgCard-${taskId}`);
@@ -1406,15 +1505,20 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     card.classList.add('task-claimed-exit');
   }
 
-  // Award configured reward (Cards, Keys, Diamonds, or Coins)
+  // Award configured reward (Coins, Cards, Keys, or Diamonds)
+  const coinsCount = Number(task.coins !== undefined ? task.coins : (task.rewardCoins !== undefined ? task.rewardCoins : 0));
   const cardsCount = Number(task.rewardCards || task.scratchCards || 0);
   const keysCount = Number(task.rewardKeys || (rewardKeys !== undefined ? rewardKeys : 0));
   const diamondsCount = Number(task.diamonds || task.rewardDiamonds || 0);
-  const coinsCount = Number(task.coins || task.rewardCoins || 0);
 
   gameState.tasksState.claimedTelegram[taskId] = true;
 
-  if (cardsCount > 0) {
+  if (coinsCount > 0) {
+    gameState.player.coins = (gameState.player.coins || 0) + coinsCount;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🪙 +${coinsCount.toLocaleString()} Coins Claimed!`);
+    }
+  } else if (cardsCount > 0) {
     gameState.player.scratchCards = (gameState.player.scratchCards || 0) + cardsCount;
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`🎴 +${cardsCount} Scratch Card${cardsCount > 1 ? 's' : ''} Claimed!`);
@@ -1432,15 +1536,10 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`💎 +${diamondsCount} Diamonds Claimed!`);
     }
-  } else if (coinsCount > 0) {
-    gameState.player.coins = (gameState.player.coins || 0) + coinsCount;
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🪙 +${coinsCount} Coins Claimed!`);
-    }
   } else {
-    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
+    gameState.player.coins = (gameState.player.coins || 0) + 100;
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎴 +1 Scratch Card Claimed!`);
+      showFloatingToast(`🪙 +100 Coins Claimed!`);
     }
   }
 

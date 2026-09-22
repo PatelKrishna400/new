@@ -20,10 +20,10 @@ const SPIN_PRIZES = [
   { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '🔷', rarity: 'rare' },
   { label: '1 Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
+  { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
-  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '🔷', rarity: 'rare' },
   { label: '10 Gold Coins', type: 'coins', amount: 10, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
-  { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' }
+  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '🔷', rarity: 'rare' }
 ];
 
 // Initialize 24 circular LED Chaser Bulbs around the perimeter
@@ -259,21 +259,6 @@ function spinLuckyWheel() {
 
   setTimeout(() => {
     if (wheelFrame) wheelFrame.classList.remove('spinning-active');
-
-    // Award prize
-    if (prize.type === 'coins') {
-      gameState.player.coins += prize.amount;
-    } else if (prize.type === 'blue_coins') {
-      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + prize.amount;
-    } else if (prize.type === 'keys') {
-      gameState.player.chestKeys = (gameState.player.chestKeys || 0) + prize.amount;
-      if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + prize.amount);
-    } else if (prize.type === 'card') {
-      gameState.player.scratchCards = (gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : 0) + prize.amount;
-    } else if (prize.type === 'ticket') {
-      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + prize.amount;
-    }
-
     gameState.rewardState.isSpinning = false;
 
     if (prize.type === 'none') {
@@ -286,6 +271,12 @@ function spinLuckyWheel() {
       if (winIcon) winIcon.textContent = '❌';
       if (winTitle) winTitle.textContent = 'Missed This Time!';
       if (winDesc) winDesc.textContent = 'No reward this spin. Better luck next spin!';
+      updateSpinTicketUI();
+      updateUI();
+      saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
     } else {
       sfx.playLevelUpSound();
       triggerSpinConfetti();
@@ -298,7 +289,7 @@ function spinLuckyWheel() {
         }
         if (winIcon) winIcon.textContent = prize.icon;
         if (winTitle) winTitle.textContent = `JACKPOT: +${prize.label.toUpperCase()}!`;
-        if (winDesc) winDesc.textContent = `Lucky 10% Jackpot hit! 10 Gold Coins credited straight to your balance!`;
+        if (winDesc) winDesc.textContent = `Lucky 10% Jackpot hit! ${prize.amount} Gold Coins unlocked!`;
       } else {
         if (resultBox) resultBox.className = 'spin-result-display winner-active';
         if (resultTag) {
@@ -307,17 +298,185 @@ function spinLuckyWheel() {
         }
         if (winIcon) winIcon.textContent = prize.icon;
         if (winTitle) winTitle.textContent = `+${prize.label.toUpperCase()}`;
-        if (winDesc) winDesc.textContent = `${prize.label} successfully added to your inventory!`;
+        if (winDesc) winDesc.textContent = `${prize.label} unlocked from the Cyber Wheel!`;
       }
-    }
 
-    updateSpinTicketUI();
-    updateUI();
-    saveGame();
-    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-      window.firebaseSync.saveToCloudImmediate();
+      // Show interactive winning popup modal with 2X profit & Claim options
+      showSpinPrizeModal(prize);
     }
   }, 4000);
+}
+
+// Global variable tracking pending uncollected spin reward
+window.currentPendingSpinPrize = null;
+
+// Display Winning Prize Popup Modal
+function showSpinPrizeModal(prize) {
+  window.currentPendingSpinPrize = prize;
+
+  const backdrop = document.getElementById('spinRewardBackdrop');
+  const modalGlow = document.getElementById('spinModalGlow');
+  const modalBadge = document.getElementById('spinModalBadge');
+  const modalIcon = document.getElementById('spinModalIcon');
+  const modalTitle = document.getElementById('spinModalTitle');
+  const modalSubtitle = document.getElementById('spinModalSubtitle');
+  const modal2xText = document.getElementById('spinModal2xText');
+  const doubleBtnText = document.getElementById('spinDoubleBtnText');
+  const claimBtnText = document.getElementById('spinClaimBtnText');
+
+  const cleanLabel = prize.label.replace(/^\d+\s*/, '');
+  const doubleAmount = prize.amount * 2;
+
+  if (modalBadge) {
+    modalBadge.className = prize.isJackpot ? 'spin-modal-badge winner' : 'spin-modal-badge winner';
+    modalBadge.textContent = prize.isJackpot ? '👑 GRAND JACKPOT WINNER!' : '🎉 PRIZE UNLOCKED!';
+  }
+
+  if (modalIcon) {
+    modalIcon.textContent = prize.icon || '🪙';
+  }
+
+  if (modalTitle) {
+    modalTitle.textContent = `YOU WON ${prize.amount} ${cleanLabel.toUpperCase()}!`;
+  }
+
+  if (modalSubtitle) {
+    modalSubtitle.textContent = prize.isJackpot 
+      ? `Ultra-rare 10% Jackpot landed! Choose your claim option below.`
+      : `Fortune Wheel slice unlocked! Claim your reward or double it.`;
+  }
+
+  if (modal2xText) {
+    modal2xText.innerHTML = `Watch 1 ad to double this to <strong>+${doubleAmount} ${cleanLabel} (2X Profit)</strong>!`;
+  }
+
+  if (doubleBtnText) {
+    doubleBtnText.textContent = `DOUBLE TO +${doubleAmount} (2X)`;
+  }
+
+  if (claimBtnText) {
+    claimBtnText.textContent = `Claim Regular (+${prize.amount})`;
+  }
+
+  if (backdrop) {
+    backdrop.classList.add('active');
+  }
+}
+
+// Award inventory prize helper
+function applySpinPrize(prize, multiplier = 1) {
+  if (!prize || !prize.amount) return;
+  const finalAmount = prize.amount * multiplier;
+
+  if (prize.type === 'coins') {
+    gameState.player.coins += finalAmount;
+  } else if (prize.type === 'blue_coins') {
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + finalAmount;
+  } else if (prize.type === 'keys') {
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + finalAmount;
+    if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + finalAmount);
+  } else if (prize.type === 'card') {
+    gameState.player.scratchCards = (gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : 0) + finalAmount;
+  } else if (prize.type === 'ticket') {
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + finalAmount;
+  }
+
+  updateSpinTicketUI();
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+}
+
+// Action 1: 2X Profit (Watch Ad & Double Reward)
+function claimDoubleSpinReward() {
+  if (!window.currentPendingSpinPrize) return;
+  const prize = window.currentPendingSpinPrize;
+  window.currentPendingSpinPrize = null;
+
+  const backdrop = document.getElementById('spinRewardBackdrop');
+  if (backdrop) backdrop.classList.remove('active');
+
+  const handleDoubleSuccess = () => {
+    applySpinPrize(prize, 2);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⚡ 2X PROFIT! Claimed +${prize.amount * 2} ${prize.label}!`);
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
+    }
+  };
+
+  // If rewarded ad helper is configured, trigger it
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(handleDoubleSuccess, () => {
+      // Fallback claim if ad cancelled
+      applySpinPrize(prize, 1);
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`Claimed regular +${prize.amount} ${prize.label}`);
+      }
+    });
+  } else {
+    // Simulated instant 2X bonus
+    handleDoubleSuccess();
+  }
+}
+
+// Action 2: Claim Regular Reward
+function claimRegularSpinReward() {
+  if (!window.currentPendingSpinPrize) return;
+  const prize = window.currentPendingSpinPrize;
+  window.currentPendingSpinPrize = null;
+
+  const backdrop = document.getElementById('spinRewardBackdrop');
+  if (backdrop) backdrop.classList.remove('active');
+
+  applySpinPrize(prize, 1);
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`✓ Claimed +${prize.amount} ${prize.label}!`);
+  }
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(1);
+  }
+}
+
+// Close Modal Backdrop
+function closeSpinRewardModal(event) {
+  const backdrop = document.getElementById('spinRewardBackdrop');
+  if (backdrop) backdrop.classList.remove('active');
+
+  // If dismissed without clicking either button, guarantee player gets regular reward
+  if (window.currentPendingSpinPrize) {
+    const prize = window.currentPendingSpinPrize;
+    window.currentPendingSpinPrize = null;
+    applySpinPrize(prize, 1);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`✓ Claimed +${prize.amount} ${prize.label}!`);
+    }
+  }
+}
+
+// Segmented Subtab Switcher for Spin Page (wheel only now)
+function switchSpinSubtab(subtabName = 'wheel') {
+  if (gameState.rewardState && gameState.rewardState.isSpinning) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Wheel is currently spinning! Please wait for it to stop.');
+    }
+    return;
+  }
+
+  const contentWheel = document.getElementById('spinSubtabContentWheel');
+  if (contentWheel) {
+    contentWheel.style.display = 'flex';
+    contentWheel.classList.add('active');
+  }
+
+  const subWheel = document.getElementById('subtabSpinWheel');
+  if (subWheel) subWheel.classList.add('active');
+
+  initSpinChaserBulbs();
+  updateSpinTicketUI();
 }
 
 // Auto-initialize Chaser Bulbs on DOM ready
@@ -331,3 +490,9 @@ window.initSpinChaserBulbs = initSpinChaserBulbs;
 window.updateSpinTicketUI = updateSpinTicketUI;
 window.spinLuckyWheel = spinLuckyWheel;
 window.handleSpinButtonClick = handleSpinButtonClick;
+window.switchSpinSubtab = switchSpinSubtab;
+window.showSpinPrizeModal = showSpinPrizeModal;
+window.claimDoubleSpinReward = claimDoubleSpinReward;
+window.claimRegularSpinReward = claimRegularSpinReward;
+window.closeSpinRewardModal = closeSpinRewardModal;
+

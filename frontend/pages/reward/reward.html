@@ -18,6 +18,87 @@
           </div>
         </div>
 
+        <!-- ==================== 1. FIRST: ADMIN MEGA REWARDS ==================== -->
+        <section class="rewards-grand-rectangle-card mega-grand-card" id="rewardTabMega" onclick="switchPage('megaReward')">
+          <div class="grand-vault-aura mega-aura"></div>
+          
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle mega-circle">
+              <!-- 3D Luxury Mega Crown & Diamond Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="megaGold3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="60%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#78350f"/>
+                  </linearGradient>
+                  <radialGradient id="megaCyanCore" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#e0f2fe"/>
+                    <stop offset="35%" stop-color="#38bdf8"/>
+                    <stop offset="70%" stop-color="#0284c7"/>
+                    <stop offset="100%" stop-color="#082f49"/>
+                  </radialGradient>
+                </defs>
+                <!-- Radiating Golden Ring -->
+                <circle cx="50" cy="50" r="46" fill="none" stroke="url(#megaGold3d)" stroke-width="2.5" opacity="0.75"/>
+                <circle cx="50" cy="50" r="41" fill="#070d1e" stroke="#1e293b" stroke-width="1.5"/>
+                <!-- Background Diamond Ray Star -->
+                <polygon points="50,15 54,36 75,36 58,49 64,70 50,57 36,70 42,49 25,36 46,36" fill="url(#megaCyanCore)" opacity="0.4"/>
+                <!-- 3D Imperial Mega Crown -->
+                <path d="M22 66 L28 38 L40 50 L50 28 L60 50 L72 38 L78 66 Z" fill="url(#megaGold3d)" stroke="#78350f" stroke-width="1.5" filter="drop-shadow(0 6px 8px rgba(0,0,0,0.6))"/>
+                <!-- Crown Base Cushion -->
+                <rect x="22" y="66" width="56" height="10" rx="3" fill="#0f172a" stroke="url(#megaGold3d)" stroke-width="1.5"/>
+                <circle cx="28" cy="71" r="2.2" fill="#38bdf8"/>
+                <circle cx="39" cy="71" r="2.2" fill="#f43f5e"/>
+                <circle cx="50" cy="71" r="2.5" fill="#fde047"/>
+                <circle cx="61" cy="71" r="2.2" fill="#34d399"/>
+                <circle cx="72" cy="71" r="2.2" fill="#a855f7"/>
+                <!-- Crown Jewels on Points -->
+                <circle cx="28" cy="38" r="3.2" fill="#38bdf8"/>
+                <circle cx="50" cy="28" r="4.2" fill="#ffffff"/>
+                <circle cx="72" cy="38" r="3.2" fill="#38bdf8"/>
+                <circle cx="50" cy="50" r="5" fill="#38bdf8"/>
+                <polygon points="50,45 54,50 50,55 46,50" fill="#ffffff"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag mega-tag">👑 ADMIN MEGA REWARDS 👑</div>
+          </div>
+
+          <div class="rewards-rect-badge mega-badge">
+            <span class="sparkle-icon">💎</span>
+            <span>REAL PRIZES &amp; GIFT VOUCHERS</span>
+          </div>
+
+          <h3 class="rewards-rect-title">Mega Rewards Catalog</h3>
+
+          <div class="rewards-stats-strip">
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">DIAMONDS</span>
+              <span class="stat-item-val cyan" id="rewardMegaDiamonds">0 💎</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">CATEGORIES</span>
+              <span class="stat-item-val gold">9 Categories</span>
+            </div>
+            <div class="rewards-stat-divider"></div>
+            <div class="rewards-stat-item">
+              <span class="stat-item-label">ADMIN ITEMS</span>
+              <span class="stat-item-val green" id="rewardAdminItemCount">0 Listed</span>
+            </div>
+          </div>
+
+          <!-- Live Shelf of Admin-Added Products from Firebase (/mega_rewards) -->
+          <div class="reward-admin-products-shelf" id="rewardAdminMegaShelf" onclick="event.stopPropagation()">
+            <!-- Rendered dynamically by reward.js from window.cloudMegaRewards -->
+          </div>
+
+          <button class="rewards-master-action-btn mega-btn" onclick="switchPage('megaReward'); event.stopPropagation();">
+            <span>👑 EXPLORE 9 MEGA CATEGORIES</span>
+          </button>
+        </section>
+
         <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
         <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
           <div class="grand-vault-aura spin-aura"></div>

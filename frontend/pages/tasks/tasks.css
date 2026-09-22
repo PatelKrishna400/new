@@ -1566,3 +1566,281 @@
   transform: translateY(-1px);
 }
 
+/* ==========================================================================
+   WEBSITE TASK FULL PAGE GUIDE BANNER & DUAL ACTION BUTTONS
+   ========================================================================== */
+.tasks-web-guide-banner {
+  background: linear-gradient(180deg, rgba(8, 24, 48, 0.96) 0%, rgba(4, 14, 30, 0.99) 100%);
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.web-guide-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.web-guide-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.web-guide-badge {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #22d3ee;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.web-guide-reward-pill {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.web-guide-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: 0.3px;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.web-guide-desc {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.web-guide-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 420px) {
+  .web-guide-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.web-guide-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: border-color 0.2s;
+}
+
+.web-guide-step-card:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.web-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7, #06b6d4);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+}
+
+.web-step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.web-step-text strong {
+  font-size: 11.5px;
+  color: #38bdf8;
+  letter-spacing: 0.2px;
+}
+
+.web-step-text span {
+  font-size: 10px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+/* Callout Notes Box */
+.web-guide-notes-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(120, 53, 15, 0.15) 100%);
+  border: 1.5px dashed rgba(245, 158, 11, 0.45);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.web-notes-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.web-notes-icon {
+  font-size: 14px;
+}
+
+.web-notes-title {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.web-notes-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10.5px;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+.web-notes-list li strong {
+  color: #fde68a;
+}
+
+/* Website Task Card Styling */
+.task-decorated-tab-card.task-web-mode {
+  height: auto;
+  min-height: 66px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+}
+
+.task-web-reward-subtext {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.reward-dia-text {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.reward-cost-text {
+  color: #facc15;
+}
+
+.task-web-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.task-web-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+  font-family: inherit;
+}
+
+.task-web-btn:active {
+  transform: scale(0.96);
+}
+
+/* 1 Button: Buy Website Task */
+.task-web-btn.buy-mode {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid rgba(254, 240, 138, 0.45);
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.45);
+}
+
+.task-web-btn.buy-mode:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6);
+}
+
+/* Open Website Button (URL hidden) */
+.task-web-btn.open-mode {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid rgba(125, 211, 252, 0.4);
+  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.4);
+}
+
+.task-web-btn.open-mode:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.6);
+}
+
+/* Verification Button (Turned ON with glowing green neon) */
+.task-web-btn.verify-mode {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid rgba(167, 243, 208, 0.5);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.7);
+  animation: pulseVerifyGlow 2s infinite ease-in-out;
+}
+
+.task-web-btn.verify-mode:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes pulseVerifyGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(16, 185, 129, 0.95);
+    transform: scale(1.02);
+  }
+}
+
+

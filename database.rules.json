@@ -4,108 +4,113 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true || root.child('whitelist').child(auth.uid).exists())",
-        ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+        ".write": true
       }
     },
     "users": {
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
+        ".write": true
       }
     },
     "leaderboard": {
       ".read": true,
+      ".indexOn": ["coins", "level", "energyTaps", "lastActive"],
       "$uid": {
-        ".write": "auth != null"
+        ".write": true
       }
     },
     "mega_rewards": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "reward_requests": {
       ".read": true,
-      ".write": "auth != null",
+      ".write": true,
       "$reqId": {
         ".read": true,
-        ".write": "auth != null"
-      }
-    },
-    "ads_direct_clicks": {
-      ".read": true,
-      ".write": "auth != null",
-      "$clickId": {
-        ".read": true,
-        ".write": "auth != null"
+        ".write": true
       }
     },
     "suggestions": {
       ".read": true,
-      ".write": "auth != null",
+      ".write": true,
       "$sugId": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": true
+      }
+    },
+    "ads_direct_clicks": {
+      ".read": true,
+      ".write": true,
+      "$clickId": {
+        ".read": true,
+        ".write": true
       }
     },
     "website_tasks_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "telegram_tasks_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
+    },
+    "monthly_tasks_config": {
+      ".read": true,
+      ".write": true
     },
     "monthly_competition": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "season": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "ads_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "whitelist": {
       ".read": true,
       "$uid": {
-        ".write": "auth != null"
+        ".write": true
       }
     },
     "admin_users": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "game_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "levels_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "fuel_cells_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "identityIndex": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "auth_config": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "activity_log": {
       ".read": true,
-      ".write": "auth != null",
+      ".write": true,
       ".indexOn": ["timestamp"]
     },
-    ".info": {
-      ".read": true
+    "deleted_users": {
+      ".read": true,
+      ".write": true
     }
   }
 }

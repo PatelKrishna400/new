@@ -176,7 +176,7 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
                 </defs>
                 <rect width="100" height="100" fill="#0f172a" />
                 <circle cx="50" cy="50" r="46" fill="url(#avatarGrad)" opacity="0.3"/>
-                <!-- Stylized Alex Vance Head & Torso -->
+                <!-- Stylized Player Portrait Avatar -->
                 <circle cx="50" cy="40" r="22" fill="url(#skinGrad)"/>
                 <!-- Hair -->
                 <path d="M 28 36 C 28 20, 72 20, 72 36 C 68 28, 60 25, 50 25 C 40 25, 32 28, 28 36 Z" fill="#1e293b"/>
@@ -196,7 +196,7 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
           </div>
           <div class="user-meta">
             <div class="user-name-row">
-              <h1 class="user-name" id="playerUsername">Alex Vance</h1>
+              <h1 class="user-name" id="playerUsername">Player</h1>
               <span class="tg-verified-badge" id="tgVerifiedBadge" title="Telegram Mini App Verified">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="#24A1DE"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
               </span>

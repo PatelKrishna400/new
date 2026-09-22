@@ -2,13 +2,13 @@
    DAILY STREAK REWARDS (pages/streak/streak.js)
    ========================================================================== */
 const STREAK_DAYS_CONFIG = [
-  { day: 1, icon: '🟢', green: 2, yellow: 0, orange: 0, keys: 0, tickets: 0, cards: 0, label: '+2 Green Fuel' },
-  { day: 2, icon: '🟡', green: 0, yellow: 1, orange: 0, keys: 0, tickets: 0, cards: 0, label: '+1 Yellow Fuel' },
-  { day: 3, icon: '🔑', green: 0, yellow: 0, orange: 0, keys: 1, tickets: 0, cards: 0, label: '+1 Key' },
-  { day: 4, icon: '🎟️', green: 0, yellow: 0, orange: 0, keys: 0, tickets: 1, cards: 0, label: '+1 Ticket' },
-  { day: 5, icon: '🎴', green: 0, yellow: 0, orange: 0, keys: 0, tickets: 0, cards: 1, label: '+1 Card' },
-  { day: 6, icon: '🟠', green: 0, yellow: 0, orange: 1, keys: 0, tickets: 0, cards: 0, label: '+1 Orange Fuel' },
-  { day: 7, icon: '👑', green: 5, yellow: 2, orange: 1, keys: 0, tickets: 0, cards: 0, label: '+5 🟢 • +2 🟡 • +1 🟠' }
+  { day: 1, icon: '🔋', darkgreen: 1, label: '+1 Dark Green Fuel' },
+  { day: 2, icon: '🔷', blueCoins: 10, label: '+10 Blue Coins' },
+  { day: 3, icon: '🔑', keys: 1, label: '+1 Key' },
+  { day: 4, icon: '🎟️', tickets: 1, label: '+1 Ticket' },
+  { day: 5, icon: '🎴', cards: 1, label: '+1 Card' },
+  { day: 6, icon: '🟢', green: 2, label: '+2 Green Fuel' },
+  { day: 7, icon: '💎', diamonds: 1, label: '+1 Diamond' }
 ];
 
 const STREAK_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 Hours
@@ -142,7 +142,14 @@ function claimCurrentStreakDay() {
     const currentDayIndex = currentStreak % 7;
     const todayCfg = STREAK_DAYS_CONFIG[currentDayIndex];
 
+    // Ensure generator and fuelCells exist
+    if (!gameState.energyGenerator) gameState.energyGenerator = { fuelCells: {} };
+    if (!gameState.energyGenerator.fuelCells) gameState.energyGenerator.fuelCells = {};
+
     // Award Fuel Cells
+    if (todayCfg.darkgreen) {
+      gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + todayCfg.darkgreen;
+    }
     if (todayCfg.green) {
       gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + todayCfg.green;
     }
@@ -153,11 +160,27 @@ function claimCurrentStreakDay() {
       gameState.energyGenerator.fuelCells.orange = (gameState.energyGenerator.fuelCells.orange || 0) + todayCfg.orange;
     }
 
+    // Award Blue Coins
+    if (todayCfg.blueCoins) {
+      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.blueCoins;
+      if (gameState.player.diamonds !== undefined) {
+        gameState.player.diamonds = gameState.player.blueCoins;
+      }
+    }
+
+    // Award Diamonds
+    if (todayCfg.diamonds) {
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + todayCfg.diamonds;
+      if (gameState.player.blueCoins !== undefined) {
+        gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.diamonds;
+      }
+    }
+
     // Award Keys
     if (todayCfg.keys) {
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + todayCfg.keys;
       if (gameState.goal) {
-        gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + todayCfg.keys);
+        gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys || 10, (gameState.goal.currentKeys || 0) + todayCfg.keys);
       }
     }
 
@@ -165,14 +188,13 @@ function claimCurrentStreakDay() {
     if (todayCfg.tickets) {
       gameState.player.chestTickets = (gameState.player.chestTickets || 0) + todayCfg.tickets;
       if (gameState.goal) {
-        gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets, (gameState.goal.currentTickets || 0) + todayCfg.tickets);
+        gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets || 10, (gameState.goal.currentTickets || 0) + todayCfg.tickets);
       }
     }
 
     // Award Cards
     if (todayCfg.cards) {
       gameState.player.scratchCards = (gameState.player.scratchCards || 0) + todayCfg.cards;
-      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + todayCfg.cards;
     }
 
     // Advance Streak & Record Timestamp
@@ -201,7 +223,13 @@ function claimCurrentStreakDay() {
 
     updateUI();
     renderStreakView();
+    if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof updateProfileUI === 'function') updateProfileUI();
+    if (typeof updateShopUI === 'function') updateShopUI();
     saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
   };
 
   if (typeof showRewardedAd === 'function') {

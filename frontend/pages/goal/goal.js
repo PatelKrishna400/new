@@ -1,19 +1,20 @@
 /* ==========================================================================
-   GOAL & 1-100 LEVEL MILESTONES CONTROLLER (pages/goal/goal.js)
-   - Goals 1 to 100 with 3 collectible emoji requirements:
-     * 🎟️ Scratch Cards
-     * 🔑 Chest Keys
-     * 🎫 Lottery Tickets
+   GOAL & 1-500 LEVEL MILESTONES CONTROLLER (pages/goal/goal.js)
+   - Goals 1 to 500 with 3 collectible emoji requirements:
+     * 🃏 Cards
+     * 🥢 Dandiyas (Keys)
+     * 🌸 Flowers (Tickets)
    - Level 1 Requirements: Cards = 20, Keys = 50, Tickets = 35
-   - Tiered Level Rewards (Levels 1-10: +1 all, 11-25: +2, 26-50: +3, 51-75: +4, 76-100: +5)
-   - Goal Level 100 Mega Reward:
-     * Unlocks when Goal Level 100 is completed
+   - Level 500 Requirements: Cards = 200,000, Keys = 500,000, Tickets = 350,000 (Level 1 * 10,000)
+   - In-between levels (2 to 499): Deterministic pseudo-random fixed targets
+   - Goal Level 500 Mega Reward:
+     * Unlocks when Goal Level 500 is completed
      * 1,000 Ads Watcher
-     * Mega Prize: 100 Keys, 75 Cards, 150 Tickets, 1,000 Coins
-   - Subtabs: Goals 1-100 List vs Mega Reward
+     * Mega Prize: 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins
+   - Subtabs: Goals 1-500 List vs Mega Reward
    ========================================================================== */
 
-// Helper: Calculate 3-Emoji Requirements for any Level 1 to 100 (Admin Synced)
+// Helper: Calculate 3-Emoji Requirements for any Level 1 to 500 (Admin Synced)
 function getGoalLevelRequirements(lvl) {
   if (typeof getLevelConfig === 'function') {
     const cfg = getLevelConfig(lvl);
@@ -25,14 +26,22 @@ function getGoalLevelRequirements(lvl) {
       };
     }
   }
+  if (typeof getDeterministicGoalTargets === 'function') {
+    return getDeterministicGoalTargets(lvl);
+  }
   if (lvl === 1) {
     return { cards: 20, keys: 50, tickets: 35 };
   }
-  // Fallback progressive scaling curve
-  const cards = 20 + (lvl - 1) * 6 + ((lvl * 11) % 15);
-  const keys = 50 + (lvl - 1) * 9 + ((lvl * 17) % 20);
-  const tickets = 35 + (lvl - 1) * 7 + ((lvl * 13) % 18);
-  return { cards, keys, tickets };
+  if (lvl >= 500) {
+    return { cards: 200000, keys: 500000, tickets: 350000 };
+  }
+  const progress = (lvl - 1) / 499;
+  const mult = Math.pow(10000, progress);
+  return {
+    cards: Math.round(20 * mult),
+    keys: Math.round(50 * mult),
+    tickets: Math.round(35 * mult)
+  };
 }
 
 // Helper: Get Level Rewards configuration
@@ -59,7 +68,10 @@ function getGoalLevelRewardQty(lvl) {
   if (lvl <= 25) return 2;
   if (lvl <= 50) return 3;
   if (lvl <= 75) return 4;
-  return 5;
+  if (lvl <= 100) return 5;
+  if (lvl <= 200) return 8;
+  if (lvl <= 350) return 12;
+  return 20;
 }
 
 // Helper: Get Tier Label
@@ -68,7 +80,7 @@ function getGoalTierLabel(lvl) {
   return `⭐ LEVEL ${lvl} REWARD: +${r.cards || 1} CARDS • +${r.keys || 1} DANDIYAS • +${r.tickets || 1} FLOWERS`;
 }
 
-// Subtab Switcher (Goals 1-100 vs Mega Reward)
+// Subtab Switcher (Goals 1-500 vs Mega Reward)
 window.switchGoalSubtab = function(subtabName) {
   if (!gameState.goalState) gameState.goalState = {};
   gameState.goalState.currentSubtab = subtabName;
@@ -85,7 +97,7 @@ window.switchGoalSubtab = function(subtabName) {
     if (DOM.subtabGoalMegaReward) DOM.subtabGoalMegaReward.classList.add('active');
     if (DOM.goalRoadmapSubView) DOM.goalRoadmapSubView.classList.remove('active');
     if (DOM.goalMegaRewardSubView) DOM.goalMegaRewardSubView.classList.add('active');
-    if (DOM.toggleGoalsBtnText) DOM.toggleGoalsBtnText.textContent = 'GOALS 1-100';
+    if (DOM.toggleGoalsBtnText) DOM.toggleGoalsBtnText.textContent = 'GOALS 1-500';
   }
 
   sfx.playTapSound(1);
@@ -100,7 +112,7 @@ window.toggleGoalSubView = function() {
   }
 };
 
-// Render Goals 1 to 100 Roadmap List (Admin-Controlled & Synced)
+// Render Goals 1 to 500 Roadmap List (Admin-Controlled & Synced)
 window.renderGoalsList = function() {
   if (!DOM.goalsScrollList) return;
   const curLvl = typeof getActiveLevel === 'function' 
@@ -113,7 +125,7 @@ window.renderGoalsList = function() {
   
   let html = '';
 
-  for (let g = 1; g <= 100; g++) {
+  for (let g = 1; g <= 500; g++) {
     const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(g) : null;
     const req = getGoalLevelRequirements(g);
     const rewards = getGoalLevelRewards(g);
@@ -177,8 +189,7 @@ window.renderGoalsList = function() {
           </div>
           <div class="level-text-info">
             <div class="level-title-row">
-              <span class="level-title-text">Goal Level ${g}</span>
-              ${isLockedByAdmin ? '<span class="level-tier-tag" style="color: #ef4444; font-weight: 800;">[LOCKED]</span>' : `<span class="level-tier-tag" style="color: #38bdf8; font-weight: 800;">(+${rewards.cards || 1} All)</span>`}
+              <span class="level-title-text">Level ${g}</span>
             </div>
             <span class="level-xp-req" style="color: #94a3b8; font-size: 10px;">Req: 🃏 ${req.cards} • 🥢 ${req.keys} • 🌸 ${req.tickets}</span>
             ${progressSnippet}
@@ -266,7 +277,7 @@ function executeClaimGoalLevel(targetLvl) {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 1);
     gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || targetLvl * 25);
     gameState.player.xp = (gameState.player.xp || 0) + (rewards.xp || targetLvl * 10);
-    if (targetLvl < 100) {
+    if (targetLvl < 500) {
       gameState.goalState.currentLevel = targetLvl + 1;
       gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     }
@@ -274,7 +285,7 @@ function executeClaimGoalLevel(targetLvl) {
 
   sfx.playLevelUpSound();
 
-  const nextLvl = Math.min(100, targetLvl + 1);
+  const nextLvl = Math.min(500, targetLvl + 1);
   if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
     DOM.sheetTitle.textContent = `🎉 GOAL LEVEL ${targetLvl} COMPLETE!`;
     DOM.sheetContent.innerHTML = `
@@ -300,17 +311,17 @@ function executeClaimGoalLevel(targetLvl) {
 }
 
 // ==========================================================================
-// GOAL LEVEL 100 MEGA REWARD ACTION HANDLER (1,000 Ads -> 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins)
+// GOAL LEVEL 500 MEGA REWARD ACTION HANDLER (1,000 Ads -> 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins)
 // ==========================================================================
 window.handleGoalMegaRewardAction = function() {
   const curLevel = (gameState.goalState && gameState.goalState.currentLevel !== undefined) ? gameState.goalState.currentLevel : 0;
-  const isLvl100Completed = curLevel >= 100 || !!(gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[100]);
+  const isLvl500Completed = curLevel >= 500 || !!(gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[500]);
 
-  if (!isLvl100Completed) {
+  if (!isLvl500Completed) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`Complete Goal Level 100 to unlock the 1,000 Ads Mega Watcher!`);
+      showFloatingToast(`Complete Goal Level 500 to unlock the 1,000 Ads Mega Watcher!`);
     } else {
-      alert(`Complete Goal Level 100 to unlock the 1,000 Ads Mega Watcher! (Current: Level ${curLevel}/100)`);
+      alert(`Complete Goal Level 500 to unlock the 1,000 Ads Mega Watcher! (Current: Level ${curLevel}/500)`);
     }
     return;
   }
@@ -368,12 +379,12 @@ window.handleGoalMegaRewardAction = function() {
     sfx.playLevelUpSound();
 
     if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
-      DOM.sheetTitle.textContent = `👑 LEVEL 100 MEGA GOAL REWARD CLAIMED!`;
+      DOM.sheetTitle.textContent = `👑 LEVEL 500 MEGA GOAL REWARD CLAIMED!`;
       DOM.sheetContent.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; gap: 14px; text-align: center;">
           <div style="font-size: 58px; animation: bounceGlow 1.2s infinite alternate;">👑</div>
           <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Grand Goal Jackpot!</h3>
-          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You reached Level 100, completed 1,000 ads, and claimed the ultimate reward bundle:</p>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You reached Level 500, completed 1,000 ads, and claimed the ultimate reward bundle:</p>
           <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 14px 18px; width: 100%; display: flex; flex-direction: column; gap: 8px;">
             <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">🥢 +100 Dandiyas</div>
             <div style="font-size: 15px; font-weight: 800; color: #ec4899;">🃏 +75 Cards</div>
@@ -392,21 +403,22 @@ window.handleGoalMegaRewardAction = function() {
 };
 
 // Fast Testing Helpers
-window.testSetGoalLevel100 = function() {
+window.testSetGoalLevel500 = function() {
   if (!gameState.goalState) gameState.goalState = {};
-  gameState.goalState.currentLevel = 100;
+  gameState.goalState.currentLevel = 500;
   if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
-  gameState.goalState.claimedGoals[100] = true;
+  gameState.goalState.claimedGoals[500] = true;
   sfx.playLevelUpSound();
   renderGoalsList();
   updateUI();
   saveGame();
 };
+window.testSetGoalLevel100 = window.testSetGoalLevel500;
 
 window.testAddGoalMegaAds = function(count = 100) {
   if (!gameState.goalState) gameState.goalState = {};
-  if (gameState.goalState.currentLevel < 100) {
-    gameState.goalState.currentLevel = 100;
+  if (gameState.goalState.currentLevel < 500) {
+    gameState.goalState.currentLevel = 500;
   }
   gameState.goalState.megaWatchedAds = Math.min(1000, (gameState.goalState.megaWatchedAds || 0) + count);
   sfx.playTapSound(2);
@@ -416,7 +428,7 @@ window.testAddGoalMegaAds = function(count = 100) {
 
 window.testFillAllGoalMegaAds = function() {
   if (!gameState.goalState) gameState.goalState = {};
-  gameState.goalState.currentLevel = 100;
+  gameState.goalState.currentLevel = 500;
   gameState.goalState.megaWatchedAds = 1000;
   sfx.playLevelUpSound();
   updateUI();
@@ -475,7 +487,7 @@ window.testSkipGoalLevel = function() {
   const curLevel = gameState.goalState.currentLevel || 1;
   if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
   gameState.goalState.claimedGoals[curLevel] = true;
-  if (curLevel < 100) {
+  if (curLevel < 500) {
     gameState.goalState.currentLevel = curLevel + 1;
     gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     gameState.goalState.levelAdsWatched = 0;
@@ -510,14 +522,14 @@ function updateGoalViewUI() {
     if (gameState.goalState && gameState.goalState.currentSubtab === 'goals') {
       DOM.toggleGoalsBtnText.textContent = 'MEGA REWARD';
     } else {
-      DOM.toggleGoalsBtnText.textContent = 'GOALS 1-100';
+      DOM.toggleGoalsBtnText.textContent = 'GOALS 1-500';
     }
   }
 
-  // Step 1: Goal Level 100 Status
-  const isLvl100Completed = curLevel >= 100 || !!(gameState.goalState && gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[100]);
+  // Step 1: Goal Level 500 Status
+  const isLvl500Completed = curLevel >= 500 || !!(gameState.goalState && gameState.goalState.claimedGoals && gameState.goalState.claimedGoals[500]);
   if (DOM.goalMegaStep1Badge) {
-    if (isLvl100Completed) {
+    if (isLvl500Completed) {
       DOM.goalMegaStep1Badge.textContent = 'COMPLETED';
       DOM.goalMegaStep1Badge.className = 'mega-step-badge completed';
     } else {
@@ -527,11 +539,11 @@ function updateGoalViewUI() {
   }
 
   if (DOM.goalMegaStep1SubText) {
-    DOM.goalMegaStep1SubText.textContent = `Current: Goal Level ${curLevel} / 100`;
+    DOM.goalMegaStep1SubText.textContent = `Current: Goal Level ${curLevel} / 500`;
   }
 
   if (DOM.goalMegaStep1Lock) {
-    DOM.goalMegaStep1Lock.style.display = isLvl100Completed ? 'none' : 'block';
+    DOM.goalMegaStep1Lock.style.display = isLvl500Completed ? 'none' : 'block';
   }
 
   // Step 2: 1,000 Ads Progress
@@ -553,9 +565,9 @@ function updateGoalViewUI() {
   // Master Mega Action Button State
   const isClaimed = !!(gameState.goalState && gameState.goalState.megaRewardClaimed);
   if (DOM.goalMegaActionBtn) {
-    if (!isLvl100Completed) {
+    if (!isLvl500Completed) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn disabled';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `REACH GOAL LEVEL 100 TO UNLOCK AD WATCHER`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `REACH GOAL LEVEL 500 TO UNLOCK AD WATCHER`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'block';
     } else if (watchedAds < 1000) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn';

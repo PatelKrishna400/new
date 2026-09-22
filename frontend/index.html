@@ -131,7 +131,7 @@
                 </defs>
                 <rect width="100" height="100" fill="#0f172a" />
                 <circle cx="50" cy="50" r="46" fill="url(#avatarGrad)" opacity="0.3"/>
-                <!-- Stylized Alex Vance Head & Torso -->
+                <!-- Stylized Player Portrait Avatar -->
                 <circle cx="50" cy="40" r="22" fill="url(#skinGrad)"/>
                 <!-- Hair -->
                 <path d="M 28 36 C 28 20, 72 20, 72 36 C 68 28, 60 25, 50 25 C 40 25, 32 28, 28 36 Z" fill="#1e293b"/>
@@ -151,7 +151,7 @@
           </div>
           <div class="user-meta">
             <div class="user-name-row">
-              <h1 class="user-name" id="playerUsername">Alex Vance</h1>
+              <h1 class="user-name" id="playerUsername">Player</h1>
               <span class="tg-verified-badge" id="tgVerifiedBadge" title="Telegram Mini App Verified">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="#24A1DE"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
               </span>
@@ -703,6 +703,85 @@
                 </div>
               </section>
       
+              <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
+              <section class="home-leaderboard-card" id="homeLeaderboardSection">
+                <!-- Leaderboard Header Strip -->
+                <div class="hlb-header">
+                  <div class="hlb-title-wrap">
+                    <div class="hlb-trophy-icon">🏆</div>
+                    <div class="hlb-title-info">
+                      <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
+                      <span class="hlb-subtitle">Live Tap Rankings &amp; Community Champions</span>
+                    </div>
+                  </div>
+                  <!-- Live Indicator -->
+                  <div class="hlb-live-indicator">
+                    <span class="hlb-live-pulse-dot"></span>
+                    <span class="hlb-live-text">LIVE</span>
+                  </div>
+                </div>
+      
+                <!-- Category Filter Tabs (Taps, Coins, Level, Blue Coins) -->
+                <div class="hlb-tabs-strip">
+                  <button type="button" class="hlb-tab-btn active" id="hlbTabTaps" onclick="switchHomeLeaderboardTab('taps')">
+                    <span class="hlb-tab-icon">⚡</span>
+                    <span class="hlb-tab-name">Tap Count</span>
+                  </button>
+                  <button type="button" class="hlb-tab-btn" id="hlbTabCoins" onclick="switchHomeLeaderboardTab('coins')">
+                    <span class="hlb-tab-icon">🪙</span>
+                    <span class="hlb-tab-name">Coins</span>
+                  </button>
+                  <button type="button" class="hlb-tab-btn" id="hlbTabLevel" onclick="switchHomeLeaderboardTab('level')">
+                    <span class="hlb-tab-icon">⭐</span>
+                    <span class="hlb-tab-name">Level</span>
+                  </button>
+                  <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
+                    <span class="hlb-tab-icon">🔷</span>
+                    <span class="hlb-tab-name">Blue</span>
+                  </button>
+                </div>
+      
+                <!-- Player's Own Live Ranking & Real-Time Count Card -->
+                <div class="hlb-my-rank-card" id="hlbMyRankCard">
+                  <div class="hlb-my-rank-left">
+                    <div class="hlb-rank-badge" id="hlbMyRankBadge">#1</div>
+                    <div class="hlb-my-avatar-wrap">
+                      <span class="hlb-my-avatar" id="hlbMyAvatar">👑</span>
+                    </div>
+                    <div class="hlb-my-info">
+                      <div class="hlb-my-name-row">
+                        <span class="hlb-my-name" id="hlbMyName">Player (You)</span>
+                        <span class="hlb-you-tag">YOU</span>
+                      </div>
+                      <span class="hlb-my-handle" id="hlbMyHandle">@player</span>
+                    </div>
+                  </div>
+                  <div class="hlb-my-score-wrap">
+                    <div class="hlb-my-score-value" id="hlbMyScoreValue">0</div>
+                    <div class="hlb-my-score-unit" id="hlbMyScoreUnit">TAPS ⚡</div>
+                  </div>
+                </div>
+      
+                <!-- Top Players Leaderboard List -->
+                <div class="hlb-list-wrap" id="hlbListWrap">
+                  <!-- Dynamically populated by renderHomeLeaderboard() -->
+                </div>
+      
+                <!-- Footer Quick Stats Strip -->
+                <div class="hlb-footer-stats">
+                  <div class="hlb-footer-item">
+                    <span class="hlb-footer-icon">⚡</span>
+                    <span class="hlb-footer-label">Total Taps:</span>
+                    <strong class="hlb-footer-val" id="hlbTotalCommunityTaps">1,480,250</strong>
+                  </div>
+                  <div class="hlb-footer-item">
+                    <span class="hlb-footer-icon">👥</span>
+                    <span class="hlb-footer-label">Active Racers:</span>
+                    <strong class="hlb-footer-val" id="hlbActiveRacers">24,590</strong>
+                  </div>
+                </div>
+              </section>
+      
               <!-- Home Action Pop-up Modal Backdrop & Dialog -->
               <div class="home-popup-backdrop" id="homePopupBackdrop" onclick="closeHomeActionPopup(event)">
                 <div class="home-popup-card" id="homePopupCard" onclick="event.stopPropagation()">
@@ -770,7 +849,7 @@
                     </svg>
                   </div>
                   <div class="metric-text-box">
-                    <span class="metric-value rate-val" id="fuelRateVal">0.01 <span class="rate-unit">/ sec</span></span>
+                    <span class="metric-value rate-val" id="fuelRateVal">0.001 <span class="rate-unit">/ sec</span></span>
                   </div>
                 </div>
               </section>
@@ -919,7 +998,35 @@
                   </div>
                 </div>
       
-                <!-- 6. Pink Boost Fuel Cell -->
+                <!-- 6. Dark Red Fuel Cell -->
+                <div class="fuel-card darkred-fuel-card" id="fuelCardDarkRed">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box darkred-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                          <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                          <rect x="6" y="7" width="4" height="4" rx="1"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #ef4444;">Dark Red Fuel</h3>
+                          <span class="fuel-cell-badge darkred-badge-pill" id="darkredCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #f87171;">30s Generator @ 0.01 EP / Sec</p>
+                        <div class="boost-status-container" id="darkredStatusInfo" style="display: none;"></div>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn darkred-btn" id="btnUseDarkRedFuel" onclick="executeFuelButtonAction('darkred')">
+                        <span id="btnDarkRedText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+      
+                <!-- 7. Pink Boost Fuel Cell -->
                 <div class="fuel-card pink-fuel-card" id="fuelCardPink">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -947,7 +1054,7 @@
                   </div>
                 </div>
       
-                <!-- 7. Purple Boost Fuel Cell -->
+                <!-- 8. Purple Boost Fuel Cell -->
                 <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1024,6 +1131,29 @@
           <div class="monthly-banner-timer-badge">
             <span class="monthly-timer-dot"></span>
             <span id="monthlyCompetitionTimer">29d 23h 59m 59s</span>
+          </div>
+        </div>
+      
+        <!-- Website Task Full Page Note Banner (How-To Steps Removed) -->
+        <div class="tasks-web-guide-banner" id="websiteGuideBanner" style="display: none;">
+          <div class="web-guide-notes-card">
+            <div class="web-notes-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="web-notes-icon">📌</span>
+                <strong class="web-notes-title">WEBSITE QUEST NOTE &amp; RULES</strong>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="web-guide-badge">🌐 SPONSOR MISSIONS</span>
+                <span class="web-guide-reward-pill">+100 Diamonds 💎</span>
+              </div>
+            </div>
+            <ul class="web-notes-list">
+              <li><strong>🪙 1,000 Coins Entry:</strong> 1,000 Coins are consumed to unlock the quest and activate site access.</li>
+              <li><strong>🌐 Confidential Link:</strong> Tap "Open" to visit the sponsor destination. The link URL is kept strictly confidential.</li>
+              <li><strong>🔍 Secret 4-Digit PIN:</strong> Browse the partner website carefully to find the hidden 4-digit code.</li>
+              <li><strong>⚠️ Single Verification Attempt:</strong> You have only 1 attempt. Entering an incorrect PIN eliminates the task and forfeits rewards!</li>
+              <li><strong>💎 Diamond Reward:</strong> Entering the correct 4-digit code in "Verification" awards +100 Diamonds instantly.</li>
+            </ul>
           </div>
         </div>
       
@@ -1200,7 +1330,7 @@
             <!-- Big Avatar Container with Camera Badge -->
             <div class="profile-avatar-container">
               <div class="profile-avatar-large" id="profileLargeAvatar">
-                <!-- Stylized Realistic Portrait Alex Vance -->
+                <!-- Stylized Player Portrait Avatar -->
                 <svg viewBox="0 0 120 120" class="profile-avatar-svg" id="profileAvatarSvg">
                   <defs>
                     <linearGradient id="pAvatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1246,7 +1376,7 @@
       
             <!-- Name & Pencil Edit Button Row -->
             <div class="profile-name-row">
-              <h2 class="profile-username" id="profileDisplayName">Alex Vance</h2>
+              <h2 class="profile-username" id="profileDisplayName">Player</h2>
               <button class="profile-pencil-edit-btn" id="btnEditProfilePencil" onclick="openEditProfileModal()" title="Edit Profile Data">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
@@ -1256,7 +1386,7 @@
       
             <!-- Handle -->
             <div class="profile-handle" id="profileHandle">
-              <span class="handle-at">@</span> alex_blue
+              <span class="handle-at">@</span> player
             </div>
       
             <!-- Fixed User Code Banner -->
@@ -1325,91 +1455,7 @@
       
           </section>
       
-          <!-- Cloud Account Security & Profile Code Login Card -->
-          <section class="profile-security-card" style="background: linear-gradient(135deg, rgba(8, 20, 48, 0.95) 0%, rgba(4, 12, 32, 0.98) 100%); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 16px 18px; margin-top: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-              <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 10px; border-radius: 9999px;">
-                <span>🔐</span>
-                <span>ACCOUNT SECURITY & CLOUD LOGIN</span>
-              </div>
-              <span style="font-size: 10px; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 9999px;">Firebase Protected</span>
-            </div>
       
-            <!-- Credentials Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(3, 8, 24, 0.7); border: 1px solid rgba(25, 55, 120, 0.5); border-radius: 14px; padding: 12px;">
-              <div>
-                <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Profile Login Code</div>
-                <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: #38bdf8;" id="profileCodeVal">ET-000000</span>
-                  <button onclick="copyPlayerProfileCode()" style="background: none; border: none; cursor: pointer; font-size: 12px;" title="Copy Profile Code">📋</button>
-                </div>
-              </div>
-      
-              <div>
-                <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Username</div>
-                <div style="font-size: 13px; font-weight: 800; color: #fff; margin-top: 2px;" id="profileUsernameVal">Alex Vance</div>
-              </div>
-      
-              <div>
-                <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Telegram Identity</div>
-                <div style="display: flex; flex-direction: column; margin-top: 2px;">
-                  <div style="font-size: 12px; font-weight: 700; color: #60a5fa; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="profileTelegramVal">@alex_blue</div>
-                  <div style="font-size: 9.5px; font-weight: 700; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="profileTelegramIdBadge">ID: Not linked</div>
-                </div>
-              </div>
-      
-              <div>
-                <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Mobile Number</div>
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 2px;">
-                  <span style="font-size: 12px; font-weight: 700; color: #34d399; font-family: 'JetBrains Mono', monospace;" id="profileMobileVal">Not linked</span>
-                  <span id="profileMobileActionWrap">
-                    <button type="button" onclick="openPhoneVerificationModal()" id="btnVerifyPhoneStatus" class="feature-btn" style="padding: 2px 7px; font-size: 9.5px; font-weight: 800; border-radius: 9999px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); color: #34d399;">
-                      Verify 📱
-                    </button>
-                  </span>
-                </div>
-              </div>
-      
-              <!-- Telegram MTProto Verified Email -->
-              <div style="grid-column: span 2; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(25, 55, 120, 0.4); padding-top: 8px; margin-top: 2px;">
-                <div>
-                  <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Linked Email Address</div>
-                  <div style="font-size: 12px; font-weight: 700; color: #f8fafc; font-family: 'JetBrains Mono', monospace; margin-top: 2px;" id="profileEmailVal">Not linked</div>
-                </div>
-                <div id="profileEmailActionWrap" style="display: flex; align-items: center; gap: 6px;">
-                  <button type="button" onclick="openEmailVerificationModal()" id="btnVerifyEmailStatus" class="feature-btn" style="padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
-                    <span>✉️ Verify Email</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-      
-            <!-- Active Sessions & Device Authorization Status -->
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(2, 6, 23, 0.8); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 10px 12px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="session-pulsing-dot"></span>
-                <div style="display: flex; flex-direction: column;">
-                  <span style="font-size: 11px; font-weight: 800; color: #f8fafc;" id="currentDeviceModelText">Current Device</span>
-                  <span style="font-size: 9.5px; font-weight: 600; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="currentDeviceSessionHashText">Session ID: #--</span>
-                </div>
-              </div>
-              <button type="button" onclick="openAuthorizationsModal()" class="feature-btn" style="padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; display: inline-flex; align-items: center; gap: 5px;">
-                <span>📱</span>
-                <span>Devices (<span id="activeSessionsCountBadge">1</span>)</span>
-              </button>
-            </div>
-      
-            <div style="display: flex; gap: 8px;">
-              <button onclick="openAccountSecurityModal()" class="feature-btn" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
-                <span>🛡️</span>
-                <span>Link / Edit Security</span>
-              </button>
-              <button onclick="openLoginWithCodeModal()" class="feature-btn" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; border-radius: 12px; background: rgba(14, 28, 64, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
-                <span>🔑</span>
-                <span>Login with Code</span>
-              </button>
-            </div>
-          </section>
       
           <!-- Referral Promo Code & Invite Squad Card -->
           <section class="fren-squad-card">
@@ -1499,7 +1545,7 @@
                   <span class="curr-amount" id="shopCoinVal">0</span>
                 </div>
                 <div class="shop-curr-pill diamond-pill-glow" title="Blue Coins" style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4;">
-                  <span class="curr-icon">💎</span>
+                  <span class="curr-icon">🔷</span>
                   <span class="curr-amount" id="shopBlueCoinVal">0</span>
                 </div>
               </div>
@@ -1510,18 +1556,18 @@
             </div>
           </section>
       
-          <!-- ==================== SECTION: KEYS, TICKETS & VAULT PASSES ==================== -->
+          <!-- ==================== SECTION: ENERGY BOOSTER & VAULT PASSES ==================== -->
           <section class="shop-section" id="shopPassesSection">
             <div class="shop-section-header">
               <div class="section-title-wrap">
-                <span class="section-icon">🗝️</span>
-                <h3 class="section-title">Keys & Passes Vault</h3>
+                <span class="section-icon">⚡</span>
+                <h3 class="section-title">Energy Booster &amp; Vault Passes</h3>
               </div>
-              <span class="section-tag">200 BLUE COIN EXCHANGE</span>
+              <span class="section-tag">FREE AD &amp; STORE</span>
             </div>
       
             <div class="shop-items-grid">
-              <!-- 1. Mystery Chest Key -->
+              <!-- 1. Mystery Chest Key (500 Blue Coins or 100 Gold Coins) -->
               <div class="shop-item-card pass-shop-card border-key">
                 <div class="shop-item-top">
                   <div class="item-icon-box gold-box"><span class="item-emoji">🔑</span></div>
@@ -1529,25 +1575,27 @@
                 </div>
                 <div class="shop-item-details">
                   <h4 class="item-name" style="color: #fbbf24;">Mystery Chest Key</h4>
-                  <p class="item-desc">Unlock Mystery Chest for rare jackpot prizes & loot</p>
+                  <p class="item-desc">Unlock Mystery Chest for rare jackpot prizes &amp; loot</p>
                 </div>
                 <div class="shop-item-bottom">
-                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
-                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('key', 200)" title="Buy 1 Key for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
-                      <span class="method-icon">💎</span>
-                      <span class="method-label">200 Blue</span>
-                      <span class="method-gain">+1 Key</span>
+                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <!-- Option 1: 500 Blue Coins -->
+                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('key', 500)" title="Buy 1 Key for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.4)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
+                      <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Key 🔑</span>
                     </button>
-                    <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('chestKey')" title="Buy 1 Key for 50 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
-                      <span class="method-icon">🪙</span>
-                      <span class="method-label">50 Coins</span>
-                      <span class="method-gain">+1 Key</span>
+                    <!-- Option 2: 100 Gold Coins -->
+                    <button class="fuel-buy-method-btn" onclick="buyPassItem('key', 100)" title="Buy 1 Key for 100 Gold Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.4)); border: 1.5px solid #f59e0b; color: #fde047; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🪙</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">100 Coins</span>
+                      <span class="method-gain" style="background: #f59e0b; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Key 🔑</span>
                     </button>
                   </div>
                 </div>
               </div>
       
-              <!-- 2. Lucky Spin Ticket -->
+              <!-- 2. Lucky Spin Ticket (500 Blue Coins or 100 Gold Coins) -->
               <div class="shop-item-card pass-shop-card border-ticket">
                 <div class="shop-item-top">
                   <div class="item-icon-box cyan-box"><span class="item-emoji">🎡</span></div>
@@ -1555,71 +1603,77 @@
                 </div>
                 <div class="shop-item-details">
                   <h4 class="item-name" style="color: #38bdf8;">Lucky Spin Ticket</h4>
-                  <p class="item-desc">Spin the Lucky Fortune Wheel for instant cash & gems</p>
+                  <p class="item-desc">Spin the Lucky Fortune Wheel for instant cash &amp; gems</p>
                 </div>
                 <div class="shop-item-bottom">
-                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
-                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('ticket', 200)" title="Buy 1 Ticket for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
-                      <span class="method-icon">💎</span>
-                      <span class="method-label">200 Blue</span>
-                      <span class="method-gain">+1 Ticket</span>
+                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <!-- Option 1: 500 Blue Coins -->
+                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('ticket', 500)" title="Buy 1 Ticket for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.4)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
+                      <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Ticket 🎟️</span>
                     </button>
-                    <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('spinTicket')" title="Buy 1 Ticket for 25 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
-                      <span class="method-icon">🪙</span>
-                      <span class="method-label">25 Coins</span>
-                      <span class="method-gain">+1 Ticket</span>
+                    <!-- Option 2: 100 Gold Coins -->
+                    <button class="fuel-buy-method-btn" onclick="buyPassItem('ticket', 100)" title="Buy 1 Ticket for 100 Gold Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.4)); border: 1.5px solid #f59e0b; color: #fde047; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🪙</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">100 Coins</span>
+                      <span class="method-gain" style="background: #f59e0b; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Ticket 🎟️</span>
                     </button>
                   </div>
                 </div>
               </div>
       
-              <!-- 3. Cyber Dragon Egg -->
+              <!-- 3. Cyber Dragon Eggs (Watch 1 Ad = 10 Eggs OR 100 Blue Coins = 20 Eggs) -->
               <div class="shop-item-card pass-shop-card border-egg">
                 <div class="shop-item-top">
                   <div class="item-icon-box green-box"><span class="item-emoji">🥚</span></div>
                   <div class="item-badge-pill" id="shopOwnedEggs">0 Owned</div>
                 </div>
                 <div class="shop-item-details">
-                  <h4 class="item-name" style="color: #34d399;">Cyber Dragon Egg</h4>
-                  <p class="item-desc">Hatch 16 mystery dragon eggs for cards, keys & coins</p>
+                  <h4 class="item-name" style="color: #34d399;">Cyber Dragon Eggs</h4>
+                  <p class="item-desc">Hatch mystery dragon eggs for cards, keys, fuel &amp; coins</p>
                 </div>
                 <div class="shop-item-bottom">
-                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
-                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('egg', 200)" title="Buy 1 Egg for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
-                      <span class="method-icon">💎</span>
-                      <span class="method-label">200 Blue</span>
-                      <span class="method-gain">+1 Egg</span>
+                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <!-- Option 1: Watch Ad -> +10 Eggs -->
+                    <button class="fuel-buy-method-btn" onclick="buyEggsWithAd()" title="Watch 1 Ad for 10 Eggs" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35)); border: 1.5px solid #10b981; color: #34d399; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🎬</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">Watch Ad</span>
+                      <span class="method-gain" style="background: #10b981; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+10 Eggs 🥚</span>
                     </button>
-                    <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('egg')" title="Buy 1 Egg for 75 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
-                      <span class="method-icon">🪙</span>
-                      <span class="method-label">75 Coins</span>
-                      <span class="method-gain">+1 Egg</span>
+                    <!-- Option 2: 100 Blue Coins -> +20 Eggs -->
+                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyEggsWithBlueCoins(100, 20)" title="Buy 20 Eggs for 100 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.35)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">100 Blue</span>
+                      <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+20 Eggs 🥚</span>
                     </button>
                   </div>
                 </div>
               </div>
       
-              <!-- 4. Lucky Scratch Card -->
+              <!-- 4. Lucky Scratch Card (500 Blue Coins or 100 Gold Coins) -->
               <div class="shop-item-card pass-shop-card border-scratch">
                 <div class="shop-item-top">
-                  <div class="item-icon-box purple-box"><span class="item-emoji">🎟️</span></div>
+                  <div class="item-icon-box purple-box"><span class="item-emoji">🎴</span></div>
                   <div class="item-badge-pill" id="shopOwnedScratch">0 Owned</div>
                 </div>
                 <div class="shop-item-details">
                   <h4 class="item-name" style="color: #c084fc;">Scratch Card</h4>
-                  <p class="item-desc">Scratch & match 3 icons to win jackpot coins & gems</p>
+                  <p class="item-desc">Scratch &amp; match 3 cyber icons to win jackpot coins &amp; gems</p>
                 </div>
                 <div class="shop-item-bottom">
-                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr;">
-                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('scratchCard', 200)" title="Buy 1 Scratch Card for 200 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.3)); border: 1.5px solid #06b6d4; color: #38bdf8;">
-                      <span class="method-icon">💎</span>
-                      <span class="method-label">200 Blue</span>
-                      <span class="method-gain">+1 Card</span>
+                  <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <!-- Option 1: 500 Blue Coins -->
+                    <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('scratchCard', 500)" title="Buy 1 Scratch Card for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(192, 132, 252, 0.25), rgba(168, 85, 247, 0.4)); border: 1.5px solid #c084fc; color: #e9d5ff; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
+                      <span class="method-gain" style="background: #c084fc; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Card 🎴</span>
                     </button>
-                    <button class="fuel-buy-method-btn coin-buy-btn" onclick="buyPassItem('scratchCard')" title="Buy 1 Card for 35 Regular Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25)); border: 1.5px solid #f59e0b; color: #fbbf24;">
-                      <span class="method-icon">🪙</span>
-                      <span class="method-label">35 Coins</span>
-                      <span class="method-gain">+1 Card</span>
+                    <!-- Option 2: 100 Gold Coins -->
+                    <button class="fuel-buy-method-btn" onclick="buyPassItem('scratchCard', 100)" title="Buy 1 Scratch Card for 100 Gold Coins" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.4)); border: 1.5px solid #f59e0b; color: #fde047; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span class="method-icon" style="font-size: 15px;">🪙</span>
+                      <span class="method-label" style="font-weight: 800; font-size: 12px;">100 Coins</span>
+                      <span class="method-gain" style="background: #f59e0b; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Card 🎴</span>
                     </button>
                   </div>
                 </div>
@@ -1637,51 +1691,9 @@
               <span class="section-tag" id="fuelActiveTag">ENERGY GENERATORS</span>
             </div>
       
-            <!-- Single Horizontal Row for all 6 Color Tabs -->
-            <div class="fuel-tabs-container">
-              <div class="fuel-tabs-row" id="fuelTabsRow">
-                <!-- 1. Green -->
-                <button type="button" class="fuel-color-tab active" data-color="green" onclick="switchFuelTab('green')">
-                  <span class="tab-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
-                  <span class="tab-name">Green</span>
-                  <span class="tab-multiplier">×1</span>
-                </button>
-                <!-- 2. Yellow -->
-                <button type="button" class="fuel-color-tab" data-color="yellow" onclick="switchFuelTab('yellow')">
-                  <span class="tab-dot" style="background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
-                  <span class="tab-name">Yellow</span>
-                  <span class="tab-multiplier">×1.5</span>
-                </button>
-                <!-- 3. Orange -->
-                <button type="button" class="fuel-color-tab" data-color="orange" onclick="switchFuelTab('orange')">
-                  <span class="tab-dot" style="background: #f97316; box-shadow: 0 0 8px #f97316;"></span>
-                  <span class="tab-name">Orange</span>
-                  <span class="tab-multiplier">×2.5</span>
-                </button>
-                <!-- 4. Pink -->
-                <button type="button" class="fuel-color-tab" data-color="pink" onclick="switchFuelTab('pink')">
-                  <span class="tab-dot" style="background: #ec4899; box-shadow: 0 0 8px #ec4899;"></span>
-                  <span class="tab-name">Pink</span>
-                  <span class="tab-multiplier">×7</span>
-                </button>
-                <!-- 5. Purple -->
-                <button type="button" class="fuel-color-tab" data-color="purple" onclick="switchFuelTab('purple')">
-                  <span class="tab-dot" style="background: #a855f7; box-shadow: 0 0 8px #a855f7;"></span>
-                  <span class="tab-name">Purple</span>
-                  <span class="tab-multiplier">×8.5</span>
-                </button>
-                <!-- 6. Red -->
-                <button type="button" class="fuel-color-tab" data-color="red" onclick="switchFuelTab('red')">
-                  <span class="tab-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
-                  <span class="tab-name">Red</span>
-                  <span class="tab-multiplier">×5</span>
-                </button>
-              </div>
-            </div>
-      
-            <!-- Active Fuel Cell Display & Purchase Card -->
-            <div class="fuel-active-card" id="fuelActiveCard">
-              <!-- Injected dynamically via renderFuelShopTab() -->
+            <!-- All 8 Energy Fuel Cells Listed Vertically (Dark Green, Green, Yellow, Orange, Pink, Purple, Red, Dark Red - Pure Currencies, Zero Ads) -->
+            <div class="fuel-shop-vertical-list" id="fuelShopCardsList">
+              <!-- Injected dynamically via renderAllFuelShopCards() -->
             </div>
           </section>
       
@@ -1741,7 +1753,7 @@
                     <div class="reel-player-row">
                       <div class="reel-player-avatar" id="reelPreviewAvatar">⚡</div>
                       <div class="reel-player-text">
-                        <span class="reel-player-name" id="reelPreviewName">Alex Vance</span>
+                        <span class="reel-player-name" id="reelPreviewName">Player</span>
                         <span class="reel-player-stats" id="reelPreviewStats">Lv.1 • Tap Power +1 • 1,000 EP</span>
                       </div>
                     </div>
@@ -1749,7 +1761,7 @@
                     <!-- Promo Code Callout -->
                     <div class="reel-promo-callout">
                       <span class="promo-tag-lbl">🎁 USE MY CODE FOR +10 🪙:</span>
-                      <span class="promo-tag-code" id="reelPreviewPromoCode">alexvance_7842</span>
+                      <span class="promo-tag-code" id="reelPreviewPromoCode">player_code</span>
                     </div>
       
                     <div class="reel-social-hashtags">
@@ -1958,15 +1970,6 @@
                     <span id="megaActionBtnText">REACH LEVEL 100 TO UNLOCK AD WATCHER</span>
                   </button>
       
-                  <!-- Test Shortcut Helpers -->
-                  <div class="mega-test-tools">
-                    <button class="test-tool-btn" onclick="testSetLevel100()">[Test] Set Lv. 100</button>
-                    <span class="test-tool-dot">•</span>
-                    <button class="test-tool-btn" onclick="testAddAds(100)">[Test] +100 Ads</button>
-                    <span class="test-tool-dot">•</span>
-                    <button class="test-tool-btn" onclick="testFillAllAds()">[Test] Fill 1,000 Ads</button>
-                  </div>
-      
                 </section>
       
               </div>
@@ -2007,6 +2010,87 @@
                   <span>🪙 <span id="rewardCoinsBal">0</span></span>
                 </div>
               </div>
+      
+              <!-- ==================== 1. FIRST: ADMIN MEGA REWARDS ==================== -->
+              <section class="rewards-grand-rectangle-card mega-grand-card" id="rewardTabMega" onclick="switchPage('megaReward')">
+                <div class="grand-vault-aura mega-aura"></div>
+                
+                <div class="grand-vault-emblem-wrap">
+                  <div class="grand-vault-circle mega-circle">
+                    <!-- 3D Luxury Mega Crown & Diamond Emblem -->
+                    <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                      <defs>
+                        <linearGradient id="megaGold3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#fffbeb"/>
+                          <stop offset="25%" stop-color="#fde047"/>
+                          <stop offset="60%" stop-color="#f59e0b"/>
+                          <stop offset="100%" stop-color="#78350f"/>
+                        </linearGradient>
+                        <radialGradient id="megaCyanCore" cx="40%" cy="35%" r="65%">
+                          <stop offset="0%" stop-color="#e0f2fe"/>
+                          <stop offset="35%" stop-color="#38bdf8"/>
+                          <stop offset="70%" stop-color="#0284c7"/>
+                          <stop offset="100%" stop-color="#082f49"/>
+                        </radialGradient>
+                      </defs>
+                      <!-- Radiating Golden Ring -->
+                      <circle cx="50" cy="50" r="46" fill="none" stroke="url(#megaGold3d)" stroke-width="2.5" opacity="0.75"/>
+                      <circle cx="50" cy="50" r="41" fill="#070d1e" stroke="#1e293b" stroke-width="1.5"/>
+                      <!-- Background Diamond Ray Star -->
+                      <polygon points="50,15 54,36 75,36 58,49 64,70 50,57 36,70 42,49 25,36 46,36" fill="url(#megaCyanCore)" opacity="0.4"/>
+                      <!-- 3D Imperial Mega Crown -->
+                      <path d="M22 66 L28 38 L40 50 L50 28 L60 50 L72 38 L78 66 Z" fill="url(#megaGold3d)" stroke="#78350f" stroke-width="1.5" filter="drop-shadow(0 6px 8px rgba(0,0,0,0.6))"/>
+                      <!-- Crown Base Cushion -->
+                      <rect x="22" y="66" width="56" height="10" rx="3" fill="#0f172a" stroke="url(#megaGold3d)" stroke-width="1.5"/>
+                      <circle cx="28" cy="71" r="2.2" fill="#38bdf8"/>
+                      <circle cx="39" cy="71" r="2.2" fill="#f43f5e"/>
+                      <circle cx="50" cy="71" r="2.5" fill="#fde047"/>
+                      <circle cx="61" cy="71" r="2.2" fill="#34d399"/>
+                      <circle cx="72" cy="71" r="2.2" fill="#a855f7"/>
+                      <!-- Crown Jewels on Points -->
+                      <circle cx="28" cy="38" r="3.2" fill="#38bdf8"/>
+                      <circle cx="50" cy="28" r="4.2" fill="#ffffff"/>
+                      <circle cx="72" cy="38" r="3.2" fill="#38bdf8"/>
+                      <circle cx="50" cy="50" r="5" fill="#38bdf8"/>
+                      <polygon points="50,45 54,50 50,55 46,50" fill="#ffffff"/>
+                    </svg>
+                  </div>
+                  <div class="grand-vault-pill-tag mega-tag">👑 ADMIN MEGA REWARDS 👑</div>
+                </div>
+      
+                <div class="rewards-rect-badge mega-badge">
+                  <span class="sparkle-icon">💎</span>
+                  <span>REAL PRIZES &amp; GIFT VOUCHERS</span>
+                </div>
+      
+                <h3 class="rewards-rect-title">Mega Rewards Catalog</h3>
+      
+                <div class="rewards-stats-strip">
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">DIAMONDS</span>
+                    <span class="stat-item-val cyan" id="rewardMegaDiamonds">0 💎</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">CATEGORIES</span>
+                    <span class="stat-item-val gold">9 Categories</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">ADMIN ITEMS</span>
+                    <span class="stat-item-val green" id="rewardAdminItemCount">0 Listed</span>
+                  </div>
+                </div>
+      
+                <!-- Live Shelf of Admin-Added Products from Firebase (/mega_rewards) -->
+                <div class="reward-admin-products-shelf" id="rewardAdminMegaShelf" onclick="event.stopPropagation()">
+                  <!-- Rendered dynamically by reward.js from window.cloudMegaRewards -->
+                </div>
+      
+                <button class="rewards-master-action-btn mega-btn" onclick="switchPage('megaReward'); event.stopPropagation();">
+                  <span>👑 EXPLORE 9 MEGA CATEGORIES</span>
+                </button>
+              </section>
       
               <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
               <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
@@ -2350,13 +2434,13 @@
                 </button>
               </div>
       
-              <!-- Subtabs Switcher: Goals 1-100 vs Mega Reward -->
+              <!-- Subtabs Switcher: Goals 1-500 vs Mega Reward -->
               <div class="xp-subtab-header">
                 <button class="xp-subtab-btn" id="subtabGoalsList" onclick="switchGoalSubtab('goals')">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
                   </svg>
-                  <span>Goals 1 - 100</span>
+                  <span>Goals 1 - 500</span>
                 </button>
       
                 <button class="xp-subtab-btn active" id="subtabGoalMegaReward" onclick="switchGoalSubtab('mega')">
@@ -2397,8 +2481,8 @@
                     <span>100 DANDIYAS • 75 CARDS • 150 FLOWERS • 1,000 COINS</span>
                   </div>
       
-                  <h3 class="mega-card-title">Level 100 Mega Goal Prize</h3>
-                  <p class="mega-card-desc">Complete Goal Level 100, then watch 1,000 ads to claim your ultimate reward: 100 Dandiyas, 75 Cards, 150 Flowers, and 1,000 Coins!</p>
+                  <h3 class="mega-card-title">Level 500 Mega Goal Prize</h3>
+                  <p class="mega-card-desc">Complete Goal Level 500, then watch 1,000 ads to claim your ultimate reward: 100 Dandiyas, 75 Cards, 150 Flowers, and 1,000 Coins!</p>
       
                   <!-- Step 1 Card -->
                   <div class="mega-step-card" id="goalMegaStep1Card">
@@ -2409,11 +2493,11 @@
                     </div>
                     <div class="mega-step-body">
                       <div class="mega-step-header">
-                        <span class="mega-step-title">Step 1: Complete Goal Level 100</span>
+                        <span class="mega-step-title">Step 1: Complete Goal Level 500</span>
                         <span class="mega-step-badge locked" id="goalMegaStep1Badge">LOCKED</span>
                       </div>
                       <div class="mega-step-sub">
-                        <span id="goalMegaStep1SubText">Current: Goal Level 1 / 100</span>
+                        <span id="goalMegaStep1SubText">Current: Goal Level 1 / 500</span>
                         <svg class="step-lock-icon" id="goalMegaStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -2453,27 +2537,18 @@
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <span id="goalMegaActionBtnText">REACH GOAL LEVEL 100 TO UNLOCK AD WATCHER</span>
+                    <span id="goalMegaActionBtnText">REACH GOAL LEVEL 500 TO UNLOCK AD WATCHER</span>
                   </button>
-      
-                  <!-- Test Shortcut Helpers -->
-                  <div class="mega-test-tools">
-                    <button class="test-tool-btn" onclick="testSetGoalLevel100()">[Test] Set Goal Lv. 100</button>
-                    <span class="test-tool-dot">•</span>
-                    <button class="test-tool-btn" onclick="testAddGoalMegaAds(100)">[Test] +100 Ads</button>
-                    <span class="test-tool-dot">•</span>
-                    <button class="test-tool-btn" onclick="testFillAllGoalMegaAds()">[Test] Fill 1,000 Ads</button>
-                  </div>
       
                 </section>
       
               </div>
       
-              <!-- ==================== SUBVIEW 2: GOALS 1-100 LIST ==================== -->
+              <!-- ==================== SUBVIEW 2: GOALS 1-500 LIST ==================== -->
               <div class="xp-subview" id="goalRoadmapSubView">
                 
                 <div class="levels-scroll-list" id="goalsScrollList">
-                  <!-- Dynamically populated Goals 1 to 100 -->
+                  <!-- Dynamically populated Goals 1 to 500 -->
                 </div>
       
                 <button class="xp-back-home-btn" onclick="switchPage('home')">
@@ -2536,15 +2611,6 @@
               <button class="streak-claim-main-btn" id="streakClaimMainBtn" onclick="claimCurrentStreakDay()">
                 <span>🔥 CLAIM DAY 1 REWARD</span>
               </button>
-      
-              <!-- Test Shortcut Helpers -->
-              <div class="mega-test-tools" style="margin-top: 10px;">
-                <button class="test-tool-btn" onclick="testResetStreakCooldown()">[Test] Reset 24h Cooldown</button>
-                <span class="test-tool-dot">•</span>
-                <button class="test-tool-btn" onclick="testSkipStreak24h()">[Test] Skip 24h</button>
-                <span class="test-tool-dot">•</span>
-                <button class="test-tool-btn" onclick="testResetStreakDays()">[Test] Reset Streak</button>
-              </div>
       
             </div>
       
@@ -2872,7 +2938,7 @@
                   type="text" 
                   id="customUserName" 
                   class="custom-field-input" 
-                  placeholder="e.g. Alex Vance or @alex_blue" 
+                  placeholder="e.g. Your Name or @username" 
                   required
                 />
               </div>
@@ -2991,7 +3057,7 @@
                   type="text" 
                   id="suggestUserName" 
                   class="suggest-field-input" 
-                  placeholder="e.g. Alex Vance or @alex_blue" 
+                  placeholder="e.g. Your Name or @username" 
                   required
                 />
               </div>
@@ -3108,61 +3174,71 @@
           </div>
         </div>
       
-        <!-- Quick Info Strip -->
-        <div class="mini-game-info-strip">
-          <div class="info-strip-chip">
-            <span class="chip-dot gold"></span>
-            <span class="chip-label">COST:</span>
-            <span class="chip-val">1 Ticket</span>
-          </div>
-          <div class="info-strip-chip">
-            <span class="chip-dot cyan"></span>
-            <span class="chip-label">SLICES:</span>
-            <span class="chip-val">8 Prizes</span>
-          </div>
-          <div class="info-strip-chip">
-            <span class="chip-dot amber"></span>
-            <span class="chip-label">JACKPOT:</span>
-            <span class="chip-val">10 Coins (10%)</span>
-          </div>
-        </div>
-      
         <!-- Hidden ticket count fallback for scripts -->
         <span id="spinTicketCountVal" style="display:none;">0</span>
       
-        <!-- Spin Wheel Game Card (Full Page View) -->
-        <section class="spin-arena-card">
+        <!-- ================= SUBTAB 1: LUCKY WHEEL ================= -->
+        <div class="spin-subtab-content active" id="spinSubtabContentWheel">
+          <!-- Quick Info Strip -->
+          <div class="mini-game-info-strip">
+            <div class="info-strip-chip">
+              <span class="chip-dot gold"></span>
+              <span class="chip-label">COST:</span>
+              <span class="chip-val">1 Ticket</span>
+            </div>
+            <div class="info-strip-chip">
+              <span class="chip-dot cyan"></span>
+              <span class="chip-label">SLICES:</span>
+              <span class="chip-val">8 Prizes</span>
+            </div>
+            <div class="info-strip-chip">
+              <span class="chip-dot amber"></span>
+              <span class="chip-label">JACKPOT:</span>
+              <span class="chip-val">10 Coins (10%)</span>
+            </div>
+          </div>
+      
+          <!-- Spin Wheel Game Card (Full Page View) -->
+          <section class="spin-arena-card">
           <!-- Ambient Neon Halo Glow -->
           <div class="spin-ambient-halo"></div>
       
-          <!-- Top Pointer Arrow / Mechanical Flapper -->
-          <div class="spin-pointer-arrow" id="spinPointerArrow">
-            <svg viewBox="0 0 40 48" width="38" height="46" fill="none">
-              <defs>
-                <linearGradient id="pointerBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#fffbeb"/>
-                  <stop offset="25%" stop-color="#fef08a"/>
-                  <stop offset="65%" stop-color="#f59e0b"/>
-                  <stop offset="100%" stop-color="#b45309"/>
-                </linearGradient>
-                <filter id="pointerGlow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.8"/>
-                </filter>
-              </defs>
-              <!-- Needle Body -->
-              <path d="M20 46 L6 14 Q3 6 10 3 Q20 0 30 3 Q37 6 34 14 Z" fill="url(#pointerBodyGrad)" stroke="#ffffff" stroke-width="1.8" filter="url(#pointerGlow)"/>
-              <!-- Inner Bezel -->
-              <circle cx="20" cy="14" r="7" fill="#0f172a" stroke="#fef08a" stroke-width="1.5"/>
-              <!-- Ruby Gem Center -->
-              <circle cx="20" cy="14" r="4.2" fill="#ef4444"/>
-              <circle cx="18.5" cy="12.5" r="1.5" fill="#ffffff" opacity="0.8"/>
-            </svg>
+          <!-- Stage Intro Header -->
+          <div class="spin-stage-intro">
+            <h3 class="spin-stage-title">⚡ Cyber Fortune Wheel</h3>
+            <p class="spin-stage-subtitle">Spin the lucky wheel to win Coins, Chest Keys, Cards &amp; Jackpot!</p>
           </div>
       
-          <!-- Spin Wheel Frame with LED Chaser Bulbs -->
-          <div class="spin-wheel-frame" id="spinWheelFrame">
-            <!-- Outer LED Chaser Ring (24 bulbs) -->
-            <div class="spin-chaser-ring" id="spinChaserRing"></div>
+          <!-- Spin Wheel Stage Container (Anchors flapper pointer directly above wheel) -->
+          <div class="spin-wheel-stage-wrap">
+            <!-- Top Pointer Arrow / Mechanical Flapper -->
+            <div class="spin-pointer-arrow" id="spinPointerArrow">
+              <svg viewBox="0 0 40 48" width="40" height="48" fill="none">
+                <defs>
+                  <linearGradient id="pointerBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fef08a"/>
+                    <stop offset="65%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#b45309"/>
+                  </linearGradient>
+                  <filter id="pointerGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.8"/>
+                  </filter>
+                </defs>
+                <!-- Needle Body -->
+                <path d="M20 46 L6 14 Q3 6 10 3 Q20 0 30 3 Q37 6 34 14 Z" fill="url(#pointerBodyGrad)" stroke="#ffffff" stroke-width="1.8" filter="url(#pointerGlow)"/>
+                <!-- Inner Bezel -->
+                <circle cx="20" cy="14" r="7" fill="#0f172a" stroke="#fef08a" stroke-width="1.5"/>
+                <!-- Ruby Gem Center -->
+                <circle cx="20" cy="14" r="4.2" fill="#ef4444"/>
+                <circle cx="18.5" cy="12.5" r="1.5" fill="#ffffff" opacity="0.8"/>
+              </svg>
+            </div>
+      
+            <!-- Spin Wheel Frame with LED Chaser Bulbs -->
+            <div class="spin-wheel-frame" id="spinWheelFrame">
+              <!-- Outer LED Chaser Ring (24 bulbs) -->
+              <div class="spin-chaser-ring" id="spinChaserRing"></div>
       
             <!-- Rotating Wheel Disc -->
             <div class="spin-wheel-disc" id="spinWheelCircle">
@@ -3235,17 +3311,17 @@
                 <!-- Slice 3: 1 Card (135 deg / 4:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceCardGrad)" stroke="#be123c" stroke-width="1.2"/>
       
-                <!-- Slice 4: 1 Ticket (180 deg / 6 o'clock) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceTicketGrad)" stroke="#0891b2" stroke-width="1.2"/>
+                <!-- Slice 4: Try Again (180 deg / 6 o'clock) -->
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
       
-                <!-- Slice 5: 100 Blue Coins (225 deg / 7:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
+                <!-- Slice 5: 1 Ticket (225 deg / 7:30) -->
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceTicketGrad)" stroke="#0891b2" stroke-width="1.2"/>
       
                 <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
       
-                <!-- Slice 7: Try Again (315 deg / 10:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+                <!-- Slice 7: 100 Blue Coins (315 deg / 10:30) -->
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
       
                 <!-- Divider Rays between Slices with Golden Metallic Sheen -->
                 <g stroke="#fde047" stroke-width="1.8" opacity="0.6">
@@ -3262,54 +3338,45 @@
                 <!-- Inner Golden Ring Divider -->
                 <circle cx="150" cy="150" r="48" fill="none" stroke="#fde047" stroke-width="2" opacity="0.75"/>
       
-                <!-- Slice Labels & Icons with Premium Shadows -->
-                <!-- Slice 0 Label: Try Again (0 deg) -->
-                <g transform="translate(150, 150) rotate(0) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">❌</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+                <!-- Slice Icons Only (No Text, Premium Big Emojis) -->
+                <!-- Slice 0: Try Again (0 deg) -->
+                <g transform="translate(150, 150) rotate(0) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
                 </g>
       
-                <!-- Slice 1 Label: 100 Blue Coins (45 deg) -->
-                <g transform="translate(150, 150) rotate(45) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔷</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">100 BLUE</text>
+                <!-- Slice 1: 100 Blue Coins (45 deg) -->
+                <g transform="translate(150, 150) rotate(45) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
                 </g>
       
-                <!-- Slice 2 Label: 1 Key (90 deg) -->
-                <g transform="translate(150, 150) rotate(90) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔑</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#e9d5ff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 KEY</text>
+                <!-- Slice 2: 1 Key (90 deg) -->
+                <g transform="translate(150, 150) rotate(90) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(192,132,252,0.9))">🔑</text>
                 </g>
       
-                <!-- Slice 3 Label: 1 Card (135 deg) -->
-                <g transform="translate(150, 150) rotate(135) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🎴</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fbcfe8" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 CARD</text>
+                <!-- Slice 3: 1 Card (135 deg) -->
+                <g transform="translate(150, 150) rotate(135) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(244,114,182,0.9))">🎴</text>
                 </g>
       
-                <!-- Slice 4 Label: 1 Ticket (180 deg) -->
-                <g transform="translate(150, 150) rotate(180) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🎟️</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#a5f3fc" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">1 TICKET</text>
+                <!-- Slice 4: Try Again (180 deg) -->
+                <g transform="translate(150, 150) rotate(180) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
                 </g>
       
-                <!-- Slice 5 Label: 100 Blue Coins (225 deg) -->
-                <g transform="translate(150, 150) rotate(225) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">🔷</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#bae6fd" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">100 BLUE</text>
+                <!-- Slice 5: 1 Ticket (225 deg) -->
+                <g transform="translate(150, 150) rotate(225) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(34,211,238,0.9))">🎟️</text>
                 </g>
       
-                <!-- Slice 6 Label: 10 Gold Coins (270 deg) -->
-                <g transform="translate(150, 150) rotate(270) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="18" filter="drop-shadow(0 2px 6px rgba(251,191,36,0.9))">🪙</text>
-                  <text y="16" text-anchor="middle" font-size="10.5" font-weight="900" fill="#ffffff" letter-spacing="0.6" font-family="'Plus Jakarta Sans', sans-serif">10 COINS</text>
-                  <text y="27" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fef08a" letter-spacing="0.8" font-family="'Plus Jakarta Sans', sans-serif">★ JACKPOT 10% ★</text>
+                <!-- Slice 6: 10 Gold Coins (270 deg) -->
+                <g transform="translate(150, 150) rotate(270) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 8px rgba(251,191,36,1))">🪙</text>
                 </g>
       
-                <!-- Slice 7 Label: Try Again (315 deg) -->
-                <g transform="translate(150, 150) rotate(315) translate(0, -96)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="16" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">❌</text>
-                  <text y="17" text-anchor="middle" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="0.5" font-family="'Plus Jakarta Sans', sans-serif">TRY AGAIN</text>
+                <!-- Slice 7: 100 Blue Coins (315 deg) -->
+                <g transform="translate(150, 150) rotate(315) translate(0, -92)">
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
                 </g>
       
                 <!-- Perimeter Golden Rivet Studs (8 pegs exactly placed on slice divider rays) -->
@@ -3326,6 +3393,7 @@
               </svg>
             </div>
       
+      
             <!-- 3D Luxury Metallic Center Hub Button -->
             <div class="spin-wheel-center-hub" id="spinCenterHub" onclick="handleSpinButtonClick()">
               <div class="hub-outer-gear"></div>
@@ -3338,6 +3406,7 @@
               </div>
             </div>
           </div>
+        </div>
       
           <!-- Prominent Winning Prize Showcase Card -->
           <div class="spin-result-display" id="spinResultBox">
@@ -3348,22 +3417,66 @@
               </div>
               <div class="spin-win-details" id="spinWinDetails">
                 <div class="spin-win-title" id="spinWinTitle">Cyber Lucky Wheel</div>
-                <div class="spin-win-desc" id="spinWinDesc">Spin to win Coins, Keys, Energy & Fuel Cells!</div>
+                <div class="spin-win-desc" id="spinWinDesc">Spin to win Coins, Keys, Cards &amp; 10-Coin Jackpot!</div>
               </div>
             </div>
           </div>
       
-          <!-- Single Unified Spin / Ad Action Button -->
+          <!-- Single Unified Spin Action Button -->
           <div class="spin-actions-wrapper">
             <button class="spin-action-main-btn spin-mode" id="btnSpinWheel" onclick="handleSpinButtonClick()">
               <div class="spin-btn-shine"></div>
               <span class="spin-btn-icon" id="spinBtnIcon">🎡</span>
               <span class="spin-btn-text" id="spinBtnText">SPIN THE WHEEL</span>
             </button>
+            <div class="spin-odds-hint">
+              <span>★ 100% Slice Precision • 10% Gold Coin Jackpot ★</span>
+            </div>
           </div>
-        </section>
-      </div>
+          </section>
+        </div>
       
+        <!-- Interactive Winning Prize Popup Modal (with 2X Profit & Claim Regular Buttons) -->
+        <div class="spin-reward-backdrop" id="spinRewardBackdrop" onclick="closeSpinRewardModal(event)">
+          <div class="spin-reward-modal" id="spinRewardModal" onclick="event.stopPropagation()">
+            <div class="spin-modal-glow" id="spinModalGlow"></div>
+            
+            <!-- Top Decorative Banner Tag -->
+            <div class="spin-modal-badge winner" id="spinModalBadge">🎉 CONGRATULATIONS!</div>
+      
+            <!-- Icon Stage -->
+            <div class="spin-modal-icon-wrap" id="spinModalIconWrap">
+              <span class="spin-modal-icon" id="spinModalIcon">🪙</span>
+            </div>
+      
+            <!-- Prize Written Details -->
+            <h3 class="spin-modal-title" id="spinModalTitle">YOU WON 10 GOLD COINS!</h3>
+            <p class="spin-modal-subtitle" id="spinModalSubtitle">Slice prize unlocked from the Cyber Lucky Wheel!</p>
+      
+            <!-- 2X Profit Highlight Banner -->
+            <div class="spin-modal-2x-preview" id="spinModal2xPreview">
+              <span class="preview-sparkle">⚡</span>
+              <span class="preview-text" id="spinModal2xText">Watch 1 ad to double this to <strong>+20 Gold Coins (2X Profit)</strong>!</span>
+            </div>
+      
+            <!-- Modal Action Buttons Row -->
+            <div class="spin-modal-actions" id="spinModalActions">
+              <!-- Button 1: 2X Profit -->
+              <button class="spin-modal-btn spin-btn-2x" id="btnSpinDoubleReward" onclick="claimDoubleSpinReward()">
+                <span class="btn-2x-badge">2X PROFIT</span>
+                <span class="btn-2x-icon">🎬</span>
+                <span class="btn-2x-text" id="spinDoubleBtnText">DOUBLE TO +20 (2X)</span>
+              </button>
+      
+              <!-- Button 2: Claim Regular -->
+              <button class="spin-modal-btn spin-btn-claim" id="btnSpinClaimRegular" onclick="claimRegularSpinReward()">
+                <span class="btn-claim-icon">✓</span>
+                <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+10)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       
 
       <!-- PAGE: CHEST -->

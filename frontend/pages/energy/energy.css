@@ -224,6 +224,12 @@
 }
 .red-fuel-card:hover { border-color: #f87171 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(239, 68, 68, 0.4) !important; }
 
+.darkred-fuel-card {
+  border: 2px solid #991b1b !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(153, 27, 27, 0.25) !important;
+}
+.darkred-fuel-card:hover { border-color: #ef4444 !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(239, 68, 68, 0.4) !important; }
+
 .pink-fuel-card {
   border: 2px solid #ec4899 !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(236, 72, 153, 0.25) !important;
@@ -265,6 +271,7 @@
 .yellow-icon-box { background: radial-gradient(circle at 35% 30%, #78350f 0%, #2e1404 70%, #0e0601 100%); border: 1.5px solid #fde047; }
 .orange-icon-box { background: radial-gradient(circle at 35% 30%, #7c2d12 0%, #301006 70%, #0f0502 100%); border: 1.5px solid #fdba74; }
 .red-icon-box { background: radial-gradient(circle at 35% 30%, #7f1d1d 0%, #330808 70%, #120303 100%); border: 1.5px solid #f87171; }
+.darkred-icon-box { background: radial-gradient(circle at 35% 30%, #580a0a 0%, #290505 70%, #0d0101 100%); border: 1.5px solid #ef4444; }
 .pink-icon-box { background: radial-gradient(circle at 35% 30%, #831843 0%, #350819 70%, #130309 100%); border: 1.5px solid #f472b6; }
 .purple-icon-box { background: radial-gradient(circle at 35% 30%, #581c87 0%, #24083a 70%, #0c0215 100%); border: 1.5px solid #d8b4fe; }
 
@@ -306,6 +313,7 @@
 .yellow-badge-pill { background: linear-gradient(180deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.5) 100%); color: #fde047; border: 1px solid #f59e0b; }
 .orange-badge-pill { background: linear-gradient(180deg, rgba(249, 115, 22, 0.3) 0%, rgba(194, 65, 12, 0.5) 100%); color: #fdba74; border: 1px solid #f97316; }
 .red-badge-pill { background: linear-gradient(180deg, rgba(239, 68, 68, 0.3) 0%, rgba(185, 28, 28, 0.5) 100%); color: #fca5a5; border: 1px solid #ef4444; }
+.darkred-badge-pill { background: linear-gradient(180deg, rgba(153, 27, 27, 0.3) 0%, rgba(127, 29, 29, 0.5) 100%); color: #fca5a5; border: 1px solid #991b1b; }
 .pink-badge-pill { background: linear-gradient(180deg, rgba(236, 72, 153, 0.3) 0%, rgba(190, 24, 93, 0.5) 100%); color: #fbcfe8; border: 1px solid #ec4899; }
 .purple-badge-pill { background: linear-gradient(180deg, rgba(168, 85, 247, 0.3) 0%, rgba(126, 34, 206, 0.5) 100%); color: #e9d5ff; border: 1px solid #a855f7; }
 
@@ -373,6 +381,7 @@
 .yellow-btn { --btn-shadow-color: #92400e; background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%); color: #030712; border-color: #fef08a; }
 .orange-btn { --btn-shadow-color: #7c2d12; background: linear-gradient(180deg, #fdba74 0%, #f97316 50%, #ea580c 100%); color: #ffffff; border-color: #fed7aa; }
 .red-btn { --btn-shadow-color: #7f1d1d; background: linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%); color: #ffffff; border-color: #fca5a5; }
+.darkred-btn { --btn-shadow-color: #580a0a; background: linear-gradient(180deg, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%); color: #ffffff; border-color: #f87171; }
 .pink-btn { --btn-shadow-color: #831843; background: linear-gradient(180deg, #f472b6 0%, #ec4899 50%, #db2777 100%); color: #ffffff; border-color: #fbcfe8; }
 .purple-btn { --btn-shadow-color: #581c87; background: linear-gradient(180deg, #c084fc 0%, #a855f7 50%, #7e22ce 100%); color: #ffffff; border-color: #e9d5ff; }
 
@@ -459,6 +468,14 @@
   animation: boostGlowPulse 1.5s infinite alternate;
 }
 
+.pulse-darkred {
+  background: rgba(185, 28, 28, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+  animation: boostGlowPulse 1.5s infinite alternate;
+}
+
 .boost-cd-badge {
   display: inline-flex;
   align-items: center;
@@ -512,6 +529,12 @@
   border: 1px solid #f472b6;
   color: #fdf2f8;
   box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
+}
+.boost-tag-darkred {
+  background: rgba(185, 28, 28, 0.35);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
 
 @keyframes boostGlowPulse {

@@ -305,6 +305,85 @@
           </div>
         </section>
 
+        <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
+        <section class="home-leaderboard-card" id="homeLeaderboardSection">
+          <!-- Leaderboard Header Strip -->
+          <div class="hlb-header">
+            <div class="hlb-title-wrap">
+              <div class="hlb-trophy-icon">🏆</div>
+              <div class="hlb-title-info">
+                <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
+                <span class="hlb-subtitle">Live Tap Rankings &amp; Community Champions</span>
+              </div>
+            </div>
+            <!-- Live Indicator -->
+            <div class="hlb-live-indicator">
+              <span class="hlb-live-pulse-dot"></span>
+              <span class="hlb-live-text">LIVE</span>
+            </div>
+          </div>
+
+          <!-- Category Filter Tabs (Taps, Coins, Level, Blue Coins) -->
+          <div class="hlb-tabs-strip">
+            <button type="button" class="hlb-tab-btn active" id="hlbTabTaps" onclick="switchHomeLeaderboardTab('taps')">
+              <span class="hlb-tab-icon">⚡</span>
+              <span class="hlb-tab-name">Tap Count</span>
+            </button>
+            <button type="button" class="hlb-tab-btn" id="hlbTabCoins" onclick="switchHomeLeaderboardTab('coins')">
+              <span class="hlb-tab-icon">🪙</span>
+              <span class="hlb-tab-name">Coins</span>
+            </button>
+            <button type="button" class="hlb-tab-btn" id="hlbTabLevel" onclick="switchHomeLeaderboardTab('level')">
+              <span class="hlb-tab-icon">⭐</span>
+              <span class="hlb-tab-name">Level</span>
+            </button>
+            <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
+              <span class="hlb-tab-icon">🔷</span>
+              <span class="hlb-tab-name">Blue</span>
+            </button>
+          </div>
+
+          <!-- Player's Own Live Ranking & Real-Time Count Card -->
+          <div class="hlb-my-rank-card" id="hlbMyRankCard">
+            <div class="hlb-my-rank-left">
+              <div class="hlb-rank-badge" id="hlbMyRankBadge">#1</div>
+              <div class="hlb-my-avatar-wrap">
+                <span class="hlb-my-avatar" id="hlbMyAvatar">👑</span>
+              </div>
+              <div class="hlb-my-info">
+                <div class="hlb-my-name-row">
+                  <span class="hlb-my-name" id="hlbMyName">Player (You)</span>
+                  <span class="hlb-you-tag">YOU</span>
+                </div>
+                <span class="hlb-my-handle" id="hlbMyHandle">@player</span>
+              </div>
+            </div>
+            <div class="hlb-my-score-wrap">
+              <div class="hlb-my-score-value" id="hlbMyScoreValue">0</div>
+              <div class="hlb-my-score-unit" id="hlbMyScoreUnit">TAPS ⚡</div>
+            </div>
+          </div>
+
+          <!-- Top Players Leaderboard List -->
+          <div class="hlb-list-wrap" id="hlbListWrap">
+            <!-- Dynamically populated by renderHomeLeaderboard() -->
+          </div>
+
+          <!-- Footer Quick Stats Strip -->
+          <div class="hlb-footer-stats">
+            <div class="hlb-footer-item">
+              <span class="hlb-footer-icon">⚡</span>
+              <span class="hlb-footer-label">Total Taps:</span>
+              <strong class="hlb-footer-val" id="hlbTotalCommunityTaps">1,480,250</strong>
+            </div>
+            <div class="hlb-footer-item">
+              <span class="hlb-footer-icon">👥</span>
+              <span class="hlb-footer-label">Active Racers:</span>
+              <strong class="hlb-footer-val" id="hlbActiveRacers">24,590</strong>
+            </div>
+          </div>
+        </section>
+
         <!-- Home Action Pop-up Modal Backdrop & Dialog -->
         <div class="home-popup-backdrop" id="homePopupBackdrop" onclick="closeHomeActionPopup(event)">
           <div class="home-popup-card" id="homePopupCard" onclick="event.stopPropagation()">

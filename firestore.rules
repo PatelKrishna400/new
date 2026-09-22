@@ -1,0 +1,125 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. Players Profile & Save State (/players/{uid})
+    match /players/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId) || isAuthenticated();
+    }
+
+    // 2. Users Account Data (/users/{uid})
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId) || isAuthenticated();
+    }
+
+    // 3. Global Live Leaderboard (/leaderboard/{uid})
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId) || isAuthenticated();
+    }
+
+    // 4. Rewards Catalog (/mega_rewards/{rewardId})
+    match /mega_rewards/{rewardId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // 5. Reward Redemption Orders (/reward_requests/{reqId})
+    match /reward_requests/{reqId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated();
+    }
+
+    // 6. Player Feedback & Suggestions (/suggestions/{sugId})
+    match /suggestions/{sugId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAuthenticated();
+    }
+
+    // 7. Monetag & Ad Click Tracking (/ads_direct_clicks/{clickId})
+    match /ads_direct_clicks/{clickId} {
+      allow read, write: if true;
+    }
+
+    // 8. Game Configurations & Quests (Public read, Authenticated write)
+    match /game_config/{configId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /levels_config/{levelId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /fuel_cells_config/{configId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /ads_config/{configId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /season/{seasonId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /monthly_competition/{competitionId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /website_tasks_config/{taskId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /telegram_tasks_config/{taskId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /monthly_tasks_config/{taskId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /whitelist/{userId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /admin_users/{adminId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /activity_log/{logId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Fallback: allow read/write for any other documents when authenticated
+    match /{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

@@ -18,7 +18,7 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain !important;
-  padding: 8px 14px 140px 14px !important;
+  padding: 6px 12px 85px 12px !important;
   box-sizing: border-box !important;
   scrollbar-width: thin !important;
   scrollbar-color: transparent transparent !important;
@@ -111,17 +111,23 @@
   line-height: 1;
 }
 
+/* Master Egg Incubator Card (Full Page View) */
 .egg-incubator-card {
   background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.22) 0%, rgba(3, 15, 30, 0.95) 75%);
   border: 1.5px solid rgba(16, 185, 129, 0.45);
   border-radius: var(--radius-xl);
-  padding: 20px 14px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  flex: 1 0 auto;
+  min-height: calc(100vh - 275px);
   position: relative;
   overflow: hidden;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.2);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .egg-incubator-header {
@@ -129,7 +135,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .egg-badge-tag {
@@ -157,9 +163,9 @@
 .egg-collection-meters-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .egg-collect-item {
@@ -243,15 +249,15 @@
 .egg-grid-16 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .egg-cell-card {
   aspect-ratio: 1 / 1;
-  min-height: 68px;
-  border-radius: 14px;
+  min-height: clamp(48px, 7.5vh, 60px);
+  border-radius: 10px;
   background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.2) 0%, rgba(6, 20, 36, 0.95) 100%);
   border: 1.5px solid rgba(16, 185, 129, 0.35);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);

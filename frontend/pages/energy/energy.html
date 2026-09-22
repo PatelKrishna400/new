@@ -50,7 +50,7 @@
               </svg>
             </div>
             <div class="metric-text-box">
-              <span class="metric-value rate-val" id="fuelRateVal">0.01 <span class="rate-unit">/ sec</span></span>
+              <span class="metric-value rate-val" id="fuelRateVal">0.001 <span class="rate-unit">/ sec</span></span>
             </div>
           </div>
         </section>
@@ -199,7 +199,35 @@
             </div>
           </div>
 
-          <!-- 6. Pink Boost Fuel Cell -->
+          <!-- 6. Dark Red Fuel Cell -->
+          <div class="fuel-card darkred-fuel-card" id="fuelCardDarkRed">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box darkred-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #ef4444;">Dark Red Fuel</h3>
+                    <span class="fuel-cell-badge darkred-badge-pill" id="darkredCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #f87171;">30s Generator @ 0.01 EP / Sec</p>
+                  <div class="boost-status-container" id="darkredStatusInfo" style="display: none;"></div>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn darkred-btn" id="btnUseDarkRedFuel" onclick="executeFuelButtonAction('darkred')">
+                  <span id="btnDarkRedText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Pink Boost Fuel Cell -->
           <div class="fuel-card pink-fuel-card" id="fuelCardPink">
             <div class="fuel-card-top-row">
               <div class="fuel-card-left">
@@ -227,7 +255,7 @@
             </div>
           </div>
 
-          <!-- 7. Purple Boost Fuel Cell -->
+          <!-- 8. Purple Boost Fuel Cell -->
           <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
             <div class="fuel-card-top-row">
               <div class="fuel-card-left">

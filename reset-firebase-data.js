@@ -2,8 +2,8 @@
 // Resets Season timer, Monthly Competition timer, Leaderboard, and user balances to zero
 const https = require('https');
 
-const API_KEY = "AIzaSyDnujl5_iBlSzwDfjCLA7sFQ7zW1DxROic";
-const DATABASE_URL = "https://tap-game-80070-default-rtdb.firebaseio.com";
+const API_KEY = "AIzaSyBEDvJ0aJ4rOG8ic01A6MmZZFXJP040PF4";
+const DATABASE_URL = "https://tab-energy-default-rtdb.firebaseio.com";
 
 function request(url, options = {}, postData = null) {
   return new Promise((resolve, reject) => {

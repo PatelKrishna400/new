@@ -36,6 +36,11 @@ window.toggleXpSubView = function() {
   }
 };
 
+// Dark Green Fuel scaling formula: Level 1 = 1, Level 100 = 20
+window.calculateLevelDarkGreenFuel = function(lvl) {
+  return Math.max(1, Math.min(20, Math.ceil(lvl / 5)));
+};
+
 window.renderLevelsList = function() {
   if (!DOM.levelsScrollList) return;
   const activeLevel = typeof getActiveLevel === 'function'
@@ -56,35 +61,13 @@ window.renderLevelsList = function() {
     const isLockedByAdmin = !!(cfg && cfg.isLocked);
     const isReached = (lvl < activeLevel) || (isCurrent && curXp >= reqXp);
 
-    let tierName = 'Bronze';
-    if (lvl > 80) tierName = 'Diamond';
-    else if (lvl > 60) tierName = 'Platinum';
-    else if (lvl > 40) tierName = 'Gold';
-    else if (lvl > 20) tierName = 'Silver';
-
-    // Reward pills from cfg.rewards
-    let rewardHtml = '';
-    if (cfg && cfg.rewards) {
-      rewardHtml = `
-        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-          <span class="lvl-reward-pill pill-milestone-coins">🪙 +${cfg.rewards.coins || lvl * 25}</span>
-          <span class="lvl-reward-pill pill-ticket">🃏 +${cfg.rewards.cards || 1}</span>
-          <span class="lvl-reward-pill pill-key">🥢 +${cfg.rewards.keys || 1}</span>
-        </div>
-      `;
-    } else if (lvl % 10 === 0) {
-      rewardHtml = `
-        <div class="milestone-container">
-          <div class="milestone-banner-tag">MILESTONE</div>
-          <div class="milestone-pills-row">
-            <span class="lvl-reward-pill pill-milestone-coins">🟡 +${lvl * 25}</span>
-            <span class="lvl-reward-pill pill-fuel">⚡ +5 Fuel</span>
-          </div>
-        </div>
-      `;
-    } else {
-      rewardHtml = `<span class="lvl-reward-pill pill-ticket">🎟️ +1 Ticket</span>`;
-    }
+    // Reward pills: Dark Green Fuel cells only
+    const fuelAmount = window.calculateLevelDarkGreenFuel(lvl);
+    let rewardHtml = `
+      <span class="lvl-reward-pill pill-fuel" style="background: rgba(5, 150, 105, 0.25); border: 1px solid #10b981; color: #34d399; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;">
+        <span>🔋</span> +${fuelAmount} Dark Green Fuel
+      </span>
+    `;
 
     // Status action
     let statusHtml = '';
@@ -138,7 +121,6 @@ window.renderLevelsList = function() {
           <div class="level-text-info">
             <div class="level-title-row">
               <span class="level-title-text">Level ${lvl}</span>
-              ${isLockedByAdmin ? '<span class="level-tier-tag" style="color: #ef4444; font-weight: 800;">[LOCKED]</span>' : `<span class="level-tier-tag">(${tierName})</span>`}
             </div>
             <span class="level-xp-req">${reqXp.toLocaleString()} XP</span>
             ${progressSnippet}
@@ -208,23 +190,43 @@ function executeClaimLevelReward(lvl) {
     ? getActiveLevel()
     : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
 
+  const darkGreenFuel = window.calculateLevelDarkGreenFuel(lvl);
+
   if (lvl === activeLevel && typeof completeActiveLevel === 'function') {
-    completeActiveLevel(lvl);
+    completeActiveLevel(lvl, { source: 'xp' });
   } else {
+    // Direct claim for reached level
+    if (!gameState.energyGenerator.fuelCells) {
+      gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+    }
+    gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
     if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
     gameState.xpState.claimedLevels[lvl] = true;
     if (gameState.progression && gameState.progression.completedLevels) {
       gameState.progression.completedLevels[lvl] = true;
     }
-
-    const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
-    const rew = (cfg && cfg.rewards) || { coins: lvl * 25, cards: 1, keys: 1, tickets: 1, xp: lvl * 10 };
-    gameState.player.coins = (gameState.player.coins || 0) + (rew.coins || lvl * 25);
-    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rew.keys || 1);
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rew.tickets || 1);
   }
 
   sfx.playLevelUpSound();
+
+  const nextLvl = Math.min(100, lvl + 1);
+  if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
+    DOM.sheetTitle.textContent = `🎉 LEVEL ${lvl} COMPLETE!`;
+    DOM.sheetContent.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; gap: 14px; text-align: center;">
+        <div style="font-size: 54px; animation: bounceGlow 1.2s infinite alternate;">🔋</div>
+        <h3 style="font-size: 20px; font-weight: 800; color: #34d399;">Level ${lvl} Claimed!</h3>
+        <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You watched 1 ad and claimed your Level ${lvl} reward:</p>
+        <div style="background: rgba(5, 150, 105, 0.2); border: 1.5px solid #10b981; border-radius: 14px; padding: 14px 20px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span style="font-size: 24px;">🔋</span>
+          <span style="font-size: 18px; font-weight: 800; color: #34d399;">+${darkGreenFuel} Dark Green Fuel</span>
+        </div>
+        <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #059669, #10b981);">Advance to Level ${nextLvl} ✨</button>
+      </div>
+    `;
+    DOM.modalBackdrop.classList.add('open');
+  }
+
   renderLevelsList();
   updateUI();
   saveGame();
@@ -233,7 +235,7 @@ function executeClaimLevelReward(lvl) {
   }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Level ${lvl} Rewards Claimed!`);
+    showFloatingToast(`🎉 Level ${lvl} Claimed: +${darkGreenFuel} Dark Green Fuel!`);
   }
 }
 

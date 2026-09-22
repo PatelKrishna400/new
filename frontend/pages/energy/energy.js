@@ -1,12 +1,12 @@
 /* ==========================================================================
    ENERGY TAP REACTOR - ENERGY GENERATOR (energy.js)
    - Center Circle Energy Generator Engine with live timer & EP accumulation
-   - Live generation rate (+0.01 / min increase)
+   - Live generation rate (0.001 / sec baseline)
    - 4 Standard Fuel Cells:
      * Green: +5m Timer
      * Yellow: +15m Timer
      * Orange: +30m Timer
-     * Red: +60m Timer & +0.01 Rate/Min
+     * Red: +60m Timer & +0.001 Rate/Sec
    - 2 Special Boost Fuels:
      * Pink Fuel: *2 Boost Timer (2x fast generator work) for 10 min
        - Active countdown in pink tab
@@ -40,13 +40,14 @@ function advanceEnergyGenerator(deltaSeconds, isOffline = false) {
     const pinkCd = boosts.pink.cooldownRemainingSeconds || 0;
     const purpleCd = boosts.purple.cooldownRemainingSeconds || 0;
     const fuelSecs = gameState.energyGenerator.remainingSeconds || 0;
+    const darkRedSecs = gameState.energyGenerator.darkRedRemainingSeconds || 0;
 
     let speedMult = 1;
     if (pinkActive > 0) speedMult *= 2;
     if (purpleActive > 0) speedMult *= 5;
 
-    // Fast-path: if no fuel and no active boosts, just fast-forward cooldowns
-    if (fuelSecs <= 0 && pinkActive <= 0 && purpleActive <= 0) {
+    // Fast-path: if no fuel, no dark red, and no active boosts, just fast-forward cooldowns
+    if (fuelSecs <= 0 && darkRedSecs <= 0 && pinkActive <= 0 && purpleActive <= 0) {
       boosts.pink.cooldownRemainingSeconds = Math.max(0, pinkCd - remainingSecs);
       boosts.purple.cooldownRemainingSeconds = Math.max(0, purpleCd - remainingSecs);
       remainingSecs = 0;
@@ -59,7 +60,10 @@ function advanceEnergyGenerator(deltaSeconds, isOffline = false) {
     if (purpleActive > 0) step = Math.min(step, purpleActive);
     if (pinkCd > 0 && pinkActive <= 0) step = Math.min(step, pinkCd);
     if (purpleCd > 0 && purpleActive <= 0) step = Math.min(step, purpleCd);
-    if (fuelSecs > 0) {
+    if (darkRedSecs > 0) {
+      const secondsToExhaustDarkRed = Math.ceil(darkRedSecs / speedMult);
+      step = Math.min(step, secondsToExhaustDarkRed);
+    } else if (fuelSecs > 0) {
       const secondsToExhaustFuel = Math.ceil(fuelSecs / speedMult);
       step = Math.min(step, secondsToExhaustFuel);
     }
@@ -79,14 +83,26 @@ function advanceEnergyGenerator(deltaSeconds, isOffline = false) {
     }
 
     // 2. Consume fuel & accrue EP
-    if (gameState.energyGenerator.remainingSeconds > 0) {
+    if (gameState.energyGenerator.darkRedRemainingSeconds > 0) {
+      // Dark Red generator operates for 30s at 0.01 Energy per second
+      const darkRedToConsume = Math.min(gameState.energyGenerator.darkRedRemainingSeconds, step * speedMult);
+      gameState.energyGenerator.darkRedRemainingSeconds -= darkRedToConsume;
+      totalFuelSecondsConsumed += darkRedToConsume;
+
+      const rate = 0.01; // 0.01 Energy per second
+      const epGain = rate * darkRedToConsume;
+      totalEpGained += epGain;
+
+      gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + epGain;
+      gameState.energyGenerator.epTotal = (gameState.energyGenerator.epTotal || 0) + epGain;
+    } else if (gameState.energyGenerator.remainingSeconds > 0) {
       const fuelToConsume = Math.min(gameState.energyGenerator.remainingSeconds, step * speedMult);
       gameState.energyGenerator.remainingSeconds -= fuelToConsume;
       totalFuelSecondsConsumed += fuelToConsume;
 
       const rate = (gameState.energyGenerator.ratePerSec !== undefined)
         ? gameState.energyGenerator.ratePerSec
-        : (gameState.energyGenerator.ratePerMin || 0.01);
+        : (gameState.energyGenerator.ratePerMin || 0.001);
       const epGain = rate * fuelToConsume;
       totalEpGained += epGain;
 
@@ -97,7 +113,10 @@ function advanceEnergyGenerator(deltaSeconds, isOffline = false) {
     remainingSecs -= step;
   }
 
-  gameState.energyGenerator.isActive = (gameState.energyGenerator.remainingSeconds > 0);
+  gameState.energyGenerator.isActive = (
+    (gameState.energyGenerator.remainingSeconds > 0) || 
+    ((gameState.energyGenerator.darkRedRemainingSeconds || 0) > 0)
+  );
   return { epGain: totalEpGained, fuelSecondsConsumed: totalFuelSecondsConsumed };
 }
 
@@ -147,7 +166,10 @@ function startEnergyEngine() {
       gameState.energyGenerator.lastTickTime = now;
     }
 
-    gameState.energyGenerator.isActive = (gameState.energyGenerator.remainingSeconds > 0);
+    gameState.energyGenerator.isActive = (
+      (gameState.energyGenerator.remainingSeconds > 0) || 
+      ((gameState.energyGenerator.darkRedRemainingSeconds || 0) > 0)
+    );
     formatTimerDisplay();
     updateEnergyUI();
     if (typeof updateHomeUI === 'function') updateHomeUI();
@@ -164,6 +186,9 @@ function startEnergyEngine() {
 }
 
 function ensureBoostsState() {
+  if (gameState.energyGenerator.darkRedRemainingSeconds === undefined) {
+    gameState.energyGenerator.darkRedRemainingSeconds = 0;
+  }
   if (!gameState.energyGenerator.boosts) {
     gameState.energyGenerator.boosts = {
       pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
@@ -177,8 +202,10 @@ function ensureBoostsState() {
     gameState.energyGenerator.boosts.purple = { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 };
   }
   if (!gameState.energyGenerator.fuelCells) {
-    gameState.energyGenerator.fuelCells = { green: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
   }
+  if (gameState.energyGenerator.fuelCells.darkgreen === undefined) gameState.energyGenerator.fuelCells.darkgreen = 0;
+  if (gameState.energyGenerator.fuelCells.darkred === undefined) gameState.energyGenerator.fuelCells.darkred = 0;
   if (gameState.energyGenerator.fuelCells.pink === undefined) gameState.energyGenerator.fuelCells.pink = 0;
   if (gameState.energyGenerator.fuelCells.purple === undefined) gameState.energyGenerator.fuelCells.purple = 0;
 }
@@ -222,12 +249,18 @@ function handleFuelAction(fuelType) {
     }
   } else if (fuelType === 'red') {
     if (gameState.energyGenerator.ratePerSec === undefined) {
-      gameState.energyGenerator.ratePerSec = gameState.energyGenerator.ratePerMin || 0.01;
+      gameState.energyGenerator.ratePerSec = gameState.energyGenerator.ratePerMin || 0.001;
     }
     gameState.energyGenerator.ratePerSec = +(gameState.energyGenerator.ratePerSec + 0.001).toFixed(4);
     gameState.energyGenerator.ratePerMin = gameState.energyGenerator.ratePerSec;
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`🔥 Red Fuel activated: +0.001 EP/Sec Rate increased! (Current: +${gameState.energyGenerator.ratePerSec}/s)`);
+    }
+  } else if (fuelType === 'darkred') {
+    gameState.energyGenerator.darkRedRemainingSeconds = (gameState.energyGenerator.darkRedRemainingSeconds || 0) + 30;
+    gameState.energyGenerator.isActive = true;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Dark Red Generator activated: 30s at 0.01 Energy/sec!');
     }
   }
 
@@ -242,6 +275,7 @@ function useDarkGreenFuel() { handleFuelAction('darkgreen'); }
 function useYellowFuel() { handleFuelAction('yellow'); }
 function useOrangeFuel() { handleFuelAction('orange'); }
 function useRedFuel() { handleFuelAction('red'); }
+function useDarkRedFuel() { handleFuelAction('darkred'); }
 
 // ==========================================================================
 // PINK BOOST FUEL (*2 Boost for 10 min, 1h Cooldown - Zero Ads)
@@ -392,15 +426,18 @@ function updateEnergyUI() {
 
   // Live Generator Rate with active boost tag
   if (DOM.fuelRateVal) {
-    const rate = (gameState.energyGenerator.ratePerSec !== undefined)
+    const drSecs = (gameState.energyGenerator && gameState.energyGenerator.darkRedRemainingSeconds) || 0;
+    const rate = drSecs > 0 ? 0.01 : ((gameState.energyGenerator.ratePerSec !== undefined)
       ? gameState.energyGenerator.ratePerSec
-      : (gameState.energyGenerator.ratePerMin || 0.01);
+      : (gameState.energyGenerator.ratePerMin || 0.001));
     const boosts = gameState.energyGenerator.boosts;
     const pinkActive = boosts.pink.activeRemainingSeconds > 0;
     const purpleActive = boosts.purple.activeRemainingSeconds > 0;
 
     let multiplierBadge = '';
-    if (pinkActive && purpleActive) {
+    if (drSecs > 0) {
+      multiplierBadge = ` <span class="rate-boost-tag boost-tag-darkred">🔴 DARK RED 0.01/s</span>`;
+    } else if (pinkActive && purpleActive) {
       multiplierBadge = ` <span class="rate-boost-tag boost-tag-combo">⚡🔥 *10 BOOST</span>`;
     } else if (purpleActive) {
       multiplierBadge = ` <span class="rate-boost-tag boost-tag-purple">🔥 *5 BOOST</span>`;
@@ -408,7 +445,7 @@ function updateEnergyUI() {
       multiplierBadge = ` <span class="rate-boost-tag boost-tag-pink">⚡ *2 BOOST</span>`;
     }
 
-    DOM.fuelRateVal.innerHTML = `${rate.toFixed(2)} <span class="rate-unit">/ sec</span>${multiplierBadge}`;
+    DOM.fuelRateVal.innerHTML = `${Number(rate).toFixed(3)} <span class="rate-unit">/ sec</span>${multiplierBadge}`;
   }
 
   // Standard Cell Count Badges
@@ -420,6 +457,7 @@ function updateEnergyUI() {
       yellow: 'use',
       orange: 'use',
       red: 'use',
+      darkred: 'use',
       pink: 'use',
       purple: 'use'
     };
@@ -432,6 +470,20 @@ function updateEnergyUI() {
   if (DOM.yellowCellCount) DOM.yellowCellCount.textContent = `${gameState.energyGenerator.fuelCells.yellow || 0} Cells`;
   if (DOM.orangeCellCount) DOM.orangeCellCount.textContent = `${gameState.energyGenerator.fuelCells.orange || 0} Cells`;
   if (DOM.redCellCount) DOM.redCellCount.textContent = `${gameState.energyGenerator.fuelCells.red || 0} Cells`;
+  const elDarkRed = DOM.darkredCellCount || document.getElementById('darkredCellCount');
+  if (elDarkRed) elDarkRed.textContent = `${(gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells.darkred) || 0} Cells`;
+
+  const darkredStatusInfo = document.getElementById('darkredStatusInfo');
+  if (darkredStatusInfo) {
+    const drSecs = (gameState.energyGenerator && gameState.energyGenerator.darkRedRemainingSeconds) || 0;
+    if (drSecs > 0) {
+      darkredStatusInfo.style.display = 'flex';
+      darkredStatusInfo.innerHTML = `<span class="boost-running-badge pulse-darkred">🔴 Active: <strong>${drSecs}s</strong> @ 0.01/s</span>`;
+    } else {
+      darkredStatusInfo.style.display = 'none';
+      darkredStatusInfo.innerHTML = '';
+    }
+  }
 
   // Standard Fuel Cells (Direct Action Button: Use when > 0, Disabled when 0)
   const standardFuels = [
@@ -439,7 +491,8 @@ function updateEnergyUI() {
     { type: 'darkgreen', btnId: 'btnUseDarkGreenFuel', textId: 'btnDarkGreenText', defaultColor: 'darkgreen-btn', label: '⚡ Use Fuel (+1m)' },
     { type: 'yellow', btnId: 'btnYellowAd', textId: 'btnYellowText', defaultColor: 'yellow-btn', label: '⚡ Use Fuel (+15m)' },
     { type: 'orange', btnId: 'btnOrangeAd', textId: 'btnOrangeText', defaultColor: 'orange-btn', label: '⚡ Use Fuel (+30m)' },
-    { type: 'red', btnId: 'btnRedAd', textId: 'btnRedText', defaultColor: 'red-btn', label: '⚡ Use Fuel (+0.001/s)' }
+    { type: 'red', btnId: 'btnRedAd', textId: 'btnRedText', defaultColor: 'red-btn', label: '⚡ Use Fuel (+0.001/s)' },
+    { type: 'darkred', btnId: 'btnUseDarkRedFuel', textId: 'btnDarkRedText', defaultColor: 'darkred-btn', label: '⚡ Use Fuel (30s)' }
   ];
 
   standardFuels.forEach(item => {
@@ -448,7 +501,16 @@ function updateEnergyUI() {
     const span = document.getElementById(item.textId) || (btn ? btn.querySelector('span') : null);
 
     if (btn) {
-      if (count <= 0) {
+      if (item.type === 'darkred' && (gameState.energyGenerator.darkRedRemainingSeconds || 0) > 0) {
+        const drSecs = gameState.energyGenerator.darkRedRemainingSeconds;
+        if (count <= 0) {
+          btn.className = `fuel-action-btn ${item.defaultColor} boost-running-btn`;
+          if (span) span.innerHTML = `<span>⚡ Active (${drSecs}s)</span>`;
+        } else {
+          btn.className = `fuel-action-btn ${item.defaultColor}`;
+          if (span) span.innerHTML = `<span>⚡ Add +30s (${count})</span>`;
+        }
+      } else if (count <= 0) {
         btn.className = `fuel-action-btn ${item.defaultColor} disabled-btn`;
         if (span) span.innerHTML = `<span>⚡ Use Fuel (0)</span>`;
       } else {
@@ -545,6 +607,7 @@ function getFuelDisplayName(fuelType) {
     case 'yellow': return 'Yellow Fuel (+15m)';
     case 'orange': return 'Orange Fuel (+30m)';
     case 'red': return 'Red Fuel (+0.001 Rate)';
+    case 'darkred': return 'Dark Red Fuel (30s @ 0.01/s)';
     case 'pink': return 'Pink Boost Fuel (*2)';
     case 'purple': return 'Purple Boost Fuel (*5)';
     default: return 'Fuel';

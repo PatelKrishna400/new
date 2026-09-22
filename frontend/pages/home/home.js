@@ -139,7 +139,7 @@ function handleOrbTap(e) {
   if (is24hPassActive) {
     // If pass is active, blue coins go directly to player wallet!
     gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 1;
-    blueCoinDepositText = '+1 💎 Blue Coin';
+    blueCoinDepositText = '+1 🔷 Blue Coin';
   } else {
     // Otherwise, per tap blue coin collects in the Big Bank
     if (!gameState.bank) gameState.bank = { blueCoins: 0, fullWithdrawalPassEndTime: 0 };
@@ -180,7 +180,7 @@ function handleOrbTap(e) {
   }
 
   // Level Up Check
-  const maxLevel = gameState.player.maxLevel || 100;
+  const maxLevel = gameState.player.maxLevel || 500;
   const curActiveLvl = typeof getActiveLevel === 'function' ? getActiveLevel() : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
   const cfgActive = typeof getLevelConfig === 'function' ? getLevelConfig(curActiveLvl) : null;
   const xpNeeded = cfgActive ? Number(cfgActive.xpRequired) : (typeof getLevelRequiredXP === 'function' ? getLevelRequiredXP(curActiveLvl) : curActiveLvl * 1000);
@@ -928,7 +928,7 @@ function renderBoosterBankPopup(header, body) {
     ${passHtml}
     <div class="popup-stat-banner" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4);">
       <span class="popup-stat-label">Bank Vault Balance</span>
-      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 🪙 Blue Coins</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 🔷 Blue Coins</span>
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="withdrawBankWithAd()">
@@ -1235,7 +1235,7 @@ function renderHomeProfilePopup(header, body) {
     <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
     <div class="home-popup-icon-wrap" style="background: rgba(168, 85, 247, 0.2); border: 2px solid #a855f7; color: #c084fc;">🪔</div>
     <h3 class="home-popup-title">MAA SHAKTI PLAYER PROFILE</h3>
-    <p class="home-popup-subtitle">Commander: ${gameState.player.handle || 'alex_blue'} • Status: Online & Blessed</p>
+    <p class="home-popup-subtitle">Commander: ${gameState.player.handle || 'player'} • Status: Online & Blessed</p>
   `;
 
   body.innerHTML = `
@@ -1257,7 +1257,7 @@ function renderHomeProfilePopup(header, body) {
       </div>
       <div class="popup-stat-banner" style="flex-direction: column; align-items: flex-start; gap: 4px;">
         <span class="popup-stat-label">Blue Coins</span>
-        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">💎 ${formatNumber(blueCoins)}</span>
+        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">🔷 ${formatNumber(blueCoins)}</span>
       </div>
     </div>
 
@@ -1384,7 +1384,7 @@ function renderHomeBlueCoinPopup(header, body) {
 
   header.innerHTML = `
     <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
-    <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">💎</div>
+    <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">🔷</div>
     <h3 class="home-popup-title">SHAKTI BLUE GEM VAULT</h3>
     <p class="home-popup-subtitle">Divine quantum blue crystals used for high-tier upgrades, multipliers, and exclusive shop items.</p>
   `;
@@ -1392,7 +1392,7 @@ function renderHomeBlueCoinPopup(header, body) {
   body.innerHTML = `
     <div class="popup-stat-banner">
       <span class="popup-stat-label">Blue Coin Balance</span>
-      <span class="popup-stat-value" style="color: #38bdf8; font-size: 17px;">💎 ${formatNumber(blueCoins)} BLUE</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 17px;">🔷 ${formatNumber(blueCoins)} BLUE</span>
     </div>
 
     <div class="popup-feature-card">
@@ -1446,7 +1446,7 @@ function claimHomeBlueCoinBonus(amount, sourceName) {
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`💎 +${amount} Blue Coins Claimed!`);
+    showFloatingToast(`🔷 +${amount} Blue Coins Claimed!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCoinSound) sfx.playCoinSound();
   refreshHomePopupIfOpen('blue');
@@ -1493,7 +1493,7 @@ function renderHomeBonusPopup(header, body) {
       </div>
       <div class="popup-stat-banner" style="flex-direction: column; align-items: flex-start; gap: 2px;">
         <span class="popup-stat-label">Blue Crystals</span>
-        <span class="popup-stat-value" style="color: #38bdf8;">💎 +10 - 25</span>
+        <span class="popup-stat-value" style="color: #38bdf8;">🔷 +10 - 25</span>
       </div>
     </div>
 
@@ -1518,8 +1518,7 @@ function openHomeMysteryCapsule() {
   const goldBonus = Math.floor(Math.random() * 2500) + 3500;
   const blueBonus = Math.floor(Math.random() * 15) + 10;
   gameState.player.coins = (gameState.player.coins || 0) + goldBonus;
-  gameState.player.diamonds = (gameState.player.diamonds || 0) + blueBonus;
-  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + blueBonus;
   if (gameState.player.chestKeys !== undefined) gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
   if (gameState.player.spinTickets !== undefined) gameState.player.spinTickets = (gameState.player.spinTickets || 0) + 1;
   if (gameState.player.scratchCards !== undefined) gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
@@ -1528,7 +1527,7 @@ function openHomeMysteryCapsule() {
   updateHomeUI();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Mahotsav Gift: +${formatNumber(goldBonus)} Gold, +${blueBonus} Blue, 🎫 1 Ticket, 🔑 1 Key!`);
+    showFloatingToast(`🎉 Mahotsav Gift: +${formatNumber(goldBonus)} Gold, +${blueBonus} 🔷 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCardRewardSound) {
     sfx.playCardRewardSound();

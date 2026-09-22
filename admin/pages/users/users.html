@@ -177,10 +177,18 @@
         <h4 style="font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
           💰 Virtual Currency Balances
         </h4>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
           <div style="padding: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
             <div style="font-size: 10px; font-weight: 800; color: #b45309;">COINS 🪙</div>
             <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #0284c7;">BLUE COINS 🔷</div>
+            <div style="font-size: 15px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailBlueCoins">0</div>
+          </div>
+          <div style="padding: 10px; background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.3); border-radius: 8px;">
+            <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
+            <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
           </div>
           <div style="padding: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px;">
             <div style="font-size: 10px; font-weight: 800; color: #0891b2;">XP ACCUMULATED ⭐</div>
@@ -242,9 +250,14 @@
 
       <!-- Action Footer -->
       <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px solid #f1f5f9; padding-top: 14px;">
-        <button type="button" class="btn-secondary" id="btnToggleStatusFromDetails" style="color: #dc2626; border-color: #fca5a5;">
-          🔒 Disable Account
-        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-secondary" id="btnToggleStatusFromDetails" style="color: #dc2626; border-color: #fca5a5;">
+            🔒 Disable Account
+          </button>
+          <button type="button" class="btn-secondary" id="btnDeleteUserFromDetails" style="color: #ef4444; border-color: #fca5a5; background: rgba(239, 68, 68, 0.06);" title="Permanently delete user and purge data from Firebase">
+            🗑️ Delete User
+          </button>
+        </div>
         <div style="display: flex; gap: 10px;">
           <button type="button" class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
           <button type="button" class="btn-primary" id="btnEditFromDetails">✏️ Edit Player Balance</button>
@@ -276,18 +289,22 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label class="form-label" style="font-size: 11px; font-weight: 700; color: #334155;">Starting Level</label>
-            <input type="number" id="inpAddLevel" value="1" min="1" max="100" class="form-input">
+            <input type="number" id="inpAddLevel" value="1" min="1" max="500" class="form-input">
           </div>
           <div class="form-group">
             <label class="form-label" style="font-size: 11px; font-weight: 700; color: #ca8a04;">Coins 🪙</label>
             <input type="number" id="inpAddCoins" value="2500" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
           </div>
           <div class="form-group">
-            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Diamonds 💎</label>
-            <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Blue Coins 🔷</label>
+            <input type="number" id="inpAddBlueCoins" value="100" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0891b2;">Diamonds 💎</label>
+            <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0891b2;">
           </div>
         </div>
 

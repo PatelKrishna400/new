@@ -319,6 +319,8 @@ function viewUserDetails(uid) {
 
   // Currency Balances
   if (document.getElementById('detailCoins')) document.getElementById('detailCoins').textContent = Number(u.coins || 0).toLocaleString();
+  if (document.getElementById('detailBlueCoins')) document.getElementById('detailBlueCoins').textContent = Number(u.blueCoins || 0).toLocaleString();
+  if (document.getElementById('detailDiamonds')) document.getElementById('detailDiamonds').textContent = Number(u.diamonds || 0).toLocaleString();
   if (document.getElementById('detailXp')) document.getElementById('detailXp').textContent = Number(u.xp || 0).toLocaleString();
   if (document.getElementById('detailKeys')) document.getElementById('detailKeys').textContent = Number(u.chestKeys || 0).toLocaleString();
   if (document.getElementById('detailCards')) document.getElementById('detailCards').textContent = Number(u.scratchCards || 0).toLocaleString();
@@ -353,6 +355,14 @@ function viewUserDetails(uid) {
     editBtn.onclick = () => {
       closeUserDetailsModal();
       handleEditPlayerClick(uid);
+    };
+  }
+
+  // Delete button hook
+  const deleteBtn = document.getElementById('btnDeleteUserFromDetails');
+  if (deleteBtn) {
+    deleteBtn.onclick = () => {
+      confirmDeleteUser(uid);
     };
   }
 
@@ -459,24 +469,22 @@ function savePlayerEditToFirebase() {
   if (xpVal !== undefined && xpVal !== '') updates.xp = Number(xpVal) || 0;
 
   const energyVal = document.getElementById('editModalEnergy')?.value;
-  if (energyVal !== undefined && energyVal !== '') updates.currentEnergy = Number(energyVal) || 1000;
+  if (energyVal !== undefined && energyVal !== '') {
+    updates.currentEnergy = Number(energyVal) || 0;
+    updates.energy = Number(energyVal) || 0;
+  }
 
-  const statusVal = document.getElementById('editModalStatus')?.value;
+  const statusVal = document.getElementById('editModalStatus')?.value || 'active';
   if (statusVal) updates.status = statusVal;
 
   const goalLevel = Number(document.getElementById('editModalGoalLevel')?.value) || 0;
 
   if (typeof window.saveUserToFirebase === 'function') {
-    window.saveUserToFirebase(uid, updates)
+    window.saveUserToFirebase(uid, updates, goalLevel, statusVal)
       .then(() => {
-        const db = window.getDb ? window.getDb() : null;
-        if (db) {
-          db.ref(`/players/${uid}/goal/level`).set(goalLevel);
-          db.ref(`/players/${uid}/goalState/currentLevel`).set(goalLevel);
-        }
         alert('✅ Player data successfully updated in Firebase!');
         closeUserEditModal();
-        renderUsersTable();
+        if (typeof renderUsersTable === 'function') renderUsersTable();
       })
       .catch(err => {
         alert('Error saving player: ' + err.message);
@@ -484,13 +492,21 @@ function savePlayerEditToFirebase() {
   } else {
     const db = window.getDb ? window.getDb() : null;
     if (!db) { alert('Firebase is not connected!'); return; }
-    Promise.all([
-      db.ref(`/players/${uid}/player`).update(updates),
-      db.ref(`/players/${uid}/goal/level`).set(goalLevel),
-      db.ref(`/players/${uid}/goalState/currentLevel`).set(goalLevel)
-    ]).then(() => {
+    const batch = {
+      [`/players/${uid}/player`]: updates,
+      [`/players/${uid}/reactor/currentEnergy`]: updates.currentEnergy !== undefined ? updates.currentEnergy : 0,
+      [`/players/${uid}/goal/level`]: goalLevel,
+      [`/players/${uid}/goalState/currentLevel`]: goalLevel,
+      [`/players/${uid}/progression/activeLevel`]: updates.level || 1,
+      [`/players/${uid}/status`]: statusVal,
+      [`/players/${uid}/player/status`]: statusVal,
+      [`/players/${uid}/resetVersion`]: 7,
+      [`/players/${uid}/updatedAt`]: Date.now()
+    };
+    db.ref().update(batch).then(() => {
       alert('✅ Player data successfully updated in Firebase!');
       closeUserEditModal();
+      if (typeof renderUsersTable === 'function') renderUsersTable();
     }).catch(err => alert('Error saving player: ' + err.message));
   }
 }
@@ -531,22 +547,36 @@ window.toggleUserAccountStatus = toggleUserAccountStatus;
  */
 function confirmDeleteUser(uid) {
   const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
-  const player = users.find(u => u.uid === uid);
+  const player = users.find(u => u.uid === uid || u.id === uid);
   const name = player ? (player.name || player.username) : uid;
 
-  if (!confirm(`⚠️ PERMANENT ACTION:\nAre you sure you want to permanently DELETE user "${name}" (${uid}) from Firebase?\nAll coins, progress, and inventory will be removed. This cannot be undone.`)) {
+  if (!confirm(`⚠️ PERMANENT ACTION:\nAre you sure you want to permanently DELETE user "${name}" (${uid}) from Firebase?\n\n• Player data will be completely wiped from Firebase\n• User panel will be immediately locked & secured\n• All associated activity logs will be deleted through Firebase\n• This action cannot be undone.`)) {
     return;
   }
 
-  if (typeof window.deleteUserFromFirebase === 'function') {
-    window.deleteUserFromFirebase(uid)
+  const deleteFn = window.deleteUserFromFirebase;
+  if (typeof deleteFn === 'function') {
+    deleteFn(uid)
       .then(() => {
+        alert(`✅ Player "${name}" and all associated data/activity have been permanently deleted from Firebase.\nUser panel has been secured.`);
+        closeUserDetailsModal();
+        closeUserEditModal();
+        renderUsersTable();
+        if (typeof window.renderRealtimeActivityFeed === 'function') {
+          window.renderRealtimeActivityFeed();
+        }
+      })
+      .catch(err => alert('Error deleting player: ' + err.message));
+  } else {
+    const db = window.getDb ? window.getDb() : null;
+    if (db) {
+      db.ref('/players/' + uid).remove().then(() => {
         alert(`✅ Player "${name}" deleted from Firebase.`);
         closeUserDetailsModal();
         closeUserEditModal();
         renderUsersTable();
-      })
-      .catch(err => alert('Error deleting player: ' + err.message));
+      }).catch(err => alert('Error: ' + err.message));
+    }
   }
 }
 window.confirmDeleteUser = confirmDeleteUser;
@@ -791,6 +821,7 @@ function saveNewPlayerToFirebase(event) {
   const telegram = (document.getElementById('inpAddTelegram')?.value || '').trim();
   const level = Number(document.getElementById('inpAddLevel')?.value) || 1;
   const coins = Number(document.getElementById('inpAddCoins')?.value) || 2500;
+  const blueCoins = Number(document.getElementById('inpAddBlueCoins')?.value) || 100;
   const diamonds = Number(document.getElementById('inpAddDiamonds')?.value) || 150;
   const keys = Number(document.getElementById('inpAddKeys')?.value) || 3;
   const tickets = Number(document.getElementById('inpAddTickets')?.value) || 2;
@@ -822,8 +853,8 @@ function saveNewPlayerToFirebase(event) {
       level: level,
       xp: 0,
       coins: coins,
+      blueCoins: blueCoins,
       diamonds: diamonds,
-      blueCoins: diamonds,
       chestKeys: keys,
       scratchCards: cards,
       chestTickets: tickets,
