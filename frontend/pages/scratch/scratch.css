@@ -201,8 +201,13 @@
 }
 
 @keyframes rotateTicketAura {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Ticket Header */
@@ -337,8 +342,13 @@
 }
 
 @keyframes spinRays {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .reward-icon-badge-box {
@@ -357,8 +367,15 @@
 }
 
 @keyframes rewardIconPulse {
-  0% { transform: scale(0.96); box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
-  100% { transform: scale(1.06); box-shadow: 0 0 28px rgba(236, 72, 153, 0.9); }
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+  }
+
+  100% {
+    transform: scale(1.06);
+    box-shadow: 0 0 28px rgba(236, 72, 153, 0.9);
+  }
 }
 
 .reward-icon-huge {
@@ -420,8 +437,15 @@
 }
 
 @keyframes stampPop {
-  0% { transform: scale(2) rotate(25deg); opacity: 0; }
-  100% { transform: scale(1) rotate(12deg); opacity: 1; }
+  0% {
+    transform: scale(2) rotate(25deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1) rotate(12deg);
+    opacity: 1;
+  }
 }
 
 /* 2. Overneath: Realistic Metallic Gray Film Canvas */
@@ -431,7 +455,8 @@
   width: 100%;
   height: 100%;
   cursor: grab;
-  touch-action: none; /* Crucial: Prevents touch drag from scrolling page on mobile */
+  touch-action: none;
+  /* Crucial: Prevents touch drag from scrolling page on mobile */
   user-select: none;
   -webkit-user-select: none;
   z-index: 2;
@@ -468,6 +493,7 @@
     opacity: 1;
     transform: translate(0, 0) scale(1);
   }
+
   100% {
     opacity: 0;
     transform: translate(var(--dx), var(--dy)) scale(0.2);
@@ -542,9 +568,17 @@
   width: 2px;
 }
 
-.barcode-lines span:nth-child(2n) { width: 3px; }
-.barcode-lines span:nth-child(3n) { width: 1px; }
-.barcode-lines span:nth-child(5n) { width: 4px; }
+.barcode-lines span:nth-child(2n) {
+  width: 3px;
+}
+
+.barcode-lines span:nth-child(3n) {
+  width: 1px;
+}
+
+.barcode-lines span:nth-child(5n) {
+  width: 4px;
+}
 
 .barcode-text {
   font-family: var(--font-mono, monospace);
@@ -596,7 +630,7 @@
   font-weight: 900;
   letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
     0 4px 0 #881337,
@@ -609,7 +643,7 @@
 
 .scratch-action-main-btn:hover {
   transform: translateY(-1.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.8),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
     0 5px 0 #881337,
@@ -618,7 +652,7 @@
 
 .scratch-action-main-btn:active {
   transform: translateY(2.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(0, 0, 0, 0.45),
     0 1px 0 #881337,
@@ -637,7 +671,7 @@
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.15),
     inset 0 -2px 0 rgba(0, 0, 0, 0.5),
     0 3px 0 rgba(136, 19, 55, 0.6),
@@ -651,7 +685,7 @@
 .scratch-btn-secondary:hover {
   transform: translateY(-1.5px);
   border-color: #f472b6;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.25),
     inset 0 -2px 0 rgba(0, 0, 0, 0.5),
     0 4px 0 rgba(136, 19, 55, 0.7),
@@ -660,7 +694,7 @@
 
 .scratch-btn-secondary:active {
   transform: translateY(2px);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 1px 0 rgba(136, 19, 55, 0.6),
     0 2px 5px rgba(0, 0, 0, 0.4);
@@ -678,7 +712,7 @@
   font-weight: 800;
   letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.6),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
     0 3.5px 0 #075985,
@@ -691,7 +725,7 @@
 
 .scratch-ad-buy-btn:hover {
   transform: translateY(-1.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.75),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
     0 4.5px 0 #075985,
@@ -700,7 +734,7 @@
 
 .scratch-ad-buy-btn:active {
   transform: translateY(2.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(0, 0, 0, 0.45),
     0 1px 0 #075985,
@@ -800,7 +834,7 @@
 .gray-foil-pattern {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(45deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 2px, transparent 2px, transparent 6px);
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04) 2px, transparent 2px, transparent 6px);
   pointer-events: none;
 }
 
@@ -853,11 +887,13 @@
     transform: scale(1);
     filter: contrast(130%) brightness(120%);
   }
+
   50% {
     opacity: 0.9;
     transform: scale(1.08);
     filter: contrast(180%) brightness(200%) drop-shadow(0 0 16px #cbd5e1);
   }
+
   100% {
     opacity: 0;
     transform: scale(0.8);
@@ -867,8 +903,13 @@
 }
 
 @keyframes flameFlicker {
-  0% { transform: scale(0.9) rotate(-6deg); }
-  100% { transform: scale(1.15) rotate(6deg); }
+  0% {
+    transform: scale(0.9) rotate(-6deg);
+  }
+
+  100% {
+    transform: scale(1.15) rotate(6deg);
+  }
 }
 
 .scratch-tile.revealed .tile-cover-gray-foil {

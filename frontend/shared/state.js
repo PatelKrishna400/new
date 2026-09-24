@@ -3,17 +3,17 @@
 // Levels 1 to 100 configured via Firebase (/levels_config) and Admin Portal
 // ==========================================================================
 
-// Deterministic pseudo-random seed cache per level for natural variation (Levels 1 to 500)
+// Deterministic pseudo-random seed cache per level for natural variation (Levels 1 to 1000)
 const GOAL_TARGETS_CACHE = [];
 
 function getDeterministicGoalTargets(lvl) {
-  const l = Math.max(1, Math.min(500, parseInt(lvl, 10) || 1));
+  const l = Math.max(1, Math.min(1000, parseInt(lvl, 10) || 1));
   if (GOAL_TARGETS_CACHE[l]) return GOAL_TARGETS_CACHE[l];
 
   if (GOAL_TARGETS_CACHE.length === 0) {
     GOAL_TARGETS_CACHE[1] = { cards: 20, keys: 50, tickets: 35 };
-    for (let i = 2; i < 500; i++) {
-      const progress = (i - 1) / 499;
+    for (let i = 2; i < 1000; i++) {
+      const progress = (i - 1) / 999;
       // Exponential scaling from 1 to 10,000x
       const mult = Math.pow(10000, progress);
 
@@ -30,33 +30,40 @@ function getDeterministicGoalTargets(lvl) {
       let k = Math.round(50 * mult * jKeys);
       let t = Math.round(35 * mult * jTickets);
 
-      // Ensure monotonically non-decreasing progression up to level 500
+      // Ensure monotonically non-decreasing progression up to level 1000
       c = Math.max(GOAL_TARGETS_CACHE[i - 1].cards, Math.min(200000, c));
       k = Math.max(GOAL_TARGETS_CACHE[i - 1].keys, Math.min(500000, k));
       t = Math.max(GOAL_TARGETS_CACHE[i - 1].tickets, Math.min(350000, t));
 
       GOAL_TARGETS_CACHE[i] = { cards: c, keys: k, tickets: t };
     }
-    GOAL_TARGETS_CACHE[500] = { cards: 200000, keys: 500000, tickets: 350000 };
+    GOAL_TARGETS_CACHE[1000] = { cards: 200000, keys: 500000, tickets: 350000 };
   }
 
   return GOAL_TARGETS_CACHE[l] || { cards: 20, keys: 50, tickets: 35 };
 }
 
-// Dark Green Fuel scaling formula for XP page: Level 1 = 1, Level 100 = 20
+// Dark Green Fuel scaling formula for XP page: Level 1 = 1, Level 1000 = 200
 // Progressive calculation: 100 levels / 20 steps = 5 levels per +1 fuel cell
 function calculateLevelDarkGreenFuel(lvl) {
   const l = Math.max(1, parseInt(lvl, 10) || 1);
-  return Math.max(1, Math.min(20, Math.ceil(l / 5)));
+  return Math.max(1, Math.min(200, Math.ceil(l / 5)));
 }
 
-// Baseline level configuration generator (Levels 1 to 500)
+// Memoized default level configurations cache for zero-allocation O(1) returns
+const DEFAULT_LEVEL_CONFIG_CACHE = [];
+
+// Baseline level configuration generator (Levels 1 to 1000)
 function generateDefaultLevelConfig(lvl) {
   const l = Math.max(1, parseInt(lvl, 10) || 1);
+  if (DEFAULT_LEVEL_CONFIG_CACHE[l]) return DEFAULT_LEVEL_CONFIG_CACHE[l];
+
   const targets = getDeterministicGoalTargets(l);
   const xpRequired = l * 1000;
   let rewardQty = 1;
-  if (l > 350) rewardQty = 20;
+  if (l > 750) rewardQty = 30;
+  else if (l > 500) rewardQty = 25;
+  else if (l > 350) rewardQty = 20;
   else if (l > 200) rewardQty = 12;
   else if (l > 100) rewardQty = 8;
   else if (l > 75) rewardQty = 5;
@@ -64,7 +71,7 @@ function generateDefaultLevelConfig(lvl) {
   else if (l > 25) rewardQty = 3;
   else if (l > 10) rewardQty = 2;
 
-  return {
+  const cfg = {
     level: l,
     name: `Level ${l}`,
     isLocked: false,
@@ -83,6 +90,9 @@ function generateDefaultLevelConfig(lvl) {
       fuel: calculateLevelDarkGreenFuel(l)
     }
   };
+
+  DEFAULT_LEVEL_CONFIG_CACHE[l] = cfg;
+  return cfg;
 }
 
 // Authoritative Level Configuration accessor (Firebase / Backend API is Source of Truth)
@@ -224,7 +234,7 @@ const gameState = {
     emailVerified: false,
     tier: 'BRONZE',
     level: 1,
-    maxLevel: 500,
+    maxLevel: 1000,
     coins: 0,
     blueCoins: 0,
     diamonds: 0,
@@ -251,6 +261,7 @@ const gameState = {
   },
   reactor: {
     tapPower: 1,
+    tapMultiplier: 1,
     currentEnergy: 0,
     maxEnergy: 1000,
     energyTaps: 0,
@@ -279,7 +290,9 @@ const gameState = {
       red: 0,
       darkred: 0,
       pink: 0,
-      purple: 0
+      purple: 0,
+      blue: 0,
+      lightblue: 0
     },
     consumed: {
       green: 0,
@@ -289,7 +302,9 @@ const gameState = {
       red: 0,
       darkred: 0,
       pink: 0,
-      purple: 0
+      purple: 0,
+      blue: 0,
+      lightblue: 0
     },
     boosts: {
       pink: {
@@ -327,6 +342,12 @@ const gameState = {
     megaRewardClaimed: false,
     grandChestClaimed: false,
     seasonEndMs: Date.now() + 30 * 24 * 3600 * 1000
+  },
+  spinState: {
+    level: 1,
+    crowns: 0,
+    targetCrowns: 5,
+    giftsClaimed: 0
   },
   settings: {
     soundEnabled: true,
@@ -388,6 +409,21 @@ function loadSavedGame() {
       if (parsed.tasksState) Object.assign(gameState.tasksState, parsed.tasksState);
       if (parsed.xpState) Object.assign(gameState.xpState, parsed.xpState);
       if (parsed.goalState) Object.assign(gameState.goalState, parsed.goalState);
+      if (parsed.spinState) {
+        gameState.spinState = Object.assign({
+          level: 1,
+          crowns: 0,
+          targetCrowns: 5,
+          giftsClaimed: 0
+        }, parsed.spinState);
+      } else if (!gameState.spinState) {
+        gameState.spinState = {
+          level: 1,
+          crowns: 0,
+          targetCrowns: 5,
+          giftsClaimed: 0
+        };
+      }
       if (parsed.dailyStats) {
         gameState.dailyStats = Object.assign({
           spins: 0,
@@ -458,20 +494,24 @@ function loadSavedGame() {
         gameState.energyGenerator.darkRedRemainingSeconds = 0;
       }
       if (!gameState.energyGenerator.fuelCells) {
-        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
       } else {
         if (gameState.energyGenerator.fuelCells.darkgreen === undefined) gameState.energyGenerator.fuelCells.darkgreen = 0;
         if (gameState.energyGenerator.fuelCells.darkred === undefined) gameState.energyGenerator.fuelCells.darkred = 0;
         if (gameState.energyGenerator.fuelCells.pink === undefined) gameState.energyGenerator.fuelCells.pink = 0;
         if (gameState.energyGenerator.fuelCells.purple === undefined) gameState.energyGenerator.fuelCells.purple = 0;
+        if (gameState.energyGenerator.fuelCells.blue === undefined) gameState.energyGenerator.fuelCells.blue = 0;
+        if (gameState.energyGenerator.fuelCells.lightblue === undefined) gameState.energyGenerator.fuelCells.lightblue = 0;
       }
       if (!gameState.energyGenerator.consumed) {
-        gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
+        gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
       } else {
         if (gameState.energyGenerator.consumed.darkgreen === undefined) gameState.energyGenerator.consumed.darkgreen = 0;
         if (gameState.energyGenerator.consumed.darkred === undefined) gameState.energyGenerator.consumed.darkred = 0;
         if (gameState.energyGenerator.consumed.pink === undefined) gameState.energyGenerator.consumed.pink = 0;
         if (gameState.energyGenerator.consumed.purple === undefined) gameState.energyGenerator.consumed.purple = 0;
+        if (gameState.energyGenerator.consumed.blue === undefined) gameState.energyGenerator.consumed.blue = 0;
+        if (gameState.energyGenerator.consumed.lightblue === undefined) gameState.energyGenerator.consumed.lightblue = 0;
       }
       if (!gameState.energyGenerator.boosts) {
         gameState.energyGenerator.boosts = {
@@ -586,6 +626,7 @@ function resetAllDataToZero() {
 
   // 3. Reset Reactor & Generator Energy to 0
   gameState.reactor.tapPower = 1;
+  gameState.reactor.tapMultiplier = 1;
   gameState.reactor.currentEnergy = 0;
   gameState.reactor.maxEnergy = 1000;
   gameState.reactor.energyTaps = 0;
@@ -597,8 +638,8 @@ function resetAllDataToZero() {
   gameState.energyGenerator.isActive = false;
   gameState.energyGenerator.lastTickTime = now;
   gameState.energyGenerator.lastSavedTime = now;
-  gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
-  gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
+  gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
+  gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
   gameState.energyGenerator.boosts = {
     pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
     purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
@@ -621,6 +662,13 @@ function resetAllDataToZero() {
   gameState.xpState.seasonEndMs = now + thirtyDaysMs;
 
   // 5. Reset Daily Stats & Event Timers
+  gameState.spinState = {
+    level: 1,
+    crowns: 0,
+    targetCrowns: 5,
+    giftsClaimed: 0
+  };
+
   gameState.dailyStats = {
     spins: 0,
     chests: 0,
@@ -817,47 +865,78 @@ function checkSeasonExpiration() {
 }
 window.checkSeasonExpiration = checkSeasonExpiration;
 
-function saveGame() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    resetVersion: GAME_RESET_VERSION,
-    updatedAt: Date.now(),
-    progression: gameState.progression,
-    bank: gameState.bank,
-    levelsConfig: gameState.levelsConfig,
-    player: gameState.player,
-    goal: gameState.goal,
-    reactor: {
-      tapPower: gameState.reactor.tapPower,
-      currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
-      maxEnergy: gameState.reactor.maxEnergy,
-      energyTaps: gameState.reactor.energyTaps,
-      comboTaps: gameState.reactor.comboTaps,
-      comboMultiplier: gameState.reactor.comboMultiplier,
-      profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
-      fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
-      fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
-    },
-    energyGenerator: {
-      epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
-      remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
-      ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
-      ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
-      lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
-      lastSavedTime: Date.now(),
-      fuelCells: gameState.energyGenerator.fuelCells,
-      consumed: gameState.energyGenerator.consumed,
-      boosts: gameState.energyGenerator.boosts
-    },
-    tasksState: gameState.tasksState,
-    xpState: gameState.xpState,
-    goalState: gameState.goalState,
-    dailyStats: gameState.dailyStats
-  }));
+let _saveGameTimeout = null;
+let _saveGamePending = false;
+
+function _performActualSave() {
+  _saveGamePending = false;
+  if (_saveGameTimeout) {
+    clearTimeout(_saveGameTimeout);
+    _saveGameTimeout = null;
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      resetVersion: GAME_RESET_VERSION,
+      updatedAt: Date.now(),
+      progression: gameState.progression,
+      bank: gameState.bank,
+      levelsConfig: gameState.levelsConfig,
+      player: gameState.player,
+      goal: gameState.goal,
+      reactor: {
+        tapPower: gameState.reactor.tapPower,
+        tapMultiplier: gameState.reactor.tapMultiplier || 1,
+        currentEnergy: Number((gameState.reactor.currentEnergy || 0).toFixed(2)),
+        maxEnergy: gameState.reactor.maxEnergy,
+        energyTaps: gameState.reactor.energyTaps,
+        comboTaps: gameState.reactor.comboTaps,
+        comboMultiplier: gameState.reactor.comboMultiplier,
+        profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
+        fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
+        fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
+      },
+      energyGenerator: {
+        epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
+        remainingSeconds: Math.max(0, Math.floor(gameState.energyGenerator.remainingSeconds || 0)),
+        ratePerSec: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
+        ratePerMin: gameState.energyGenerator.ratePerSec || gameState.energyGenerator.ratePerMin || 0.001,
+        lastTickTime: gameState.energyGenerator.lastTickTime || Date.now(),
+        lastSavedTime: Date.now(),
+        fuelCells: gameState.energyGenerator.fuelCells,
+        consumed: gameState.energyGenerator.consumed,
+        boosts: gameState.energyGenerator.boosts
+      },
+      tasksState: gameState.tasksState,
+      xpState: gameState.xpState,
+      goalState: gameState.goalState,
+      spinState: gameState.spinState || {
+        level: 1,
+        crowns: 0,
+        targetCrowns: 3,
+        giftsClaimed: 0
+      },
+      dailyStats: gameState.dailyStats
+    }));
+  } catch (e) {
+    console.warn('LocalStorage save failed:', e);
+  }
 
   // Real-time Cloud Save to Firebase
   if (window.firebaseSync && typeof window.firebaseSync.debouncedSave === 'function') {
     window.firebaseSync.debouncedSave();
   }
+}
+
+function saveGame(immediate = false) {
+  if (immediate) {
+    _performActualSave();
+    return;
+  }
+  if (_saveGameTimeout) return;
+  _saveGamePending = true;
+  _saveGameTimeout = setTimeout(() => {
+    _performActualSave();
+  }, 350);
 }
 
 // Level Progression Completer (Unified across Goal, XP, Home)
@@ -920,7 +999,7 @@ function completeActiveLevel(targetLvl, options = {}) {
   const nextLvl = lvlToComplete + 1;
   const nextCfg = getLevelConfig(nextLvl);
 
-  if (nextLvl <= 500) {
+  if (nextLvl <= 1000) {
     gameState.progression.activeLevel = nextLvl;
     gameState.progression.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     gameState.progression.levelXp = 0;
@@ -948,8 +1027,8 @@ function completeActiveLevel(targetLvl, options = {}) {
   if (typeof updateXpViewUI === 'function') updateXpViewUI();
   if (typeof updateHomeViewUI === 'function') updateHomeViewUI();
 
-  // Save game state locally and cloud
-  saveGame();
+  // Save game state locally and cloud immediately on level up
+  saveGame(true);
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
@@ -1059,9 +1138,11 @@ function formatTimerDisplay() {
   }
 }
 
-// Ambient Background Particles
+// Ambient Background Particles (Idempotent + DocumentFragment batch)
 function initAmbientParticles() {
   if (!DOM.ambientParticles) return;
+  if (DOM.ambientParticles.childElementCount > 0) return;
+  const fragment = document.createDocumentFragment();
   for (let i = 0; i < 20; i++) {
     const particle = document.createElement('div');
     particle.className = 'ambient-particle';
@@ -1071,8 +1152,9 @@ function initAmbientParticles() {
     particle.style.left = `${Math.random() * 100}%`;
     particle.style.animationDuration = `${Math.random() * 8 + 6}s`;
     particle.style.animationDelay = `${Math.random() * 5}s`;
-    DOM.ambientParticles.appendChild(particle);
+    fragment.appendChild(particle);
   }
+  DOM.ambientParticles.appendChild(fragment);
 }
 
 // DOM References Cache
@@ -1192,6 +1274,8 @@ const DOM = {
   darkredCellCount: document.getElementById('darkredCellCount'),
   pinkCellCount: document.getElementById('pinkCellCount'),
   purpleCellCount: document.getElementById('purpleCellCount'),
+  blueCellCount: document.getElementById('blueCellCount'),
+  lightblueCellCount: document.getElementById('lightblueCellCount'),
   btnUseGreenFuel: document.getElementById('btnUseGreenFuel'),
   btnUseDarkGreenFuel: document.getElementById('btnUseDarkGreenFuel'),
   btnUseDarkRedFuel: document.getElementById('btnUseDarkRedFuel'),
@@ -1236,6 +1320,69 @@ if (typeof window !== 'undefined') {
   window.getActiveLevel = getActiveLevel;
   window.canClaimActiveLevel = canClaimActiveLevel;
   window.completeActiveLevel = completeActiveLevel;
+  window.claimServerAuthoritativeReward = claimServerAuthoritativeReward;
+}
+
+/**
+ * Server-Authoritative Reward Claim & Anti-Fraud Engine
+ * Validates important economic operations through backend validation
+ */
+async function claimServerAuthoritativeReward(action, payload) {
+  const uid = (typeof firebaseSync !== 'undefined' && firebaseSync.userId)
+    || (gameState && gameState.player && gameState.player.profileCode)
+    || 'player_guest';
+
+  const nonce = 'claim_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+
+  try {
+    const res = await fetch('/api/reward/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid,
+        nonce,
+        action,
+        payload: payload || {},
+        clientTimestamp: Date.now()
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && data.balances) {
+        // Authoritative server balance update
+        if (data.balances.coins !== undefined) {
+          gameState.player.coins = data.balances.coins;
+        }
+        if (data.balances.diamonds !== undefined) {
+          gameState.bank.diamonds = data.balances.diamonds;
+          gameState.player.diamonds = data.balances.diamonds;
+        }
+        if (data.balances.keys !== undefined) {
+          gameState.bank.keys = data.balances.keys;
+        }
+
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame(true);
+        return data;
+      }
+    } else {
+      const errData = await res.json().catch(() => ({}));
+      console.warn('Server rejected reward claim:', errData);
+      if (errData.error && typeof showFloatingToast === 'function') {
+        showFloatingToast(`⚠️ ${errData.error}`);
+      }
+      return { ok: false, error: errData.error };
+    }
+  } catch (err) {
+    console.warn('Network offline, queuing local fallback for claim:', err);
+    // Offline local fallback
+    if (payload && payload.claimedCoins) gameState.player.coins = (gameState.player.coins || 0) + Number(payload.claimedCoins);
+    if (payload && payload.claimedDiamonds) gameState.bank.diamonds = (gameState.bank.diamonds || 0) + Number(payload.claimedDiamonds);
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame(true);
+    return { ok: true, offline: true };
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -83,17 +83,34 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDuplicateCountBadge();
 });
 
+let _userSearchDebounceTimer = null;
+
 /**
- * Filter users table
+ * Filter users table (debounced for smooth search input)
  */
-function filterUsersTable() {
+function filterUsersTable(immediate = false) {
   const searchInput = document.getElementById('userSearchInput');
   const filterSelect = document.getElementById('userStatusFilter');
 
   usersSearchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
   userStatusFilter = filterSelect ? filterSelect.value : 'all';
 
-  renderUsersTable();
+  if (immediate) {
+    if (_userSearchDebounceTimer) {
+      clearTimeout(_userSearchDebounceTimer);
+      _userSearchDebounceTimer = null;
+    }
+    renderUsersTable();
+    return;
+  }
+
+  if (_userSearchDebounceTimer) {
+    clearTimeout(_userSearchDebounceTimer);
+  }
+  _userSearchDebounceTimer = setTimeout(() => {
+    _userSearchDebounceTimer = null;
+    renderUsersTable();
+  }, 180);
 }
 window.filterUsersTable = filterUsersTable;
 
@@ -101,6 +118,10 @@ function clearUserSearch() {
   const input = document.getElementById('userSearchInput');
   if (input) input.value = '';
   usersSearchQuery = '';
+  if (_userSearchDebounceTimer) {
+    clearTimeout(_userSearchDebounceTimer);
+    _userSearchDebounceTimer = null;
+  }
   renderUsersTable();
 }
 window.clearUserSearch = clearUserSearch;
@@ -550,33 +571,41 @@ function confirmDeleteUser(uid) {
   const player = users.find(u => u.uid === uid || u.id === uid);
   const name = player ? (player.name || player.username) : uid;
 
-  if (!confirm(`⚠️ PERMANENT ACTION:\nAre you sure you want to permanently DELETE user "${name}" (${uid}) from Firebase?\n\n• Player data will be completely wiped from Firebase\n• User panel will be immediately locked & secured\n• All associated activity logs will be deleted through Firebase\n• This action cannot be undone.`)) {
-    return;
-  }
-
-  const deleteFn = window.deleteUserFromFirebase;
-  if (typeof deleteFn === 'function') {
-    deleteFn(uid)
-      .then(() => {
-        alert(`✅ Player "${name}" and all associated data/activity have been permanently deleted from Firebase.\nUser panel has been secured.`);
-        closeUserDetailsModal();
-        closeUserEditModal();
-        renderUsersTable();
-        if (typeof window.renderRealtimeActivityFeed === 'function') {
-          window.renderRealtimeActivityFeed();
-        }
-      })
-      .catch(err => alert('Error deleting player: ' + err.message));
-  } else {
-    const db = window.getDb ? window.getDb() : null;
-    if (db) {
-      db.ref('/players/' + uid).remove().then(() => {
-        alert(`✅ Player "${name}" deleted from Firebase.`);
-        closeUserDetailsModal();
-        closeUserEditModal();
-        renderUsersTable();
-      }).catch(err => alert('Error: ' + err.message));
+  const executeDelete = () => {
+    if (!confirm(`⚠️ PERMANENT ACTION:\nAre you sure you want to permanently DELETE user "${name}" (${uid}) from Firebase?\n\n• Player data will be completely wiped from Firebase\n• User panel will be immediately locked & secured\n• All associated activity logs will be deleted through Firebase\n• This action cannot be undone.`)) {
+      return;
     }
+
+    const deleteFn = window.deleteUserFromFirebase;
+    if (typeof deleteFn === 'function') {
+      deleteFn(uid)
+        .then(() => {
+          alert(`✅ Player "${name}" and all associated data/activity have been permanently deleted through Firebase.\nUser panel has been secured.`);
+          closeUserDetailsModal();
+          closeUserEditModal();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
+          if (typeof window.renderRealtimeActivityFeed === 'function') {
+            window.renderRealtimeActivityFeed();
+          }
+        })
+        .catch(err => alert('Error deleting player: ' + err.message));
+    } else {
+      const db = window.getDb ? window.getDb() : null;
+      if (db) {
+        db.ref('/players/' + uid).remove().then(() => {
+          alert(`✅ Player "${name}" deleted from Firebase.`);
+          closeUserDetailsModal();
+          closeUserEditModal();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
+        }).catch(err => alert('Error: ' + err.message));
+      }
+    }
+  };
+
+  if (typeof window.requireAdminPassword === 'function') {
+    window.requireAdminPassword(executeDelete);
+  } else {
+    executeDelete();
   }
 }
 window.confirmDeleteUser = confirmDeleteUser;
@@ -638,14 +667,15 @@ function restartPlayerInFirebase() {
 window.restartPlayerInFirebase = restartPlayerInFirebase;
 
 /**
- * Remove Player from modal
+ * Remove / Delete Player from Edit modal
  */
-function removeUserFromModal() {
+function deleteUserFromModal() {
   const uid = editingPlayerUid || window.currentEditingUserUid;
   if (!uid) return;
   confirmDeleteUser(uid);
 }
-window.removeUserFromModal = removeUserFromModal;
+window.deleteUserFromModal = deleteUserFromModal;
+window.removeUserFromModal = deleteUserFromModal;
 
 function escapeHtmlText(str) {
   if (!str) return '';
@@ -794,11 +824,26 @@ window.unlinkDuplicateCredential = unlinkDuplicateCredential;
    ADD NEW PLAYER (REAL-TIME FIREBASE WRITE)
    ========================================================================== */
 
-function openAddPlayerModal() {
+function openAddPlayerModal(prefillData = null) {
   const modal = document.getElementById('addUserModal');
   if (modal) {
     modal.classList.add('active');
     modal.classList.add('open');
+
+    if (prefillData) {
+      if (document.getElementById('inpAddUsername')) {
+        document.getElementById('inpAddUsername').value = prefillData.name || prefillData.username || '';
+      }
+      if (document.getElementById('inpAddTelegram')) {
+        document.getElementById('inpAddTelegram').value = prefillData.telegram || '';
+      }
+      window.currentProcessingRequestId = prefillData.requestId || null;
+      window.currentProcessingOldUserId = prefillData.oldUserId || null;
+    } else {
+      window.currentProcessingRequestId = null;
+      window.currentProcessingOldUserId = null;
+    }
+
     const input = document.getElementById('inpAddUsername');
     if (input) input.focus();
   }
@@ -811,6 +856,8 @@ function closeAddPlayerModal() {
     modal.classList.remove('active');
     modal.classList.remove('open');
   }
+  window.currentProcessingRequestId = null;
+  window.currentProcessingOldUserId = null;
 }
 window.closeAddPlayerModal = closeAddPlayerModal;
 
@@ -868,6 +915,15 @@ function saveNewPlayerToFirebase(event) {
       joinedAt: new Date().toISOString(),
       lastActive: new Date().toISOString()
     },
+    reactor: {
+      currentEnergy: 1000,
+      maxEnergy: 1000,
+      tapPower: 1,
+      energyTaps: 0
+    },
+    goal: {
+      level: 0
+    },
     updatedAt: Date.now()
   };
 
@@ -879,6 +935,20 @@ function saveNewPlayerToFirebase(event) {
 
   db.ref('/players/' + newUid).set(newPlayerPayload)
     .then(() => {
+      // If created in response to an account creation request, approve the request
+      if (window.currentProcessingRequestId) {
+        db.ref(`account_requests/${window.currentProcessingRequestId}`).update({
+          status: 'approved',
+          approvedAt: Date.now(),
+          createdUid: newUid
+        }).catch(() => {});
+      }
+
+      // If previous user was in deleted_users, lift the tombstone so user can log in
+      if (window.currentProcessingOldUserId) {
+        db.ref(`deleted_users/${window.currentProcessingOldUserId}`).remove().catch(() => {});
+      }
+
       closeAddPlayerModal();
       if (btn) {
         btn.disabled = false;
@@ -888,9 +958,13 @@ function saveNewPlayerToFirebase(event) {
       window.recentlyAddedUids = window.recentlyAddedUids || new Set();
       window.recentlyAddedUids.add(newUid);
 
+      alert(`✅ Player "${username}" successfully created in Firebase with UID: ${newUid}!`);
+
       // Open details modal automatically for the new user
       setTimeout(() => {
-        viewUserDetails(newUid);
+        if (typeof viewUserDetails === 'function') {
+          viewUserDetails(newUid);
+        }
       }, 300);
     })
     .catch(err => {

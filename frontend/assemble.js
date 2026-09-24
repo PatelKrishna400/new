@@ -33,7 +33,10 @@ const PAGE_KEYS = [
   'spin',
   'chest',
   'scratch',
-  'egg'
+  'egg',
+  'leaderboard',
+  'memory-match',
+  'coin-catcher'
 ];
 
 console.log('--- Verifying Modular Page Structure ---');
@@ -81,13 +84,48 @@ const headerContent = `<!DOCTYPE html>
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS (Scoped without preflight reset) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: {
+        extend: {
+          colors: {
+            sunamber: '#f59e0b',
+            sunyellow: '#fde047',
+            leafgreen: '#22c55e',
+            earthbrown: '#78350f',
+            stonegray: '#334155'
+          },
+          animation: {
+            'bounce-gentle': 'bounceGentle 2s infinite ease-in-out',
+            'spin-very-slow': 'spin 25s linear infinite',
+            'worker-hammer': 'workerPump 1.8s infinite ease-in-out',
+            'float-slow': 'floatSlow 3s ease-in-out infinite'
+          },
+          keyframes: {
+            bounceGentle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            workerPump: {
+              '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+              '50%': { transform: 'rotate(-12deg) translateY(4px) scale(0.96)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
 
-  <!-- Shared Global Styles -->
-  <link rel="stylesheet" href="shared/common.css">
-
-  <!-- Modular Page-Wise Styles -->
-${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).join('\n')}
+  <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -252,6 +290,15 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
             <span class="btn-dot-indicator"></span>
             <svg class="fire-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
+            </svg>
+          </button>
+
+          <!-- Notification Inbox Bell Button -->
+          <button class="icon-action-btn inbox-btn" id="headerInboxBtn" onclick="toggleNotificationInbox()" title="Notification Inbox">
+            <span class="btn-dot-indicator unread-bell-dot" id="inboxUnreadDot" style="display: none;"></span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
         </div>
@@ -504,6 +551,40 @@ const footerContent = `
       </div>
     </div>
 
+    <!-- Notification Center Modal / In-Game Inbox -->
+    <div class="notification-modal-overlay" id="notificationModalOverlay">
+      <div class="notification-modal-sheet">
+        <div class="notification-sheet-handle"></div>
+        
+        <div class="notification-modal-header">
+          <div class="notif-header-title-wrap">
+            <span class="notif-bell-icon">🔔</span>
+            <h3 class="notif-title">Command Center Inbox</h3>
+            <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
+          </div>
+          <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
+        </div>
+
+        <!-- Filter Tabs: All, Rewards, System -->
+        <div class="notif-filter-tabs">
+          <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
+          <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
+          <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
+        </div>
+
+        <!-- Notification Messages List -->
+        <div class="notification-list" id="notificationItemsList">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="notif-sheet-footer">
+          <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
+            <span>✓</span> Mark All as Read
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Firebase Cloud Realtime SDKs -->
@@ -519,10 +600,11 @@ const footerContent = `
   <!-- Shared Core State -->
   <script src="shared/state.js"></script>
 
-  <!-- Modular Page-Wise Scripts -->
-${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
+  <!-- Critical Initial Modules (Home & Energy Reactor) -->
+  <script src="pages/home/home.js"></script>
+  <script src="pages/energy/energy.js"></script>
 
-  <!-- App Shell & Router -->
+  <!-- App Shell, Dynamic On-Demand Loader & Router -->
   <script src="shared/app.js"></script>
 </body>
 </html>
@@ -532,14 +614,15 @@ const fullHtml = headerContent + pagesContent + footerContent;
 fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), fullHtml, 'utf8');
 console.log('Successfully assembled modular index.html in frontend/!');
 
-// Also write CSS aggregator to style.css for backwards compatibility
-const styleImports = [
-  '/* CSS Aggregator for modular pages */',
-  '@import url("shared/common.css");',
-  ...PAGE_KEYS.map(k => `@import url("pages/${k}/${k}.css");`)
-].join('\n');
-fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), styleImports + '\n', 'utf8');
-console.log('Successfully updated style.css with modular imports!');
+// Compile consolidated CSS into style.css directly
+const commonCss = fs.readFileSync(path.join(SHARED_DIR, 'common.css'), 'utf8');
+const pageCssBundles = PAGE_KEYS.map(k => {
+  const p = path.join(PAGES_DIR, k, `${k}.css`);
+  return fs.existsSync(p) ? `/* --- PAGE: ${k.toUpperCase()} --- */\n` + fs.readFileSync(p, 'utf8') : '';
+}).join('\n\n');
+const fullCss = `/* Energy Tap Reactor - Consolidated Unified Stylesheet */\n${commonCss}\n\n${pageCssBundles}\n`;
+fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), fullCss, 'utf8');
+console.log('Successfully compiled consolidated style.css in frontend/!');
 
 
 

@@ -302,24 +302,40 @@
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
             </div>
+
+            <!-- Beside Energy Tab: Circle Format Multi-Tap Selector (*1, *2, *3, *5, *10, *50, *100) -->
+            <div class="multi-tap-strip" id="multiTapStrip" role="group" aria-label="Multi-Tap Power Multiplier">
+              <button type="button" class="multi-tap-circle active" id="btnMultiTap1" onclick="setMultiTapMultiplier(1)" title="*1 Multi-Tap (1 Energy/click)">*1</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap2" onclick="setMultiTapMultiplier(2)" title="*2 Multi-Tap (2 Energy/click, unlocks at 100+ Energy)" style="display: none;">*2</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap3" onclick="setMultiTapMultiplier(3)" title="*3 Multi-Tap (3 Energy/click, unlocks at 250+ Energy)" style="display: none;">*3</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap5" onclick="setMultiTapMultiplier(5)" title="*5 Multi-Tap (5 Energy/click, unlocks at 500+ Energy)" style="display: none;">*5</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap10" onclick="setMultiTapMultiplier(10)" title="*10 Multi-Tap (10 Energy/click, unlocks at 1000+ Energy)" style="display: none;">*10</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap50" onclick="setMultiTapMultiplier(50)" title="*50 Multi-Tap (50 Energy/click, unlocks at 5000+ Energy)" style="display: none;">*50</button>
+              <button type="button" class="multi-tap-circle" id="btnMultiTap100" onclick="setMultiTapMultiplier(100)" title="*100 Multi-Tap (100 Energy/click, unlocks at 10000+ Energy)" style="display: none;">*100</button>
+            </div>
           </div>
         </section>
 
         <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
-        <section class="home-leaderboard-card" id="homeLeaderboardSection">
+        <section class="home-leaderboard-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" style="cursor: pointer;" title="Tap to open full Top 100 Leaderboard">
           <!-- Leaderboard Header Strip -->
           <div class="hlb-header">
             <div class="hlb-title-wrap">
               <div class="hlb-trophy-icon">🏆</div>
               <div class="hlb-title-info">
                 <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
-                <span class="hlb-subtitle">Live Tap Rankings &amp; Community Champions</span>
+                <span class="hlb-subtitle">Top 100 Champions &amp; Live Step Podium</span>
               </div>
             </div>
-            <!-- Live Indicator -->
-            <div class="hlb-live-indicator">
-              <span class="hlb-live-pulse-dot"></span>
-              <span class="hlb-live-text">LIVE</span>
+            <!-- Live Indicator & Open Arrow -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="hlb-live-indicator">
+                <span class="hlb-live-pulse-dot"></span>
+                <span class="hlb-live-text">LIVE</span>
+              </div>
+              <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fde047; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                <span>OPEN</span> <span>›</span>
+              </div>
             </div>
           </div>
 
@@ -338,7 +354,7 @@
               <span class="hlb-tab-name">Level</span>
             </button>
             <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
-              <span class="hlb-tab-icon">🔷</span>
+              <span class="hlb-tab-icon">💙</span>
               <span class="hlb-tab-name">Blue</span>
             </button>
           </div>

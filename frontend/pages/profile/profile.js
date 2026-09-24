@@ -522,7 +522,7 @@ window.buyItemWithBlueCoins = function(itemType, cost) {
 
   if (currentBlue < finalCost) {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${finalCost} Blue Coins! (Have ${currentBlue})`, '🔷');
+    showShopToast(`⚠️ Need ${finalCost} Blue Coins! (Have ${currentBlue})`, '💙');
     return;
   }
 
@@ -702,7 +702,7 @@ window.buyEggsWithBlueCoins = function(cost = 100, count = 20) {
   const currentBlue = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
   if (currentBlue < cost) {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${cost} Blue Coins! (Have ${currentBlue})`, '🔷');
+    showShopToast(`⚠️ Need ${cost} Blue Coins! (Have ${currentBlue})`, '💙');
     return;
   }
 
@@ -754,7 +754,9 @@ const DEFAULT_FUEL_CELLS_CONFIG = {
     pink: 7,
     purple: 8.5,
     red: 5,
-    darkred: 6.5
+    darkred: 6.5,
+    blue: 2.0,
+    lightblue: 3.5
   },
   darkGreenOptions: {
     blueCoin: 100,
@@ -818,6 +820,20 @@ const DEFAULT_FUEL_CELLS_CONFIG = {
       badge: '×6.5 TURBO',
       effect: '30s generator operating at 0.01 EP/s rate',
       color: '#b91c1c'
+    },
+    blue: {
+      name: 'Blue Fuel Cell',
+      icon: '💙',
+      badge: '30s SKIP',
+      effect: 'Instantly skips 30 seconds of generator timer',
+      color: '#0284c7'
+    },
+    lightblue: {
+      name: 'Light Blue Fuel Cell',
+      icon: '❄️',
+      badge: '1m SKIP',
+      effect: 'Instantly skips 1 minute of generator timer',
+      color: '#06b6d4'
     }
   }
 };
@@ -851,7 +867,7 @@ function getFuelCellPricing(color) {
 }
 
 function switchFuelTab(color) {
-  const allowed = ['green', 'yellow', 'orange', 'pink', 'purple', 'red', 'darkred'];
+  const allowed = ['green', 'yellow', 'orange', 'pink', 'purple', 'red', 'darkred', 'blue', 'lightblue'];
   if (!allowed.includes(color)) color = 'green';
   currentSelectedFuelColor = color;
 
@@ -877,7 +893,7 @@ function renderAllFuelShopCards() {
   const listContainer = document.getElementById('fuelShopCardsList');
   if (!listContainer) return;
 
-  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'pink', 'purple', 'red', 'darkred'];
+  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'blue', 'lightblue', 'pink', 'purple', 'red', 'darkred'];
   const cfg = getFuelCellsConfig();
   const dgOpts = (cfg && cfg.darkGreenOptions) || DEFAULT_FUEL_CELLS_CONFIG.darkGreenOptions;
 
@@ -940,7 +956,7 @@ function renderAllFuelShopCards() {
           <div class="fuel-pricing-grid">
             <!-- Option 1: Blue Coins -->
             <button type="button" class="fuel-buy-btn fuel-btn-blue" onclick="purchaseFuelCell('${color}', 'blueCoin')" title="Buy ${meta.name} with ${formatNumber(blueCost)} Blue Coins">
-              <span class="fuel-btn-icon">🔷</span>
+              <span class="fuel-btn-icon">💙</span>
               <span class="fuel-btn-cost">${formatNumber(blueCost)}</span>
               <span class="fuel-btn-label">Blue Coins</span>
               <span class="method-gain" style="color: ${colorHex};">+1 Cell</span>
@@ -1009,7 +1025,7 @@ async function purchaseFuelCell(color, method) {
       const current = gameState.player.blueCoins || 0;
       if (current < cost) {
         if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-        showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '🔷');
+        showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '💙');
         resetLock();
         return;
       }
@@ -1065,7 +1081,7 @@ async function purchaseFuelCell(color, method) {
     const current = gameState.player.blueCoins || 0;
     if (current < cost) {
       if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '🔷');
+      showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '💙');
       resetLock();
       return;
     }
@@ -1402,6 +1418,10 @@ function updateProfileUI() {
   const diaEl = document.getElementById('profileDiamondBalance');
   if (diaEl) diaEl.textContent = formatNumber(gameState.player.diamonds || 0);
 
+  // Blue Coin balance on profile
+  const blueEl = document.getElementById('profileBlueCoinBalance');
+  if (blueEl) blueEl.textContent = formatNumber(gameState.player.blueCoins || 0);
+
   // Streak on profile
   const streakEl = document.getElementById('profileStreakVal');
   if (streakEl) streakEl.textContent = `${gameState.player.streakDays || 0} Days`;
@@ -1409,6 +1429,70 @@ function updateProfileUI() {
   // Tap Power on profile
   const powerEl = document.getElementById('profileTapPowerVal');
   if (powerEl) powerEl.textContent = `+${gameState.reactor.tapPower || 1}`;
+
+  // Expanded Profile Fields: Level, Reactor Lv, Season Rank, Clan
+  const pLvlEl = document.getElementById('profilePlayerLevel');
+  if (pLvlEl) pLvlEl.textContent = gameState.player.level || (gameState.progression && gameState.progression.activeLevel) || 1;
+
+  const rLvlEl = document.getElementById('profileReactorLevel');
+  if (rLvlEl) rLvlEl.textContent = gameState.reactor.level || 1;
+
+  const sRankEl = document.getElementById('profileSeasonRank');
+  if (sRankEl) sRankEl.textContent = `#${gameState.player.seasonRank || 1}`;
+
+  const clanEl = document.getElementById('profileClanTag');
+  if (clanEl) clanEl.textContent = gameState.player.clan || 'Quantum';
+
+  // Extended Operational Stats
+  const totTapsEl = document.getElementById('profileTotalTaps');
+  if (totTapsEl) totTapsEl.textContent = formatNumber(gameState.reactor.energyTaps || gameState.player.totalTaps || 0);
+
+  const totCoinsEl = document.getElementById('profileTotalCoinsEarned');
+  if (totCoinsEl) totCoinsEl.textContent = formatNumber(gameState.player.totalCoinsEarned || gameState.player.coins || 0);
+
+  const miniGamesEl = document.getElementById('profileMiniGamesPlayed');
+  if (miniGamesEl) miniGamesEl.textContent = formatNumber(gameState.player.miniGamesPlayed || 0);
+
+  const refsEl = document.getElementById('profileReferralsCount');
+  if (refsEl) refsEl.textContent = formatNumber(gameState.player.referralsCount || (gameState.player.frens && gameState.player.frens.length) || 0);
+
+  const curStreakEl = document.getElementById('profileCurrentStreak');
+  if (curStreakEl) curStreakEl.textContent = `${gameState.player.streakDays || (gameState.dailyStats && gameState.dailyStats.streak) || 0} Days`;
+
+  const longStreakEl = document.getElementById('profileLongestStreak');
+  if (longStreakEl) longStreakEl.textContent = `${gameState.player.longestStreak || Math.max(gameState.player.streakDays || 0, 7)} Days`;
+
+  // Badges Evaluation
+  const totalTaps = gameState.reactor.energyTaps || gameState.player.totalTaps || 0;
+  const pLevel = gameState.player.level || 1;
+  const streak = gameState.player.streakDays || 0;
+  const diamonds = (gameState.player.diamonds || 0) + (gameState.bank ? (gameState.bank.diamonds || 0) : 0);
+  const reactorPower = gameState.reactor.tapPower || 1;
+
+  const badges = {
+    tapMaster: totalTaps >= 10000,
+    champion: pLevel >= 50,
+    streakKing: streak >= 7,
+    diamondPlayer: diamonds >= 1000,
+    reactorLegend: reactorPower >= 50 || pLevel >= 100
+  };
+
+  let unlockedBadgesCount = 0;
+  Object.keys(badges).forEach(bKey => {
+    const isUnlocked = badges[bKey];
+    if (isUnlocked) unlockedBadgesCount++;
+    const bEl = document.getElementById(`badge${bKey.charAt(0).toUpperCase() + bKey.slice(1)}`);
+    if (bEl) {
+      bEl.classList.toggle('unlocked', isUnlocked);
+      const tagEl = bEl.querySelector('.badge-status-tag');
+      if (tagEl) {
+        tagEl.textContent = isUnlocked ? 'UNLOCKED ✓' : tagEl.dataset.req || tagEl.textContent;
+      }
+    }
+  });
+
+  const badgesCountEl = document.getElementById('profileBadgesUnlockedCount');
+  if (badgesCountEl) badgesCountEl.textContent = `${unlockedBadgesCount} / 5`;
 
   // Promo Code text
   const promoCodeEl = document.getElementById('myPromoCodeText');
@@ -2105,6 +2189,13 @@ function initReelLiveCanvas() {
   }
 
   function renderFrame() {
+    if (!canvas || !canvas.isConnected || canvas.offsetParent === null) {
+      if (_reelAnimFrameId) {
+        cancelAnimationFrame(_reelAnimFrameId);
+        _reelAnimFrameId = null;
+      }
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
 
     // Deep dynamic space gradient
@@ -2553,7 +2644,7 @@ window.buyTapPowerWithBlueCoins = function(amount) {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
       sfx.playErrorSound();
     }
-    showShopToast(`⚠️ Need ${amount} Blue Coins! (You have ${currentBlue})`, '🔷');
+    showShopToast(`⚠️ Need ${amount} Blue Coins! (You have ${currentBlue})`, '💙');
     return;
   }
 
@@ -2593,7 +2684,7 @@ window.buyTapPowerWithBlueCoins = function(amount) {
   }
 
   // Toast feedback
-  showShopToast(`⚡ +${amount} Tap Power Added! (Cost: ${amount} 🔷)`, '⚡');
+  showShopToast(`⚡ +${amount} Tap Power Added! (Cost: ${amount} 💙)`, '⚡');
 
   // Synchronize UI across all tabs
   updateBlueTabUI();
@@ -2618,7 +2709,7 @@ window.buyMaxTapPowerWithBlueCoins = function() {
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
       sfx.playErrorSound();
     }
-    showShopToast('⚠️ You need at least 1 Blue Coin to buy Tap Power!', '🔷');
+    showShopToast('⚠️ You need at least 1 Blue Coin to buy Tap Power!', '💙');
     return;
   }
 
@@ -2634,7 +2725,7 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
       if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
         sfx.playErrorSound();
       }
-      showShopToast(`⚠️ Need ${cost} Blue Coins to activate!`, '🔷');
+      showShopToast(`⚠️ Need ${cost} Blue Coins to activate!`, '💙');
       return;
     }
     gameState.player.diamonds = Math.max(0, currentBlue - cost);
@@ -2652,7 +2743,7 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
         cashValue: `$${(cost * 0.05).toFixed(2)}`,
         category: 'quantum-taps',
         categoryName: 'Quantum Boost',
-        categoryIcon: '🔷'
+        categoryIcon: '💙'
       };
       const delivery = {
         contact: (gameState.player && (gameState.player.handle || gameState.player.telegram || gameState.player.name)) || 'Player',
@@ -2670,7 +2761,7 @@ window.activateQuantumBlueTaps = function(count, cost, label) {
     sfx.playLevelUpSound();
   }
 
-  showShopToast(`🔷 ${count} Blue Taps Activated! (1 Tap = 1 🔷)`, '⚡');
+  showShopToast(`💙 ${count} Blue Taps Activated! (1 Tap = 1 💙)`, '⚡');
 
   updateBlueTabUI();
   if (typeof updateUI === 'function') updateUI();
@@ -2714,7 +2805,7 @@ window.claimDailyBlueCoinDrop = function() {
     sfx.playLevelUpSound();
   }
 
-  showShopToast('🎁 +15 Blue Coins Claimed!', '🔷');
+  showShopToast('🎁 +15 Blue Coins Claimed!', '💙');
 
   if (btn) {
     btn.textContent = 'Claimed ✓';
@@ -2747,7 +2838,7 @@ window.synthesizeGoldToBlueInTab = function() {
     sfx.playLevelUpSound();
   }
 
-  showShopToast('🔷 Synthesized 25 Blue Coins for 5K Gold!', '🔄');
+  showShopToast('💙 Synthesized 25 Blue Coins for 5K Gold!', '🔄');
 
   updateBlueTabUI();
   updateShopUI();
@@ -2770,7 +2861,7 @@ window.watchAdForBlueCoins = function() {
       if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
         sfx.playLevelUpSound();
       }
-      showShopToast('🔷 +50 Blue Coins Unlocked!', '🎬');
+      showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
       updateBlueTabUI();
       if (typeof updateUI === 'function') updateUI();
       if (typeof saveGame === 'function') saveGame();
@@ -2783,7 +2874,7 @@ window.watchAdForBlueCoins = function() {
     if (gameState.player.blueCoins !== undefined) {
       gameState.player.blueCoins = gameState.player.diamonds;
     }
-    showShopToast('🔷 +50 Blue Coins Unlocked!', '🎬');
+    showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
     updateBlueTabUI();
     if (typeof updateUI === 'function') updateUI();
     if (typeof saveGame === 'function') saveGame();
@@ -2838,16 +2929,16 @@ window.updateBlueTabUI = function() {
       dailyBtn.disabled = true;
       dailyBtn.style.opacity = '0.6';
     } else {
-      dailyBtn.textContent = 'Claim +15 💎';
+      dailyBtn.textContent = 'Claim +15 💙';
       dailyBtn.disabled = false;
       dailyBtn.style.opacity = '1';
     }
   }
 };
 
-window.buyFuelWithAds = buyFuelWithAds;
-window.buyFuelWithCoins = buyFuelWithCoins;
-window.buyFuelWithDiamonds = buyFuelWithDiamonds;
+if (typeof buyFuelWithAds !== 'undefined') window.buyFuelWithAds = buyFuelWithAds;
+if (typeof buyFuelWithCoins !== 'undefined') window.buyFuelWithCoins = buyFuelWithCoins;
+if (typeof buyFuelWithDiamonds !== 'undefined') window.buyFuelWithDiamonds = buyFuelWithDiamonds;
 
 // ==========================================================================
 // TELEGRAM MTPROTO EMAIL VERIFICATION MODAL & FLOW
@@ -3279,3 +3370,29 @@ setTimeout(() => {
     window.renderFuelShopTab();
   }
 }, 150);
+
+// Badge details inspector
+window.showBadgeDetails = function(badgeKey) {
+  const totalTaps = (typeof gameState !== 'undefined' && gameState.reactor && gameState.reactor.energyTaps) || 0;
+  const pLevel = (typeof gameState !== 'undefined' && gameState.player && gameState.player.level) || 1;
+  const streak = (typeof gameState !== 'undefined' && gameState.player && gameState.player.streakDays) || 0;
+  const diamonds = (typeof gameState !== 'undefined' && gameState.player && gameState.player.diamonds) || 0;
+
+  const BADGE_INFO = {
+    tapMaster: { name: 'Tap Master ⚡', desc: 'Reach 10,000 Total Taps on the Reactor Core.', target: 10000, current: totalTaps },
+    champion: { name: 'Champion 🏆', desc: 'Reach Player Level 50 in Quantum Progression.', target: 50, current: pLevel },
+    streakKing: { name: 'Streak King 🔥', desc: 'Maintain an active 7-Day login streak.', target: 7, current: streak },
+    diamondPlayer: { name: 'Diamond Player 💎', desc: 'Accumulate 1,000+ Diamonds.', target: 1000, current: diamonds },
+    reactorLegend: { name: 'Reactor Legend 👑', desc: 'Upgrade Tap Power to +50 or Reach Level 100.', target: 100, current: pLevel }
+  };
+  const b = BADGE_INFO[badgeKey];
+  if (!b) return;
+  const isUnlocked = b.current >= b.target;
+  const status = isUnlocked ? '✅ UNLOCKED!' : `🔒 In Progress: ${b.current.toLocaleString()} / ${b.target.toLocaleString()}`;
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`${b.name}: ${b.desc} (${status})`);
+  } else {
+    alert(`${b.name}\n${b.desc}\n${status}`);
+  }
+};
+

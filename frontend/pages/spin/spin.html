@@ -53,7 +53,7 @@
     <!-- Stage Intro Header -->
     <div class="spin-stage-intro">
       <h3 class="spin-stage-title">⚡ Cyber Fortune Wheel</h3>
-      <p class="spin-stage-subtitle">Spin the lucky wheel to win Coins, Chest Keys, Cards &amp; Jackpot!</p>
+      <p class="spin-stage-subtitle">Spin the lucky wheel to collect 👑 Crowns, win Coins, Keys &amp; Jackpot!</p>
     </div>
 
     <!-- Spin Wheel Stage Container (Anchors flapper pointer directly above wheel) -->
@@ -87,52 +87,40 @@
         <!-- Outer LED Chaser Ring (24 bulbs) -->
         <div class="spin-chaser-ring" id="spinChaserRing"></div>
 
-      <!-- Rotating Wheel Disc -->
+      <!-- Rotating Wheel Disc (Clean White Wedges for High Contrast) -->
       <div class="spin-wheel-disc" id="spinWheelCircle">
         <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
           <defs>
-            <!-- Slice Gradients -->
-            <!-- Slice 0 & 7: Try Again -->
-            <linearGradient id="sliceTryAgainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#1e293b"/>
-              <stop offset="60%" stop-color="#0f172a"/>
-              <stop offset="100%" stop-color="#090d16"/>
+            <!-- Clean White Slices (below the logos/emojis) -->
+            <linearGradient id="sliceWhiteGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#f8fafc"/>
+              <stop offset="100%" stop-color="#f1f5f9"/>
             </linearGradient>
 
-            <!-- Slice 1 & 5: 100 Blue Coins -->
-            <linearGradient id="sliceBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#38bdf8"/>
-              <stop offset="50%" stop-color="#0284c7"/>
-              <stop offset="100%" stop-color="#0c4a6e"/>
+            <linearGradient id="sliceWhiteGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#f1f5f9"/>
+              <stop offset="100%" stop-color="#e2e8f0"/>
             </linearGradient>
 
-            <!-- Slice 2: 1 Key -->
-            <linearGradient id="sliceKeyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#c084fc"/>
-              <stop offset="50%" stop-color="#9333ea"/>
-              <stop offset="100%" stop-color="#581c87"/>
+            <!-- Crown Highlight Slice White Gradient (Slice 0) -->
+            <linearGradient id="sliceCrownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#fffbeb"/>
+              <stop offset="100%" stop-color="#fef3c7"/>
             </linearGradient>
 
-            <!-- Slice 3: 1 Card -->
-            <linearGradient id="sliceCardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#f472b6"/>
-              <stop offset="50%" stop-color="#db2777"/>
-              <stop offset="100%" stop-color="#831843"/>
-            </linearGradient>
+            <filter id="crownGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
 
-            <!-- Slice 4: 1 Ticket -->
-            <linearGradient id="sliceTicketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#22d3ee"/>
-              <stop offset="50%" stop-color="#0891b2"/>
-              <stop offset="100%" stop-color="#155e75"/>
-            </linearGradient>
-
-            <!-- Slice 6: 10 Gold Coins Jackpot (10%) -->
+            <!-- Jackpot Golden Sheen Gradient (Slice 6) -->
             <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#fde047"/>
-              <stop offset="35%" stop-color="#f59e0b"/>
-              <stop offset="70%" stop-color="#b45309"/>
-              <stop offset="100%" stop-color="#78350f"/>
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="40%" stop-color="#fffbeb"/>
+              <stop offset="100%" stop-color="#fef08a"/>
             </linearGradient>
 
             <filter id="jackpotGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
@@ -143,35 +131,35 @@
 
           <!-- Outer Housing Circle -->
           <circle cx="150" cy="150" r="148" fill="#030816" stroke="#fbbf24" stroke-width="3"/>
-          <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5"/>
+          <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(251, 191, 36, 0.5)" stroke-width="1.5"/>
 
-          <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg -->
-          <!-- Slice 0: Try Again (0 deg / 12 o'clock) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+          <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg - Clean White Colors -->
+          <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
 
           <!-- Slice 1: 100 Blue Coins (45 deg / 1:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceKeyGrad)" stroke="#7e22ce" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 3: 1 Card (135 deg / 4:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceCardGrad)" stroke="#be123c" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 4: Try Again (180 deg / 6 o'clock) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 5: 1 Ticket (225 deg / 7:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceTicketGrad)" stroke="#0891b2" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
 
           <!-- Slice 7: 100 Blue Coins (315 deg / 10:30) -->
-          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Divider Rays between Slices with Golden Metallic Sheen -->
-          <g stroke="#fde047" stroke-width="1.8" opacity="0.6">
+          <g stroke="#f59e0b" stroke-width="2" opacity="0.85">
             <line x1="150" y1="150" x2="95.7" y2="18.8"/>
             <line x1="150" y1="150" x2="204.3" y2="18.8"/>
             <line x1="150" y1="150" x2="281.2" y2="95.7"/>
@@ -183,47 +171,47 @@
           </g>
 
           <!-- Inner Golden Ring Divider -->
-          <circle cx="150" cy="150" r="48" fill="none" stroke="#fde047" stroke-width="2" opacity="0.75"/>
+          <circle cx="150" cy="150" r="48" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0.9"/>
 
-          <!-- Slice Icons Only (No Text, Premium Big Emojis) -->
-          <!-- Slice 0: Try Again (0 deg) -->
+          <!-- Slice Icons (Vibrant Crisp Emojis over White Wedges) -->
+          <!-- Slice 0: 👑 Crown (0 deg) -->
           <g transform="translate(150, 150) rotate(0) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
           </g>
 
           <!-- Slice 1: 100 Blue Coins (45 deg) -->
           <g transform="translate(150, 150) rotate(45) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
           </g>
 
           <!-- Slice 2: 1 Key (90 deg) -->
           <g transform="translate(150, 150) rotate(90) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(192,132,252,0.9))">🔑</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(147,51,234,0.5))">🔑</text>
           </g>
 
           <!-- Slice 3: 1 Card (135 deg) -->
           <g transform="translate(150, 150) rotate(135) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(244,114,182,0.9))">🎴</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(219,39,119,0.5))">🎴</text>
           </g>
 
           <!-- Slice 4: Try Again (180 deg) -->
           <g transform="translate(150, 150) rotate(180) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(100,116,139,0.6))">❌</text>
           </g>
 
           <!-- Slice 5: 1 Ticket (225 deg) -->
           <g transform="translate(150, 150) rotate(225) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(34,211,238,0.9))">🎟️</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(8,145,178,0.5))">🎟️</text>
           </g>
 
           <!-- Slice 6: 10 Gold Coins (270 deg) -->
           <g transform="translate(150, 150) rotate(270) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 8px rgba(251,191,36,1))">🪙</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
           </g>
 
           <!-- Slice 7: 100 Blue Coins (315 deg) -->
           <g transform="translate(150, 150) rotate(315) translate(0, -92)">
-            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
           </g>
 
           <!-- Perimeter Golden Rivet Studs (8 pegs exactly placed on slice divider rays) -->
@@ -255,17 +243,39 @@
     </div>
   </div>
 
-    <!-- Prominent Winning Prize Showcase Card -->
-    <div class="spin-result-display" id="spinResultBox">
-      <div class="spin-result-badge" id="spinResultTag">🎯 READY TO SPIN</div>
-      <div class="spin-win-content" id="spinWinContent">
-        <div class="spin-win-icon-wrapper" id="spinWinIconWrapper">
-          <span class="spin-win-icon" id="spinWinIcon">🎡</span>
+    <!-- King Event Level Card (1 - 1000 Levels Wave Progression) -->
+    <div class="spin-level-display" id="spinLevelBox">
+      <div class="spin-level-header">
+        <div class="spin-level-title-group">
+          <span class="spin-level-crown-badge">👑</span>
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span class="spin-level-name" id="spinLevelTitle">👑 KING EVENT • LEVEL 1 / 1000</span>
+              <span class="spin-wave-badge crest" id="spinWaveTag">⚡ WAVE CREST</span>
+            </div>
+            <div class="spin-level-sub" id="spinLevelSub">Collect 5 👑 King Crowns to unlock Level 1 Gift!</div>
+          </div>
         </div>
-        <div class="spin-win-details" id="spinWinDetails">
-          <div class="spin-win-title" id="spinWinTitle">Cyber Lucky Wheel</div>
-          <div class="spin-win-desc" id="spinWinDesc">Spin to win Coins, Keys, Cards &amp; 10-Coin Jackpot!</div>
+        <div class="spin-level-gift-badge" id="spinLevelGiftBadge" onclick="showMysteryGiftPreview()">
+          <span class="gift-badge-icon">🎁</span>
+          <span class="gift-badge-text">LEVEL GIFT</span>
         </div>
+      </div>
+
+      <div class="spin-level-progress-container">
+        <div class="spin-crown-track">
+          <div class="spin-crown-fill" id="spinCrownBarFill" style="width: 0%;"></div>
+        </div>
+        <div class="spin-crown-meta">
+          <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5 King Crowns Collected</span>
+          <span class="spin-crown-status" id="spinCrownStatusText">🎯 Crown Chance: 45% (Inverse Odds)</span>
+        </div>
+      </div>
+
+      <!-- Level Reward Preview Strip -->
+      <div class="spin-level-reward-strip" id="spinLevelRewardStrip">
+        <span style="color: #94a3b8; font-size: 10px;">🎁 Level Reward:</span>
+        <span class="spin-reward-preview-val" id="spinLevelRewardPreviewText">+10 🪙 • +100 💙 • +2 🗝️ • +3 🎫</span>
       </div>
     </div>
 
@@ -277,7 +287,7 @@
         <span class="spin-btn-text" id="spinBtnText">SPIN THE WHEEL</span>
       </button>
       <div class="spin-odds-hint">
-        <span>★ 100% Slice Precision • 10% Gold Coin Jackpot ★</span>
+        <span>★ Collect 👑 Crowns on Wheel • Unlock Mystery Gift 🎁 ★</span>
       </div>
     </div>
     </section>
@@ -321,6 +331,50 @@
           <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+10)</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Grand Mystery Gift Winning Modal (Triggered when 👑 Crown Level Goal is Reached) -->
+  <div class="spin-gift-backdrop" id="spinGiftModalBackdrop" onclick="closeMysteryGiftModal(event)">
+    <div class="spin-gift-modal" id="spinGiftModal" onclick="event.stopPropagation()">
+      <div class="spin-gift-glow"></div>
+      
+      <div class="spin-gift-badge">👑 LEVEL COMPLETE!</div>
+      
+      <div class="spin-gift-chest-wrap">
+        <div class="spin-gift-sparkles">✨</div>
+        <div class="spin-gift-chest-icon">🎁</div>
+      </div>
+
+      <h3 class="spin-gift-title" id="spinGiftTitle">MYSTERY GIFT UNLOCKED!</h3>
+      <p class="spin-gift-sub" id="spinGiftSub">You collected all 👑 crowns and unlocked the Grand Level Gift!</p>
+
+      <div class="spin-gift-rewards-grid" id="spinGiftRewardsGrid">
+        <div class="gift-reward-card gold">
+          <span class="reward-icon">🪙</span>
+          <span class="reward-val" id="spinGiftCoinsVal">+10</span>
+          <span class="reward-label">Coins</span>
+        </div>
+        <div class="gift-reward-card blue">
+          <span class="reward-icon">💙</span>
+          <span class="reward-val" id="spinGiftBlueVal">+100</span>
+          <span class="reward-label">Blue Coins</span>
+        </div>
+        <div class="gift-reward-card purple">
+          <span class="reward-icon">🗝️</span>
+          <span class="reward-val" id="spinGiftKeysVal">+2</span>
+          <span class="reward-label">Keys</span>
+        </div>
+        <div class="gift-reward-card cyan">
+          <span class="reward-icon">🎟️</span>
+          <span class="reward-val" id="spinGiftTicketsVal">+3</span>
+          <span class="reward-label">Tickets</span>
+        </div>
+      </div>
+
+      <button class="spin-gift-claim-btn" id="btnClaimMysteryGift" onclick="claimMysteryGiftReward()">
+        <span>🎉 CLAIM ALL GIFTS</span>
+      </button>
     </div>
   </div>
 </div>

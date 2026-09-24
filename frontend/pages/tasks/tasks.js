@@ -296,6 +296,18 @@ const DAILY_TASKS = MONTHLY_TASKS;
 const TELEGRAM_TASKS = [];
 const WEBSITE_TASKS = [];
 
+let _cachedMonthlyList = null;
+let _cachedMonthlyRawRef = null;
+let _monthlyTaskMap = new Map();
+
+let _cachedWebsiteList = null;
+let _cachedWebsiteRawRef = null;
+let _websiteTaskMap = new Map();
+
+let _cachedTelegramList = null;
+let _cachedTelegramRawRef = null;
+let _telegramTaskMap = new Map();
+
 function getMonthlyTasksList() {
   let list = window.cloudMonthlyTasks;
   if (!list || !Array.isArray(list)) {
@@ -307,8 +319,14 @@ function getMonthlyTasksList() {
       }
     } catch (e) {}
   }
-  if (Array.isArray(list) && list.length > 0) {
-    return list
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    return MONTHLY_TASKS;
+  }
+  if (_cachedMonthlyList && _cachedMonthlyRawRef === list) {
+    return _cachedMonthlyList;
+  }
+  _cachedMonthlyRawRef = list;
+  _cachedMonthlyList = list
       .filter(ct => ct && ct.disabled !== true)
       .map((ct, idx) => {
         const target = Number(ct.target || 100);
@@ -381,8 +399,8 @@ function getMonthlyTasksList() {
           tagText: ct.tagText || 'MONTHLY QUEST'
         };
       });
-  }
-  return MONTHLY_TASKS;
+  _monthlyTaskMap = new Map(_cachedMonthlyList.map(t => [t.id, t]));
+  return _cachedMonthlyList;
 }
 
 const DEFAULT_WEB_TASKS = [
@@ -427,7 +445,12 @@ function getWebsiteTasksList() {
     list = DEFAULT_WEB_TASKS;
   }
 
-  return list
+  if (_cachedWebsiteList && _cachedWebsiteRawRef === list) {
+    return _cachedWebsiteList;
+  }
+  _cachedWebsiteRawRef = list;
+
+  _cachedWebsiteList = list
     .filter(ct => ct && ct.disabled !== true)
     .map((ct, idx) => {
       const cost = ct.costCoins !== undefined ? Number(ct.costCoins) : 1000;
@@ -456,6 +479,8 @@ function getWebsiteTasksList() {
         btnText: ct.btnText || `Buy Website Task (${cost.toLocaleString()} 🪙)`
       };
     });
+  _websiteTaskMap = new Map(_cachedWebsiteList.map(t => [t.id, t]));
+  return _cachedWebsiteList;
 }
 
 function getTelegramTasksList() {
@@ -469,8 +494,16 @@ function getTelegramTasksList() {
       }
     } catch (e) {}
   }
-  if (Array.isArray(list) && list.length > 0) {
-    return list
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    return [];
+  }
+
+  if (_cachedTelegramList && _cachedTelegramRawRef === list) {
+    return _cachedTelegramList;
+  }
+  _cachedTelegramRawRef = list;
+
+  _cachedTelegramList = list
       .filter(ct => ct && ct.disabled !== true)
       .map((ct, idx) => {
         const isBot = ct.iconType === 'bot' || (ct.url && ct.url.toLowerCase().includes('bot')) || (ct.tagText && ct.tagText.includes('BOT'));
@@ -511,8 +544,8 @@ function getTelegramTasksList() {
           btnText: ct.btnText || (isBot ? 'Join Bot' : 'Join Channel')
         };
       });
-  }
-  return [];
+  _telegramTaskMap = new Map(_cachedTelegramList.map(t => [t.id, t]));
+  return _cachedTelegramList;
 }
 
 // Subtab Switcher
@@ -686,6 +719,11 @@ function renderTasksList() {
 
   // Update 30-day competition cycle timer display
   updateMonthlyCompetitionTimer();
+
+  // If tasks page is not currently active, avoid rebuilding full 30+ card DOM list
+  if (gameState.currentTab !== 'tasks') {
+    return;
+  }
 
   // Show/Hide 30-day competition timer banner: Only visible on Monthly ('daily') subtab; removed on Telegram and Website
   const monthlyBanner = document.getElementById('monthlyCompetitionBanner');
@@ -913,11 +951,11 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
 
   let task = null;
   if (subtabType === 'daily') {
-    task = getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
+    task = _monthlyTaskMap.get(taskId) || getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
   } else if (subtabType === 'telegram') {
-    task = getTelegramTasksList().find(t => t.id === taskId);
+    task = _telegramTaskMap.get(taskId) || getTelegramTasksList().find(t => t.id === taskId);
   } else {
-    task = getWebsiteTasksList().find(t => t.id === taskId);
+    task = _websiteTaskMap.get(taskId) || getWebsiteTasksList().find(t => t.id === taskId);
   }
   if (!task) return;
 
@@ -1109,7 +1147,7 @@ function buyWebsiteTask(taskId, event) {
   }
 
   const allWebsiteTasks = getWebsiteTasksList();
-  const task = allWebsiteTasks.find(t => t.id === taskId);
+  const task = _websiteTaskMap.get(taskId) || allWebsiteTasks.find(t => t.id === taskId);
   if (!task) return;
 
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
@@ -1152,7 +1190,7 @@ function openWebsiteTaskHiddenUrl(taskId, event) {
   }
 
   const allWebsiteTasks = getWebsiteTasksList();
-  const task = allWebsiteTasks.find(t => t.id === taskId);
+  const task = _websiteTaskMap.get(taskId) || allWebsiteTasks.find(t => t.id === taskId);
   if (!task || !task.url) {
     if (typeof showFloatingToast === 'function') {
       showFloatingToast('⚠️ Website link not found.');
@@ -1177,7 +1215,7 @@ function startWebsiteTask(taskId, event) {
 
 function openWebCodeModal(taskId) {
   const allWebsiteTasks = getWebsiteTasksList();
-  const task = allWebsiteTasks.find(t => t.id === taskId);
+  const task = _websiteTaskMap.get(taskId) || allWebsiteTasks.find(t => t.id === taskId);
   if (!task) return;
 
   activeVerifyingTaskId = taskId;
@@ -1215,7 +1253,7 @@ function closeWebCodeModal(event) {
 function revisitWebsiteTaskUrl() {
   if (!activeVerifyingTaskId) return;
   const allWebsiteTasks = getWebsiteTasksList();
-  const task = allWebsiteTasks.find(t => t.id === activeVerifyingTaskId);
+  const task = _websiteTaskMap.get(activeVerifyingTaskId) || allWebsiteTasks.find(t => t.id === activeVerifyingTaskId);
   if (task && task.url) {
     window.open(task.url, '_blank');
   }
@@ -1251,7 +1289,7 @@ function submitWebsiteCodeVerification() {
 
   const taskId = activeVerifyingTaskId;
   const allWebsiteTasks = getWebsiteTasksList();
-  const task = allWebsiteTasks.find(t => t.id === taskId);
+  const task = _websiteTaskMap.get(taskId) || allWebsiteTasks.find(t => t.id === taskId);
   if (!task) return;
 
   let enteredCode = '';
@@ -1429,7 +1467,7 @@ function claimDailyTaskReward(taskId, event) {
     event.stopPropagation();
   }
 
-  const task = getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
+  const task = _monthlyTaskMap.get(taskId) || getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
   if (!task) return;
 
   const executeClaim = () => {
@@ -1488,7 +1526,7 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
   }
 
   const allTelegramTasks = getTelegramTasksList();
-  const task = allTelegramTasks.find(t => t.id === taskId);
+  const task = _telegramTaskMap.get(taskId) || allTelegramTasks.find(t => t.id === taskId);
   if (!task) return;
 
   // Open the Telegram link
@@ -1561,15 +1599,19 @@ window.addEventListener('telegramTasksUpdated', () => {
   if (typeof renderTasksList === 'function') renderTasksList();
 });
 
-// Auto-initialize when Tasks Page renders
+// Auto-initialize when Tasks Page renders only if tasks page is active
 if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      if (typeof renderTasksList === 'function') renderTasksList();
+      if (typeof gameState !== 'undefined' && gameState.currentTab === 'tasks') {
+        if (typeof renderTasksList === 'function') renderTasksList();
+      }
     });
   } else {
     setTimeout(() => {
-      if (typeof renderTasksList === 'function') renderTasksList();
+      if (typeof gameState !== 'undefined' && gameState.currentTab === 'tasks') {
+        if (typeof renderTasksList === 'function') renderTasksList();
+      }
     }, 0);
   }
 }

@@ -52,10 +52,100 @@ function updateHomeComboPill() {
   }
 }
 
+// ==========================================================================
+// MULTI-TAP POWER ENGINE (*1, *2, *3, *5, *10, *50, *100)
+// Dynamic unlocks based on Energy Balance limits
+// ==========================================================================
+const MULTI_TAP_CONFIG = [
+  { multiplier: 1, limit: 0 },
+  { multiplier: 2, limit: 100 },
+  { multiplier: 3, limit: 250 },
+  { multiplier: 5, limit: 500 },
+  { multiplier: 10, limit: 1000 },
+  { multiplier: 50, limit: 5000 },
+  { multiplier: 100, limit: 10000 }
+];
+
+function getActiveMultiTapMultiplier() {
+  if (!gameState || !gameState.reactor) return 1;
+  const currentEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+  const activeMult = gameState.reactor.tapMultiplier || 1;
+  let isAllowed = false;
+  let maxAllowed = 1;
+
+  for (let i = 0; i < MULTI_TAP_CONFIG.length; i++) {
+    const cfg = MULTI_TAP_CONFIG[i];
+    if (currentEnergy >= cfg.limit && currentEnergy >= cfg.multiplier) {
+      if (cfg.multiplier === activeMult) isAllowed = true;
+      if (cfg.multiplier > maxAllowed) maxAllowed = cfg.multiplier;
+    }
+  }
+
+  if (isAllowed) return activeMult;
+  gameState.reactor.tapMultiplier = maxAllowed;
+  return maxAllowed;
+}
+window.getActiveMultiTapMultiplier = getActiveMultiTapMultiplier;
+
+function setMultiTapMultiplier(multiplier) {
+  if (!gameState || !gameState.reactor) return;
+  const currentEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+  const targetCfg = MULTI_TAP_CONFIG.find(c => c.multiplier === multiplier);
+  if (!targetCfg) return;
+
+  if (currentEnergy < targetCfg.limit || currentEnergy < multiplier) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⚡ Need ${targetCfg.limit}+ Energy to use ${multiplier}× Multi-Tap!`);
+    }
+    return;
+  }
+
+  gameState.reactor.tapMultiplier = multiplier;
+  if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('selection');
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(2);
+
+  updateMultiTapOptions();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`⚡ ${multiplier}× Multi-Tap Active (${multiplier} Energy/tap)!`);
+  }
+}
+window.setMultiTapMultiplier = setMultiTapMultiplier;
+
+function updateMultiTapOptions() {
+  if (!gameState || !gameState.reactor) return;
+  const currentEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+  const activeMult = getActiveMultiTapMultiplier();
+
+  MULTI_TAP_CONFIG.forEach(cfg => {
+    const btn = document.getElementById(`btnMultiTap${cfg.multiplier}`);
+    if (!btn) return;
+
+    const isUnlocked = (currentEnergy >= cfg.limit);
+    if (isUnlocked) {
+      if (btn.style.display === 'none' || !btn.style.display) {
+        btn.style.display = 'inline-flex';
+        btn.classList.add('unlocked-pulse');
+        setTimeout(() => btn.classList.remove('unlocked-pulse'), 450);
+      }
+    } else {
+      btn.style.display = 'none';
+    }
+
+    if (cfg.multiplier === activeMult) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+window.updateMultiTapOptions = updateMultiTapOptions;
+
 // Orb Tap Handler
 function handleOrbTap(e) {
-  // 1. Strict Energy Verification (Must have at least 1 full unit of energy to tap)
+  const mult = getActiveMultiTapMultiplier();
   const availableEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
+
+  // 1. Strict Energy Verification (Must have enough energy for active multiplier)
   if (availableEnergy < 1) {
     sfx.playTapSound(1);
     
@@ -95,59 +185,63 @@ function handleOrbTap(e) {
     return;
   }
 
-  // Consume 1 Energy (-1 Energy per click)
-  gameState.reactor.currentEnergy = Math.max(0, (gameState.reactor.currentEnergy || 0) - 1);
+  // If player doesn't have enough energy for current multiplier M, fallback to highest affordable
+  let activeMult = mult;
+  if (availableEnergy < mult) {
+    activeMult = 1;
+    gameState.reactor.tapMultiplier = 1;
+    updateMultiTapOptions();
+  }
 
-  // Immediate live sync of energy balance on Home & Energy page
-  const energyTapCountEl = document.getElementById('energyTapCount') || DOM.energyTapCount;
-  if (energyTapCountEl) {
-    energyTapCountEl.textContent = Math.floor(gameState.reactor.currentEnergy).toString();
+  // Consume Energy (-activeMult Energy per click)
+  gameState.reactor.currentEnergy = Math.max(0, (gameState.reactor.currentEnergy || 0) - activeMult);
+
+  // Immediate live sync of energy balance on Home & Energy page (cached lookups)
+  if (!_homeEnergyTapCountEl) _homeEnergyTapCountEl = document.getElementById('energyTapCount') || DOM.energyTapCount;
+  if (_homeEnergyTapCountEl) {
+    _homeEnergyTapCountEl.textContent = Math.floor(gameState.reactor.currentEnergy).toString();
   }
-  const epCounterEl = document.querySelector('#epCounterPill .ep-badge-icon');
-  if (epCounterEl) {
+  if (!_homeEpCounterEl) _homeEpCounterEl = document.querySelector('#epCounterPill .ep-badge-icon');
+  if (_homeEpCounterEl) {
     const curVal = Math.max(0, Number(gameState.reactor.currentEnergy) || 0);
-    epCounterEl.textContent = curVal.toFixed(2);
+    _homeEpCounterEl.textContent = curVal.toFixed(2);
   }
+
+  updateMultiTapOptions();
 
   // 2. Combo Calculation based on total tap streak
-  // *1 for 10 tap, *1.3 for 30 tap, *1.5 for 50 tap, *1.7 for 75 tap, *2 for 150 tap, *2.5 for 250 tap, *3 for 500 tap
-  gameState.reactor.comboTaps = (gameState.reactor.comboTaps || 0) + 1;
+  gameState.reactor.comboTaps = (gameState.reactor.comboTaps || 0) + activeMult;
   gameState.reactor.comboMultiplier = getComboMultiplier(gameState.reactor.comboTaps);
 
   const comboLvl = Math.floor(gameState.reactor.comboMultiplier);
   sfx.playTapSound(comboLvl);
 
-  // 3. Tap Registration
-  gameState.reactor.energyTaps = (gameState.reactor.energyTaps || 0) + 1;
+  // 3. Tap Registration & Blue Coin Bank Collection
+  gameState.reactor.energyTaps = (gameState.reactor.energyTaps || 0) + activeMult;
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) {
-    gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
+    gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + activeMult;
   }
 
   const now = Date.now();
 
-  // 3. Tap Registration & Blue Coin Bank Collection
-  gameState.reactor.energyTaps = (gameState.reactor.energyTaps || 0) + 1;
-  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
-  if (gameState.dailyStats) {
-    gameState.dailyStats.taps = (gameState.dailyStats.taps || 0) + 1;
-  }
-
   // Check 24-hour full bank withdrawal pass
   const is24hPassActive = !!(gameState.bank && gameState.bank.fullWithdrawalPassEndTime && now < gameState.bank.fullWithdrawalPassEndTime);
-  let blueCoinDepositText = '+1 🏦 Bank';
+  let blueCoinDepositText = `+${activeMult} 🏦 Bank`;
   if (is24hPassActive) {
     // If pass is active, blue coins go directly to player wallet!
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 1;
-    blueCoinDepositText = '+1 🔷 Blue Coin';
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + activeMult;
+    blueCoinDepositText = `+${activeMult} 💙 Blue Coin${activeMult > 1 ? 's' : ''}`;
   } else {
     // Otherwise, per tap blue coin collects in the Big Bank
     if (!gameState.bank) gameState.bank = { blueCoins: 0, fullWithdrawalPassEndTime: 0 };
-    gameState.bank.blueCoins = (gameState.bank.blueCoins || 0) + 1;
+    gameState.bank.blueCoins = (gameState.bank.blueCoins || 0) + activeMult;
   }
 
-  const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-  blueEls.forEach(el => {
+  if (!_homeBlueEls || _homeBlueEls.length === 0) {
+    _homeBlueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
+  }
+  _homeBlueEls.forEach(el => {
     el.textContent = formatNumber(gameState.player.blueCoins || 0);
   });
   const bluePill = document.getElementById('blueCoinPill') || (typeof DOM !== 'undefined' && DOM.blueCoinPill);
@@ -157,21 +251,19 @@ function handleOrbTap(e) {
   }
 
   // 4. Boosters & XP Progression
-  // Booster 2: 3 Hours 2X Profit
   const isProfit2xActive = !!(
     (gameState.reactor && gameState.reactor.profit2xEndTime && now < gameState.reactor.profit2xEndTime) ||
     isHome2xBoostActive()
   );
-  // Booster 4: Fast XP (+1 XP per tap for 10 min)
   const isFastXpActive = !!(
     gameState.reactor && gameState.reactor.fastXpEndTime && now < gameState.reactor.fastXpEndTime
   );
 
   const boostFactor = isProfit2xActive ? 2 : 1;
   const comboMultiplier = gameState.reactor.comboMultiplier || 1.0;
-  let xpGain = +(0.1 * comboMultiplier * boostFactor).toFixed(2);
+  let xpGain = +(0.1 * comboMultiplier * boostFactor * activeMult).toFixed(2);
   if (isFastXpActive) {
-    xpGain = +(xpGain + 1.0).toFixed(2); // +1 extra point per tap!
+    xpGain = +(xpGain + (1.0 * activeMult)).toFixed(2); // Fast XP per tap scaled!
   }
 
   gameState.player.xp = +(gameState.player.xp + xpGain).toFixed(2);
@@ -216,17 +308,17 @@ function handleOrbTap(e) {
     
     const itemRoll = Math.random();
     if (itemRoll < 0.35) {
-      gameState.progression.levelProgress.cards = Math.min(req.cards, (gameState.progression.levelProgress.cards || 0) + 1);
+      gameState.progression.levelProgress.cards = Math.min(req.cards, (gameState.progression.levelProgress.cards || 0) + activeMult);
       gameState.goalState.levelProgress.cards = gameState.progression.levelProgress.cards;
-      droppedItem = { text: '🃏 +1 Card', color: '#f43f5e' };
+      droppedItem = { text: `🃏 +${activeMult} Card${activeMult > 1 ? 's' : ''}`, color: '#f43f5e' };
     } else if (itemRoll < 0.70) {
-      gameState.progression.levelProgress.keys = Math.min(req.keys, (gameState.progression.levelProgress.keys || 0) + 1);
+      gameState.progression.levelProgress.keys = Math.min(req.keys, (gameState.progression.levelProgress.keys || 0) + activeMult);
       gameState.goalState.levelProgress.keys = gameState.progression.levelProgress.keys;
-      droppedItem = { text: '🥢 +1 Dandiya', color: '#fbbf24' };
+      droppedItem = { text: `🥢 +${activeMult} Dandiya`, color: '#fbbf24' };
     } else {
-      gameState.progression.levelProgress.tickets = Math.min(req.tickets, (gameState.progression.levelProgress.tickets || 0) + 1);
+      gameState.progression.levelProgress.tickets = Math.min(req.tickets, (gameState.progression.levelProgress.tickets || 0) + activeMult);
       gameState.goalState.levelProgress.tickets = gameState.progression.levelProgress.tickets;
-      droppedItem = { text: '🌸 +1 Flower', color: '#ec4899' };
+      droppedItem = { text: `🌸 +${activeMult} Flower${activeMult > 1 ? 's' : ''}`, color: '#ec4899' };
     }
   }
 
@@ -251,8 +343,8 @@ function handleOrbTap(e) {
   }
 
   if (clientX && clientY) {
-    let tapText = '+1 Tap';
-    if (isProfit2xActive) tapText = '🔥 +1 Tap (*2 Profit)';
+    let tapText = `+${activeMult} Tap${activeMult > 1 ? 's' : ''}`;
+    if (isProfit2xActive) tapText = `🔥 +${activeMult} Tap${activeMult > 1 ? 's' : ''} (*2 Profit)`;
     createFloatingNumber(clientX, clientY, tapText, isProfit2xActive ? '#fbbf24' : '#38bdf8');
     
     setTimeout(() => {
@@ -261,7 +353,7 @@ function handleOrbTap(e) {
 
     if (isFastXpActive) {
       setTimeout(() => {
-        createFloatingNumber(clientX + (Math.random() - 0.5) * 20, clientY - 38, '+1 ⭐ Fast XP', '#c084fc');
+        createFloatingNumber(clientX + (Math.random() - 0.5) * 20, clientY - 38, `+${activeMult} ⭐ Fast XP`, '#c084fc');
       }, 110);
     }
 
@@ -277,6 +369,23 @@ function handleOrbTap(e) {
   saveGame();
 }
 
+let _homeEnergyTapCountEl = null;
+let _homeEpCounterEl = null;
+let _homeBlueEls = null;
+let _homeOrbStageRect = null;
+let _homeOrbStageRectTime = 0;
+
+function getOrbStageRect() {
+  const now = performance.now();
+  if (!_homeOrbStageRect || (now - _homeOrbStageRectTime) > 800) {
+    if (DOM.orbStage) {
+      _homeOrbStageRect = DOM.orbStage.getBoundingClientRect();
+      _homeOrbStageRectTime = now;
+    }
+  }
+  return _homeOrbStageRect || { left: 0, top: 0 };
+}
+
 function createFloatingNumber(x, y, text, customColor = null) {
   if (!DOM.orbStage) return;
   const floatEl = document.createElement('div');
@@ -288,7 +397,7 @@ function createFloatingNumber(x, y, text, customColor = null) {
     floatEl.style.fontSize = '17px';
   }
   
-  const rect = DOM.orbStage.getBoundingClientRect();
+  const rect = getOrbStageRect();
   const relX = x - rect.left;
   const relY = y - rect.top;
 
@@ -308,7 +417,7 @@ function createFloatingNumber(x, y, text, customColor = null) {
 function createSparks(x, y) {
   if (!DOM.orbStage) return;
   const sparkCount = 6;
-  const rect = DOM.orbStage.getBoundingClientRect();
+  const rect = getOrbStageRect();
   const relX = x - rect.left;
   const relY = y - rect.top;
 
@@ -368,18 +477,52 @@ function triggerLevelUpAnimation() {
   }, 400);
 }
 
+let _cachedHomeGoldEls = null;
+let _cachedHomeBlueEls = null;
+let _cachedHomeDiamondEls = null;
+let _cachedHomeXpLimitEl = null;
+let _cachedHomeGoalCardsEl = null;
+let _cachedHomeEnergyTapEl = null;
+let _cachedHomeBadgeProfit = null;
+let _cachedHomeBadgeBank = null;
+
+let _lastHomeGoldText = null;
+let _lastHomeBlueText = null;
+let _lastHomeDiamondText = null;
+
 function updateHomeUI() {
   const activeLevel = typeof getActiveLevel === 'function'
     ? getActiveLevel()
     : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
 
-  if (DOM.playerLevelBadge) DOM.playerLevelBadge.textContent = `Lv.${activeLevel}`;
-  const goldEls = document.querySelectorAll('#coinCounter, #headerCoinBalance');
-  goldEls.forEach(el => { el.textContent = formatNumber(gameState.player.coins); });
-  const blueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-  blueEls.forEach(el => { el.textContent = formatNumber(gameState.player.blueCoins || 0); });
-  const diamondEls = document.querySelectorAll('#headerDiamondBalance, #playerDiamondBalance');
-  diamondEls.forEach(el => { el.textContent = formatNumber(gameState.player.diamonds || 0); });
+  if (DOM.playerLevelBadge) {
+    const lvlText = `Lv.${activeLevel}`;
+    if (DOM.playerLevelBadge.textContent !== lvlText) DOM.playerLevelBadge.textContent = lvlText;
+  }
+
+  // 1. Coins
+  const formattedGold = formatNumber(gameState.player.coins);
+  if (_lastHomeGoldText !== formattedGold) {
+    _lastHomeGoldText = formattedGold;
+    if (!_cachedHomeGoldEls) _cachedHomeGoldEls = document.querySelectorAll('#coinCounter, #headerCoinBalance');
+    _cachedHomeGoldEls.forEach(el => { if (el.textContent !== formattedGold) el.textContent = formattedGold; });
+  }
+
+  // 2. Blue Gem Coins
+  const formattedBlue = formatNumber(gameState.player.blueCoins || 0);
+  if (_lastHomeBlueText !== formattedBlue) {
+    _lastHomeBlueText = formattedBlue;
+    if (!_cachedHomeBlueEls) _cachedHomeBlueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
+    _cachedHomeBlueEls.forEach(el => { if (el.textContent !== formattedBlue) el.textContent = formattedBlue; });
+  }
+
+  // 3. Diamonds
+  const formattedDiamonds = formatNumber(gameState.player.diamonds || 0);
+  if (_lastHomeDiamondText !== formattedDiamonds) {
+    _lastHomeDiamondText = formattedDiamonds;
+    if (!_cachedHomeDiamondEls) _cachedHomeDiamondEls = document.querySelectorAll('#headerDiamondBalance, #playerDiamondBalance');
+    _cachedHomeDiamondEls.forEach(el => { if (el.textContent !== formattedDiamonds) el.textContent = formattedDiamonds; });
+  }
 
   // Level Config from single source of truth
   const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(activeLevel) : null;
@@ -389,13 +532,20 @@ function updateHomeUI() {
     : Number(gameState.player.xp || 0);
 
   // XP Card
-  if (DOM.xpLevelNum) DOM.xpLevelNum.textContent = activeLevel;
+  if (DOM.xpLevelNum) {
+    const actLvlStr = String(activeLevel);
+    if (DOM.xpLevelNum.textContent !== actLvlStr) DOM.xpLevelNum.textContent = actLvlStr;
+  }
   const xpPercent = Math.min(100, Math.max(0, (xpCurrent / xpTarget) * 100));
-  if (DOM.xpProgressFill) DOM.xpProgressFill.style.width = `${xpPercent}%`;
+  if (DOM.xpProgressFill) {
+    const xpW = `${xpPercent}%`;
+    if (DOM.xpProgressFill.style.width !== xpW) DOM.xpProgressFill.style.width = xpW;
+  }
 
-  const xpLevelLimitEl = document.getElementById('xpLevelLimitText');
-  if (xpLevelLimitEl) {
-    xpLevelLimitEl.textContent = `${Math.floor(xpCurrent)} / ${xpTarget}`;
+  if (!_cachedHomeXpLimitEl) _cachedHomeXpLimitEl = document.getElementById('xpLevelLimitText');
+  if (_cachedHomeXpLimitEl) {
+    const xpLimitStr = `${Math.floor(xpCurrent)} / ${xpTarget}`;
+    if (_cachedHomeXpLimitEl.textContent !== xpLimitStr) _cachedHomeXpLimitEl.textContent = xpLimitStr;
   }
 
   // Goal Card Progress & Stats (Active Level Targets)
@@ -407,46 +557,65 @@ function updateHomeUI() {
     || (gameState.goalState && gameState.goalState.levelProgress)
     || { cards: 0, keys: 0, tickets: 0 };
 
-  if (DOM.goalLevelNum) DOM.goalLevelNum.textContent = activeLevel;
+  if (DOM.goalLevelNum) {
+    const gLvlStr = String(activeLevel);
+    if (DOM.goalLevelNum.textContent !== gLvlStr) DOM.goalLevelNum.textContent = gLvlStr;
+  }
   
-  const goalCardsEl = document.getElementById('goalCards') || DOM.goalCoins;
-  if (goalCardsEl) goalCardsEl.textContent = `${goalProg.cards || 0}/${goalReq.cards}`;
-  if (DOM.goalKeys) DOM.goalKeys.textContent = `${goalProg.keys || 0}/${goalReq.keys}`;
-  if (DOM.goalTickets) DOM.goalTickets.textContent = `${goalProg.tickets || 0}/${goalReq.tickets}`;
+  if (!_cachedHomeGoalCardsEl) _cachedHomeGoalCardsEl = document.getElementById('goalCards') || DOM.goalCoins;
+  if (_cachedHomeGoalCardsEl) {
+    const gCardsStr = `${goalProg.cards || 0}/${goalReq.cards}`;
+    if (_cachedHomeGoalCardsEl.textContent !== gCardsStr) _cachedHomeGoalCardsEl.textContent = gCardsStr;
+  }
+  if (DOM.goalKeys) {
+    const gKeysStr = `${goalProg.keys || 0}/${goalReq.keys}`;
+    if (DOM.goalKeys.textContent !== gKeysStr) DOM.goalKeys.textContent = gKeysStr;
+  }
+  if (DOM.goalTickets) {
+    const gTicketsStr = `${goalProg.tickets || 0}/${goalReq.tickets}`;
+    if (DOM.goalTickets.textContent !== gTicketsStr) DOM.goalTickets.textContent = gTicketsStr;
+  }
   
   const totalGoalRatio = (
     (((goalProg.cards || 0) / goalReq.cards) * 0.34) +
     (((goalProg.keys || 0) / goalReq.keys) * 0.33) +
     (((goalProg.tickets || 0) / goalReq.tickets) * 0.33)
   ) * 100;
-  if (DOM.goalProgressFill) DOM.goalProgressFill.style.width = `${Math.min(100, Math.max(6, totalGoalRatio))}%`;
+  if (DOM.goalProgressFill) {
+    const goalW = `${Math.min(100, Math.max(6, totalGoalRatio))}%`;
+    if (DOM.goalProgressFill.style.width !== goalW) DOM.goalProgressFill.style.width = goalW;
+  }
 
   // Energy Balance Pill (⚡ Energy Balance - Integer Only)
-  const energyTapEl = document.getElementById('energyTapCount') || DOM.energyTapCount;
-  if (energyTapEl) {
+  if (!_cachedHomeEnergyTapEl) _cachedHomeEnergyTapEl = document.getElementById('energyTapCount') || DOM.energyTapCount;
+  if (_cachedHomeEnergyTapEl) {
     const curEnergy = gameState.reactor.currentEnergy !== undefined ? gameState.reactor.currentEnergy : 0;
-    energyTapEl.textContent = Math.floor(Math.max(0, curEnergy)).toString();
+    const energyStr = Math.floor(Math.max(0, curEnergy)).toString();
+    if (_cachedHomeEnergyTapEl.textContent !== energyStr) _cachedHomeEnergyTapEl.textContent = energyStr;
   }
 
   // Booster Button Badges
   const now = Date.now();
-  const badgeProfit = document.getElementById('badgeBoosterProfit');
-  if (badgeProfit) {
+  if (!_cachedHomeBadgeProfit) _cachedHomeBadgeProfit = document.getElementById('badgeBoosterProfit');
+  if (_cachedHomeBadgeProfit) {
     const isAct = !!(gameState.reactor && gameState.reactor.profit2xEndTime && now < gameState.reactor.profit2xEndTime);
+    let profText;
     if (isAct) {
       const rem = Math.ceil((gameState.reactor.profit2xEndTime - now) / 1000);
       const h = Math.floor(rem / 3600);
       const m = Math.floor((rem % 3600) / 60);
-      badgeProfit.textContent = `${h}h ${m}m`;
+      profText = `${h}h ${m}m`;
     } else {
-      badgeProfit.textContent = '*2 PROFIT';
+      profText = '*2 PROFIT';
     }
+    if (_cachedHomeBadgeProfit.textContent !== profText) _cachedHomeBadgeProfit.textContent = profText;
   }
 
   const badgeBank = document.getElementById('badgeBoosterBank');
   if (badgeBank) {
     const bankCoins = (gameState.bank && gameState.bank.blueCoins) || 0;
-    badgeBank.textContent = `${bankCoins} 🪙`;
+    const bankStr = `${bankCoins} 🪙`;
+    if (badgeBank.textContent !== bankStr) badgeBank.textContent = bankStr;
   }
 
   const badgeFastXp = document.getElementById('badgeBoosterFastXp');
@@ -464,6 +633,11 @@ function updateHomeUI() {
 
   // Update Combo Pill
   updateHomeComboPill();
+
+  // Update Multi-Tap Circle Selector Options (*1, *2, *3, *5, *10, *50, *100)
+  if (typeof updateMultiTapOptions === 'function') {
+    updateMultiTapOptions();
+  }
 }
 
 // Initialize Combo Decay Engine automatically on load
@@ -928,7 +1102,7 @@ function renderBoosterBankPopup(header, body) {
     ${passHtml}
     <div class="popup-stat-banner" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4);">
       <span class="popup-stat-label">Bank Vault Balance</span>
-      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 🔷 Blue Coins</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 💙 Blue Coins</span>
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="withdrawBankWithAd()">
@@ -1257,7 +1431,7 @@ function renderHomeProfilePopup(header, body) {
       </div>
       <div class="popup-stat-banner" style="flex-direction: column; align-items: flex-start; gap: 4px;">
         <span class="popup-stat-label">Blue Coins</span>
-        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">🔷 ${formatNumber(blueCoins)}</span>
+        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">💙 ${formatNumber(blueCoins)}</span>
       </div>
     </div>
 
@@ -1384,7 +1558,7 @@ function renderHomeBlueCoinPopup(header, body) {
 
   header.innerHTML = `
     <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
-    <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">🔷</div>
+    <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">💙</div>
     <h3 class="home-popup-title">SHAKTI BLUE GEM VAULT</h3>
     <p class="home-popup-subtitle">Divine quantum blue crystals used for high-tier upgrades, multipliers, and exclusive shop items.</p>
   `;
@@ -1392,7 +1566,7 @@ function renderHomeBlueCoinPopup(header, body) {
   body.innerHTML = `
     <div class="popup-stat-banner">
       <span class="popup-stat-label">Blue Coin Balance</span>
-      <span class="popup-stat-value" style="color: #38bdf8; font-size: 17px;">🔷 ${formatNumber(blueCoins)} BLUE</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 17px;">💙 ${formatNumber(blueCoins)} BLUE</span>
     </div>
 
     <div class="popup-feature-card">
@@ -1446,7 +1620,7 @@ function claimHomeBlueCoinBonus(amount, sourceName) {
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🔷 +${amount} Blue Coins Claimed!`);
+    showFloatingToast(`💙 +${amount} Blue Coins Claimed!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCoinSound) sfx.playCoinSound();
   refreshHomePopupIfOpen('blue');
@@ -1493,7 +1667,7 @@ function renderHomeBonusPopup(header, body) {
       </div>
       <div class="popup-stat-banner" style="flex-direction: column; align-items: flex-start; gap: 2px;">
         <span class="popup-stat-label">Blue Crystals</span>
-        <span class="popup-stat-value" style="color: #38bdf8;">🔷 +10 - 25</span>
+        <span class="popup-stat-value" style="color: #38bdf8;">💙 +10 - 25</span>
       </div>
     </div>
 
@@ -1527,7 +1701,7 @@ function openHomeMysteryCapsule() {
   updateHomeUI();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Mahotsav Gift: +${formatNumber(goldBonus)} Gold, +${blueBonus} 🔷 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
+    showFloatingToast(`🎉 Mahotsav Gift: +${formatNumber(goldBonus)} Gold, +${blueBonus} 💙 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCardRewardSound) {
     sfx.playCardRewardSound();
@@ -1613,5 +1787,19 @@ window.addEventListener('levelsConfigUpdated', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderHomeAnnouncement();
+  if (typeof updateMultiTapOptions === 'function') {
+    updateMultiTapOptions();
+  }
 });
+
+function switchHomeLeaderboardTab(tab) {
+  if (typeof switchLeaderboardCategory === 'function') {
+    switchLeaderboardCategory(tab);
+  }
+  if (typeof switchPage === 'function') {
+    switchPage('leaderboard');
+  }
+}
+window.switchHomeLeaderboardTab = switchHomeLeaderboardTab;
+
 

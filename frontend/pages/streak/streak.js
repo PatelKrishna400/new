@@ -3,7 +3,7 @@
    ========================================================================== */
 const STREAK_DAYS_CONFIG = [
   { day: 1, icon: '🔋', darkgreen: 1, label: '+1 Dark Green Fuel' },
-  { day: 2, icon: '🔷', blueCoins: 10, label: '+10 Blue Coins' },
+  { day: 2, icon: '💙', blueCoins: 10, label: '+10 Blue Coins' },
   { day: 3, icon: '🔑', keys: 1, label: '+1 Key' },
   { day: 4, icon: '🎟️', tickets: 1, label: '+1 Ticket' },
   { day: 5, icon: '🎴', cards: 1, label: '+1 Card' },

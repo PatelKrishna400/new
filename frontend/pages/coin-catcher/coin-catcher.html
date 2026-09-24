@@ -1,0 +1,132 @@
+<div class="page-view" id="pageCoinCatcher">
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+
+    <div class="spin-header-title-pill">
+      <span class="spin-sparkle-icon">🪙</span>
+      <span>COIN CATCHER</span>
+    </div>
+
+    <div class="spin-ticket-header-pill" onclick="startCoinCatcherGame()">
+      <span class="ticket-pill-icon">🔄</span>
+      <span class="ticket-pill-val">Restart</span>
+    </div>
+  </div>
+
+  <!-- Quick Info Strip -->
+  <div class="mini-game-info-strip">
+    <div class="info-strip-chip">
+      <span class="chip-dot gold"></span>
+      <span class="chip-label">TARGET:</span>
+      <span class="chip-val">Tap Falling Coins</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot amber"></span>
+      <span class="chip-label">HAZARD:</span>
+      <span class="chip-val">Avoid 💣 Bombs</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot cyan"></span>
+      <span class="chip-label">TIME:</span>
+      <span class="chip-val">30s Round</span>
+    </div>
+  </div>
+
+  <!-- Game Arena Card -->
+  <section class="catcher-arena-card">
+    <div class="catcher-ambient-glow"></div>
+
+    <!-- Live Performance HUD -->
+    <div class="catcher-hud-row">
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">⏱️</span>
+        <div class="hud-data">
+          <span class="hud-label">TIME</span>
+          <span class="hud-val" id="catcherTimeVal">30s</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">🪙</span>
+        <div class="hud-data">
+          <span class="hud-label">COINS</span>
+          <span class="hud-val highlight" id="catcherScoreVal">0</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">🔥</span>
+        <div class="hud-data">
+          <span class="hud-label">COMBO</span>
+          <span class="hud-val" id="catcherComboVal">1.0x</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">❤️</span>
+        <div class="hud-data">
+          <span class="hud-label">LIVES</span>
+          <span class="hud-val" id="catcherLivesVal">❤️❤️❤️</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Falling Stage -->
+    <div class="catcher-stage" id="catcherStage">
+      <!-- Falling items spawn dynamically here -->
+      <div class="catcher-start-overlay" id="catcherStartOverlay">
+        <div class="catcher-intro-content">
+          <span class="catcher-big-icon">🪙💣</span>
+          <h4 class="catcher-intro-title">Ready to Catch?</h4>
+          <p class="catcher-intro-desc">Tap gold &amp; blue coins as they drop! Don't tap the red 💣 bombs!</p>
+          <button class="catcher-start-btn" onclick="startCoinCatcherGame()">
+            <span>⚡</span> Start Catching
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Victory / Game Over Modal -->
+  <div class="catcher-modal-overlay" id="catcherModalOverlay">
+    <div class="catcher-modal-card">
+      <div class="catcher-modal-glow"></div>
+      <div class="catcher-modal-header">
+        <div class="catcher-modal-icon" id="catcherResultIcon">🪙</div>
+        <h3 class="catcher-modal-title" id="catcherResultTitle">ROUND COMPLETE!</h3>
+        <p class="catcher-modal-desc" id="catcherResultDesc">You gathered reactor bounty from the sky!</p>
+      </div>
+
+      <div class="catcher-stats-breakdown">
+        <div class="breakdown-row">
+          <span>Coins Caught:</span>
+          <strong id="catcherStatCoins">0</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Peak Combo:</span>
+          <strong id="catcherStatCombo">2.4x</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Remaining Lives:</span>
+          <strong id="catcherStatLives">❤️❤️❤️</strong>
+        </div>
+        <div class="breakdown-row highlight">
+          <span>Reward Calculated:</span>
+          <strong id="catcherStatReward">+0 Coins 🪙, +0 💎</strong>
+        </div>
+      </div>
+
+      <div class="catcher-modal-actions">
+        <button class="catcher-claim-btn" id="catcherClaimBtn" onclick="claimCoinCatcherReward()">
+          <span>🎁</span> Claim Reward
+        </button>
+        <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
+          <span>🔄</span> Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

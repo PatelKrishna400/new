@@ -125,6 +125,24 @@
           <span class="metric-value" id="dashTotalLevels">100</span>
         </div>
       </div>
+
+      <!-- 7. Diamonds in Circulation -->
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(8, 145, 178, 0.2); color: #22d3ee;">💎</div>
+        <div class="metric-meta">
+          <span class="metric-label">Diamonds in Circulation</span>
+          <span class="metric-value" id="dashTotalDiamonds" style="color: #06b6d4;">0</span>
+        </div>
+      </div>
+
+      <!-- 8. Blue Coins in Circulation -->
+      <div class="metric-box">
+        <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">💙</div>
+        <div class="metric-meta">
+          <span class="metric-label">Blue Coins in Circulation</span>
+          <span class="metric-value" id="dashTotalBlueCoins" style="color: #38bdf8;">0</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -479,6 +497,64 @@
   </div>
 
   <!-- ============================================================
+       IN-GAME NOTIFICATION CENTER BROADCASTER (ADMIN)
+       ============================================================ -->
+  <div class="dash-activity-wrapper" style="margin-top: 24px; margin-bottom: 24px;">
+    <div class="dash-section-header">
+      <div class="dash-header-title-box">
+        <div class="dash-title-tag">
+          <span>🔔 Command Center Dispatch</span>
+        </div>
+        <h2 class="dash-analytics-title">Broadcast In-Game Notifications</h2>
+        <p class="dash-analytics-desc">Send Global, Event, Maintenance, or Reward Announcement notifications directly to player inboxes.</p>
+      </div>
+    </div>
+
+    <div class="minimal-card" style="padding: 16px; background: #0b132b; border: 1px solid rgba(255,255,255,0.08);">
+      <form id="adminBroadcastForm" onsubmit="handleAdminBroadcastNotification(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: flex-end;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">NOTIFICATION TYPE</label>
+          <select id="adminNotifType" style="width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #ffffff; font-size: 13px;">
+            <option value="global">📢 Global Notification</option>
+            <option value="event">🎉 Event Notification</option>
+            <option value="maintenance">🛠️ Maintenance Notification</option>
+            <option value="reward">🎁 Reward Announcement</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">NOTIFICATION TITLE</label>
+          <input type="text" id="adminNotifTitle" placeholder="e.g. 🎉 Double Energy Weekend!" required style="width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #ffffff; font-size: 13px;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">ACTION BUTTON TARGET</label>
+          <select id="adminNotifTarget" style="width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #ffffff; font-size: 13px;">
+            <option value="home">Home (Reactor)</option>
+            <option value="reward">Rewards Vault</option>
+            <option value="energy">Energy Fuel Cells</option>
+            <option value="tasks">Quests &amp; Tasks</option>
+            <option value="streak">Daily Streak</option>
+            <option value="leaderboard">Leaderboard</option>
+            <option value="xp">XP &amp; Season</option>
+          </select>
+        </div>
+
+        <div style="grid-column: 1 / -1;">
+          <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">MESSAGE CONTENT</label>
+          <textarea id="adminNotifMessage" rows="2" placeholder="Write announcement details for all players..." required style="width: 100%; padding: 8px 10px; background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #ffffff; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end;">
+          <button type="submit" class="btn-dash-primary" style="padding: 9px 20px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #06b6d4); color: white; border: none; border-radius: 10px; cursor: pointer;">
+            <span>🚀</span> Send Notification to All Players
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
        MODAL: EDIT MONTHLY/YEARLY TARGETS & FOUR PIE CHARTS (SQUARE TABS)
        ============================================================ -->
   <div class="modal-overlay" id="dashboardTargetsModal" onclick="closeEditTargetsModal()">
@@ -587,7 +663,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="form-label">Blue Diamonds Total Holdings 💎</label>
+              <label class="form-label">Diamonds Total Holdings 💎</label>
               <div class="input-with-live-tag">
                 <input type="number" id="inpEditEconomyDiamonds" class="form-input" min="0" step="100" oninput="onChartEditInput('economy')">
                 <span class="live-ref-tag" id="refEconomyDiamonds">Live: 0</span>

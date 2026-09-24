@@ -1,13 +1,25 @@
 /* ==========================================================================
-   CYBER EGG HATCHERY MINI-GAME (pages/egg/egg.js)
+   12-EGG CYBER HATCHERY MINI-GAME (pages/egg/egg.js)
+   - 12 Eggs Interactive Set
+   - 5 Prize Categories:
+     * Keys (3 -> Win 1 Key)
+     * Tickets (3 -> Win 1 Ticket)
+     * Cards (3 -> Win 1 Card)
+     * Coins (3 -> Win 10 Coins)
+     * Blue Coins (3 -> Win 100 Blue Coins!)
+   - Hatched one by one (1 Egg Coin per hatch).
+   - In first 10 hatches: Random distribution of 2 of each category (none reaches 3).
+   - On 11th hatch: 3rd matching item revealed -> Match-3 Victory Result Modal!
    ========================================================================== */
-// ==========================================================================
-// 4. CYBER EGG HATCHERY MINI-GAME LOGIC (16-EGG SET • COLLECT 3 TO WIN)
-// Rewards: Key, Ticket, Card, Coin (Coin win probability is strictly 2%)
-// Winning: 3 Keys -> +1 Key | 3 Cards -> +1 Card | 3 Tickets -> +1 Ticket | 3 Coins -> +10 Coins
-// Costs: 1 Egg Coin per egg hatch | Ads provide +1 Egg Coin
-// As soon as first set of 3 is completed -> Claim reward, restart & reshuffle all 16 eggs!
-// ==========================================================================
+
+// 5 Reward Definitions with Winning Prizes & Odds
+const EGG_HATCH_REWARDS = {
+  key: { type: 'key', label: '1 Key', icon: '🔑', winAmount: 1, unit: 'Key', weight: 25 },
+  ticket: { type: 'ticket', label: '1 Ticket', icon: '🎟️', winAmount: 1, unit: 'Ticket', weight: 25 },
+  card: { type: 'card', label: '1 Card', icon: '🎴', winAmount: 1, unit: 'Card', weight: 20 },
+  coin: { type: 'coin', label: '10 Coins', icon: '🪙', winAmount: 10, unit: 'Coins', weight: 15 },
+  blueCoin: { type: 'blueCoin', label: '100 Blue Coins', icon: '💙', winAmount: 100, unit: 'Blue Coins', weight: 15 }
+};
 
 if (!gameState.eggHatchState) {
   gameState.eggHatchState = {
@@ -16,58 +28,90 @@ if (!gameState.eggHatchState) {
       key: 0,
       ticket: 0,
       card: 0,
-      coin: 0
+      coin: 0,
+      blueCoin: 0
     },
+    hatchedCount: 0,
+    targetWinner: 'blueCoin',
+    first10Items: [],
+    gameCompleted: false,
     isHatching: false
   };
 }
 
-const EGG_HATCH_REWARDS = {
-  coin: { type: 'coin', label: '10 Coins', icon: '🪙', isRare: true },
-  key: { type: 'key', label: '1 Key', icon: '🔑' },
-  ticket: { type: 'ticket', label: '1 Ticket', icon: '🎟️' },
-  card: { type: 'card', label: '1 Card', icon: '🎴' }
-};
+// Selects the winning reward category for this 12-egg round based on probability
+function pickTargetWinningCategory() {
+  const categories = ['key', 'ticket', 'card', 'coin', 'blueCoin'];
+  const totalWeight = categories.reduce((sum, cat) => sum + (EGG_HATCH_REWARDS[cat].weight || 20), 0);
+  let rand = Math.random() * totalWeight;
 
-// Generates a reward item for an egg with exact 2% Coin probability
-function generateEggItem() {
-  const rewards = (window.cloudGameConfig && window.cloudGameConfig.egg_rewards) || EGG_HATCH_REWARDS;
-  const rand = Math.random();
-  // Strictly 2% chance for Coin
-  if (rand < 0.02) {
-    return rewards.coin || EGG_HATCH_REWARDS.coin;
-  } else if (rand < 0.3467) { // (100% - 2%) / 3 = 32.67%
-    return rewards.key || EGG_HATCH_REWARDS.key;
-  } else if (rand < 0.6733) {
-    return rewards.ticket || EGG_HATCH_REWARDS.ticket;
-  } else {
-    return rewards.card || EGG_HATCH_REWARDS.card;
+  for (const cat of categories) {
+    const w = EGG_HATCH_REWARDS[cat].weight || 20;
+    if (rand < w) {
+      return cat;
+    }
+    rand -= w;
   }
+  return 'blueCoin';
 }
 
-// Shuffles and initializes a fresh 16-egg set
-function shuffleEggs16(manual = false) {
+// Fisher-Yates shuffle helper
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Shuffles and initializes a fresh 12-egg game
+function shuffleEggs12(manual = false) {
   if (manual) sfx.playTapSound(1);
 
+  // 1. Pick the guaranteed winning prize on hatch #11
+  const targetWinner = pickTargetWinningCategory();
+
+  // 2. Prepare first 10 items: exactly 2 of each of the 5 categories (2 * 5 = 10 items)
+  // This guarantees that in the first 10 hatches, no item ever reaches 3!
+  const base10 = [
+    'key', 'key',
+    'ticket', 'ticket',
+    'card', 'card',
+    'coin', 'coin',
+    'blueCoin', 'blueCoin'
+  ];
+  const shuffledFirst10 = shuffleArray(base10);
+
+  // 3. Initialize 12 egg slots on the grid
   const newEggs = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 12; i++) {
     newEggs.push({
       id: i,
-      item: generateEggItem(),
       revealed: false,
-      hatching: false
+      hatching: false,
+      item: null
     });
   }
 
+  // 4. Update Game State
   if (!gameState.eggHatchState) gameState.eggHatchState = {};
   gameState.eggHatchState.eggs = newEggs;
   gameState.eggHatchState.collected = {
     key: 0,
     ticket: 0,
     card: 0,
-    coin: 0
+    coin: 0,
+    blueCoin: 0
   };
+  gameState.eggHatchState.hatchedCount = 0;
+  gameState.eggHatchState.targetWinner = targetWinner;
+  gameState.eggHatchState.first10Items = shuffledFirst10;
+  gameState.eggHatchState.gameCompleted = false;
   gameState.eggHatchState.isHatching = false;
+
+  // Close win modal if open
+  closeEggWinModal(false);
 
   renderEggPageContent();
   updateUI();
@@ -75,19 +119,27 @@ function shuffleEggs16(manual = false) {
 
   const statusText = document.getElementById('eggStatusText');
   if (statusText) {
-    statusText.innerHTML = manual 
-      ? '🔄 <strong>16 Fresh Cyber Eggs Shuffled!</strong> Tap any egg to hatch.'
-      : 'Tap any egg to hatch (1 Egg Coin). First to collect 3 wins & reshuffles!';
+    statusText.innerHTML = manual
+      ? '🔄 <strong>12 Fresh Cyber Eggs Shuffled!</strong> Tap any egg to hatch.'
+      : 'Tap eggs to hatch (1 Egg Coin). Reveal 10 random items, 11th egg hatches match-3 win!';
   }
 
   if (manual && typeof showFloatingToast === 'function') {
-    showFloatingToast('🔄 16 New Cyber Eggs Shuffled!');
+    showFloatingToast('🔄 12 New Cyber Eggs Shuffled!');
   }
 }
 
-// Hatch an individual egg from the 16-egg grid
+// Hatch an individual egg from the 12-egg grid
 function hatchEggCell(index) {
   if (!gameState.eggHatchState || gameState.eggHatchState.isHatching) return;
+
+  // If game is completed, prompt to claim or reshuffle
+  if (gameState.eggHatchState.gameCompleted) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎉 Current 12-egg round completed! Tap Collect or Reshuffle to play again.');
+    }
+    return;
+  }
 
   const egg = gameState.eggHatchState.eggs[index];
   if (!egg || egg.revealed || egg.hatching) return;
@@ -119,68 +171,46 @@ function hatchEggCell(index) {
     gameState.eggHatchState.isHatching = false;
     sfx.playTapSound(1);
 
-    // Increment collection tracker for this item
-    const itemType = egg.item.type;
-    gameState.eggHatchState.collected[itemType] = (gameState.eggHatchState.collected[itemType] || 0) + 1;
+    // Determine the hatched item according to the 10-random + 11th win rule:
+    const hatchedCount = (gameState.eggHatchState.hatchedCount || 0) + 1;
+    gameState.eggHatchState.hatchedCount = hatchedCount;
+
+    let itemType = 'blueCoin';
+
+    if (hatchedCount <= 10) {
+      // Draw from the pre-shuffled list of 10 items (2 of each category)
+      const first10 = gameState.eggHatchState.first10Items || [];
+      itemType = first10[hatchedCount - 1] || 'key';
+    } else if (hatchedCount === 11) {
+      // 11th hatch ALWAYS completes the target winning category (reaching 3/3)!
+      itemType = gameState.eggHatchState.targetWinner || 'blueCoin';
+    } else {
+      // 12th hatch fallback if player continues
+      itemType = gameState.eggHatchState.targetWinner || 'blueCoin';
+    }
+
+    const rewardDef = EGG_HATCH_REWARDS[itemType] || EGG_HATCH_REWARDS.blueCoin;
+    egg.item = rewardDef;
+
+    // Increment collection tracker for this category
+    if (!gameState.eggHatchState.collected) {
+      gameState.eggHatchState.collected = { key: 0, ticket: 0, card: 0, coin: 0, blueCoin: 0 };
+    }
+    gameState.eggHatchState.collected[itemType] = Math.min(3, (gameState.eggHatchState.collected[itemType] || 0) + 1);
 
     renderEggPageContent();
 
-    // Check if 3 collected (first 3 to complete wins!)
     const count = gameState.eggHatchState.collected[itemType];
     const statusText = document.getElementById('eggStatusText');
 
-    if (count >= 3) {
-      // First set of 3 completed! Award respective prize
-      sfx.playLevelUpSound();
-
-      if (itemType === 'key') {
-        gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
-        if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + 1);
-        if (statusText) statusText.innerHTML = `🎉 <strong>3 KEYS COLLECTED!</strong> You won <strong>+1 Winning Key</strong>! Reshuffling 16 eggs...`;
-        if (typeof showFloatingToast === 'function') showFloatingToast('🎉 3 Keys Collected! Won +1 Key!');
-      } else if (itemType === 'ticket') {
-        gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
-        if (gameState.goal) gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets, (gameState.goal.currentTickets || 0) + 1);
-        if (statusText) statusText.innerHTML = `🎉 <strong>3 TICKETS COLLECTED!</strong> You won <strong>+1 Spin Ticket</strong>! Reshuffling 16 eggs...`;
-        if (typeof showFloatingToast === 'function') showFloatingToast('🎉 3 Tickets Collected! Won +1 Ticket!');
-      } else if (itemType === 'card') {
-        if (gameState.player.scratchCards !== undefined) {
-          gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
-        } else {
-          gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
-        }
-        if (statusText) statusText.innerHTML = `🎉 <strong>3 CARDS COLLECTED!</strong> You won <strong>+1 Scratch Card</strong>! Reshuffling 16 eggs...`;
-        if (typeof showFloatingToast === 'function') showFloatingToast('🎉 3 Cards Collected! Won +1 Scratch Card!');
-      } else if (itemType === 'coin') {
-        gameState.player.coins = (gameState.player.coins || 0) + 10;
-        if (statusText) statusText.innerHTML = `🎉 <strong>3 RARE COINS COLLECTED!</strong> You won <strong>+10 Coins</strong>! Reshuffling 16 eggs...`;
-        if (typeof showFloatingToast === 'function') showFloatingToast('🎉 3 Rare Coins Collected! Won +10 Coins!');
-      }
-
-      updateUI();
-      saveGame();
-      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-        window.firebaseSync.saveToCloudImmediate();
-      }
-
-      // Restart and reshuffle all 16 eggs after small celebration delay
-      setTimeout(() => {
-        shuffleEggs16(false);
-      }, 1600);
+    // If 11th egg hatched OR any item reaches 3 -> MATCH-3 VICTORY!
+    if (hatchedCount === 11 || count >= 3) {
+      triggerEggWinCelebration(itemType, rewardDef);
       return;
     }
 
-    // Check if all 16 eggs revealed without reaching 3 (auto-reshuffle)
-    const allRevealed = gameState.eggHatchState.eggs.every(e => e.revealed);
-    if (allRevealed) {
-      if (statusText) statusText.textContent = 'All 16 eggs hatched! Reshuffling fresh set...';
-      setTimeout(() => {
-        shuffleEggs16(false);
-      }, 1400);
-    } else {
-      if (statusText) {
-        statusText.innerHTML = `Hatched <strong>${egg.item.label}</strong>! (${gameState.eggHatchState.collected[itemType]}/3 Collected)`;
-      }
+    if (statusText) {
+      statusText.innerHTML = `Hatched <strong>${rewardDef.icon} ${rewardDef.label}</strong>! (${count}/3) • Hatch #${hatchedCount}/11`;
     }
 
     updateUI();
@@ -191,8 +221,80 @@ function hatchEggCell(index) {
   }, 380);
 }
 
-// Render the 16-Egg Hatchery Page View
+// Trigger the Match-3 Victory Result Modal & Credit the Reward
+function triggerEggWinCelebration(itemType, rewardDef) {
+  gameState.eggHatchState.gameCompleted = true;
+  sfx.playLevelUpSound();
+
+  // 1. Credit the respective winning prize
+  if (itemType === 'blueCoin') {
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 100;
+  } else if (itemType === 'coin') {
+    gameState.player.coins = (gameState.player.coins || 0) + 10;
+  } else if (itemType === 'key') {
+    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
+    if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + 1);
+  } else if (itemType === 'ticket') {
+    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+    if (gameState.goal) gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets, (gameState.goal.currentTickets || 0) + 1);
+  } else if (itemType === 'card') {
+    if (gameState.player.scratchCards !== undefined) {
+      gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
+    } else {
+      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+    }
+  }
+
+  // 2. Update Status Box
+  const statusText = document.getElementById('eggStatusText');
+  if (statusText) {
+    statusText.innerHTML = `🎉 <strong>MATCH-3 VICTORY ON EGG #11!</strong> You won <strong>+${rewardDef.label}</strong>!`;
+  }
+
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🎉 Match-3 Win! Won +${rewardDef.label}!`);
+  }
+
+  // 3. Display Match-3 Victory Modal
+  const modal = document.getElementById('eggWinResultModal');
+  const iconEl = document.getElementById('eggWinPrizeIcon');
+  const titleEl = document.getElementById('eggWinPrizeTitle');
+  const descEl = document.getElementById('eggWinPrizeDesc');
+
+  if (iconEl) iconEl.textContent = rewardDef.icon;
+  if (titleEl) titleEl.textContent = `YOU WON ${rewardDef.label.toUpperCase()}!`;
+  if (descEl) descEl.textContent = `3 ${rewardDef.unit} collected on egg #11! Reward added to your vault balance.`;
+
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  updateUI();
+  saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+}
+
+// Close Match-3 Victory Modal and optionally reshuffle fresh round
+function closeEggWinModal(autoReshuffle = true) {
+  const modal = document.getElementById('eggWinResultModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  if (autoReshuffle) {
+    sfx.playTapSound(1);
+    shuffleEggs12(false);
+  }
+}
+
+let _eggPipsCache = null;
+
+// Render the 12-Egg Hatchery Page View
 function renderEggPageContent() {
+  const isEggActive = (gameState.currentTab === 'egg') || (document.getElementById('pageEgg') && document.getElementById('pageEgg').classList.contains('active'));
+  if (!isEggActive) return;
+
   const eggs = gameState.player.eggs !== undefined ? gameState.player.eggs : 0;
 
   const eggCountEl = document.getElementById('eggPageEggsCount');
@@ -201,36 +303,47 @@ function renderEggPageContent() {
   const eggAvail = document.getElementById('eggAvailableCoins');
   if (eggAvail) eggAvail.textContent = `${eggs} Egg${eggs === 1 ? '' : 's'}`;
 
-  // Ensure 16 eggs initialized
-  if (!gameState.eggHatchState || !gameState.eggHatchState.eggs || gameState.eggHatchState.eggs.length !== 16) {
-    shuffleEggs16(false);
+  // Ensure 12 eggs initialized
+  if (!gameState.eggHatchState || !gameState.eggHatchState.eggs || gameState.eggHatchState.eggs.length !== 12) {
+    shuffleEggs12(false);
     return;
   }
 
   // Update Remaining Eggs Count Badge
   const unhatchedCount = gameState.eggHatchState.eggs.filter(e => !e.revealed).length;
   const remainEl = document.getElementById('eggRemainingGridText');
-  if (remainEl) remainEl.textContent = `${unhatchedCount} / 16 Remaining`;
+  if (remainEl) remainEl.textContent = `${unhatchedCount} / 12 Remaining`;
 
-  // Update 4 Collection Counters & Pips
-  const collected = gameState.eggHatchState.collected || { key: 0, ticket: 0, card: 0, coin: 0 };
-  ['key', 'ticket', 'card', 'coin'].forEach(type => {
-    const capitalized = type.charAt(0).toUpperCase() + type.slice(1);
-    const countEl = document.getElementById(`eggCount${capitalized}`);
-    if (countEl) countEl.textContent = collected[type] || 0;
+  // Initialize cached count and pip elements
+  if (!_eggPipsCache) {
+    _eggPipsCache = {};
+    ['key', 'ticket', 'card', 'coin', 'blueCoin'].forEach(type => {
+      const elementSuffix = type === 'blueCoin' ? 'BlueCoin' : (type.charAt(0).toUpperCase() + type.slice(1));
+      _eggPipsCache[type] = {
+        countEl: document.getElementById(`eggCount${elementSuffix}`),
+        pipsContainer: document.getElementById(`eggPips${elementSuffix}`)
+      };
+    });
+  }
 
-    const pipsContainer = document.getElementById(`eggPips${capitalized}`);
-    if (pipsContainer) {
-      const val = collected[type] || 0;
-      pipsContainer.innerHTML = `
-        <span class="pip ${val >= 1 ? 'filled' : ''}"></span>
-        <span class="pip ${val >= 2 ? 'filled' : ''}"></span>
-        <span class="pip ${val >= 3 ? 'filled' : ''}"></span>
-      `;
+  // Update 5 Collection Counters & Pips
+  const collected = gameState.eggHatchState.collected || { key: 0, ticket: 0, card: 0, coin: 0, blueCoin: 0 };
+  ['key', 'ticket', 'card', 'coin', 'blueCoin'].forEach(type => {
+    const refs = _eggPipsCache[type];
+    if (refs) {
+      if (refs.countEl) refs.countEl.textContent = collected[type] || 0;
+      if (refs.pipsContainer) {
+        const val = collected[type] || 0;
+        refs.pipsContainer.innerHTML = `
+          <span class="pip ${val >= 1 ? 'filled' : ''}"></span>
+          <span class="pip ${val >= 2 ? 'filled' : ''}"></span>
+          <span class="pip ${val >= 3 ? 'filled' : ''}"></span>
+        `;
+      }
     }
   });
 
-  // Render 16 Eggs in 4x4 Grid
+  // Render 12 Eggs in 4x3 Grid
   const gridEl = document.getElementById('eggGrid16');
   if (!gridEl) return;
 
@@ -238,6 +351,7 @@ function renderEggPageContent() {
   gameState.eggHatchState.eggs.forEach((egg, idx) => {
     const isRevealed = egg.revealed;
     const isHatching = egg.hatching;
+    const item = egg.item;
 
     html += `
       <div class="egg-cell-card ${isRevealed ? 'revealed' : ''} ${isHatching ? 'hatching' : ''}" onclick="hatchEggCell(${idx})">
@@ -250,8 +364,8 @@ function renderEggPageContent() {
           </div>
         ` : `
           <div class="egg-revealed-content">
-            <span class="egg-prize-icon">${egg.item.icon}</span>
-            <span class="egg-prize-label">${egg.item.label}</span>
+            <span class="egg-prize-icon">${item ? item.icon : '✨'}</span>
+            <span class="egg-prize-label">${item ? item.label : 'Revealed'}</span>
           </div>
         `}
       </div>
@@ -261,14 +375,16 @@ function renderEggPageContent() {
   gridEl.innerHTML = html;
 }
 
-window.renderEggPageContent = renderEggPageContent;
-window.hatchEggCell = hatchEggCell;
-window.shuffleEggs16 = shuffleEggs16;
-
 function promptEggCoinsInfo() {
   if (typeof showFloatingToast === 'function') {
     showFloatingToast('🥚 Egg Coins can be earned by tapping the Reactor Orb, spinning the wheel, or claiming mystery chests!');
   }
 }
-window.promptEggCoinsInfo = promptEggCoinsInfo;
 
+// Export functions to window
+window.renderEggPageContent = renderEggPageContent;
+window.hatchEggCell = hatchEggCell;
+window.shuffleEggs12 = shuffleEggs12;
+window.shuffleEggs16 = shuffleEggs12; // Backwards compatible alias
+window.closeEggWinModal = closeEggWinModal;
+window.promptEggCoinsInfo = promptEggCoinsInfo;

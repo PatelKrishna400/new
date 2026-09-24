@@ -21,6 +21,7 @@ window.adminState = {
   users: [],
   rewards: [],
   requests: [],
+  accountRequests: [],
   customRequests: [],
   websiteTasks: [],
   telegramTasks: [],
@@ -531,6 +532,26 @@ function listenToFirebase() {
     dispatchAdminEvent('requestsUpdated');
   }, err => onFirebasePermissionError(err, '/reward_requests'));
 
+  // 3b. Account Creation Requests
+  db.ref('/account_requests').on('value', snapshot => {
+    const val = snapshot.val();
+    const list = [];
+    if (val) {
+      Object.keys(val).forEach(id => {
+        list.push({ id, ...val[id] });
+      });
+    }
+    window.adminState.accountRequests = list.reverse();
+    const pendingCount = list.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
+    const badge = document.getElementById('badgeAccountRequestsCount');
+    if (badge) {
+      badge.textContent = pendingCount;
+      badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+    }
+    clearFirebaseRulesWarningBanner();
+    dispatchAdminEvent('accountRequestsUpdated');
+  }, err => onFirebasePermissionError(err, '/account_requests'));
+
   // 4. Website Tasks Config
   db.ref('/website_tasks_config').on('value', snapshot => {
     const val = snapshot.val();
@@ -719,6 +740,8 @@ function calculateAggregatedMetrics() {
   let totalKeys = 0;
   let totalTickets = 0;
   let totalEggs = 0;
+  let totalDiamonds = 0;
+  let totalBlueCoins = 0;
   let totalEnergy = 0;
   let totalAdViews = 0;
   let totalCompletedTasks = 0;
@@ -731,6 +754,8 @@ function calculateAggregatedMetrics() {
     totalKeys += Number(u.chestKeys || 0);
     totalTickets += Number(u.chestTickets || 0);
     totalEggs += Number(u.eggs || 0);
+    totalDiamonds += Number(u.diamonds || 0);
+    totalBlueCoins += Number(u.blueCoins !== undefined ? u.blueCoins : (u.diamonds || 0));
     totalEnergy += Number(u.currentEnergy || 0);
     totalAdViews += Number(u.adsWatched || u.adsButtonCount || 0);
     totalCompletedTasks += (Number(u.dailyTasksDone || 0) + Number(u.webTasksDone || 0) + Number(u.tgDone || 0));
@@ -757,6 +782,8 @@ function calculateAggregatedMetrics() {
     totalKeys: totalKeys,
     totalTickets: totalTickets,
     totalEggs: totalEggs,
+    totalDiamonds: totalDiamonds,
+    totalBlueCoins: totalBlueCoins,
     totalEnergy: totalEnergy,
     totalWithdrawals: requests.length,
     pendingWithdrawals: pendingWithdrawals,
@@ -848,11 +875,12 @@ function deleteUserFromFirebase(uid) {
   updates[`/leaderboard/${uid}`] = null;
   updates[`/whitelist/${uid}`] = null;
 
-  // Set permanent tombstone in /deleted_users so user panel locks out and halts sync
+  // Set permanent tombstone in /deleted_users so user panel locks out, purges cache, and halts sync
   updates[`/deleted_users/${uid}`] = {
     deletedAt: Date.now(),
     reason: 'Account and data permanently deleted by admin',
-    uid: uid
+    uid: uid,
+    status: 'deleted'
   };
 
   // Clean identityIndex if player has known telegram, phone, email
@@ -878,17 +906,26 @@ function deleteUserFromFirebase(uid) {
     });
   }
 
-  // Clean up any activity log entries referencing this player
-  if (window.adminState && window.adminState.activities) {
-    window.adminState.activities.forEach(act => {
-      const actStr = JSON.stringify(act);
-      if (act.id && (actStr.includes(uid) || (playerName && actStr.includes(playerName)))) {
-        updates[`/activity_log/${act.id}`] = null;
-      }
-    });
-  }
+  // Directly query /activity_log from Firebase to purge ALL activity items for this user
+  return db.ref('/activity_log').once('value').then(actSnap => {
+    const actData = actSnap.val();
+    if (actData && typeof actData === 'object') {
+      Object.keys(actData).forEach(actId => {
+        const item = actData[actId];
+        const itemStr = JSON.stringify(item);
+        if (
+          item.userId === uid ||
+          item.uid === uid ||
+          itemStr.includes(uid) ||
+          (playerName && playerName.length > 2 && itemStr.includes(playerName))
+        ) {
+          updates[`/activity_log/${actId}`] = null;
+        }
+      });
+    }
 
-  return db.ref().update(updates).then(() => {
+    return db.ref().update(updates);
+  }).then(() => {
     // Also scan identityIndex to ensure no orphaned mappings point to this user
     db.ref('/identityIndex').once('value').then(idxSnap => {
       const idxVal = idxSnap.val();
@@ -909,15 +946,19 @@ function deleteUserFromFirebase(uid) {
       }
     }).catch(() => {});
 
-    // Log deletion activity in Firebase
-    logActivity('user_delete', `Deleted player: ${playerName} & purged data from Firebase`, { uid, deletedAt: Date.now() });
-
     // Update local state
     if (window.adminState && window.adminState.users) {
       window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
     }
+    if (window.adminState && window.adminState.activities) {
+      window.adminState.activities = window.adminState.activities.filter(a => {
+        const str = JSON.stringify(a);
+        return !str.includes(uid) && (!playerName || playerName.length <= 2 || !str.includes(playerName));
+      });
+    }
 
     dispatchAdminEvent('userDeleted');
+    dispatchAdminEvent('activitiesUpdated');
   });
 }
 window.deleteUserFromFirebase = deleteUserFromFirebase;

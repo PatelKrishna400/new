@@ -1,0 +1,124 @@
+<div class="page-view" id="pageMemoryMatch">
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back</span>
+    </button>
+
+    <div class="spin-header-title-pill">
+      <span class="spin-sparkle-icon">🧠</span>
+      <span>MEMORY MATCH</span>
+    </div>
+
+    <div class="spin-ticket-header-pill" onclick="startMemoryMatchGame()">
+      <span class="ticket-pill-icon">🔄</span>
+      <span class="ticket-pill-val">Restart</span>
+    </div>
+  </div>
+
+  <!-- Quick Info Strip -->
+  <div class="mini-game-info-strip">
+    <div class="info-strip-chip">
+      <span class="chip-dot cyan"></span>
+      <span class="chip-label">GRID:</span>
+      <span class="chip-val">4 × 4 (16 Cards)</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot amber"></span>
+      <span class="chip-label">TIME:</span>
+      <span class="chip-val">60 Seconds</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot gold"></span>
+      <span class="chip-label">REWARD:</span>
+      <span class="chip-val">Coins + Diamonds</span>
+    </div>
+  </div>
+
+  <!-- Game Arena Card -->
+  <section class="memory-arena-card">
+    <div class="memory-ambient-glow"></div>
+
+    <!-- Live Performance HUD -->
+    <div class="memory-hud-row">
+      <div class="memory-hud-pill">
+        <span class="hud-icon">⏱️</span>
+        <div class="hud-data">
+          <span class="hud-label">TIME</span>
+          <span class="hud-val" id="memoryTimeVal">60s</span>
+        </div>
+      </div>
+      <div class="memory-hud-pill">
+        <span class="hud-icon">🎯</span>
+        <div class="hud-data">
+          <span class="hud-label">MATCHES</span>
+          <span class="hud-val highlight" id="memoryMatchesVal">0 / 8</span>
+        </div>
+      </div>
+      <div class="memory-hud-pill">
+        <span class="hud-icon">⚠️</span>
+        <div class="hud-data">
+          <span class="hud-label">MISTAKES</span>
+          <span class="hud-val" id="memoryMistakesVal">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4x4 Grid of 16 Cards -->
+    <div class="memory-grid-container" id="memoryGridContainer">
+      <!-- Generated dynamically in memory-match.js -->
+    </div>
+
+    <!-- Controls / Action Strip -->
+    <div class="memory-controls-bar">
+      <button class="memory-action-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
+        <span>🚀</span> Start Memory Match
+      </button>
+    </div>
+  </section>
+
+  <!-- Victory / Game Over Modal -->
+  <div class="memory-modal-overlay" id="memoryModalOverlay">
+    <div class="memory-modal-card">
+      <div class="memory-modal-glow"></div>
+      <div class="memory-modal-header">
+        <div class="memory-modal-icon" id="memoryResultIcon">🏆</div>
+        <h3 class="memory-modal-title" id="memoryResultTitle">REACTOR SYNCHRONIZED!</h3>
+        <p class="memory-modal-desc" id="memoryResultDesc">All 8 pairs matched successfully!</p>
+      </div>
+
+      <div class="memory-stars-row" id="memoryStarsRow">
+        <span class="star-item active">⭐</span>
+        <span class="star-item active">⭐</span>
+        <span class="star-item active">⭐</span>
+      </div>
+
+      <div class="memory-stats-breakdown">
+        <div class="breakdown-row">
+          <span>Time Remaining:</span>
+          <strong id="memoryStatTime">24s</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Mistakes Made:</span>
+          <strong id="memoryStatMistakes">2</strong>
+        </div>
+        <div class="breakdown-row highlight">
+          <span>Reward Calculated:</span>
+          <strong id="memoryStatReward">+250 Coins 🪙, +35 💎</strong>
+        </div>
+      </div>
+
+      <div class="memory-modal-actions">
+        <button class="memory-claim-btn" id="memoryClaimBtn" onclick="claimMemoryMatchReward()">
+          <span>🎁</span> Claim Reward
+        </button>
+        <button class="memory-retry-btn" onclick="startMemoryMatchGame()">
+          <span>🔄</span> Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -205,21 +205,33 @@ function updateDashboardMetrics() {
   const elTickets = document.getElementById('dashTotalTickets');
   const elEggs = document.getElementById('dashTotalEggs');
   const elLevels = document.getElementById('dashTotalLevels');
+  const elDiamonds = document.getElementById('dashTotalDiamonds');
+  const elBlueCoins = document.getElementById('dashTotalBlueCoins');
 
   if (elCoins) {
     const c = Number(metrics.totalCoins || 0);
     elCoins.textContent = c >= 1000000 ? (c / 1000000).toFixed(2) + 'M' : c.toLocaleString();
-    elCoins.title = `${c.toLocaleString()} Coins`;
+    elCoins.title = `${c.toLocaleString()} Coins 🪙`;
   }
   if (elXP) {
     const xp = Number(metrics.totalXP || 0);
     elXP.textContent = xp >= 1000000 ? (xp / 1000000).toFixed(2) + 'M' : xp.toLocaleString();
-    elXP.title = `${xp.toLocaleString()} XP`;
+    elXP.title = `${xp.toLocaleString()} XP ⭐`;
   }
   if (elKeys) elKeys.textContent = Number(metrics.totalKeys || 0).toLocaleString();
   if (elTickets) elTickets.textContent = Number(metrics.totalTickets || 0).toLocaleString();
   if (elEggs) elEggs.textContent = Number(metrics.totalEggs || 0).toLocaleString();
   if (elLevels) elLevels.textContent = Number(metrics.totalLevels || 100).toLocaleString();
+  if (elDiamonds) {
+    const d = Number(metrics.totalDiamonds || 0);
+    elDiamonds.textContent = d >= 1000000 ? (d / 1000000).toFixed(2) + 'M' : d.toLocaleString();
+    elDiamonds.title = `${d.toLocaleString()} Diamonds 💎`;
+  }
+  if (elBlueCoins) {
+    const b = Number(metrics.totalBlueCoins || 0);
+    elBlueCoins.textContent = b >= 1000000 ? (b / 1000000).toFixed(2) + 'M' : b.toLocaleString();
+    elBlueCoins.title = `${b.toLocaleString()} Blue Coins 💙`;
+  }
 
   // Legacy elements if present
   const elDaily = document.getElementById('dashDailyTasksCompleted');
@@ -245,38 +257,12 @@ function renderRealtimeActivityFeed() {
 
   let activities = (window.adminState && window.adminState.activities) ? [...window.adminState.activities] : [];
 
-  // If activity_log is empty in Firebase, synthesize from real active users and real requests
-  if (activities.length === 0) {
-    const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
-    const requests = (window.adminState && window.adminState.rewardRequests) ? window.adminState.rewardRequests : [];
-
-    users.slice(0, 10).forEach(u => {
-      if (u.lastActive) {
-        activities.push({
-          type: 'active',
-          title: `Player ${u.name || u.username || (u.id ? u.id.slice(0, 8) : 'User')} Active`,
-          details: `Level ${u.level || 1} • ${(u.coins || 0).toLocaleString()} Coins • ${(u.xp || 0).toLocaleString()} XP`,
-          timestamp: new Date(u.lastActive).getTime() || Date.now()
-        });
-      }
-    });
-
-    requests.slice(0, 10).forEach(r => {
-      activities.push({
-        type: 'withdrawal',
-        title: `Withdrawal Request: ${r.amount || 0} ${r.type || 'Coins'}`,
-        details: `Player: ${r.userName || r.userId || 'User'} • Status: ${(r.status || 'pending').toUpperCase()}`,
-        timestamp: new Date(r.createdAt || r.date || Date.now()).getTime()
-      });
-    });
-
-    activities.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  }
-
   if (activities.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; color: #64748b; padding: 24px; font-size: 13px;">
-        Listening for live events from Firebase...
+      <div style="text-align: center; color: #94a3b8; padding: 32px 16px; font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="font-size: 26px;">✨</span>
+        <span style="font-weight: 700; color: #f1f5f9;">No Activity Logs in Firebase</span>
+        <span style="font-size: 11.5px; color: #64748b;">All activity logs have been cleared or no recent actions recorded.</span>
       </div>
     `;
     return;
@@ -712,7 +698,7 @@ function renderExecutiveKpis(data) {
     elTagEconomy.style.background = (economyPct >= 100) ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.1)';
   }
   if (elSubEconomy) {
-    elSubEconomy.textContent = `${(data.economy.coins || 0).toLocaleString()} Coins • ${(data.economy.diamonds || 0).toLocaleString()} Gems`;
+    elSubEconomy.textContent = `${(data.economy.coins || 0).toLocaleString()} Coins 🪙 • ${(data.economy.diamonds || 0).toLocaleString()} Diamonds 💎`;
   }
 
   // KPI 4: Ads
@@ -1847,6 +1833,78 @@ function resetTargetsToDefault() {
   }
 }
 window.resetTargetsToDefault = resetTargetsToDefault;
+
+/**
+ * Handle Admin Broadcast Notification Form Submission
+ */
+async function handleAdminBroadcastNotification(event) {
+  if (event && event.preventDefault) event.preventDefault();
+
+  const type = document.getElementById('adminNotifType')?.value || 'global';
+  const title = document.getElementById('adminNotifTitle')?.value?.trim();
+  const target = document.getElementById('adminNotifTarget')?.value || 'home';
+  const message = document.getElementById('adminNotifMessage')?.value?.trim();
+
+  if (!title || !message) {
+    alert('Please fill out both Title and Message.');
+    return;
+  }
+
+  const targetLabels = {
+    home: 'Go to Reactor',
+    reward: 'Open Rewards',
+    energy: 'View Cells',
+    tasks: 'Quests',
+    streak: 'Streak',
+    leaderboard: 'Rankings',
+    xp: 'Season XP'
+  };
+
+  const payload = {
+    type,
+    title,
+    message,
+    actionTarget: target,
+    actionText: targetLabels[target] || 'Open View'
+  };
+
+  try {
+    const res = await fetch('/api/notifications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data && data.ok) {
+      showQuickNotification('🚀 Notification broadcasted to all player inboxes!');
+      document.getElementById('adminBroadcastForm')?.reset();
+    } else {
+      showQuickNotification('⚠️ ' + ((data && data.error) || 'Failed to broadcast notification'));
+    }
+  } catch (err) {
+    console.warn('API broadcast error, attempting Firebase fallback:', err);
+    // Firebase fallback
+    const db = (typeof window.getDb === 'function') ? window.getDb() : null;
+    if (db) {
+      try {
+        const notifRef = db.ref('/notifications').push();
+        await notifRef.set({
+          ...payload,
+          id: notifRef.key,
+          timestamp: Date.now(),
+          read: false
+        });
+        showQuickNotification('🚀 Notification broadcasted via Firebase cloud!');
+        document.getElementById('adminBroadcastForm')?.reset();
+        return;
+      } catch (fbErr) {
+        console.error('Firebase broadcast error:', fbErr);
+      }
+    }
+    showQuickNotification('⚠️ Broadcast submitted in local session.');
+  }
+}
+window.handleAdminBroadcastNotification = handleAdminBroadcastNotification;
 
 /**
  * Toast / Alert Helper

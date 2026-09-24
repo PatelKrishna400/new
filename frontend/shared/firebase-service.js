@@ -53,6 +53,32 @@ class FirebaseSyncService {
 
   init() {
     try {
+      if (this.isPermanentlyDeleted) {
+        if (typeof firebase !== 'undefined' && firebase.database) {
+          try {
+            const tempDb = firebase.database();
+            const localUid = this.userId || this.getOrCreateLocalUid();
+            tempDb.ref(`deleted_users/${localUid}`).once('value').then(snap => {
+              if (snap.exists()) {
+                this.lockUserPanelPermanently(snap.val()?.reason || 'Account Terminated by Administrator.');
+              } else {
+                console.log('🔓 Clearing local termination flag: User is not marked deleted in Firebase.');
+                this.isPermanentlyDeleted = false;
+                localStorage.removeItem('ENERGY_TAP_USER_TERMINATED');
+                const overlay = document.getElementById('userAccountLockedOverlay');
+                if (overlay) overlay.style.display = 'none';
+                this.init();
+              }
+            }).catch(() => {
+              this.lockUserPanelPermanently('Account Terminated: This account and data were permanently deleted by administrator.');
+            });
+            return;
+          } catch (e) {}
+        }
+        this.lockUserPanelPermanently('Account Terminated: This account and data were permanently deleted by administrator.');
+        return;
+      }
+
       if (typeof firebase !== 'undefined') {
         // Initialize Firebase
         if (!firebase.apps.length) {
@@ -97,19 +123,27 @@ class FirebaseSyncService {
             this.setSyncStatus('synced');
             console.log('🔥 Firebase Auth verified! Authenticated Player UID:', this.userId);
             
+            // Check tombstone listener on /deleted_users to enforce security lockdown (idempotent)
+            if (this._listeningDeletedUser !== this.userId) {
+              this._listeningDeletedUser = this.userId;
+              this.database.ref(`deleted_users/${this.userId}`).on('value', (delSnap) => {
+                if (delSnap.exists()) {
+                  const delVal = delSnap.val() || {};
+                  this.lockUserPanelPermanently(delVal.reason || 'Account Terminated & Purged by Administrator.');
+                }
+              });
+            }
+
+            if (this.isPermanentlyDeleted) return;
+
             // Initial cloud sync: load from Firebase, then attach real-time presence
             this.loadFromCloud();
             this.setupPresence();
             this.listenToMegaRewards();
-            this.listenToWebsiteTasks();
-            this.listenToTelegramTasks();
-            this.listenToMonthlyTasks();
             this.listenToUser();
             this.listenToSeason();
-            this.listenToMonthlyCompetition();
             this.listenToAdsConfig();
             this.listenToLevelsConfig();
-            this.listenToGameConfig();
             this.listenToFuelCellsConfig();
             this.listenToAuthConfig();
             this.registerOrUpdateCurrentAuthorization();
@@ -189,9 +223,12 @@ class FirebaseSyncService {
   }
 
   setSyncStatus(status) {
+    if (this.syncStatus === status) return;
     this.syncStatus = status;
-    const statusEls = document.querySelectorAll('.firebase-cloud-status-badge');
-    statusEls.forEach(statusEl => {
+    if (!this._cachedStatusEls || this._cachedStatusEls.length === 0) {
+      this._cachedStatusEls = document.querySelectorAll('.firebase-cloud-status-badge');
+    }
+    this._cachedStatusEls.forEach(statusEl => {
       if (status === 'synced') {
         statusEl.innerHTML = `<span class="cloud-dot online">●</span> 🔐 Auth Synced`;
         statusEl.className = 'firebase-cloud-status-badge synced';
@@ -345,18 +382,249 @@ class FirebaseSyncService {
       });
   }
 
-  // Real-time listener for user updates / resets from Admin Portal
+  // Permanent Security Lockout for Terminated / Deleted Accounts
+  lockUserPanelPermanently(reason = 'Account has been terminated by administrator.') {
+    this.isPermanentlyDeleted = true;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('ENERGY_TAP_USER_TERMINATED', 'true');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V3');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V2');
+        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V1');
+        localStorage.removeItem('energy_tap_game_state');
+      }
+    } catch (e) {}
+
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+      this.saveTimeout = null;
+    }
+
+    if (typeof resetAllDataToZero === 'function') {
+      resetAllDataToZero();
+    }
+
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      gameState.player.coins = 0;
+      gameState.player.blueCoins = 0;
+      gameState.player.diamonds = 0;
+      gameState.player.chestKeys = 0;
+      gameState.player.scratchCards = 0;
+      gameState.player.chestTickets = 0;
+      gameState.player.eggs = 0;
+      gameState.player.status = 'deleted';
+    }
+
+    // Disconnect Firebase listeners
+    if (this.database && this.userId) {
+      try {
+        this.database.ref(`players/${this.userId}`).off();
+        this.database.ref(`users/${this.userId}`).off();
+      } catch (e) {}
+    }
+
+    this.setSyncStatus('offline');
+    this.renderAccountLockScreen(reason);
+  }
+
+  renderAccountLockScreen(reason) {
+    let overlay = document.getElementById('userAccountLockedOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'userAccountLockedOverlay';
+      overlay.className = 'user-account-locked-overlay';
+      document.body.appendChild(overlay);
+    }
+
+    const defaultName = (typeof gameState !== 'undefined' && gameState.player && gameState.player.name) ? gameState.player.name : 'Player';
+    const defaultHandle = (typeof gameState !== 'undefined' && gameState.player && gameState.player.handle) ? gameState.player.handle : '';
+
+    overlay.innerHTML = `
+      <div class="user-lock-card">
+        <div class="user-lock-icon">🔒</div>
+        <div class="user-lock-badge">SECURITY NOTICE</div>
+        <h2 class="user-lock-title">ACCOUNT TERMINATED</h2>
+        <p class="user-lock-desc">${reason || 'Account Deleted: This player account was removed from Firebase by administrator.'}</p>
+        
+        <div class="user-lock-meta">
+          <div class="lock-meta-row"><span>STATUS:</span> <strong style="color: #ef4444;">REVOKED &amp; SECURED</strong></div>
+          <div class="lock-meta-row"><span>TIMESTAMP:</span> <strong>${new Date().toLocaleTimeString()}</strong></div>
+        </div>
+
+        <!-- Interactive Account Reconnect & Request Form -->
+        <div class="user-lock-form-box" id="lockRequestFormContainer">
+          <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 8px; text-align: left;">
+            ✏️ Edit Player Details &amp; Reconnect:
+          </div>
+          <div class="user-lock-input-group">
+            <input type="text" id="reqAccName" class="user-lock-input" placeholder="Player Name" value="${defaultName}">
+            <input type="text" id="reqAccTelegram" class="user-lock-input" placeholder="Telegram / Handle (e.g. @username)" value="${defaultHandle}">
+            <textarea id="reqAccReason" class="user-lock-textarea" rows="2" placeholder="Note to Administrator (optional)"></textarea>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 4px;">
+            <!-- Primary Action: Edit & Reconnect immediately to Firebase -->
+            <button type="button" class="user-lock-edit-reconnect-btn" onclick="window.firebaseSync && window.firebaseSync.reconnectAndEditAccount()">
+              <span>⚡ Edit &amp; Reconnect to Firebase</span>
+            </button>
+
+            <!-- Secondary Action: Send request to Admin Panel -->
+            <button type="button" class="user-lock-submit-btn" onclick="window.firebaseSync && window.firebaseSync.handleUserRequestSubmit()">
+              <span>📨 Send Request to Admin</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="user-lock-note">
+          ℹ️ You can edit your player name above and reconnect immediately to start fresh, or send a request to the administrator.
+        </div>
+      </div>
+    `;
+    overlay.style.display = 'flex';
+  }
+
+  handleUserRequestSubmit() {
+    const nameEl = document.getElementById('reqAccName');
+    const tgEl = document.getElementById('reqAccTelegram');
+    const reasonEl = document.getElementById('reqAccReason');
+
+    const name = nameEl ? nameEl.value.trim() : '';
+    const telegram = tgEl ? tgEl.value.trim() : '';
+    const reason = reasonEl ? reasonEl.value.trim() : '';
+
+    if (!name) {
+      alert('Please enter your name.');
+      if (nameEl) nameEl.focus();
+      return;
+    }
+
+    this.submitAccountCreationRequest(name, telegram, '', reason);
+  }
+
+  submitAccountCreationRequest(name, handle, phone, message) {
+    if (!this.database) {
+      alert('Firebase is currently offline. Please check your internet connection.');
+      return Promise.reject(new Error('Firebase offline'));
+    }
+
+    const reqId = 'REQ_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
+    const payload = {
+      id: reqId,
+      oldUserId: this.userId || (typeof localStorage !== 'undefined' ? localStorage.getItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5') : '') || 'unknown',
+      name: name || 'Player',
+      username: handle ? handle.replace(/^@/, '') : 'player',
+      telegram: handle || '',
+      phone: phone || '',
+      reason: message || 'Account recreation requested after administrator deletion.',
+      status: 'pending',
+      requestedAt: Date.now(),
+      dateStr: new Date().toLocaleString()
+    };
+
+    return this.database.ref(`account_requests/${reqId}`).set(payload).then(() => {
+      const box = document.getElementById('lockRequestFormContainer');
+      if (box) {
+        box.innerHTML = `
+          <div class="user-lock-success" style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10b981; border-radius: 12px; padding: 12px; text-align: center; color: #a7f3d0;">
+            <div style="font-size: 24px; margin-bottom: 4px;">✅</div>
+            <strong style="color: #34d399; font-size: 13.5px; display: block;">Request Sent to Administrator!</strong>
+            <p style="margin: 4px 0 8px 0; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
+              Your request (ID: <code>#${reqId.slice(-6).toUpperCase()}</code>) has been submitted. The admin can review and approve it from the Admin Portal.
+            </p>
+            <button type="button" class="user-lock-edit-reconnect-btn" style="margin-top: 6px;" onclick="window.firebaseSync && window.firebaseSync.reconnectAndEditAccount()">
+              <span>⚡ Or Reconnect Now Instantly</span>
+            </button>
+          </div>
+        `;
+      }
+    }).catch(err => {
+      alert('Error submitting request: ' + err.message);
+      throw err;
+    });
+  }
+
+  // Edit details and reconnect to Firebase
+  reconnectAndEditAccount() {
+    const nameEl = document.getElementById('reqAccName');
+    const tgEl = document.getElementById('reqAccTelegram');
+    const name = nameEl ? nameEl.value.trim() : '';
+    const telegram = tgEl ? tgEl.value.trim() : '';
+
+    this.isPermanentlyDeleted = false;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('ENERGY_TAP_USER_TERMINATED');
+        const newUid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+        localStorage.setItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5', newUid);
+        this.userId = newUid;
+      }
+    } catch (e) {}
+
+    const overlay = document.getElementById('userAccountLockedOverlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+      overlay.remove();
+    }
+
+    if (typeof resetAllDataToZero === 'function') {
+      resetAllDataToZero();
+    }
+
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      if (name) gameState.player.name = name;
+      if (telegram) gameState.player.handle = telegram.startsWith('@') ? telegram : `@${telegram}`;
+      gameState.player.status = 'active';
+    }
+
+    this.init();
+    setTimeout(() => {
+      this.saveToCloudImmediate();
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`✅ Connected to Firebase as ${name || 'Player'}!`);
+      }
+    }, 700);
+  }
+
+  reconnectAndResetAccount() {
+    this.reconnectAndEditAccount();
+  }
+
+  // Real-time listener for user updates / resets from Admin Portal (idempotent per user)
   listenToUser() {
     if (!this.database || !this.userId) return;
+    if (this._listeningUser === this.userId) return;
+    this._listeningUser = this.userId;
 
     const userRef = this.database.ref(`players/${this.userId}`);
     userRef.on('value', (snapshot) => {
+      if (this.isPermanentlyDeleted) return;
+
       const cloudData = snapshot.val();
       if (!cloudData || typeof cloudData !== 'object') {
-        // Player was removed from Firebase: reset all local state to 0
-        if (typeof resetAllDataToZero === 'function') {
-          resetAllDataToZero();
+        // Verify with /deleted_users before locking out!
+        if (this.database && this.userId) {
+          this.database.ref(`deleted_users/${this.userId}`).once('value').then(delSnap => {
+            if (delSnap.exists()) {
+              const delVal = delSnap.val() || {};
+              this.lockUserPanelPermanently(delVal.reason || 'Account Deleted: This player account was removed from Firebase by administrator.');
+            } else {
+              console.log('🆕 User record not yet initialized in cloud, syncing fresh session...');
+              this.saveToCloudImmediate();
+            }
+          }).catch(() => {
+            this.saveToCloudImmediate();
+          });
         }
+        return;
+      }
+
+      const playerStatus = (cloudData.player && cloudData.player.status) || cloudData.status;
+      if (playerStatus === 'deleted' || playerStatus === 'disabled') {
+        this.lockUserPanelPermanently(`Account ${playerStatus === 'disabled' ? 'Suspended' : 'Deleted'}: Access revoked by administrator.`);
         return;
       }
 
@@ -516,6 +784,14 @@ class FirebaseSyncService {
         }
       }
 
+      if (cloudData.spinState && typeof gameState !== 'undefined') {
+        if (JSON.stringify(gameState.spinState || {}) !== JSON.stringify(cloudData.spinState)) {
+          gameState.spinState = Object.assign(gameState.spinState || {}, cloudData.spinState);
+          hasChanged = true;
+          if (typeof updateSpinLevelUI === 'function') updateSpinLevelUI();
+        }
+      }
+
       if (cloudData.bank && typeof gameState !== 'undefined' && gameState.bank) {
         if (gameState.bank.blueCoins !== cloudData.bank.blueCoins) {
           gameState.bank.blueCoins = cloudData.bank.blueCoins || 0;
@@ -542,6 +818,8 @@ class FirebaseSyncService {
   // Real-time listener for Global Season Resets from Admin (/season)
   listenToSeason() {
     if (!this.database) return;
+    if (this._listeningSeason) return;
+    this._listeningSeason = true;
 
     const seasonRef = this.database.ref('/season');
     seasonRef.on('value', (snapshot) => {
@@ -621,8 +899,8 @@ class FirebaseSyncService {
           gameState.energyGenerator.epTotal = 0;
           gameState.energyGenerator.remainingSeconds = 0;
           gameState.energyGenerator.isActive = false;
-          gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-          gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
+          gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
+          gameState.energyGenerator.consumed = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
           gameState.energyGenerator.boosts = {
             pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
             purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
@@ -672,6 +950,8 @@ class FirebaseSyncService {
   // Real-time listener for Global 30-Day Monthly Task Competition (/monthly_competition)
   listenToMonthlyCompetition() {
     if (!this.database) return;
+    if (this._listeningMonthlyComp) return;
+    this._listeningMonthlyComp = true;
 
     const compRef = this.database.ref('/monthly_competition');
     compRef.on('value', (snapshot) => {
@@ -778,6 +1058,8 @@ class FirebaseSyncService {
   // Real-time listener for Level Configurations from Admin Portal (/levels_config)
   listenToLevelsConfig() {
     if (!this.database) return;
+    if (this._listeningLevelsConfig) return;
+    this._listeningLevelsConfig = true;
 
     const levelsRef = this.database.ref('/levels_config');
     levelsRef.on('value', (snapshot) => {
@@ -812,6 +1094,8 @@ class FirebaseSyncService {
   // Real-time listener for Global Game Configuration (/game_config)
   listenToGameConfig() {
     if (!this.database) return;
+    if (this._listeningGameConfig) return;
+    this._listeningGameConfig = true;
 
     const configRef = this.database.ref('/game_config');
     configRef.on('value', (snapshot) => {
@@ -828,6 +1112,8 @@ class FirebaseSyncService {
   // Real-time listener for Fuel Cells Configuration (/fuel_cells_config)
   listenToFuelCellsConfig() {
     if (!this.database) return;
+    if (this._listeningFuelConfig) return;
+    this._listeningFuelConfig = true;
 
     const fuelRef = this.database.ref('/fuel_cells_config');
     fuelRef.on('value', (snapshot) => {
@@ -852,6 +1138,9 @@ class FirebaseSyncService {
 
   // Debounced Save (efficient for fast taps)
   debouncedSave() {
+    if (this.isPermanentlyDeleted || (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true')) {
+      return;
+    }
     if (!this.database || !this.userId) return;
     this.setSyncStatus('saving');
     clearTimeout(this.saveTimeout);
@@ -862,11 +1151,16 @@ class FirebaseSyncService {
 
   // Immediate Save to Firebase
   saveToCloudImmediate() {
+    if (this.isPermanentlyDeleted || (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true')) {
+      console.warn('⛔ Save blocked: Account has been terminated by administrator.');
+      return;
+    }
     if (!this.database) return;
 
     // Authentication is strictly required for all user data store
     this.ensureAuthenticated().then(() => {
       if (!this.userId) return;
+      if (this.isPermanentlyDeleted) return;
 
       // Calculate aggregated activity metrics
       const totalAdsWatched = (gameState.player.adsWatchedCount || 0) + 
@@ -924,7 +1218,13 @@ class FirebaseSyncService {
         tasksState: gameState.tasksState,
         xpState: gameState.xpState,
         goalState: gameState.goalState,
-        dailyStats: gameState.dailyStats
+        dailyStats: gameState.dailyStats,
+        spinState: gameState.spinState || {
+          level: 1,
+          crowns: 0,
+          targetCrowns: 5,
+          giftsClaimed: 0
+        }
       };
 
       this.database.ref(`players/${this.userId}`).set(payload)
@@ -1032,6 +1332,8 @@ class FirebaseSyncService {
       this.loadCachedMegaRewards();
       return;
     }
+    if (this._listeningMegaRewards) return;
+    this._listeningMegaRewards = true;
 
     const rewardsRef = this.database.ref('/mega_rewards');
     rewardsRef.on('value', (snapshot) => {
@@ -1069,6 +1371,9 @@ class FirebaseSyncService {
 
   listenToAdsConfig() {
     if (!this.database) return;
+    if (this._listeningAdsConfig) return;
+    this._listeningAdsConfig = true;
+
     this.database.ref('/ads_config').on('value', (snapshot) => {
       const val = snapshot.val();
       if (val) {
@@ -1087,6 +1392,8 @@ class FirebaseSyncService {
   // ==========================================================================
   listenToAuthConfig() {
     if (!this.database) return;
+    if (this._listeningAuthConfig) return;
+    this._listeningAuthConfig = true;
     this.database.ref('auth_config').on('value', (snap) => {
       const val = snap.val();
       if (val && typeof val === 'object') {
@@ -1236,6 +1543,8 @@ class FirebaseSyncService {
       this.loadCachedWebsiteTasks();
       return;
     }
+    if (this._listeningWebsiteTasks) return;
+    this._listeningWebsiteTasks = true;
 
     const tasksRef = this.database.ref('/website_tasks_config');
     tasksRef.on('value', (snapshot) => {
@@ -1288,6 +1597,8 @@ class FirebaseSyncService {
       this.loadCachedTelegramTasks();
       return;
     }
+    if (this._listeningTelegramTasks) return;
+    this._listeningTelegramTasks = true;
 
     const tasksRef = this.database.ref('/telegram_tasks_config');
     tasksRef.on('value', (snapshot) => {
@@ -1340,6 +1651,8 @@ class FirebaseSyncService {
       this.loadCachedMonthlyTasks();
       return;
     }
+    if (this._listeningMonthlyTasks) return;
+    this._listeningMonthlyTasks = true;
 
     const tasksRef = this.database.ref('/monthly_tasks_config');
     tasksRef.on('value', (snapshot) => {
@@ -2705,5 +3018,12 @@ window.signInWithPhone = function(phone, hash, code, mode = 'login') {
 window.handleTelegramAuthorization = function(tgUser) {
   return window.firebaseSync ? window.firebaseSync.handleTelegramAuthorization(tgUser) : Promise.resolve({ ok: false });
 };
+window.reconnectAndEditAccount = function() {
+  if (window.firebaseSync) window.firebaseSync.reconnectAndEditAccount();
+};
+window.reconnectAndResetAccount = function() {
+  if (window.firebaseSync) window.firebaseSync.reconnectAndResetAccount();
+};
+
 
 

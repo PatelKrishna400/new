@@ -354,9 +354,11 @@ function resetThreeChests() {
   updateChestUI();
 }
 
-// Auto-sync on DOM ready
+// Auto-sync on DOM ready only if chest page is active
 document.addEventListener('DOMContentLoaded', () => {
-  updateChestUI();
+  if (typeof gameState !== 'undefined' && gameState.currentTab === 'chest') {
+    updateChestUI();
+  }
 });
 
 // Window exports

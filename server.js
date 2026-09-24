@@ -1,6 +1,9 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
+
+const staticCache = new Map(); // targetFile -> { mtimeMs, size, rawBuffer, gzipBuffer, etag, contentType, ext }
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_DIR = path.join(__dirname, 'frontend');
@@ -23,7 +26,9 @@ const MIME_TYPES = {
 let memoryStore = {
   rewards: [],
   requests: [],
+  accountRequests: [],
   users: {},
+  usersByProfileCode: {},
   websiteTasks: [],
   telegramTasks: [],
   gameConfig: {
@@ -33,6 +38,74 @@ let memoryStore = {
     announcementActive: false
   },
   levelsConfig: {},
+  notifications: [
+    {
+      id: 'notif_1',
+      type: 'reward',
+      title: '🎁 Daily Reward Available',
+      message: 'Your Daily Streak bonus is ready to collect! Tap to claim today’s coins and free scratch cards.',
+      timestamp: Date.now() - 3600000,
+      read: false,
+      actionText: 'Claim Streak',
+      actionTarget: 'streak'
+    },
+    {
+      id: 'notif_2',
+      type: 'system',
+      title: '🏆 Achievement Unlocked',
+      message: 'Congratulations! You unlocked the Tap Master badge. Visit Profile to inspect your rewards.',
+      timestamp: Date.now() - 7200000,
+      read: false,
+      actionText: 'View Badges',
+      actionTarget: 'profile'
+    },
+    {
+      id: 'notif_3',
+      type: 'reward',
+      title: '🔥 Your 7-Day Streak is Active',
+      message: 'Incredible momentum! Keep tapping daily to maintain your peak combo multiplier and win mega diamonds.',
+      timestamp: Date.now() - 86400000,
+      read: false,
+      actionText: 'Check Streak',
+      actionTarget: 'streak'
+    },
+    {
+      id: 'notif_4',
+      type: 'system',
+      title: '🎉 Community Boss Defeated',
+      message: 'Global milestone reached! All active players receive +500 Coins in their reward vault.',
+      timestamp: Date.now() - 172800000,
+      read: true,
+      actionText: 'View Rewards',
+      actionTarget: 'reward'
+    },
+    {
+      id: 'notif_5',
+      type: 'reward',
+      title: '🎁 Season Reward Available',
+      message: 'Season 2 competition rewards have been finalized. Claim your dark green fuel allocation now!',
+      timestamp: Date.now() - 259200000,
+      read: true,
+      actionText: 'Open XP View',
+      actionTarget: 'xp'
+    },
+    {
+      id: 'notif_6',
+      type: 'system',
+      title: '👥 Your Referral Joined',
+      message: 'A new recruit entered the reactor using your invite code. +10 Coins credited to your squad bonus.',
+      timestamp: Date.now() - 345600000,
+      read: true,
+      actionText: 'Squad Info',
+      actionTarget: 'profile'
+    }
+  ],
+  antiFraud: {
+    processedNonces: {}, // nonce -> timestamp
+    userCooldowns: {},   // uid -> { [action]: timestamp }
+    auditLog: [],
+    tapRates: {}         // uid -> { tapCount, startTime }
+  },
   identityIndex: {
     telegram: {}, // tgId -> uid
     phone: {},    // normalizedPhone -> uid
@@ -229,8 +302,8 @@ const server = http.createServer(async (req, res) => {
         const profileCode = body.profileCode || ('ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : uid.toUpperCase()));
 
         // If user already exists, UPDATE rather than create duplicate
-        const existingByCode = Object.values(memoryStore.users).find(u => u.profileCode === profileCode && u.uid !== uid);
-        if (existingByCode) {
+        const existingUid = memoryStore.usersByProfileCode[profileCode];
+        if (existingUid && existingUid !== uid) {
           return sendJson(res, 409, { ok: false, error: 'Profile Code already registered to another account' });
         }
 
@@ -242,6 +315,7 @@ const server = http.createServer(async (req, res) => {
           updatedAt: Date.now()
         };
         memoryStore.users[uid] = updatedUser;
+        memoryStore.usersByProfileCode[profileCode] = uid;
         return sendJson(res, 200, { ok: true, user: updatedUser });
       }
     }
@@ -392,6 +466,241 @@ const server = http.createServer(async (req, res) => {
           cost: body.cost || 0,
           timestamp: Date.now()
         }
+      });
+    }
+
+    // ==========================================================================
+    // NOTIFICATION CENTER APIS (/api/notifications)
+    // ==========================================================================
+    if (apiRoute === '/notifications' || apiRoute.startsWith('/notifications')) {
+      if (req.method === 'GET') {
+        return sendJson(res, 200, {
+          ok: true,
+          notifications: memoryStore.notifications || []
+        });
+      }
+
+      // Admin Broadcast Notification
+      if (apiRoute === '/notifications' && req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        if (!body.title || !body.message) {
+          return sendJson(res, 400, { ok: false, error: 'Title and message are required' });
+        }
+
+        const newNotif = {
+          id: 'notif_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          type: body.type || 'global', // global, event, maintenance, reward
+          title: body.title,
+          message: body.message,
+          timestamp: Date.now(),
+          read: false,
+          actionText: body.actionText || 'View',
+          actionTarget: body.actionTarget || 'home'
+        };
+
+        if (!memoryStore.notifications) memoryStore.notifications = [];
+        memoryStore.notifications.unshift(newNotif);
+
+        // Keep last 50 notifications
+        if (memoryStore.notifications.length > 50) {
+          memoryStore.notifications = memoryStore.notifications.slice(0, 50);
+        }
+
+        return sendJson(res, 201, { ok: true, notification: newNotif });
+      }
+
+      // Mark notification(s) as read
+      if (apiRoute === '/notifications/mark-read' && req.method === 'POST') {
+        const body = await parseRequestBody(req);
+        if (body.all) {
+          (memoryStore.notifications || []).forEach(n => { n.read = true; });
+        } else if (body.id) {
+          const target = (memoryStore.notifications || []).find(n => n.id === body.id);
+          if (target) target.read = true;
+        }
+        return sendJson(res, 200, { ok: true, notifications: memoryStore.notifications });
+      }
+    }
+
+    // ==========================================================================
+    // ANTI-FRAUD & SERVER-AUTHORITATIVE REWARD VALIDATION (/api/reward/claim)
+    // ==========================================================================
+    if (apiRoute === '/reward/claim' && req.method === 'POST') {
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      const userAgent = req.headers['user-agent'] || 'unknown';
+      const body = await parseRequestBody(req);
+
+      const { uid, nonce, action, payload } = body;
+
+      if (!uid || !action || !nonce) {
+        return sendJson(res, 400, { ok: false, error: 'Missing uid, action, or nonce in claim payload' });
+      }
+
+      // 1. Replay Attack & Duplicate Claim Prevention
+      if (memoryStore.antiFraud.processedNonces[nonce]) {
+        return sendJson(res, 409, {
+          ok: false,
+          error: 'Duplicate claim transaction: nonce already processed',
+          duplicate: true
+        });
+      }
+
+      // 2. Cooldown Checks per User and Action
+      const now = Date.now();
+      const userCd = memoryStore.antiFraud.userCooldowns[uid] || {};
+      const lastActionTime = userCd[action] || 0;
+
+      const MIN_COOLDOWNS = {
+        mini_game_memory: 12000,  // Minimum 12 seconds between Memory Match finishes
+        mini_game_catcher: 15000, // Minimum 15 seconds between Coin Catcher finishes
+        ad_reward: 8000,          // Minimum 8 seconds between ad rewards
+        daily_streak: 3600000,    // 1 hour cooldown between streak claims
+        referral_claim: 5000
+      };
+
+      const requiredCd = MIN_COOLDOWNS[action] || 2000;
+      if (now - lastActionTime < requiredCd) {
+        return sendJson(res, 429, {
+          ok: false,
+          error: `Cooldown active for action '${action}'. Please wait.`,
+          retryAfterMs: requiredCd - (now - lastActionTime)
+        });
+      }
+
+      // 3. Rule & Mathematical Bounds Validation
+      let approvedCoins = 0;
+      let approvedDiamonds = 0;
+      let approvedKeys = 0;
+
+      if (action === 'mini_game_memory') {
+        const timeRemaining = Number(payload.timeRemaining || 0);
+        const mistakes = Number(payload.mistakes || 0);
+        const stars = Number(payload.stars || 1);
+
+        // Sanity bounds: Cannot complete in less than 5 seconds
+        if (timeRemaining > 55) {
+          return sendJson(res, 400, { ok: false, error: 'Impossible completion speed flagged by anti-fraud.' });
+        }
+
+        const baseCoins = 150;
+        const timeBonus = Math.max(0, Math.min(60, timeRemaining)) * 3;
+        let dia = 15;
+        if (mistakes <= 2) dia = 60;
+        else if (mistakes <= 5) dia = 35;
+
+        approvedCoins = baseCoins + timeBonus;
+        approvedDiamonds = dia;
+        approvedKeys = 1;
+      } else if (action === 'mini_game_catcher') {
+        const claimedCoins = Number(payload.coinsEarned || 0);
+        const claimedDiamonds = Number(payload.diamondsEarned || 0);
+
+        // Max possible in 30s is roughly 1500 coins and 50 diamonds
+        approvedCoins = Math.max(0, Math.min(1500, claimedCoins));
+        approvedDiamonds = Math.max(0, Math.min(50, claimedDiamonds));
+      } else if (action === 'ad_reward') {
+        approvedCoins = Number(payload.coins || 100);
+        approvedDiamonds = Number(payload.diamonds || 10);
+      } else {
+        approvedCoins = Math.min(500, Number(payload.coins || 0));
+        approvedDiamonds = Math.min(50, Number(payload.diamonds || 0));
+      }
+
+      // 4. Record Nonce & Cooldown
+      memoryStore.antiFraud.processedNonces[nonce] = now;
+      if (!memoryStore.antiFraud.userCooldowns[uid]) {
+        memoryStore.antiFraud.userCooldowns[uid] = {};
+      }
+      memoryStore.antiFraud.userCooldowns[uid][action] = now;
+
+      // 5. Update Server-Authoritative User Balances
+      if (!memoryStore.users[uid]) {
+        memoryStore.users[uid] = {
+          uid,
+          player: { coins: 0, diamonds: 0, name: 'Player' },
+          bank: { coins: 0, diamonds: 0, keys: 0 },
+          updatedAt: now
+        };
+      }
+      const userObj = memoryStore.users[uid];
+      if (!userObj.player) userObj.player = { coins: 0, diamonds: 0 };
+      if (!userObj.bank) userObj.bank = { coins: 0, diamonds: 0, keys: 0 };
+
+      userObj.player.coins = (userObj.player.coins || 0) + approvedCoins;
+      userObj.player.diamonds = (userObj.player.diamonds || 0) + approvedDiamonds;
+      userObj.bank.diamonds = (userObj.bank.diamonds || 0) + approvedDiamonds;
+      userObj.bank.keys = (userObj.bank.keys || 0) + approvedKeys;
+      userObj.updatedAt = now;
+
+      // 6. Audit Logging
+      memoryStore.antiFraud.auditLog.unshift({
+        uid,
+        action,
+        approvedCoins,
+        approvedDiamonds,
+        clientIp,
+        userAgent: userAgent.slice(0, 80),
+        status: 'approved',
+        timestamp: now
+      });
+      if (memoryStore.antiFraud.auditLog.length > 100) {
+        memoryStore.antiFraud.auditLog = memoryStore.antiFraud.auditLog.slice(0, 100);
+      }
+
+      console.log(`🛡️ Anti-Fraud Approved: User ${uid} claimed '${action}' -> +${approvedCoins} 🪙, +${approvedDiamonds} 💎`);
+
+      return sendJson(res, 200, {
+        ok: true,
+        success: true,
+        action,
+        approvedRewards: {
+          coins: approvedCoins,
+          diamonds: approvedDiamonds,
+          keys: approvedKeys
+        },
+        balances: {
+          coins: userObj.player.coins,
+          diamonds: userObj.bank.diamonds,
+          keys: userObj.bank.keys
+        }
+      });
+    }
+
+    // Anti-Fraud Tap Verification API
+    if (apiRoute === '/anti-fraud/verify-tap-session' && req.method === 'POST') {
+      const body = await parseRequestBody(req);
+      const { uid, tapCount, durationSeconds } = body;
+      const validDuration = Math.max(1, Number(durationSeconds) || 1);
+      const rate = Number(tapCount || 0) / validDuration;
+
+      const isCritical = rate > 40; // Impossible human rate > 40 taps/sec
+      const isSuspicious = rate > 25; // Highly improbable > 25 taps/sec
+
+      if (isCritical) {
+        memoryStore.antiFraud.auditLog.unshift({
+          uid: uid || 'anonymous',
+          action: 'tap_frequency_anomaly',
+          rate: Number(rate.toFixed(1)),
+          status: 'blocked',
+          timestamp: Date.now()
+        });
+        return sendJson(res, 400, {
+          ok: false,
+          verified: false,
+          valid: false,
+          riskLevel: 'CRITICAL',
+          ratePerSec: Number(rate.toFixed(1)),
+          error: 'Impossible tap frequency detected: autoclicker / bot pattern blocked.'
+        });
+      }
+
+      return sendJson(res, 200, {
+        ok: true,
+        verified: !isSuspicious,
+        valid: !isSuspicious,
+        riskLevel: isSuspicious ? 'HIGH' : 'NORMAL',
+        ratePerSec: Number(rate.toFixed(1)),
+        warning: isSuspicious ? 'Excessive tap frequency detected: potential autoclicker script' : null
       });
     }
 
@@ -709,6 +1018,19 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { ok: false, error: 'Unsupported resolution action' });
       }
 
+      // GET & POST /api/account_requests
+      if (apiRoute === '/account_requests') {
+        if (req.method === 'GET') {
+          return sendJson(res, 200, { ok: true, requests: memoryStore.accountRequests || [] });
+        }
+        if (req.method === 'POST') {
+          const body = await parseRequestBody(req);
+          if (!memoryStore.accountRequests) memoryStore.accountRequests = [];
+          memoryStore.accountRequests.unshift(body);
+          return sendJson(res, 200, { ok: true, request: body });
+        }
+      }
+
       // POST /api/auth/migrate-indexes - Safely scan and populate identityIndex from existing players
       if (apiRoute === '/auth/migrate-indexes' && req.method === 'POST') {
         const users = Object.values(memoryStore.users);
@@ -772,7 +1094,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // Check existence
+  // High-Performance In-Memory Static File Cache with HTTP 304 ETags and Gzip Compression
   fs.stat(targetFile, (err, stats) => {
     if (err || !stats.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -781,19 +1103,64 @@ const server = http.createServer(async (req, res) => {
 
     const ext = path.extname(targetFile).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const isText = ['.html', '.css', '.js', '.json', '.svg'].includes(ext);
 
-    fs.readFile(targetFile, (readErr, content) => {
-      if (readErr) {
+    let cached = staticCache.get(targetFile);
+    if (!cached || cached.mtimeMs !== stats.mtimeMs || cached.size !== stats.size) {
+      try {
+        const content = fs.readFileSync(targetFile);
+        const etag = `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`;
+        let gzipBuffer = null;
+        if (isText && content.length > 256) {
+          gzipBuffer = zlib.gzipSync(content, { level: 6 });
+        }
+        cached = {
+          mtimeMs: stats.mtimeMs,
+          size: stats.size,
+          rawBuffer: content,
+          gzipBuffer: gzipBuffer,
+          etag: etag,
+          contentType: contentType,
+          ext: ext
+        };
+        staticCache.set(targetFile, cached);
+      } catch (readErr) {
         res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
         return res.end(`500 Server Error: ${readErr.code}`);
       }
+    }
 
-      res.writeHead(200, {
-        'Content-Type': contentType,
+    // 1. ETag & HTTP 304 Validation
+    const clientEtag = req.headers['if-none-match'];
+    if (clientEtag && clientEtag === cached.etag) {
+      res.writeHead(304, {
+        'ETag': cached.etag,
+        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400, stale-while-revalidate=604800',
         'Access-Control-Allow-Origin': '*'
       });
-      res.end(content);
-    });
+      return res.end();
+    }
+
+    // 2. Gzip Serving if supported
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    const shouldGzip = !!(cached.gzipBuffer && acceptEncoding.includes('gzip'));
+    const headers = {
+      'Content-Type': cached.contentType,
+      'ETag': cached.etag,
+      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400, stale-while-revalidate=604800',
+      'Access-Control-Allow-Origin': '*'
+    };
+
+    if (shouldGzip) {
+      headers['Content-Encoding'] = 'gzip';
+      headers['Content-Length'] = cached.gzipBuffer.length;
+      res.writeHead(200, headers);
+      res.end(cached.gzipBuffer);
+    } else {
+      headers['Content-Length'] = cached.size;
+      res.writeHead(200, headers);
+      res.end(cached.rawBuffer);
+    }
   });
 });
 

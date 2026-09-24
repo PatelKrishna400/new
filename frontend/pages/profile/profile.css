@@ -3441,4 +3441,191 @@
   }
 }
 
+/* ==========================================================================
+   PROFILE EXPANSION: LEVEL PILLS, STATS & BADGES
+   ========================================================================== */
+
+.profile-chip-pill {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.profile-chip-pill.chip-lvl {
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #c084fc;
+}
+
+.profile-chip-pill.chip-reactor {
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  color: #22d3ee;
+}
+
+.profile-chip-pill.chip-rank {
+  background: rgba(234, 179, 8, 0.2);
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  color: #facc15;
+}
+
+.profile-chip-pill.chip-clan {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
+.profile-section-mini-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Lifetime Stats Box */
+.profile-lifetime-stats-box {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.profile-stat-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.stat-mini-card {
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-mini-card .mini-icon {
+  font-size: 18px;
+}
+
+.stat-mini-card .mini-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-mini-card .mini-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.stat-mini-card .mini-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-mini-card .mini-val.highlight {
+  color: #f97316;
+}
+
+/* Badges Showcase */
+.profile-badges-container {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.profile-badges-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.badges-count-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.profile-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.profile-badge-item {
+  background: rgba(2, 6, 23, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.profile-badge-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.profile-badge-item.unlocked {
+  border-color: rgba(234, 179, 8, 0.5);
+  background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%);
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+}
+
+.profile-badge-item .badge-icon-wrap {
+  font-size: 22px;
+  margin-bottom: 3px;
+  filter: grayscale(1) opacity(0.4);
+  transition: filter 0.2s ease;
+}
+
+.profile-badge-item.unlocked .badge-icon-wrap {
+  filter: grayscale(0) opacity(1) drop-shadow(0 0 6px rgba(250, 204, 21, 0.6));
+}
+
+.profile-badge-item .badge-name {
+  font-size: 9px;
+  font-weight: 800;
+  color: #94a3b8;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+
+.profile-badge-item.unlocked .badge-name {
+  color: #f1f5f9;
+}
+
+.profile-badge-item .badge-status-tag {
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.profile-badge-item.unlocked .badge-status-tag {
+  color: #10b981;
+}
+
+
 

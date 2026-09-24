@@ -1,8 +1,8 @@
 /* ==========================================================================
    XP & MEGA CASH PRIZE CONTROLLER (pages/xp/xp.js)
-   - Level 1 - 100 Progression List & Milestones
+   - Level 1 - 1000 Progression List & Milestones
    - Claiming Level Progression Rewards
-   - 10,000 Coins Level 100 Mega Cash Prize Logic
+   - 10,000 Coins Level 1000 Mega Cash Prize Logic
    - Ad Watcher Simulation & Claim Verification
    - Developer/Debug Test Helpers
    - XP Page UI Synchronization
@@ -22,7 +22,7 @@ window.switchXpSubtab = function(subtabName) {
     DOM.subtabMegaReward.classList.add('active');
     DOM.xpLevelsListSubView.classList.remove('active');
     DOM.xpMegaRewardSubView.classList.add('active');
-    if (DOM.toggleLevelsBtnText) DOM.toggleLevelsBtnText.textContent = 'LV. 1 - 100';
+    if (DOM.toggleLevelsBtnText) DOM.toggleLevelsBtnText.textContent = 'LV. 1 - 1000';
   }
   sfx.playTapSound(1);
   updateUI();
@@ -36,13 +36,16 @@ window.toggleXpSubView = function() {
   }
 };
 
-// Dark Green Fuel scaling formula: Level 1 = 1, Level 100 = 20
+// Dark Green Fuel scaling formula: Level 1 = 1, Level 1000 = 200
 window.calculateLevelDarkGreenFuel = function(lvl) {
-  return Math.max(1, Math.min(20, Math.ceil(lvl / 5)));
+  return Math.max(1, Math.min(200, Math.ceil(lvl / 5)));
 };
 
 window.renderLevelsList = function() {
   if (!DOM.levelsScrollList) return;
+  if (gameState.currentTab !== 'xp' || (gameState.xpState && gameState.xpState.currentSubtab !== 'levels')) {
+    return;
+  }
   const activeLevel = typeof getActiveLevel === 'function'
     ? getActiveLevel()
     : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
@@ -51,14 +54,17 @@ window.renderLevelsList = function() {
     ? Number(gameState.progression.levelXp)
     : Number(gameState.player.xp || 0);
 
+  const completed = (gameState.progression && gameState.progression.completedLevels) || {};
+  const claimedLevelsState = (gameState.xpState && gameState.xpState.claimedLevels) || {};
+
   let html = '';
-  for (let lvl = 1; lvl <= 100; lvl++) {
+  for (let lvl = 1; lvl <= 1000; lvl++) {
     const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
     const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
-    const isUnlocked = typeof isLevelUnlocked === 'function' ? isLevelUnlocked(lvl) : (lvl <= activeLevel);
-    const isClaimed = typeof isLevelCompleted === 'function' ? isLevelCompleted(lvl) : !!gameState.xpState.claimedLevels[lvl];
-    const isCurrent = (lvl === activeLevel);
     const isLockedByAdmin = !!(cfg && cfg.isLocked);
+    const isUnlocked = !isLockedByAdmin && (lvl === 1 || !!completed[lvl - 1]);
+    const isClaimed = !!completed[lvl] || !!claimedLevelsState[lvl];
+    const isCurrent = (lvl === activeLevel);
     const isReached = (lvl < activeLevel) || (isCurrent && curXp >= reqXp);
 
     // Reward pills: Dark Green Fuel cells only
@@ -209,7 +215,7 @@ function executeClaimLevelReward(lvl) {
 
   sfx.playLevelUpSound();
 
-  const nextLvl = Math.min(100, lvl + 1);
+  const nextLvl = Math.min(1000, lvl + 1);
   if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
     DOM.sheetTitle.textContent = `🎉 LEVEL ${lvl} COMPLETE!`;
     DOM.sheetContent.innerHTML = `
@@ -240,9 +246,9 @@ function executeClaimLevelReward(lvl) {
 }
 
 window.handleMegaRewardAction = function() {
-  if (gameState.player.level < 100) {
+  if (gameState.player.level < 1000) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('Reach Level 100 first to unlock the Mega Prize!');
+      showFloatingToast('Reach Level 1000 first to unlock the Mega Prize!');
     }
     return;
   }
@@ -264,7 +270,7 @@ window.handleMegaRewardAction = function() {
     if (typeof showRewardedAd === 'function') {
       showRewardedAd(doAd);
     } else if (typeof startAdSimulation === 'function') {
-      startAdSimulation('xp', 'Level 100 Mega Ad Watcher', '+1 Ad Progress Towards 10,000 Cash Prize', doAd);
+      startAdSimulation('xp', 'Level 1000 Mega Ad Watcher', '+1 Ad Progress Towards 10,000 Cash Prize', doAd);
     } else {
       doAd();
     }
@@ -293,19 +299,20 @@ window.handleMegaRewardAction = function() {
 };
 
 // Debug & Fast-Testing Helpers for XP
-window.testSetLevel100 = function() {
-  gameState.player.level = 100;
-  gameState.player.xp = 100000;
+window.testSetLevel1000 = function() {
+  gameState.player.level = 1000;
+  gameState.player.xp = 1000000;
   sfx.playLevelUpSound();
   renderLevelsList();
   updateUI();
   saveGame();
 };
+window.testSetLevel100 = window.testSetLevel1000;
 
 window.testAddAds = function(count = 100) {
-  if (gameState.player.level < 100) {
-    gameState.player.level = 100;
-    gameState.player.xp = 100000;
+  if (gameState.player.level < 1000) {
+    gameState.player.level = 1000;
+    gameState.player.xp = 1000000;
   }
   gameState.xpState.watchedAds = Math.min(1000, (gameState.xpState.watchedAds || 0) + count);
   sfx.playTapSound(2);
@@ -314,9 +321,9 @@ window.testAddAds = function(count = 100) {
 };
 
 window.testFillAllAds = function() {
-  if (gameState.player.level < 100) {
-    gameState.player.level = 100;
-    gameState.player.xp = 100000;
+  if (gameState.player.level < 1000) {
+    gameState.player.level = 1000;
+    gameState.player.xp = 1000000;
   }
   gameState.xpState.watchedAds = 1000;
   sfx.playLevelUpSound();
@@ -360,19 +367,19 @@ function updateXpViewUI() {
     }
   }
 
-  // Step 1: Reach Level 100
-  const isLv100 = gameState.player.level >= 100;
+  // Step 1: Reach Level 1000
+  const isLv1000 = gameState.player.level >= 1000;
   if (DOM.megaStep1Badge) {
-    if (isLv100) {
+    if (isLv1000) {
       DOM.megaStep1Badge.textContent = 'COMPLETED';
       DOM.megaStep1Badge.className = 'mega-step-badge unlocked';
-      if (DOM.megaStep1SubText) DOM.megaStep1SubText.textContent = 'Current: Level 100 / 100 (100,000 / 100,000 XP)';
+      if (DOM.megaStep1SubText) DOM.megaStep1SubText.textContent = 'Current: Level 1000 / 1000 (1,000,000 / 1,000,000 XP)';
       if (DOM.megaStep1Lock) DOM.megaStep1Lock.innerHTML = `<polyline points="20 6 9 17 4 12" stroke="#10b981" stroke-width="2.5" fill="none"/>`;
     } else {
       DOM.megaStep1Badge.textContent = 'LOCKED';
       DOM.megaStep1Badge.className = 'mega-step-badge locked';
-      const xpReqRemaining = Math.max(0, 100000 - gameState.player.xp);
-      if (DOM.megaStep1SubText) DOM.megaStep1SubText.textContent = `Current: Level ${gameState.player.level} / 100 (-${xpReqRemaining.toLocaleString()} / 100,000 XP)`;
+      const xpReqRemaining = Math.max(0, 1000000 - gameState.player.xp);
+      if (DOM.megaStep1SubText) DOM.megaStep1SubText.textContent = `Current: Level ${gameState.player.level} / 1000 (-${xpReqRemaining.toLocaleString()} / 1,000,000 XP)`;
       if (DOM.megaStep1Lock) DOM.megaStep1Lock.innerHTML = `<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`;
     }
   }
@@ -386,9 +393,9 @@ function updateXpViewUI() {
 
   // Action Button
   if (DOM.megaActionBtn) {
-    if (!isLv100) {
+    if (!isLv1000) {
       DOM.megaActionBtn.className = 'mega-action-btn disabled';
-      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = 'REACH LEVEL 100 TO UNLOCK AD WATCHER';
+      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = 'REACH LEVEL 1000 TO UNLOCK AD WATCHER';
       if (DOM.megaActionLockIcon) DOM.megaActionLockIcon.style.display = 'block';
     } else if (watched < 1000) {
       DOM.megaActionBtn.className = 'mega-action-btn active-watch';

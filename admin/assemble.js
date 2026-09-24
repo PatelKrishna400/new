@@ -12,6 +12,7 @@ const SHARED_DIR = path.join(ROOT_DIR, 'shared');
 const PAGE_KEYS = [
   'dashboard',
   'users',
+  'account-requests',
   'mega-add',
   'mega-request',
   'tasks-web',
@@ -60,11 +61,8 @@ const headerContent = `<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   
-  <!-- Shared Global Styles -->
-  <link rel="stylesheet" href="shared/common.css">
-
-  <!-- Modular Page-Wise Styles -->
-${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).join('\n')}
+  <!-- Consolidated Unified Stylesheet (Replaces 10 separate HTTP round-trips) -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -112,6 +110,12 @@ ${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).joi
         <span class="nav-icon">👥</span>
         <span>User</span>
         <span class="nav-badge" id="badgeUsersCount">0</span>
+      </button>
+
+      <button class="nav-item" data-page="account-requests" onclick="switchAdminPage('account-requests', 'Account Creation Requests')">
+        <span class="nav-icon">👤+</span>
+        <span>Account Requests</span>
+        <span class="nav-badge badge-amber" id="badgeAccountRequestsCount" style="display: none;">0</span>
       </button>
 
       <button class="nav-item" data-page="mega-add" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
@@ -277,7 +281,7 @@ const footerContent = `
           <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
         </div>
         <div class="form-group">
-          <label class="form-label">Blue Coins 🔷</label>
+          <label class="form-label">Blue Coins 💙</label>
           <input type="number" id="editModalBlueCoins" class="form-input" style="color: #0284c7; font-weight: 800;">
         </div>
         <div class="form-group">
@@ -323,8 +327,8 @@ const footerContent = `
           <button onclick="restartPlayerInFirebase()" class="btn-secondary" style="flex: 1; color: #d97706; border-color: #d97706; text-align: center; justify-content: center; display: flex; align-items: center; gap: 6px;">
             🔄 Full Reset to 0 (Clean All Data)
           </button>
-          <button onclick="removeUserFromModal()" class="btn-secondary" style="color: #dc2626; border-color: #dc2626; padding: 8px 12px;" title="Permanently Remove Player">
-            🗑️ Remove
+          <button type="button" onclick="deleteUserFromModal()" class="btn-secondary" style="color: #ef4444; border-color: #fca5a5; background: rgba(239, 68, 68, 0.08); font-weight: 700; padding: 8px 14px;" title="Permanently Delete Player, Activities &amp; Secure User Panel">
+            🗑️ Delete User &amp; Activity
           </button>
         </div>
       </div>
@@ -786,31 +790,25 @@ const footerContent = `
     }
     window.restartPlayerInFirebase = restartPlayerInFirebase;
 
-    function removeUserFromModal() {
-      requireAdminPassword(() => {
-        const uid = window.currentEditingUserUid;
-        if (!uid) return;
-        if (typeof window.confirmDeleteUser === 'function') {
-          window.confirmDeleteUser(uid);
-        } else if (typeof window.deleteUserFromFirebase === 'function') {
+    function deleteUserFromModal() {
+      const uid = window.currentEditingUserUid || window.editingPlayerUid;
+      if (!uid) return;
+      if (typeof window.confirmDeleteUser === 'function') {
+        window.confirmDeleteUser(uid);
+      } else if (typeof window.deleteUserFromFirebase === 'function') {
+        requireAdminPassword(() => {
           if (!confirm('⚠️ Permanently delete this player account and activity from Firebase?')) return;
           window.deleteUserFromFirebase(uid).then(() => {
-            alert('✅ Player account and activity deleted from Firebase.');
+            alert('✅ Player account and activity deleted from Firebase. User panel secured.');
             closeUserEditModal();
             if (typeof renderUsersTable === 'function') renderUsersTable();
+            if (typeof renderRealtimeActivityFeed === 'function') renderRealtimeActivityFeed();
           }).catch(err => alert('Error: ' + err.message));
-        } else {
-          const db = window.getDb ? window.getDb() : null;
-          if (!db) return;
-          if (!confirm('Permanently delete this player account from Firebase?')) return;
-          db.ref('/players/' + uid).remove().then(() => {
-            alert('Player deleted.');
-            closeUserEditModal();
-          });
-        }
-      });
+        });
+      }
     }
-    window.removeUserFromModal = removeUserFromModal;
+    window.deleteUserFromModal = deleteUserFromModal;
+    window.removeUserFromModal = deleteUserFromModal;
 
     function saveRequestStatusToFirebase() {
       requireAdminPassword(() => {
@@ -1011,3 +1009,12 @@ ${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
 
 fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), headerContent + pagesContent + footerContent, 'utf8');
 console.log('Successfully assembled modular admin/index.html!');
+
+// Compile consolidated CSS into style.css
+const adminCommonCss = fs.readFileSync(path.join(SHARED_DIR, 'common.css'), 'utf8');
+const adminPageCss = PAGE_KEYS.map(k => {
+  const p = path.join(PAGES_DIR, k, `${k}.css`);
+  return fs.existsSync(p) ? `/* --- PAGE: ${k.toUpperCase()} --- */\n` + fs.readFileSync(p, 'utf8') : '';
+}).join('\n\n');
+fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), `/* Admin Portal Stylesheet */\n${adminCommonCss}\n\n${adminPageCss}\n`, 'utf8');
+console.log('Successfully compiled consolidated admin/style.css!');

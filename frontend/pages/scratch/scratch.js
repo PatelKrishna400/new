@@ -4,35 +4,59 @@
    - 3x3 Match-3 Alternate Mode
    ========================================================================== */
 
-// 1. REWARD POOLS
-const SINGLE_SCRATCH_REWARDS = [
-  { label: "100 Coins", type: "coins", amount: 100, icon: "🪙", tier: "COMMONS TIER", tierColor: "#94a3b8", weight: 25 },
-  { label: "250 Coins", type: "coins", amount: 250, icon: "🪙", tier: "UNCOMMON TIER", tierColor: "#38bdf8", weight: 20 },
-  { label: "500 Coins", type: "coins", amount: 500, icon: "🪙", tier: "RARE TIER", tierColor: "#a855f7", weight: 15 },
-  { label: "1,000 Coins", type: "coins", amount: 1000, icon: "🪙", tier: "EPIC TIER", tierColor: "#f43f5e", weight: 10 },
-  { label: "5,000 Coins", type: "coins", amount: 5000, icon: "👑", tier: "👑 MEGA JACKPOT", tierColor: "#fbbf24", weight: 4 },
-  { label: "25 Energy", type: "energy", amount: 25, icon: "⚡", tier: "ENERGY SURGE", tierColor: "#06b6d4", weight: 10 },
-  { label: "50 Energy", type: "energy", amount: 50, icon: "⚡", tier: "SUPER CHARGE", tierColor: "#22d3ee", weight: 6 },
-  { label: "2 Keys", type: "keys", amount: 2, icon: "🔑", tier: "VAULT UNLOCK", tierColor: "#f59e0b", weight: 6 },
-  { label: "1 Cyber Egg", type: "egg", amount: 1, icon: "🥚", tier: "HATCHERY BOUNTY", tierColor: "#10b981", weight: 4 },
-  { label: "20 Diamonds", type: "diamonds", amount: 20, icon: "💎", tier: "💎 DIAMOND JACKPOT", tierColor: "#38bdf8", weight: 5 },
+// 1. REWARD POOLS WITH EXACT PROBABILITIES:
+// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 10 Coins (2%), 50-75 Blue Coins (8%)
+const SCRATCH_CARD_TIERS = [
+  { type: 'keys', min: 1, max: 2, weight: 20, icon: '🔑', tier: 'KEY REWARD 🔑', tierColor: '#f59e0b', desc: 'Keys to unlock mystery chests!' },
+  { type: 'egg', min: 10, max: 20, weight: 50, icon: '🥚', tier: 'EGG REWARD 🥚', tierColor: '#10b981', desc: 'Egg coins to hatch 12-Egg cyber prizes!' },
+  { type: 'tickets', min: 1, max: 2, weight: 20, icon: '🎟️', tier: 'TICKET REWARD 🎟️', tierColor: '#ec4899', desc: 'Tickets to spin the lucky wheel!' },
+  { type: 'coins', min: 10, max: 10, weight: 2, icon: '🪙', tier: 'RARE COINS 🪙', tierColor: '#fbbf24', desc: 'Coins deposited into your vault balance!' },
+  { type: 'blue_coins', min: 50, max: 75, weight: 8, icon: '💙', tier: 'BLUE COINS 💙', tierColor: '#38bdf8', desc: 'Premium blue coins deposited to your balance!' }
 ];
 
-if (typeof CHEST_AND_CARD_REWARDS === "undefined") {
-  window.CHEST_AND_CARD_REWARDS = [
-    { label: "10 Coins", type: "coins", amount: 10, icon: "🪙" },
-    { label: "10 Energy", type: "energy", amount: 10, icon: "⚡" },
-    { label: "1 Key", type: "keys", amount: 1, icon: "🔑" },
-    { label: "1 Egg", type: "egg", amount: 1, icon: "🥚" },
-    { label: "1 Green Fuel", type: "green_fuel", amount: 1, icon: "🟢" },
-    { label: "1 Yellow Fuel", type: "yellow_fuel", amount: 1, icon: "🟡" },
-    { label: "1 Ticket", type: "tickets", amount: 1, icon: "🎟️" }
-  ];
+function generateScratchReward() {
+  const rand = Math.random() * 100;
+  let cumulative = 0;
+  let selected = SCRATCH_CARD_TIERS[0];
+  for (const tier of SCRATCH_CARD_TIERS) {
+    cumulative += tier.weight;
+    if (rand < cumulative) {
+      selected = tier;
+      break;
+    }
+  }
+  const amount = Math.floor(Math.random() * (selected.max - selected.min + 1)) + selected.min;
+  let label = '';
+  if (selected.type === 'keys') {
+    label = `${amount} Key${amount > 1 ? 's' : ''}`;
+  } else if (selected.type === 'egg') {
+    label = `${amount} Eggs`;
+  } else if (selected.type === 'tickets') {
+    label = `${amount} Ticket${amount > 1 ? 's' : ''}`;
+  } else if (selected.type === 'coins') {
+    label = `${amount} Coins`;
+  } else if (selected.type === 'blue_coins') {
+    label = `${amount} Blue Coins`;
+  }
+
+  return {
+    type: selected.type,
+    amount: amount,
+    icon: selected.icon,
+    tier: selected.tier,
+    tierColor: selected.tierColor,
+    label: label,
+    desc: selected.desc
+  };
 }
+
+const SINGLE_SCRATCH_REWARDS = SCRATCH_CARD_TIERS;
+window.CHEST_AND_CARD_REWARDS = SCRATCH_CARD_TIERS;
 
 // Single Card Runtime State
 const singleCardState = {
   activeMode: 'single', // 'single' | 'grid'
+  hasActiveTicket: false, // Must spend 1 card to activate ticket
   currentReward: null,
   serial: '#TKT-78491',
   isRevealed: false,
@@ -52,8 +76,8 @@ function switchScratchMode(mode = 'single') {
   singleCardState.activeMode = 'single';
   const singleArea = document.getElementById('scratchSingleCardArea');
   if (singleArea) singleArea.style.display = 'flex';
-  if (!singleCardState.canvasInitialized || !singleCardState.currentReward) {
-    dealNewSingleCard(false);
+  if (!singleCardState.hasActiveTicket || !singleCardState.currentReward) {
+    renderLockedCardPlaceholder();
   }
   sfx.playTapSound(1);
 }
@@ -62,16 +86,24 @@ function switchScratchMode(mode = 'single') {
 // 3. ONE CARD SCRATCH TICKET ENGINE
 // ==========================================================================
 
-// Deal a fresh Single Scratch Card
-function dealNewSingleCard(consumeCard = false) {
+// Deal a fresh Single Scratch Card (Strict Rule: requires 1 card!)
+function dealNewSingleCard(consumeCard = true) {
   const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
 
   if (consumeCard) {
     if (cards <= 0) {
+      singleCardState.hasActiveTicket = false;
+      renderLockedCardPlaceholder();
       if (typeof showFloatingToast === 'function') {
         showFloatingToast('🎴 You need 1 Scratch Card! Tap the reactor orb or complete goals to earn cards!');
       }
-      return;
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = '⚠️ <strong>No Scratch Cards!</strong> Tap the reactor orb or complete goals to earn cards.';
+      }
+      if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('error');
+      updateScratchUI();
+      return false;
     }
     if (gameState.player.scratchCards !== undefined) {
       gameState.player.scratchCards = Math.max(0, gameState.player.scratchCards - 1);
@@ -84,24 +116,17 @@ function dealNewSingleCard(consumeCard = false) {
     if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
     if (gameState.dailyStats) gameState.dailyStats.scratches = (gameState.dailyStats.scratches || 0) + 1;
     singleCardState.cardCountedForDay = true;
+    singleCardState.hasActiveTicket = true;
   } else {
     singleCardState.cardCountedForDay = false;
+    if (!singleCardState.hasActiveTicket) {
+      renderLockedCardPlaceholder();
+      return false;
+    }
   }
 
-  // Pick weighted random reward (support cloud configuration if provided)
-  const pool = (window.cloudGameConfig && Array.isArray(window.cloudGameConfig.scratch_rewards) && window.cloudGameConfig.scratch_rewards.length > 0)
-    ? window.cloudGameConfig.scratch_rewards
-    : SINGLE_SCRATCH_REWARDS;
-  const totalWeight = pool.reduce((acc, r) => acc + (r.weight || 10), 0);
-  let rand = Math.random() * totalWeight;
-  let selected = pool[0];
-  for (const reward of pool) {
-    if (rand < (reward.weight || 10)) {
-      selected = reward;
-      break;
-    }
-    rand -= (reward.weight || 10);
-  }
+  // Generate weighted random reward
+  const selected = generateScratchReward();
 
   singleCardState.currentReward = selected;
   singleCardState.serial = `#TKT-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -129,6 +154,7 @@ function dealNewSingleCard(consumeCard = false) {
   if (consumeCard && window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
+  return true;
 }
 
 // Render Secret Reward underneath canvas
@@ -150,16 +176,168 @@ function renderSingleRewardCard() {
   if (iconEl) iconEl.textContent = reward.icon;
 
   const tagEl = document.getElementById('singleRewardTag');
-  if (tagEl) tagEl.textContent = reward.tier;
+  if (tagEl) {
+    tagEl.textContent = reward.tier || 'LUCKY WINNER!';
+    tagEl.style.color = reward.tierColor || '#38bdf8';
+  }
 
   const amountEl = document.getElementById('singleRewardAmount');
-  if (amountEl) amountEl.textContent = `+${reward.amount} ${reward.type.toUpperCase()}`;
+  if (amountEl) {
+    if (reward.type === 'keys') {
+      amountEl.textContent = `+${reward.amount} KEY${reward.amount > 1 ? 'S' : ''} 🔑`;
+      amountEl.style.color = '#f59e0b';
+    } else if (reward.type === 'egg') {
+      amountEl.textContent = `+${reward.amount} EGGS 🥚`;
+      amountEl.style.color = '#10b981';
+    } else if (reward.type === 'tickets') {
+      amountEl.textContent = `+${reward.amount} TICKET${reward.amount > 1 ? 'S' : ''} 🎟️`;
+      amountEl.style.color = '#ec4899';
+    } else if (reward.type === 'coins') {
+      amountEl.textContent = `+${reward.amount} COINS 🪙`;
+      amountEl.style.color = '#fbbf24';
+    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
+      amountEl.textContent = `+${reward.amount} BLUE COINS 💙`;
+      amountEl.style.color = '#38bdf8';
+    } else {
+      amountEl.textContent = `+${reward.amount} ${reward.type.toUpperCase()}`;
+      amountEl.style.color = reward.tierColor || '#fbbf24';
+    }
+  }
 
   const descEl = document.getElementById('singleRewardDesc');
-  if (descEl) descEl.textContent = reward.label;
+  if (descEl) {
+    if (reward.type === 'keys') {
+      descEl.textContent = `+${reward.amount} Key${reward.amount > 1 ? 's' : ''} added to your inventory for mystery chests!`;
+    } else if (reward.type === 'egg') {
+      descEl.textContent = `+${reward.amount} Egg coins added to hatch 12-Egg cyber prizes!`;
+    } else if (reward.type === 'tickets') {
+      descEl.textContent = `+${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} added to spin the lucky wheel!`;
+    } else if (reward.type === 'coins') {
+      descEl.textContent = `+${reward.amount} Gold coins deposited to your vault!`;
+    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
+      descEl.textContent = `+${reward.amount} Premium blue coins deposited to your vault!`;
+    } else {
+      descEl.textContent = reward.desc || reward.label;
+    }
+  }
 
   const stampEl = document.getElementById('singleRewardStamp');
-  if (stampEl) stampEl.classList.remove('visible');
+  if (stampEl) {
+    stampEl.classList.remove('visible');
+    stampEl.textContent = 'REVEALED';
+    stampEl.style.color = '#10b981';
+    stampEl.style.borderColor = '#10b981';
+  }
+}
+
+// ==========================================================================
+// RENDER LOCKED CARD PLACEHOLDER (When user has not spent a card)
+// ==========================================================================
+function renderLockedCardPlaceholder() {
+  const canvas = document.getElementById('scratchCanvas');
+  if (!canvas) return;
+
+  const parent = canvas.parentElement;
+  if (!parent) return;
+
+  const rect = parent.getBoundingClientRect();
+  const width = rect.width || 320;
+  const height = rect.height || 190;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.globalCompositeOperation = 'source-over';
+  canvas.classList.remove('cleared');
+
+  // 1. Sleek Metallic Silver / Slate Foil Gradient
+  const grad = ctx.createLinearGradient(0, 0, width, height);
+  grad.addColorStop(0.0, '#1e293b');
+  grad.addColorStop(0.2, '#475569');
+  grad.addColorStop(0.4, '#94a3b8');
+  grad.addColorStop(0.55, '#cbd5e1');
+  grad.addColorStop(0.7, '#64748b');
+  grad.addColorStop(1.0, '#0f172a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, width, height);
+
+  // 2. Micro Security Pattern
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1;
+  const spacing = 12;
+  for (let x = -height; x < width + height; x += spacing) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + height, height);
+    ctx.stroke();
+  }
+
+  // 3. Shimmer Border
+  ctx.strokeStyle = 'rgba(236, 72, 153, 0.35)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(6, 6, width - 12, height - 12);
+
+  // 4. Center Hologram Locked Badge
+  const cx = width / 2;
+  const cy = height / 2;
+
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(cx - 110, cy - 40, 220, 80, 16);
+  } else {
+    ctx.rect(cx - 110, cy - 40, 220, 80);
+  }
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Emblem Icon & Text
+  ctx.font = '24px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🎴', cx, cy - 14);
+
+  ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+  ctx.fillStyle = '#fbcfe8';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+  ctx.shadowBlur = 4;
+  ctx.fillText('TAP "NEW TICKET" TO UNLOCK', cx, cy + 12);
+
+  ctx.font = '8.5px "Plus Jakarta Sans", sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillText('Costs 1 Card • Instant Win Prizes', cx, cy + 26);
+  ctx.shadowBlur = 0;
+
+  // Update Status Text & Badges
+  const statusEl = document.getElementById('singleScratchStatusText');
+  if (statusEl) {
+    statusEl.innerHTML = '🎴 <strong>Ticket Locked:</strong> Tap <strong>"NEW TICKET (1 CARD)"</strong> below to unlock and scratch!';
+  }
+
+  const tierBadge = document.getElementById('ticketTierBadge');
+  if (tierBadge) {
+    tierBadge.textContent = '🎴 1 CARD REQUIRED';
+    tierBadge.style.color = '#f472b6';
+    tierBadge.style.borderColor = '#f472b6';
+  }
+
+  const serialBadge = document.getElementById('ticketSerialText');
+  if (serialBadge) serialBadge.textContent = '#TKT-LOCKED';
+
+  updateScratchProgressUI(0);
+
+  // Bind Events if needed
+  if (!singleCardState.canvasInitialized) {
+    bindScratchEvents(canvas);
+    singleCardState.canvasInitialized = true;
+  }
 }
 
 // Draw Metallic Gray Film on HTML5 Canvas
@@ -190,16 +368,17 @@ function initSingleScratchCanvas() {
   // 1. Metallic Silver/Gray Film Gradient
   const grad = ctx.createLinearGradient(0, 0, width, height);
   grad.addColorStop(0.0, '#334155');
-  grad.addColorStop(0.2, '#64748b');
-  grad.addColorStop(0.45, '#94a3b8');
-  grad.addColorStop(0.55, '#cbd5e1');
-  grad.addColorStop(0.75, '#475569');
+  grad.addColorStop(0.18, '#64748b');
+  grad.addColorStop(0.38, '#94a3b8');
+  grad.addColorStop(0.52, '#e2e8f0');
+  grad.addColorStop(0.68, '#cbd5e1');
+  grad.addColorStop(0.82, '#64748b');
   grad.addColorStop(1.0, '#1e293b');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, width, height);
 
   // 2. Micro Security Lattice Texture
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
   ctx.lineWidth = 1;
   const spacing = 10;
   for (let x = -height; x < width + height; x += spacing) {
@@ -216,7 +395,7 @@ function initSingleScratchCanvas() {
   }
 
   // 3. Shimmer Border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
   ctx.lineWidth = 2;
   ctx.strokeRect(6, 6, width - 12, height - 12);
 
@@ -224,11 +403,15 @@ function initSingleScratchCanvas() {
   const cx = width / 2;
   const cy = height / 2;
 
-  ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
   ctx.beginPath();
-  ctx.roundRect ? ctx.roundRect(cx - 100, cy - 35, 200, 70, 14) : ctx.rect(cx - 100, cy - 35, 200, 70);
+  if (ctx.roundRect) {
+    ctx.roundRect(cx - 105, cy - 35, 210, 70, 14);
+  } else {
+    ctx.rect(cx - 105, cy - 35, 210, 70);
+  }
   ctx.fill();
-  ctx.strokeStyle = 'rgba(244, 114, 182, 0.6)';
+  ctx.strokeStyle = 'rgba(244, 114, 182, 0.7)';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -236,7 +419,7 @@ function initSingleScratchCanvas() {
   ctx.font = '22px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🔒', cx, cy - 10);
+  ctx.fillText('🪙', cx, cy - 10);
 
   ctx.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
   ctx.fillStyle = '#f8fafc';
@@ -252,22 +435,37 @@ function initSingleScratchCanvas() {
   }
 }
 
-// Bind Mouse & Touch scratch events
+// Bind Modern Pointer & Touch Scratch Events
 function bindScratchEvents(canvas) {
   let isDown = false;
 
   const getCanvasCoords = (e) => {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
     };
   };
 
-  const handleStart = (e) => {
+  const handlePointerDown = (e) => {
+    // If ticket is not unlocked, require spending a card to unlock
+    if (!singleCardState.hasActiveTicket) {
+      const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
+      if (cards <= 0) {
+        if (typeof showFloatingToast === 'function') {
+          showFloatingToast('🎴 You have 0 Scratch Cards! Tap reactor orb or complete goals to earn cards!');
+        }
+        return;
+      }
+      dealNewSingleCard(true);
+      return;
+    }
     if (singleCardState.isRevealed) return;
+
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch (err) {}
+
     isDown = true;
     const { x, y } = getCanvasCoords(e);
     singleCardState.lastX = x;
@@ -275,33 +473,39 @@ function bindScratchEvents(canvas) {
     scratchAt(x, y, true);
   };
 
-  const handleMove = (e) => {
-    if (!isDown || singleCardState.isRevealed) return;
-    if (e.cancelable) e.preventDefault(); // Stop mobile window scroll
+  const handlePointerMove = (e) => {
+    if (!isDown || !singleCardState.hasActiveTicket || singleCardState.isRevealed) return;
+    if (e.cancelable) e.preventDefault();
     const { x, y } = getCanvasCoords(e);
     scratchLine(singleCardState.lastX, singleCardState.lastY, x, y);
     singleCardState.lastX = x;
     singleCardState.lastY = y;
   };
 
-  const handleEnd = () => {
+  const handlePointerUp = (e) => {
     if (!isDown) return;
     isDown = false;
+    try {
+      canvas.releasePointerCapture(e.pointerId);
+    } catch (err) {}
     checkScratchCompletion();
   };
 
-  canvas.addEventListener('mousedown', handleStart);
-  window.addEventListener('mousemove', handleMove);
-  window.addEventListener('mouseup', handleEnd);
+  canvas.addEventListener('pointerdown', handlePointerDown);
+  canvas.addEventListener('pointermove', handlePointerMove);
+  canvas.addEventListener('pointerup', handlePointerUp);
+  canvas.addEventListener('pointercancel', handlePointerUp);
 
-  canvas.addEventListener('touchstart', handleStart, { passive: false });
-  window.addEventListener('touchmove', handleMove, { passive: false });
-  window.addEventListener('touchend', handleEnd);
-  window.addEventListener('touchcancel', handleEnd);
+  // Fallback touch prevent default for smooth mobile rubbing
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
 }
 
 // Erase a circular spot
 function scratchAt(x, y, isStart = false) {
+  if (!singleCardState.hasActiveTicket || singleCardState.isRevealed) return;
+
   const canvas = document.getElementById('scratchCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -315,7 +519,7 @@ function scratchAt(x, y, isStart = false) {
   ctx.save();
   ctx.globalCompositeOperation = 'destination-out';
   ctx.beginPath();
-  ctx.arc(x, y, 22, 0, Math.PI * 2);
+  ctx.arc(x, y, 24, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 
@@ -326,22 +530,38 @@ function scratchAt(x, y, isStart = false) {
   }
 }
 
-// Erase a continuous smooth line between two points
+// Erase a continuous smooth line between two points with interpolation
 function scratchLine(x1, y1, x2, y2) {
+  if (!singleCardState.hasActiveTicket || singleCardState.isRevealed) return;
   const canvas = document.getElementById('scratchCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const dist = Math.hypot(dx, dy);
+  const steps = Math.max(1, Math.ceil(dist / 4));
+
   ctx.save();
   ctx.globalCompositeOperation = 'destination-out';
-  ctx.lineWidth = 42;
+
+  // Smooth line stroke
+  ctx.lineWidth = 48;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
+
+  // Circle stamps along the vector for 100% gapless rubbing
+  for (let i = 0; i <= steps; i++) {
+    const px = x1 + (dx * i) / steps;
+    const py = y1 + (dy * i) / steps;
+    ctx.beginPath();
+    ctx.arc(px, py, 24, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.restore();
 
   singleCardState.rubStrokeCount++;
@@ -350,16 +570,21 @@ function scratchLine(x1, y1, x2, y2) {
   if (singleCardState.rubStrokeCount % 2 === 0) {
     spawnScratchDust(x2, y2);
   }
-  if (singleCardState.rubStrokeCount % 8 === 0) {
+  if (singleCardState.rubStrokeCount % 6 === 0) {
     sfx.playTapSound(2);
     checkScratchCompletion();
   }
 }
 
+// Cached DOM references for high-speed rubbing loop
+let _scratchDustLayer = null;
+let _scratchProgressBar = null;
+let _scratchProgressText = null;
+
 // Flying silver & gold scratch dust particles
 function spawnScratchDust(x, y) {
-  const dustLayer = document.getElementById('scratchDustLayer');
-  if (!dustLayer) return;
+  if (!_scratchDustLayer) _scratchDustLayer = document.getElementById('scratchDustLayer');
+  if (!_scratchDustLayer) return;
 
   for (let i = 0; i < 3; i++) {
     const p = document.createElement('div');
@@ -378,7 +603,7 @@ function spawnScratchDust(x, y) {
     p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
     p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
 
-    dustLayer.appendChild(p);
+    _scratchDustLayer.appendChild(p);
     setTimeout(() => p.remove(), 520);
   }
 }
@@ -423,11 +648,11 @@ function checkScratchCompletion() {
 
 // Update UI Progress Bar
 function updateScratchProgressUI(percent) {
-  const bar = document.getElementById('scratchProgressBar');
-  const text = document.getElementById('scratchProgressText');
+  if (!_scratchProgressBar) _scratchProgressBar = document.getElementById('scratchProgressBar');
+  if (!_scratchProgressText) _scratchProgressText = document.getElementById('scratchProgressText');
 
-  if (bar) bar.style.width = `${percent}%`;
-  if (text) text.textContent = `${percent}% Scratched`;
+  if (_scratchProgressBar) _scratchProgressBar.style.width = `${percent}%`;
+  if (_scratchProgressText) _scratchProgressText.textContent = `${percent}% Scratched`;
 }
 
 // Fully reveal reward and award prize
@@ -452,27 +677,63 @@ function completeSingleCardReveal() {
   // Claim the reward into player inventory
   const reward = singleCardState.currentReward;
   if (reward) {
-    if (reward.type === 'coins') gameState.player.coins += reward.amount;
-    else if (reward.type === 'energy') gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + reward.amount;
-    else if (reward.type === 'keys') {
+    if (reward.type === 'keys') {
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + reward.amount;
       if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + reward.amount);
-    }
-    else if (reward.type === 'diamonds') gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
-    else if (reward.type === 'egg') gameState.player.eggs = (gameState.player.eggs || 0) + reward.amount;
-    else if (reward.type === 'tickets') gameState.player.chestTickets = (gameState.player.chestTickets || 0) + reward.amount;
-
-    sfx.playLevelUpSound();
-
-    const statusEl = document.getElementById('singleScratchStatusText');
-    if (statusEl) {
-      statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>${reward.label}</strong>!`;
-    }
-
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎉 Scratch Card: Won ${reward.label}!`);
+      sfx.playLevelUpSound();
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Key${reward.amount > 1 ? 's' : ''} 🔑</strong>!`;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Key${reward.amount > 1 ? 's' : ''} 🔑!`);
+      }
+    } else if (reward.type === 'egg') {
+      gameState.player.eggs = (gameState.player.eggs || 0) + reward.amount;
+      sfx.playLevelUpSound();
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Eggs 🥚</strong>!`;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Eggs 🥚!`);
+      }
+    } else if (reward.type === 'tickets') {
+      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + reward.amount;
+      if (gameState.goal) gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets, (gameState.goal.currentTickets || 0) + reward.amount);
+      sfx.playLevelUpSound();
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} 🎟️</strong>!`;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} 🎟️!`);
+      }
+    } else if (reward.type === 'coins') {
+      gameState.player.coins = (gameState.player.coins || 0) + reward.amount;
+      sfx.playLevelUpSound();
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Coins 🪙</strong>!`;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Coins 🪙!`);
+      }
+    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
+      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + reward.amount;
+      sfx.playLevelUpSound();
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Blue Coins 💙</strong>!`;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Blue Coins 💙!`);
+      }
     }
   }
+
+  // Once scratched and revealed, ticket is consumed and no longer active!
+  singleCardState.hasActiveTicket = false;
 
   updateScratchUI();
   updateUI();
@@ -484,7 +745,7 @@ function completeSingleCardReveal() {
 
 // Quick reveal button
 function quickScratchSingleCard() {
-  if (singleCardState.isRevealed) return;
+  if (!singleCardState.hasActiveTicket || singleCardState.isRevealed) return;
   if (!singleCardState.cardCountedForDay) {
     singleCardState.cardCountedForDay = true;
     if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
@@ -510,13 +771,14 @@ function scratchTile(index, event) {
 // Initialize on page entry (Single Luxury Card Full Page View)
 function initScratchPage() {
   singleCardState.activeMode = 'single';
-  if (!singleCardState.currentReward) {
-    dealNewSingleCard(false);
+  if (!singleCardState.hasActiveTicket || !singleCardState.currentReward) {
+    renderLockedCardPlaceholder();
   } else {
     setTimeout(() => {
       initSingleScratchCanvas();
     }, 50);
   }
+  updateScratchUI();
 }
 
 function updateScratchUI() {
@@ -540,8 +802,10 @@ window.dealNewSingleCard = dealNewSingleCard;
 window.quickScratchSingleCard = quickScratchSingleCard;
 window.resetScratchCard = resetScratchCard;
 window.scratchTile = scratchTile;
+window.renderLockedCardPlaceholder = renderLockedCardPlaceholder;
 window.renderScratchGrid = renderScratchGrid;
 window.initScratchPage = initScratchPage;
 window.updateScratchUI = updateScratchUI;
 window.singleCardState = singleCardState;
+
 

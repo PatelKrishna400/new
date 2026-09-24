@@ -13,36 +13,48 @@
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS (Scoped without preflight reset) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: {
+        extend: {
+          colors: {
+            sunamber: '#f59e0b',
+            sunyellow: '#fde047',
+            leafgreen: '#22c55e',
+            earthbrown: '#78350f',
+            stonegray: '#334155'
+          },
+          animation: {
+            'bounce-gentle': 'bounceGentle 2s infinite ease-in-out',
+            'spin-very-slow': 'spin 25s linear infinite',
+            'worker-hammer': 'workerPump 1.8s infinite ease-in-out',
+            'float-slow': 'floatSlow 3s ease-in-out infinite'
+          },
+          keyframes: {
+            bounceGentle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            workerPump: {
+              '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+              '50%': { transform: 'rotate(-12deg) translateY(4px) scale(0.96)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
 
-  <!-- Shared Global Styles -->
-  <link rel="stylesheet" href="shared/common.css">
-
-  <!-- Modular Page-Wise Styles -->
-  <link rel="stylesheet" href="pages/home/home.css">
-  <link rel="stylesheet" href="pages/energy/energy.css">
-  <link rel="stylesheet" href="pages/tasks/tasks.css">
-  <link rel="stylesheet" href="pages/profile/profile.css">
-  <link rel="stylesheet" href="pages/xp/xp.css">
-  <link rel="stylesheet" href="pages/reward/reward.css">
-  <link rel="stylesheet" href="pages/goal/goal.css">
-  <link rel="stylesheet" href="pages/streak/streak.css">
-  <link rel="stylesheet" href="pages/mega-reward/mega-reward.css">
-  <link rel="stylesheet" href="pages/gift-card/gift-card.css">
-  <link rel="stylesheet" href="pages/gadgets/gadgets.css">
-  <link rel="stylesheet" href="pages/accessories/accessories.css">
-  <link rel="stylesheet" href="pages/gaming-tool/gaming-tool.css">
-  <link rel="stylesheet" href="pages/kitchen/kitchen.css">
-  <link rel="stylesheet" href="pages/stationery/stationery.css">
-  <link rel="stylesheet" href="pages/fitness/fitness.css">
-  <link rel="stylesheet" href="pages/home-decorate/home-decorate.css">
-  <link rel="stylesheet" href="pages/custom/custom.css">
-  <link rel="stylesheet" href="pages/suggest-box/suggest-box.css">
-  <link rel="stylesheet" href="pages/ad-rewards/ad-rewards.css">
-  <link rel="stylesheet" href="pages/spin/spin.css">
-  <link rel="stylesheet" href="pages/chest/chest.css">
-  <link rel="stylesheet" href="pages/scratch/scratch.css">
-  <link rel="stylesheet" href="pages/egg/egg.css">
+  <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -207,6 +219,15 @@
             <span class="btn-dot-indicator"></span>
             <svg class="fire-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
+            </svg>
+          </button>
+
+          <!-- Notification Inbox Bell Button -->
+          <button class="icon-action-btn inbox-btn" id="headerInboxBtn" onclick="toggleNotificationInbox()" title="Notification Inbox">
+            <span class="btn-dot-indicator unread-bell-dot" id="inboxUnreadDot" style="display: none;"></span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
         </div>
@@ -700,24 +721,40 @@
                       <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                     </svg>
                   </div>
+      
+                  <!-- Beside Energy Tab: Circle Format Multi-Tap Selector (*1, *2, *3, *5, *10, *50, *100) -->
+                  <div class="multi-tap-strip" id="multiTapStrip" role="group" aria-label="Multi-Tap Power Multiplier">
+                    <button type="button" class="multi-tap-circle active" id="btnMultiTap1" onclick="setMultiTapMultiplier(1)" title="*1 Multi-Tap (1 Energy/click)">*1</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap2" onclick="setMultiTapMultiplier(2)" title="*2 Multi-Tap (2 Energy/click, unlocks at 100+ Energy)" style="display: none;">*2</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap3" onclick="setMultiTapMultiplier(3)" title="*3 Multi-Tap (3 Energy/click, unlocks at 250+ Energy)" style="display: none;">*3</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap5" onclick="setMultiTapMultiplier(5)" title="*5 Multi-Tap (5 Energy/click, unlocks at 500+ Energy)" style="display: none;">*5</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap10" onclick="setMultiTapMultiplier(10)" title="*10 Multi-Tap (10 Energy/click, unlocks at 1000+ Energy)" style="display: none;">*10</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap50" onclick="setMultiTapMultiplier(50)" title="*50 Multi-Tap (50 Energy/click, unlocks at 5000+ Energy)" style="display: none;">*50</button>
+                    <button type="button" class="multi-tap-circle" id="btnMultiTap100" onclick="setMultiTapMultiplier(100)" title="*100 Multi-Tap (100 Energy/click, unlocks at 10000+ Energy)" style="display: none;">*100</button>
+                  </div>
                 </div>
               </section>
       
               <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
-              <section class="home-leaderboard-card" id="homeLeaderboardSection">
+              <section class="home-leaderboard-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" style="cursor: pointer;" title="Tap to open full Top 100 Leaderboard">
                 <!-- Leaderboard Header Strip -->
                 <div class="hlb-header">
                   <div class="hlb-title-wrap">
                     <div class="hlb-trophy-icon">🏆</div>
                     <div class="hlb-title-info">
                       <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
-                      <span class="hlb-subtitle">Live Tap Rankings &amp; Community Champions</span>
+                      <span class="hlb-subtitle">Top 100 Champions &amp; Live Step Podium</span>
                     </div>
                   </div>
-                  <!-- Live Indicator -->
-                  <div class="hlb-live-indicator">
-                    <span class="hlb-live-pulse-dot"></span>
-                    <span class="hlb-live-text">LIVE</span>
+                  <!-- Live Indicator & Open Arrow -->
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="hlb-live-indicator">
+                      <span class="hlb-live-pulse-dot"></span>
+                      <span class="hlb-live-text">LIVE</span>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fde047; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                      <span>OPEN</span> <span>›</span>
+                    </div>
                   </div>
                 </div>
       
@@ -736,7 +773,7 @@
                     <span class="hlb-tab-name">Level</span>
                   </button>
                   <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
-                    <span class="hlb-tab-icon">🔷</span>
+                    <span class="hlb-tab-icon">💙</span>
                     <span class="hlb-tab-name">Blue</span>
                   </button>
                 </div>
@@ -798,6 +835,18 @@
 
       <!-- PAGE: ENERGY -->
       <div class="page-view" id="pageEnergy">
+              <!-- Subtab Switcher Header at top of Energy Page -->
+              <div class="energy-subtab-nav" id="energySubtabNav">
+                <button class="energy-subtab-pill active" id="subtabBtnFuelGenerator" onclick="switchEnergySubview('fuel')">
+                  <span>⚡ Fuel Cells & Reactor</span>
+                </button>
+                <button class="energy-subtab-pill" id="subtabBtnSunflowerFarm" onclick="switchEnergySubview('sunflower')">
+                  <span>🌻 Sunflower Farming <span class="sf-nav-badge" id="sfNavLiveBadge">20 Lands</span></span>
+                </button>
+              </div>
+      
+              <!-- VIEW 1: Fuel Generator & Existing Cells -->
+              <div id="energyFuelGeneratorView">
               <section class="energy-gauge-section">
                 <div class="gauge-wrapper" id="energyGaugeWrapper">
                   <svg class="gauge-svg" viewBox="0 0 200 200">
@@ -971,7 +1020,58 @@
                   </div>
                 </div>
       
-                <!-- 5. Red Fuel Cell -->
+                <!-- 5. Blue Fuel Cell (30s Skip) -->
+                <div class="fuel-card blue-fuel-card" id="fuelCardBlue">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box blue-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(2, 132, 199, 0.2)"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #0284c7;">Blue Fuel</h3>
+                          <span class="fuel-cell-badge blue-badge-pill" id="blueCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #38bdf8;">⚡ 30s Generator Timer Skip</p>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn blue-btn" id="btnUseBlueFuel" onclick="executeFuelButtonAction('blue')">
+                        <span id="btnBlueText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+      
+                <!-- 6. Light Blue Fuel Cell (1 Min Skip) -->
+                <div class="fuel-card lightblue-fuel-card" id="fuelCardLightBlue">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box lightblue-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" fill="rgba(6, 182, 212, 0.2)"/>
+                          <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #06b6d4;">Light Blue Fuel</h3>
+                          <span class="fuel-cell-badge lightblue-badge-pill" id="lightblueCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #22d3ee;">❄️ 1 Min Generator Timer Skip</p>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn lightblue-btn" id="btnUseLightBlueFuel" onclick="executeFuelButtonAction('lightblue')">
+                        <span id="btnLightBlueText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+      
+                <!-- 7. Red Fuel Cell -->
                 <div class="fuel-card red-fuel-card" id="fuelCardRed">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -998,7 +1098,7 @@
                   </div>
                 </div>
       
-                <!-- 6. Dark Red Fuel Cell -->
+                <!-- 8. Dark Red Fuel Cell -->
                 <div class="fuel-card darkred-fuel-card" id="fuelCardDarkRed">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1026,7 +1126,7 @@
                   </div>
                 </div>
       
-                <!-- 7. Pink Boost Fuel Cell -->
+                <!-- 9. Pink Boost Fuel Cell -->
                 <div class="fuel-card pink-fuel-card" id="fuelCardPink">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1054,7 +1154,7 @@
                   </div>
                 </div>
       
-                <!-- 8. Purple Boost Fuel Cell -->
+                <!-- 10. Purple Boost Fuel Cell -->
                 <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1084,6 +1184,635 @@
                   </div>
                 </div>
               </section>
+              <!-- Entry Tab to Sunflower Farming below all 10 fuel cards -->
+              <div class="sunflower-entry-tab-card" id="sunflowerEntryCard" onclick="switchEnergySubview('sunflower')">
+                <div class="sf-entry-glow"></div>
+                <div class="sf-entry-left">
+                  <div class="sf-entry-icon-wrap animate-spin-very-slow">
+                    <span class="sf-entry-emoji">🌻</span>
+                  </div>
+                  <div class="sf-entry-text">
+                    <div class="sf-entry-title-row">
+                      <h3 class="sf-entry-title">Sunflower Solar Farming</h3>
+                      <span class="sf-entry-badge">20 Lands System</span>
+                    </div>
+                    <p class="sf-entry-desc">
+                      Plant sunflowers for <span class="sf-highlight">+2 ☀️ Coins/s</span>! Cistern well worker, 20 unlockable plots, &amp; convert <span class="sf-highlight">100 🪙 &rarr; 29 ⚡ Solar Energy</span>!
+                    </p>
+                    <div class="sf-entry-mini-stats">
+                      <span class="sf-mini-stat">🗺️ <span id="sfEntryPlotsUnlocked">1</span>/20 Lands</span>
+                      <span class="sf-mini-stat">🧺 <span id="sfEntryBaskets">2</span> Baskets</span>
+                      <span class="sf-mini-stat">⚡ 100🪙=29⚡</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="sf-entry-right">
+                  <button class="sf-entry-btn">
+                    <span>Enter Garden 🌻 &rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </div><!-- /#energyFuelGeneratorView -->
+      
+            <!-- VIEW 2: Complete Sunflower Solar Tycoon Game (Opened when clicking Sunflower Farming tab) -->
+            <div id="energySunflowerFarmingView" style="display: none;" class="sunflower-tycoon-container flex flex-col min-h-screen text-stone-800 pb-20 sm:pb-6">
+      
+              <!-- Top Navigation / Return Bar -->
+              <div class="flex items-center justify-between mb-3 px-1 pt-1">
+                <button onclick="switchEnergySubview('fuel')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/85 hover:bg-white text-stone-800 font-bold text-xs shadow-sm border border-amber-300 transition active:scale-95">
+                  <span>&larr; Back to Fuel Generator</span>
+                </button>
+                <div class="text-[11px] text-amber-950 font-black bg-amber-200/90 px-3 py-1 rounded-xl border border-amber-300 shadow-sm flex items-center gap-1">
+                  <span>🌻</span> <span>Sunflower Tycoon Garden</span>
+                </div>
+              </div>
+      
+              <!-- Sticky Tycoon Game Header -->
+              <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b-4 border-amber-300 shadow-md px-3 sm:px-6 py-2 rounded-2xl mb-4">
+                <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                  
+                  <!-- Brand & Page Title -->
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-3xl sm:text-4xl animate-spin-very-slow">🌻</span>
+                    <div>
+                      <h1 class="text-base sm:text-lg font-black text-amber-950 leading-tight flex items-center gap-1.5">
+                        <span>Sunflower Solar Tycoon</span>
+                        <span id="sfActivePageBadge" class="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Page 1: Garden
+                        </span>
+                      </h1>
+                      <p class="text-[11px] text-stone-500 font-medium hidden sm:block">20 Plots Garden &bull; Cistern Worker &bull; 100🪙 &rarr; 29⚡ &bull; Diamond Vault</p>
+                    </div>
+                  </div>
+      
+                  <!-- Persistent Resource Indicators -->
+                  <div class="flex flex-wrap items-center gap-2 sm:gap-3 bg-amber-50/90 border-2 border-amber-200 px-3 py-1.5 rounded-2xl shadow-inner text-xs sm:text-sm">
+                    
+                    <!-- Solar Coins -->
+                    <div class="flex items-center gap-1.5" title="Solar Coins generated by blooming sunflowers (+2 ☀️/s)">
+                      <span class="text-lg sm:text-xl">☀️🪙</span>
+                      <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-bold text-amber-700 leading-none">Coins</span>
+                        <span id="sfCoinCount" class="font-black text-stone-900 text-xs sm:text-sm leading-none mt-0.5">150</span>
+                      </div>
+                    </div>
+      
+                    <div class="w-px h-5 bg-amber-300"></div>
+      
+                    <!-- Solar Energy -->
+                    <div class="flex items-center gap-1.5" title="Solar Energy converted in Shop (100 Coins = 29 Energy)">
+                      <span class="text-lg sm:text-xl">⚡</span>
+                      <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-bold text-yellow-600 leading-none">Energy</span>
+                        <span id="sfEnergyCount" class="font-black text-yellow-700 text-xs sm:text-sm leading-none mt-0.5">0</span>
+                      </div>
+                    </div>
+      
+                    <div class="w-px h-5 bg-amber-300"></div>
+      
+                    <!-- Diamonds -->
+                    <div class="flex items-center gap-1.5" title="Diamonds to unlock land & buy requirements">
+                      <span class="text-lg sm:text-xl">💎</span>
+                      <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-bold text-cyan-600 leading-none">Diamonds</span>
+                        <span id="sfDiamondCount" class="font-black text-cyan-700 text-xs sm:text-sm leading-none mt-0.5">25</span>
+                      </div>
+                    </div>
+      
+                    <div class="w-px h-5 bg-amber-300"></div>
+      
+                    <!-- Water Baskets -->
+                    <div class="flex items-center gap-1.5" title="Water Baskets collected from Wall Cistern">
+                      <span class="text-lg sm:text-xl">🧺</span>
+                      <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-bold text-blue-600 leading-none">Baskets</span>
+                        <span id="sfBasketCount" class="font-black text-blue-700 text-xs sm:text-sm leading-none mt-0.5">2</span>
+                      </div>
+                    </div>
+      
+                    <div class="w-px h-5 bg-amber-300"></div>
+      
+                    <!-- Shovels -->
+                    <div class="flex items-center gap-1.5" title="Shovels to clear withered plants">
+                      <span class="text-lg sm:text-xl">🪏</span>
+                      <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-bold text-stone-700 leading-none">Shovels</span>
+                        <span id="sfShovelCount" class="font-black text-stone-800 text-xs sm:text-sm leading-none mt-0.5">1</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Quick Audio & Guide Buttons -->
+                  <div class="flex items-center gap-1.5">
+                    <button id="sfSoundBtn" class="p-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-sm shadow-sm active:scale-95 transition" title="Toggle Sound">
+                      🔊
+                    </button>
+                    <button id="sfGuideBtn" class="p-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-sm shadow-sm active:scale-95 transition" title="Game Guide">
+                      📖
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- Desktop Navigation Bar: Left = Page 3, Middle = Page 1, Right = Page 2 -->
+                <nav class="max-w-6xl mx-auto mt-2 hidden sm:flex items-center justify-between bg-amber-100/90 p-1.5 rounded-2xl border border-amber-200 gap-2">
+                  <!-- LEFT: Page 3 (Merged Solar & Diamond Shop) -->
+                  <button onclick="navigateSunflowerPage(3)" id="sfDesktopTab3" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm text-stone-700 hover:bg-amber-200/70 transition flex items-center justify-center gap-2">
+                    <span>⚡</span> <span>Page 3: Solar &amp; Diamond Shop</span>
+                  </button>
+      
+                  <!-- MIDDLE: Page 1 (Garden Field) -->
+                  <button onclick="navigateSunflowerPage(1)" id="sfDesktopTab1" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-amber-500 text-white shadow">
+                    <span>🌻</span> <span>Page 1: Garden Field (<span id="sfUnlockedPlotsCounter">1</span>/20 Lands)</span>
+                  </button>
+      
+                  <!-- RIGHT: Page 2 (Side Wall Cistern) -->
+                  <button onclick="navigateSunflowerPage(2)" id="sfDesktopTab2" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm text-stone-700 hover:bg-amber-200/70 transition flex items-center justify-center gap-2">
+                    <span>🧱</span> <span>Page 2: Side Wall Cistern</span>
+                    <span id="sfDesktopNavCrateBadge" class="bg-blue-600 text-white text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+                  </button>
+                </nav>
+              </header>
+      
+              <!-- Mobile Navigation Bar -->
+              <nav class="sm:hidden mb-3 bg-white/95 backdrop-blur-md border-2 border-amber-300 py-1.5 px-3 rounded-2xl flex items-center justify-between shadow-md">
+                <!-- LEFT: Page 3 -->
+                <button onclick="navigateSunflowerPage(3)" id="sfMobileTab3" class="flex flex-col items-center p-1 text-stone-500 font-bold text-[10px] flex-1">
+                  <span class="text-xl">⚡</span>
+                  <span>Shop &amp; Solar</span>
+                </button>
+      
+                <!-- MIDDLE: Page 1 -->
+                <button onclick="navigateSunflowerPage(1)" id="sfMobileTab1" class="flex flex-col items-center p-1 text-amber-600 font-black text-[10px] flex-1 border-x border-amber-200">
+                  <span class="text-xl">🌻</span>
+                  <span>Garden (<span id="sfMobileUnlockedCount">1</span>/20)</span>
+                </button>
+      
+                <!-- RIGHT: Page 2 -->
+                <button onclick="navigateSunflowerPage(2)" id="sfMobileTab2" class="flex flex-col items-center p-1 text-stone-500 font-bold text-[10px] flex-1 relative">
+                  <span class="text-xl">🧱</span>
+                  <span>Wall Cistern</span>
+                  <span id="sfMobileNavCrateBadge" class="absolute top-0 right-4 bg-blue-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono">0</span>
+                </button>
+              </nav>
+      
+              <main class="max-w-6xl mx-auto w-full flex-1 flex flex-col gap-4">
+      
+                <!-- PAGE 1: Garden Field (20 Land Plots) -->
+                <section id="sfPage1" class="game-page active-page bg-white/95 rounded-3xl p-4 sm:p-6 border-4 border-amber-300 shadow-md flex flex-col gap-4">
+                  
+                  <!-- Page 1 Header -->
+                  <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-amber-100 pb-3">
+                    <div class="flex items-center gap-3">
+                      <span class="text-3xl sm:text-4xl">🌻</span>
+                      <div>
+                        <h2 class="text-base sm:text-lg font-black text-amber-950 flex items-center gap-2">
+                          Garden Field (20 Land Plots Created)
+                          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                            Land 1 Free &bull; Land 2: 10 💎 &bull; Land 3: 100 💎...
+                          </span>
+                        </h2>
+                        <p class="text-xs text-stone-500">
+                          Sunflowers auto-generate <strong>+2 ☀️ Coins/s</strong>! Pour Water Baskets (🧺) to extend life by +35s, or Shovel (🪏) withered stalks to free plots.
+                        </p>
+                      </div>
+                    </div>
+      
+                    <!-- Field Actions -->
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button id="sfWaterAllBtn" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
+                        <span>🧺 Water All</span>
+                      </button>
+                      <button id="sfClearAllWitheredBtn" class="bg-stone-700 hover:bg-stone-800 active:scale-95 text-white font-black text-xs px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
+                        <span>🪏 Dig Withered</span>
+                      </button>
+                      <button onclick="navigateSunflowerPage(3)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1">
+                        <span>🌱 Buy Sprouts (Page 3)</span>
+                      </button>
+                    </div>
+                  </div>
+      
+                  <!-- Land Progress Ribbon -->
+                  <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xl">🗺️</span>
+                      <div>
+                        <span class="font-black text-stone-900">Garden Expansion:</span>
+                        <span id="sfLandSummaryLabel" class="text-stone-600 font-semibold ml-1">1 of 20 Lands Unlocked</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-stone-500 text-[11px]">Next plot cost:</span>
+                      <span id="sfNextLandCostBadge" class="bg-cyan-100 text-cyan-900 border border-cyan-300 font-black px-2.5 py-0.5 rounded-full text-xs">10 💎</span>
+                    </div>
+                  </div>
+      
+                  <!-- 20 Plots Grid Layout -->
+                  <div id="sfPlotsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 my-2">
+                    <!-- Rendered dynamically for all 20 plots -->
+                  </div>
+                </section>
+      
+                <!-- PAGE 2: Side Wall Cistern Tab -->
+                <section id="sfPage2" class="game-page stone-wall-pattern rounded-3xl p-4 sm:p-6 border-4 border-slate-700 text-white shadow-xl flex flex-col gap-5">
+                  
+                  <!-- Page 2 Header -->
+                  <div class="bg-slate-900/90 backdrop-blur rounded-2xl p-4 border border-slate-600 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <span class="text-3xl sm:text-4xl">🧱</span>
+                      <div>
+                        <h2 class="text-base sm:text-lg font-black text-cyan-300 flex items-center gap-2">
+                          Side Wall Cistern &amp; Well Worker Station
+                          <span class="text-[10px] bg-cyan-950 text-cyan-300 font-mono border border-cyan-500/40 px-2 py-0.5 rounded-full">Automated Irrigation</span>
+                        </h2>
+                        <p class="text-xs text-slate-300">
+                          The worker continuously pumps groundwater into wooden baskets. The wall crate holds up to 5 baskets!
+                        </p>
+                      </div>
+                    </div>
+      
+                    <div class="flex items-center gap-2">
+                      <span id="sfBoostActiveBadge" class="hidden text-xs bg-amber-400 text-stone-900 font-black px-3 py-1 rounded-xl animate-pulse">
+                        ⚡ 2x Worker Boost Active (<span id="sfBoostTimeRemaining">60</span>s)
+                      </span>
+                      <div class="bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-600 text-xs font-mono text-cyan-300 font-bold">
+                        Wall Crate: <span id="sfWallCrateCounter" class="text-white text-sm font-black">0</span> / 5 🧺
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Worker Presentation Stage -->
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center bg-slate-800/90 rounded-2xl p-5 border border-slate-600 shadow-inner">
+                    
+                    <!-- Worker Mascot -->
+                    <div class="md:col-span-4 flex items-center gap-4 border-b md:border-b-0 md:border-r border-slate-700 pb-3 md:pb-0 md:pr-4">
+                      <div class="text-6xl animate-worker-hammer select-none filter drop-shadow">👷‍♂️</div>
+                      <div>
+                        <div class="text-base font-extrabold text-cyan-200">Foreman Dave</div>
+                        <div class="text-xs text-slate-400" id="sfWorkerStatusText">Pumping water into crate...</div>
+                        <div class="text-xs text-amber-300 font-semibold mt-1">
+                          Pump Rate: <span id="sfWorkerSpeedLabel" class="font-mono">1 basket / 4s</span>
+                        </div>
+                      </div>
+                    </div>
+      
+                    <!-- Progress Gauge -->
+                    <div class="md:col-span-5 flex flex-col gap-2">
+                      <div class="flex justify-between text-xs text-slate-300 font-semibold">
+                        <span>Next Basket Extraction:</span>
+                        <span id="sfWorkerCyclePercent" class="font-mono text-cyan-300 font-bold">0%</span>
+                      </div>
+                      <div class="w-full bg-slate-950 rounded-full h-4 overflow-hidden border border-slate-700 p-0.5">
+                        <div id="sfWorkerProgressBar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full w-0 rounded-full transition-all duration-100"></div>
+                      </div>
+                      <p class="text-[11px] text-slate-400">
+                        Water Baskets poured on blooming sunflowers add +35s to their coin-generation timer!
+                      </p>
+                    </div>
+      
+                    <!-- Action / Collect Button -->
+                    <div class="md:col-span-3 flex flex-col gap-2">
+                      <button id="sfCollectBasketsBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 active:scale-95 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                        <span>🧺 Collect Baskets</span>
+                        <span id="sfCollectableBadge" class="bg-white/20 px-2 py-0.5 rounded-full font-mono text-xs">0</span>
+                      </button>
+      
+                      <button onclick="navigateSunflowerPage(3)" class="w-full bg-slate-700 hover:bg-slate-600 text-cyan-300 font-bold text-xs py-2 rounded-xl transition border border-slate-500 flex items-center justify-center gap-1">
+                        <span>⚡ Overdrive Speed (Shop)</span>
+                      </button>
+                    </div>
+                  </div>
+      
+                  <!-- Cistern Stats Grid -->
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
+                      <div class="text-[10px] uppercase font-bold text-slate-400">Inventory Baskets</div>
+                      <div class="text-xl font-black text-cyan-300" id="sfCisternInvBaskets">2 🧺</div>
+                    </div>
+                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
+                      <div class="text-[10px] uppercase font-bold text-slate-400">Wall Crate Storage</div>
+                      <div class="text-xl font-black text-blue-400" id="sfCisternCrateBaskets">0 / 5 🧺</div>
+                    </div>
+                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
+                      <div class="text-[10px] uppercase font-bold text-slate-400">Water Boost Effect</div>
+                      <div class="text-xl font-black text-emerald-400">+35s per Sunflower</div>
+                    </div>
+                  </div>
+                </section>
+      
+                <!-- PAGE 3: Solar & Diamond Shop Tab -->
+                <section id="sfPage3" class="game-page bg-white/95 rounded-3xl p-4 sm:p-6 border-4 border-amber-300 shadow-md flex flex-col gap-6">
+                  
+                  <!-- Unified Page 3 Header -->
+                  <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-amber-100 pb-3">
+                    <div class="flex items-center gap-3">
+                      <div class="flex items-center text-3xl sm:text-4xl">
+                        <span class="animate-bounce-gentle">⚡</span>
+                        <span class="text-2xl sm:text-3xl -ml-1">💎</span>
+                      </div>
+                      <div>
+                        <h2 class="text-base sm:text-lg font-black text-amber-950 flex items-center gap-2">
+                          Page 3: Solar &amp; Diamond Shop
+                          <span class="text-[10px] bg-gradient-to-r from-yellow-200 to-cyan-200 text-stone-900 font-mono font-black px-2 py-0.5 rounded-full border border-amber-300">
+                            Converter + Vault
+                          </span>
+                        </h2>
+                        <p class="text-xs text-stone-500">
+                          Convert Sunflower Coins into Solar Energy (100 ☀️🪙 &rarr; 29 ⚡), buy requirements with Diamonds, or watch voluntary 5s Ads!
+                        </p>
+                      </div>
+                    </div>
+      
+                    <div class="flex items-center gap-2">
+                      <div class="bg-cyan-50 border-2 border-cyan-200 px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
+                        <span class="text-lg">💎</span>
+                        <span class="text-xs text-cyan-900 font-extrabold">
+                          Diamonds: <span id="sfVaultDiamondCount" class="text-cyan-700 font-black text-sm">25 💎</span>
+                        </span>
+                      </div>
+                      <div class="bg-amber-100/80 border border-amber-300 px-3.5 py-1.5 rounded-2xl text-xs font-bold text-amber-900">
+                        Ratio: <span class="font-black text-amber-950">100 ☀️🪙 = 29 ⚡</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- SECTION A: Sunflower Coin Throw Energy Converter (100 🪙 -> 29 ⚡) -->
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-sm font-black text-stone-800 flex items-center gap-1.5">
+                        <span class="text-lg">☀️</span> Section A: Coin Throw Solar Converter
+                      </h3>
+                      <span class="text-[11px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
+                        Formula: 100 Sunflower Coins &rarr; 29 Solar Energy
+                      </span>
+                    </div>
+      
+                    <!-- Central Throw Station Visual -->
+                    <div class="bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-500 rounded-3xl p-5 text-stone-900 shadow-xl border-4 border-yellow-200 relative overflow-hidden flex flex-col items-center text-center gap-3">
+                      
+                      <div class="text-5xl animate-float-slow filter drop-shadow-md select-none">
+                        ⚡
+                      </div>
+      
+                      <div>
+                        <h4 class="text-lg sm:text-xl font-black text-stone-900 tracking-tight">Solar Synthesis Core</h4>
+                        <p class="text-xs text-stone-800 font-medium max-w-md mt-0.5">
+                          Throw Sunflower Coins generated from Page 1 into the solar chamber. Each batch converts 100 ☀️🪙 into 29 ⚡ Solar Energy!
+                        </p>
+                      </div>
+      
+                      <!-- Interactive Coin Throw Buttons -->
+                      <div class="flex flex-wrap items-center justify-center gap-3 mt-1 w-full max-w-md">
+                        <button id="sfConvert100Btn" class="flex-1 bg-stone-900 hover:bg-stone-800 text-yellow-300 active:scale-95 font-black text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-xl transition flex items-center justify-center gap-2">
+                          <span>🪙 Throw 100 Coins</span>
+                          <span class="bg-yellow-400/20 text-yellow-200 px-2 py-0.5 rounded-full text-xs font-mono">+29 ⚡</span>
+                        </button>
+      
+                        <button id="sfConvertAllBtn" class="flex-1 bg-white hover:bg-yellow-50 text-stone-900 active:scale-95 font-black text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-xl transition border-2 border-stone-800 flex items-center justify-center gap-2">
+                          <span>⚡ Throw ALL Available</span>
+                        </button>
+                      </div>
+                    </div>
+      
+                    <!-- Live Conversion Metrics -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                      <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 shadow-sm">
+                        <div class="text-[10px] uppercase font-bold text-amber-700">Available Sunflower Coins</div>
+                        <div class="text-xl font-black text-amber-950 mt-0.5" id="sfShopCoinsDisplay">150 🪙</div>
+                        <div class="text-[10px] text-amber-700 mt-0.5">Generated (+2 ☀️/s) on Page 1</div>
+                      </div>
+      
+                      <div class="bg-yellow-50 rounded-2xl p-3 border border-yellow-200 shadow-sm">
+                        <div class="text-[10px] uppercase font-bold text-yellow-800">Convertible Batches</div>
+                        <div class="text-xl font-black text-yellow-700 mt-0.5" id="sfConvertibleBatchesDisplay">1 Batch (29 ⚡)</div>
+                        <div class="text-[10px] text-yellow-800 mt-0.5">Ready for immediate toss</div>
+                      </div>
+      
+                      <div class="bg-emerald-50 rounded-2xl p-3 border border-emerald-200 shadow-sm">
+                        <div class="text-[10px] uppercase font-bold text-emerald-800">Total Solar Energy Banked</div>
+                        <div class="text-xl font-black text-emerald-700 mt-0.5" id="sfShopEnergyDisplay">0 ⚡</div>
+                        <div class="text-[10px] text-emerald-800 mt-0.5">Permanent energy reserve</div>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="w-full h-px bg-amber-200 my-1"></div>
+      
+                  <!-- SECTION B: Diamond Requirements & Ad Station -->
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-sm font-black text-stone-800 flex items-center gap-1.5">
+                        <span class="text-lg">💎</span> Section B: Diamond Requirements &amp; Ad Station
+                      </h3>
+                      <span class="text-[11px] text-cyan-800 font-semibold bg-cyan-100 px-2 py-0.5 rounded-lg border border-cyan-300">
+                        Price Scaling: +1 💎 per Sprout purchase
+                      </span>
+                    </div>
+      
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                      
+                      <!-- Requirement 1: Sunflower Sprout Seed (+1 💎 Escalation OR Watch Ad) -->
+                      <div class="bg-emerald-50/90 rounded-2xl p-3.5 border-2 border-emerald-300 flex flex-col justify-between gap-3 shadow-sm">
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-3xl">🌱</span>
+                            <div>
+                              <h4 class="text-xs sm:text-sm font-black text-emerald-950">Sunflower Sprout Seed</h4>
+                              <p class="text-[11px] text-emerald-800 leading-snug">
+                                Starts at 1 💎. Permanently increases by +1 💎 after every diamond purchase!
+                              </p>
+                            </div>
+                          </div>
+                          <span id="sfCurrentSproutPriceBadge" class="bg-emerald-200 text-emerald-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
+                            1 💎
+                          </span>
+                        </div>
+      
+                        <div class="flex items-center gap-2 pt-1">
+                          <button id="sfBuySproutDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                            <span>Throw <span id="sfBtnSproutDiamondPrice">1</span> 💎 &rarr; Plant 🌱</span>
+                          </button>
+                          <button onclick="openSfAdWatchModal('sprout')" class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                            <span>🎬 Watch Ad (FREE 🌱)</span>
+                          </button>
+                        </div>
+                      </div>
+      
+                      <!-- Requirement 2: Garden Shovel (10 💎 OR Watch Ad) -->
+                      <div class="bg-stone-50 rounded-2xl p-3.5 border-2 border-stone-300 flex flex-col justify-between gap-3 shadow-sm">
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-3xl">🪏</span>
+                            <div>
+                              <h4 class="text-xs sm:text-sm font-black text-stone-900">Garden Shovel</h4>
+                              <p class="text-[11px] text-stone-600 leading-snug">
+                                Required to dig up withered sunflowers (🥀) on Page 1 to free soil beds.
+                              </p>
+                            </div>
+                          </div>
+                          <span class="bg-stone-200 text-stone-800 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
+                            10 💎
+                          </span>
+                        </div>
+      
+                        <div class="flex items-center gap-2 pt-1">
+                          <button id="sfBuyShovelDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                            <span>Throw 10 💎 &rarr; +1 🪏</span>
+                          </button>
+                          <button onclick="openSfAdWatchModal('shovel')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                            <span>🎬 Watch Ad (FREE 🪏)</span>
+                          </button>
+                        </div>
+                      </div>
+      
+                      <!-- Requirement 3: Water Basket (2 💎) -->
+                      <div class="bg-blue-50/90 rounded-2xl p-3.5 border-2 border-blue-300 flex flex-col justify-between gap-2.5 shadow-sm">
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-3xl">🧺</span>
+                            <div>
+                              <h4 class="text-xs sm:text-sm font-black text-blue-950">Instant Water Basket</h4>
+                              <p class="text-[11px] text-blue-800 leading-snug">
+                                Adds +35s coin generating lifespan to an active sunflower!
+                              </p>
+                            </div>
+                          </div>
+                          <span class="bg-blue-200 text-blue-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
+                            2 💎
+                          </span>
+                        </div>
+      
+                        <button id="sfBuyBasketDiamondBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                          <span>Throw 2 💎 &rarr; Get 1 Water Basket 🧺</span>
+                        </button>
+                      </div>
+      
+                      <!-- Requirement 4: Coin Treasury Pack (5 💎 for 250 Coins) -->
+                      <div class="bg-amber-50/90 rounded-2xl p-3.5 border-2 border-amber-300 flex flex-col justify-between gap-2.5 shadow-sm">
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-3xl">🪙</span>
+                            <div>
+                              <h4 class="text-xs sm:text-sm font-black text-amber-950">Sunflower Coin Treasury</h4>
+                              <p class="text-[11px] text-amber-800 leading-snug">
+                                Instant coins to throw into the Section A Solar Converter.
+                              </p>
+                            </div>
+                          </div>
+                          <span class="bg-amber-200 text-amber-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
+                            5 💎
+                          </span>
+                        </div>
+      
+                        <button id="sfBuyCoinsDiamondBtn" class="w-full bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                          <span>Throw 5 💎 &rarr; Get 250 Coins 🪙</span>
+                        </button>
+                      </div>
+      
+                      <!-- Requirement 5: Worker Speed Boost (8 💎 for 2x pump speed for 60s) -->
+                      <div class="md:col-span-2 bg-gradient-to-r from-cyan-100 to-blue-100 rounded-2xl p-3.5 border-2 border-cyan-400 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+                        <div class="flex items-center gap-2.5">
+                          <span class="text-3xl">⚡</span>
+                          <div>
+                            <h4 class="text-xs sm:text-sm font-black text-cyan-950">Worker High-Speed Pump Overdrive</h4>
+                            <p class="text-[11px] text-cyan-800">
+                              Cistern Well Worker pumps 2x faster (1 basket every 2 seconds) for 60 seconds on Page 2!
+                            </p>
+                          </div>
+                        </div>
+      
+                        <button id="sfBuyWorkerBoostDiamondBtn" class="w-full sm:w-auto bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 text-white font-black text-xs px-4 py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                          <span>Throw 8 💎 &rarr; 2x Worker Speed ⚡</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </main>
+      
+              <!-- Ad Reel Modal (5-second simulation) -->
+              <div id="sfAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+                <div class="bg-stone-900 border-4 border-amber-400 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
+                  
+                  <!-- Top Bar -->
+                  <div class="bg-stone-800 px-4 py-2 border-b border-stone-700 flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[9px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
+                      <span id="sfAdBrandName" class="text-xs text-stone-400">GreenSprout Garden</span>
+                    </div>
+                    
+                    <span id="sfAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-xs px-2.5 py-0.5 rounded-full">
+                      ⏳ 5s
+                    </span>
+                  </div>
+      
+                  <!-- Commercial Screen -->
+                  <div class="p-5 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[190px]">
+                    <div id="sfAdGraphicEmoji" class="text-5xl mb-2 animate-bounce-gentle">🌻</div>
+                    <h3 id="sfAdHeadline" class="text-base font-black text-amber-300">MaxiSun Golden Fertilizer</h3>
+                    <p id="sfAdCatchphrase" class="text-stone-300 text-xs mt-1 max-w-xs">
+                      "Double the sunshine, triple the blooms. The trusted sponsor of solar gardens everywhere!"
+                    </p>
+      
+                    <div class="mt-3 inline-flex items-center gap-1 bg-stone-800/80 px-2.5 py-1 rounded-full border border-stone-700 text-xs">
+                      <span class="text-amber-300 font-semibold">Reward:</span>
+                      <span id="sfAdRewardTag" class="font-bold text-white">1 Free Sprout 🌱</span>
+                    </div>
+      
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-stone-800 h-2 rounded-full mt-4 overflow-hidden">
+                      <div id="sfAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
+                    </div>
+                  </div>
+      
+                  <!-- Claim Button Footer -->
+                  <div class="p-3 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
+                    <span class="text-[10px] text-stone-400">Watch full 5s clip for reward.</span>
+                    <button id="sfAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-xs px-3.5 py-1.5 rounded-xl cursor-not-allowed transition">
+                      Watching...
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 20 Land Farm Guide Rules Modal -->
+              <div id="sfRulesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border-4 border-amber-300 relative max-h-[90vh] overflow-y-auto">
+                  <button id="sfCloseRulesBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold p-1">✕</button>
+                  <h3 class="text-lg font-black text-amber-950 mb-1 flex items-center gap-2">
+                    <span>📖</span> 20 Land Garden Farm Guide
+                  </h3>
+                  <p class="text-xs text-stone-500 mb-3">Complete gameplay guide and land unlock rules:</p>
+      
+                  <div class="space-y-2.5 text-xs text-stone-700 leading-relaxed">
+                    <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                      <strong class="text-emerald-950 block font-bold">🗺️ 20 Land Plots System</strong>
+                      Plot 1 is unlocked for free! Plot 2 costs <strong>10 💎</strong>, Plot 3 costs <strong>100 💎</strong>, and subsequent plots scale up to Plot 20. Tap any locked plot to unlock it with Diamonds.
+                    </div>
+      
+                    <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                      <strong class="text-amber-950 block font-bold">🌻 Continuous Coin Emission</strong>
+                      Blooming Sunflowers generate <strong>+2 ☀️ Coins every second</strong>! Use Water Baskets (🧺) to prolong life (+35s). If a flower runs out of water, it withers (🥀) and must be cleared with a Shovel (🪏).
+                    </div>
+      
+                    <div class="p-2.5 bg-yellow-50 rounded-xl border border-yellow-200">
+                      <strong class="text-yellow-950 block font-bold">⚡ Solar Converter (100 🪙 &rarr; 29 ⚡)</strong>
+                      Throw 100 Sunflower Coins into the Page 3 converter to yield 29 Solar Energy units!
+                    </div>
+      
+                    <div class="p-2.5 bg-blue-50 rounded-xl border border-blue-200">
+                      <strong class="text-blue-950 block font-bold">🧱 Wall Cistern Worker</strong>
+                      Foreman Dave pumps water into wooden baskets on the wall crate (max 5 🧺). Collect them into your inventory on Page 2!
+                    </div>
+                  </div>
+      
+                  <div class="mt-4 flex justify-end">
+                    <button id="sfCloseRulesBtn2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-1.5 rounded-xl text-xs transition">
+                      Got It!
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /#energySunflowerFarmingView -->
             </div>
       
 
@@ -1423,6 +2152,16 @@
       
               <div class="profile-stat-row">
                 <div class="stat-left">
+                  <span class="stat-icon">💙</span>
+                  <span class="stat-label">Blue Coin Balance:</span>
+                </div>
+                <div class="stat-right">
+                  <span class="stat-val blue-highlight" id="profileBlueCoinBalance" style="color: #38bdf8; font-weight: 800;">0</span>
+                </div>
+              </div>
+      
+              <div class="profile-stat-row">
+                <div class="stat-left">
                   <span class="stat-icon">🔥</span>
                   <span class="stat-label">Streak:</span>
                 </div>
@@ -1451,6 +2190,100 @@
                 </div>
               </div>
       
+            </div>
+      
+            <!-- Identity & Progression Badges Row -->
+            <div class="profile-level-pills-row" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px 0 14px 0;">
+              <span class="profile-chip-pill chip-lvl">⭐ Level <b id="profilePlayerLevel">1</b></span>
+              <span class="profile-chip-pill chip-reactor">⚛️ Reactor Lv.<b id="profileReactorLevel">1</b></span>
+              <span class="profile-chip-pill chip-rank">🏆 Rank <b id="profileSeasonRank">#1</b></span>
+              <span class="profile-chip-pill chip-clan">🛡️ Clan: <b id="profileClanTag">Quantum</b></span>
+            </div>
+      
+            <!-- Extended Lifetime Statistics -->
+            <div class="profile-lifetime-stats-box">
+              <h4 class="profile-section-mini-title">📊 Operational Statistics</h4>
+              
+              <div class="profile-stat-grid-2col">
+                <div class="stat-mini-card">
+                  <span class="mini-icon">👆</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Total Taps</span>
+                    <span class="mini-val" id="profileTotalTaps">0</span>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="mini-icon">💰</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Total Coins Earned</span>
+                    <span class="mini-val" id="profileTotalCoinsEarned">0</span>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="mini-icon">🎮</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Mini-games Played</span>
+                    <span class="mini-val" id="profileMiniGamesPlayed">0</span>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="mini-icon">👥</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Referrals</span>
+                    <span class="mini-val" id="profileReferralsCount">0</span>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="mini-icon">🔥</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Current Streak</span>
+                    <span class="mini-val highlight" id="profileCurrentStreak">0 Days</span>
+                  </div>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="mini-icon">⚡</span>
+                  <div class="mini-content">
+                    <span class="mini-label">Longest Streak</span>
+                    <span class="mini-val" id="profileLongestStreak">0 Days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Achievement Badges Section -->
+            <div class="profile-badges-container">
+              <div class="profile-badges-header">
+                <h4 class="profile-section-mini-title">🎖️ Badges & Achievements</h4>
+                <span class="badges-count-badge" id="profileBadgesUnlockedCount">0 / 5</span>
+              </div>
+      
+              <div class="profile-badges-grid">
+                <div class="profile-badge-item" id="badgeTapMaster" onclick="showBadgeDetails('tapMaster')">
+                  <div class="badge-icon-wrap">⚡</div>
+                  <div class="badge-name">Tap Master</div>
+                  <div class="badge-status-tag">10K Taps</div>
+                </div>
+                <div class="profile-badge-item" id="badgeChampion" onclick="showBadgeDetails('champion')">
+                  <div class="badge-icon-wrap">🏆</div>
+                  <div class="badge-name">Champion</div>
+                  <div class="badge-status-tag">Level 50</div>
+                </div>
+                <div class="profile-badge-item" id="badgeStreakKing" onclick="showBadgeDetails('streakKing')">
+                  <div class="badge-icon-wrap">🔥</div>
+                  <div class="badge-name">Streak King</div>
+                  <div class="badge-status-tag">7-Day Streak</div>
+                </div>
+                <div class="profile-badge-item" id="badgeDiamondPlayer" onclick="showBadgeDetails('diamondPlayer')">
+                  <div class="badge-icon-wrap">💎</div>
+                  <div class="badge-name">Diamond Player</div>
+                  <div class="badge-status-tag">1K Diamonds</div>
+                </div>
+                <div class="profile-badge-item" id="badgeReactorLegend" onclick="showBadgeDetails('reactorLegend')">
+                  <div class="badge-icon-wrap">👑</div>
+                  <div class="badge-name">Reactor Legend</div>
+                  <div class="badge-status-tag">Level 100</div>
+                </div>
+              </div>
             </div>
       
           </section>
@@ -1545,8 +2378,12 @@
                   <span class="curr-amount" id="shopCoinVal">0</span>
                 </div>
                 <div class="shop-curr-pill diamond-pill-glow" title="Blue Coins" style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4;">
-                  <span class="curr-icon">🔷</span>
+                  <span class="curr-icon">💙</span>
                   <span class="curr-amount" id="shopBlueCoinVal">0</span>
+                </div>
+                <div class="shop-curr-pill diamond-pill-glow" title="Diamonds" style="background: rgba(8, 145, 178, 0.15); border: 1.5px solid #0891b2;">
+                  <span class="curr-icon">💎</span>
+                  <span class="curr-amount" id="shopDiamondVal">0</span>
                 </div>
               </div>
             </div>
@@ -1581,7 +2418,7 @@
                   <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
                     <!-- Option 1: 500 Blue Coins -->
                     <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('key', 500)" title="Buy 1 Key for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.4)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-icon" style="font-size: 15px;">💙</span>
                       <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
                       <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Key 🔑</span>
                     </button>
@@ -1609,7 +2446,7 @@
                   <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
                     <!-- Option 1: 500 Blue Coins -->
                     <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('ticket', 500)" title="Buy 1 Ticket for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.4)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-icon" style="font-size: 15px;">💙</span>
                       <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
                       <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Ticket 🎟️</span>
                     </button>
@@ -1643,7 +2480,7 @@
                     </button>
                     <!-- Option 2: 100 Blue Coins -> +20 Eggs -->
                     <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyEggsWithBlueCoins(100, 20)" title="Buy 20 Eggs for 100 Blue Coins" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(14, 165, 233, 0.35)); border: 1.5px solid #06b6d4; color: #38bdf8; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-icon" style="font-size: 15px;">💙</span>
                       <span class="method-label" style="font-weight: 800; font-size: 12px;">100 Blue</span>
                       <span class="method-gain" style="background: #06b6d4; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+20 Eggs 🥚</span>
                     </button>
@@ -1665,7 +2502,7 @@
                   <div class="fuel-three-ways-buy" style="grid-template-columns: 1fr 1fr; gap: 8px;">
                     <!-- Option 1: 500 Blue Coins -->
                     <button class="fuel-buy-method-btn blue-convert-btn" onclick="buyItemWithBlueCoins('scratchCard', 500)" title="Buy 1 Scratch Card for 500 Blue Coins" style="background: linear-gradient(135deg, rgba(192, 132, 252, 0.25), rgba(168, 85, 247, 0.4)); border: 1.5px solid #c084fc; color: #e9d5ff; padding: 10px 8px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <span class="method-icon" style="font-size: 15px;">🔷</span>
+                      <span class="method-icon" style="font-size: 15px;">💙</span>
                       <span class="method-label" style="font-weight: 800; font-size: 12px;">500 Blue</span>
                       <span class="method-gain" style="background: #c084fc; color: #000; font-weight: 800; padding: 2px 6px; border-radius: 6px; font-size: 10px;">+1 Card 🎴</span>
                     </button>
@@ -1859,17 +2696,17 @@
       
                 <button class="xp-level-badge-btn" id="btnToggleLevels" onclick="toggleXpSubView()">
                   <span class="btn-sparkle">✨</span>
-                  <span id="toggleLevelsBtnText">LV. 1 - 100</span>
+                  <span id="toggleLevelsBtnText">LV. 1 - 1000</span>
                 </button>
               </div>
       
-              <!-- Subtabs Switcher: Levels 1-100 vs 10,000 Mega Reward -->
+              <!-- Subtabs Switcher: Levels 1-1000 vs 10,000 Mega Reward -->
               <div class="xp-subtab-header">
                 <button class="xp-subtab-btn" id="subtabLevelsList" onclick="switchXpSubtab('levels')">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
                   </svg>
-                  <span>Levels 1 - 100</span>
+                  <span>Levels 1 - 1000</span>
                 </button>
       
                 <button class="xp-subtab-btn active" id="subtabMegaReward" onclick="switchXpSubtab('mega')">
@@ -1911,8 +2748,8 @@
                     <span>10,000 COINS</span>
                   </div>
       
-                  <h3 class="mega-card-title">Level 100 Mega Cash Prize</h3>
-                  <p class="mega-card-desc">Complete Level 100, then watch 1,000 ads to claim your 10,000 Coins real money reward via UPI / Paytm!</p>
+                  <h3 class="mega-card-title">Level 1000 Mega Cash Prize</h3>
+                  <p class="mega-card-desc">Complete Level 1000, then watch 1,000 ads to claim your 10,000 Coins real money reward via UPI / Paytm!</p>
       
                   <!-- Step 1 Card -->
                   <div class="mega-step-card" id="megaStep1Card">
@@ -1923,11 +2760,11 @@
                     </div>
                     <div class="mega-step-body">
                       <div class="mega-step-header">
-                        <span class="mega-step-title">Step 1: Reach Level 100</span>
+                        <span class="mega-step-title">Step 1: Reach Level 1000</span>
                         <span class="mega-step-badge locked" id="megaStep1Badge">LOCKED</span>
                       </div>
                       <div class="mega-step-sub">
-                        <span id="megaStep1SubText">Current: Level 0 / 100 (-1,000 / 100,000 XP)</span>
+                        <span id="megaStep1SubText">Current: Level 0 / 1000 (-1,000 / 1,000,000 XP)</span>
                         <svg class="step-lock-icon" id="megaStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -1967,18 +2804,18 @@
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <span id="megaActionBtnText">REACH LEVEL 100 TO UNLOCK AD WATCHER</span>
+                    <span id="megaActionBtnText">REACH LEVEL 1000 TO UNLOCK AD WATCHER</span>
                   </button>
       
                 </section>
       
               </div>
       
-              <!-- ==================== SUBVIEW 2: LEVELS 1-100 LIST ==================== -->
+              <!-- ==================== SUBVIEW 2: LEVELS 1-1000 LIST ==================== -->
               <div class="xp-subview" id="xpLevelsListSubView">
                 
                 <div class="levels-scroll-list" id="levelsScrollList">
-                  <!-- Dynamically populated Levels 1 to 100 -->
+                  <!-- Dynamically populated Levels 1 to 1000 -->
                 </div>
       
                 <button class="xp-back-home-btn" onclick="switchPage('home')">
@@ -2396,6 +3233,84 @@
                 </button>
               </section>
       
+              <!-- ================= CARD 6: 4x4 MEMORY MATCH ================= -->
+              <section class="rewards-grand-rectangle-card" id="rewardTabMemory" onclick="switchPage('memoryMatch')">
+                <div class="grand-vault-aura spin-aura"></div>
+                
+                <div class="grand-vault-circle spin-circle">
+                  <span style="font-size: 38px; filter: drop-shadow(0 4px 10px rgba(0, 240, 255, 0.6));">🧠</span>
+                </div>
+      
+                <div class="grand-vault-pill-tag spin-tag">🧠 MEMORY MATCH 🧠</div>
+      
+                <div class="rewards-rect-badge spin-badge">
+                  <span class="badge-dot"></span>
+                  <span>4 × 4 CARDS</span>
+                </div>
+      
+                <h3 class="rewards-rect-title">Quantum Memory Pair Match</h3>
+      
+                <div class="rewards-stats-strip">
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">GRID</span>
+                    <span class="stat-item-val cyan">16 Cards</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">PAIRS</span>
+                    <span class="stat-item-val gold">8 Pairs</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">PRIZE</span>
+                    <span class="stat-item-val green">Coins + 💎</span>
+                  </div>
+                </div>
+      
+                <button class="rewards-master-action-btn spin-btn" onclick="switchPage('memoryMatch'); event.stopPropagation();">
+                  <span>🧠 PLAY 4x4 MEMORY MATCH</span>
+                </button>
+              </section>
+      
+              <!-- ================= CARD 7: COIN CATCHER ================= -->
+              <section class="rewards-grand-rectangle-card" id="rewardTabCatcher" onclick="switchPage('coinCatcher')">
+                <div class="grand-vault-aura chest-aura"></div>
+                
+                <div class="grand-vault-circle chest-circle">
+                  <span style="font-size: 38px; filter: drop-shadow(0 4px 10px rgba(234, 179, 8, 0.6));">🪙</span>
+                </div>
+      
+                <div class="grand-vault-pill-tag chest-tag">🪙 COIN CATCHER 🪙</div>
+      
+                <div class="rewards-rect-badge chest-badge">
+                  <span class="badge-dot"></span>
+                  <span>ARCADE ACTION</span>
+                </div>
+      
+                <h3 class="rewards-rect-title">Cyber Coin Sky Catcher</h3>
+      
+                <div class="rewards-stats-strip">
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">ACTION</span>
+                    <span class="stat-item-val gold">Tap Coins</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">HAZARD</span>
+                    <span class="stat-item-val amber">Avoid 💣</span>
+                  </div>
+                  <div class="rewards-stat-divider"></div>
+                  <div class="rewards-stat-item">
+                    <span class="stat-item-label">ROUND</span>
+                    <span class="stat-item-val cyan">30s Timer</span>
+                  </div>
+                </div>
+      
+                <button class="rewards-master-action-btn chest-btn" onclick="switchPage('coinCatcher'); event.stopPropagation();">
+                  <span>🪙 PLAY COIN CATCHER</span>
+                </button>
+              </section>
+      
             </div>
       
       
@@ -2434,13 +3349,13 @@
                 </button>
               </div>
       
-              <!-- Subtabs Switcher: Goals 1-500 vs Mega Reward -->
+              <!-- Subtabs Switcher: Goals 1-1000 vs Mega Reward -->
               <div class="xp-subtab-header">
                 <button class="xp-subtab-btn" id="subtabGoalsList" onclick="switchGoalSubtab('goals')">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
                   </svg>
-                  <span>Goals 1 - 500</span>
+                  <span>Goals 1 - 1000</span>
                 </button>
       
                 <button class="xp-subtab-btn active" id="subtabGoalMegaReward" onclick="switchGoalSubtab('mega')">
@@ -2481,8 +3396,8 @@
                     <span>100 DANDIYAS • 75 CARDS • 150 FLOWERS • 1,000 COINS</span>
                   </div>
       
-                  <h3 class="mega-card-title">Level 500 Mega Goal Prize</h3>
-                  <p class="mega-card-desc">Complete Goal Level 500, then watch 1,000 ads to claim your ultimate reward: 100 Dandiyas, 75 Cards, 150 Flowers, and 1,000 Coins!</p>
+                  <h3 class="mega-card-title">Level 1000 Mega Goal Prize</h3>
+                  <p class="mega-card-desc">Complete Goal Level 1000, then watch 1,000 ads to claim your ultimate reward: 100 Dandiyas, 75 Cards, 150 Flowers, and 1,000 Coins!</p>
       
                   <!-- Step 1 Card -->
                   <div class="mega-step-card" id="goalMegaStep1Card">
@@ -2493,11 +3408,11 @@
                     </div>
                     <div class="mega-step-body">
                       <div class="mega-step-header">
-                        <span class="mega-step-title">Step 1: Complete Goal Level 500</span>
+                        <span class="mega-step-title">Step 1: Complete Goal Level 1000</span>
                         <span class="mega-step-badge locked" id="goalMegaStep1Badge">LOCKED</span>
                       </div>
                       <div class="mega-step-sub">
-                        <span id="goalMegaStep1SubText">Current: Goal Level 1 / 500</span>
+                        <span id="goalMegaStep1SubText">Current: Goal Level 1 / 1000</span>
                         <svg class="step-lock-icon" id="goalMegaStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -2537,18 +3452,18 @@
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <span id="goalMegaActionBtnText">REACH GOAL LEVEL 500 TO UNLOCK AD WATCHER</span>
+                    <span id="goalMegaActionBtnText">REACH GOAL LEVEL 1000 TO UNLOCK AD WATCHER</span>
                   </button>
       
                 </section>
       
               </div>
       
-              <!-- ==================== SUBVIEW 2: GOALS 1-500 LIST ==================== -->
+              <!-- ==================== SUBVIEW 2: GOALS 1-1000 LIST ==================== -->
               <div class="xp-subview" id="goalRoadmapSubView">
                 
                 <div class="levels-scroll-list" id="goalsScrollList">
-                  <!-- Dynamically populated Goals 1 to 500 -->
+                  <!-- Dynamically populated Goals 1 to 1000 -->
                 </div>
       
                 <button class="xp-back-home-btn" onclick="switchPage('home')">
@@ -3206,7 +4121,7 @@
           <!-- Stage Intro Header -->
           <div class="spin-stage-intro">
             <h3 class="spin-stage-title">⚡ Cyber Fortune Wheel</h3>
-            <p class="spin-stage-subtitle">Spin the lucky wheel to win Coins, Chest Keys, Cards &amp; Jackpot!</p>
+            <p class="spin-stage-subtitle">Spin the lucky wheel to collect 👑 Crowns, win Coins, Keys &amp; Jackpot!</p>
           </div>
       
           <!-- Spin Wheel Stage Container (Anchors flapper pointer directly above wheel) -->
@@ -3240,52 +4155,40 @@
               <!-- Outer LED Chaser Ring (24 bulbs) -->
               <div class="spin-chaser-ring" id="spinChaserRing"></div>
       
-            <!-- Rotating Wheel Disc -->
+            <!-- Rotating Wheel Disc (Clean White Wedges for High Contrast) -->
             <div class="spin-wheel-disc" id="spinWheelCircle">
               <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
                 <defs>
-                  <!-- Slice Gradients -->
-                  <!-- Slice 0 & 7: Try Again -->
-                  <linearGradient id="sliceTryAgainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#1e293b"/>
-                    <stop offset="60%" stop-color="#0f172a"/>
-                    <stop offset="100%" stop-color="#090d16"/>
+                  <!-- Clean White Slices (below the logos/emojis) -->
+                  <linearGradient id="sliceWhiteGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#f8fafc"/>
+                    <stop offset="100%" stop-color="#f1f5f9"/>
                   </linearGradient>
       
-                  <!-- Slice 1 & 5: 100 Blue Coins -->
-                  <linearGradient id="sliceBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#38bdf8"/>
-                    <stop offset="50%" stop-color="#0284c7"/>
-                    <stop offset="100%" stop-color="#0c4a6e"/>
+                  <linearGradient id="sliceWhiteGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#f1f5f9"/>
+                    <stop offset="100%" stop-color="#e2e8f0"/>
                   </linearGradient>
       
-                  <!-- Slice 2: 1 Key -->
-                  <linearGradient id="sliceKeyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#c084fc"/>
-                    <stop offset="50%" stop-color="#9333ea"/>
-                    <stop offset="100%" stop-color="#581c87"/>
+                  <!-- Crown Highlight Slice White Gradient (Slice 0) -->
+                  <linearGradient id="sliceCrownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#fffbeb"/>
+                    <stop offset="100%" stop-color="#fef3c7"/>
                   </linearGradient>
       
-                  <!-- Slice 3: 1 Card -->
-                  <linearGradient id="sliceCardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#f472b6"/>
-                    <stop offset="50%" stop-color="#db2777"/>
-                    <stop offset="100%" stop-color="#831843"/>
-                  </linearGradient>
+                  <filter id="crownGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                  </filter>
       
-                  <!-- Slice 4: 1 Ticket -->
-                  <linearGradient id="sliceTicketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#22d3ee"/>
-                    <stop offset="50%" stop-color="#0891b2"/>
-                    <stop offset="100%" stop-color="#155e75"/>
-                  </linearGradient>
-      
-                  <!-- Slice 6: 10 Gold Coins Jackpot (10%) -->
+                  <!-- Jackpot Golden Sheen Gradient (Slice 6) -->
                   <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#fde047"/>
-                    <stop offset="35%" stop-color="#f59e0b"/>
-                    <stop offset="70%" stop-color="#b45309"/>
-                    <stop offset="100%" stop-color="#78350f"/>
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="40%" stop-color="#fffbeb"/>
+                    <stop offset="100%" stop-color="#fef08a"/>
                   </linearGradient>
       
                   <filter id="jackpotGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
@@ -3296,35 +4199,35 @@
       
                 <!-- Outer Housing Circle -->
                 <circle cx="150" cy="150" r="148" fill="#030816" stroke="#fbbf24" stroke-width="3"/>
-                <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5"/>
+                <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(251, 191, 36, 0.5)" stroke-width="1.5"/>
       
-                <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg -->
-                <!-- Slice 0: Try Again (0 deg / 12 o'clock) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+                <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg - Clean White Colors -->
+                <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
       
                 <!-- Slice 1: 100 Blue Coins (45 deg / 1:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceKeyGrad)" stroke="#7e22ce" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 3: 1 Card (135 deg / 4:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceCardGrad)" stroke="#be123c" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 4: Try Again (180 deg / 6 o'clock) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceTryAgainGrad)" stroke="#334155" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 5: 1 Ticket (225 deg / 7:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceTicketGrad)" stroke="#0891b2" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
       
                 <!-- Slice 7: 100 Blue Coins (315 deg / 10:30) -->
-                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceBlueGrad)" stroke="#0284c7" stroke-width="1.2"/>
+                <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Divider Rays between Slices with Golden Metallic Sheen -->
-                <g stroke="#fde047" stroke-width="1.8" opacity="0.6">
+                <g stroke="#f59e0b" stroke-width="2" opacity="0.85">
                   <line x1="150" y1="150" x2="95.7" y2="18.8"/>
                   <line x1="150" y1="150" x2="204.3" y2="18.8"/>
                   <line x1="150" y1="150" x2="281.2" y2="95.7"/>
@@ -3336,47 +4239,47 @@
                 </g>
       
                 <!-- Inner Golden Ring Divider -->
-                <circle cx="150" cy="150" r="48" fill="none" stroke="#fde047" stroke-width="2" opacity="0.75"/>
+                <circle cx="150" cy="150" r="48" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0.9"/>
       
-                <!-- Slice Icons Only (No Text, Premium Big Emojis) -->
-                <!-- Slice 0: Try Again (0 deg) -->
+                <!-- Slice Icons (Vibrant Crisp Emojis over White Wedges) -->
+                <!-- Slice 0: 👑 Crown (0 deg) -->
                 <g transform="translate(150, 150) rotate(0) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
                 </g>
       
                 <!-- Slice 1: 100 Blue Coins (45 deg) -->
                 <g transform="translate(150, 150) rotate(45) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
       
                 <!-- Slice 2: 1 Key (90 deg) -->
                 <g transform="translate(150, 150) rotate(90) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(192,132,252,0.9))">🔑</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(147,51,234,0.5))">🔑</text>
                 </g>
       
                 <!-- Slice 3: 1 Card (135 deg) -->
                 <g transform="translate(150, 150) rotate(135) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(244,114,182,0.9))">🎴</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(219,39,119,0.5))">🎴</text>
                 </g>
       
                 <!-- Slice 4: Try Again (180 deg) -->
                 <g transform="translate(150, 150) rotate(180) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.9))">❌</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(100,116,139,0.6))">❌</text>
                 </g>
       
                 <!-- Slice 5: 1 Ticket (225 deg) -->
                 <g transform="translate(150, 150) rotate(225) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(34,211,238,0.9))">🎟️</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(8,145,178,0.5))">🎟️</text>
                 </g>
       
                 <!-- Slice 6: 10 Gold Coins (270 deg) -->
                 <g transform="translate(150, 150) rotate(270) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 8px rgba(251,191,36,1))">🪙</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
                 </g>
       
                 <!-- Slice 7: 100 Blue Coins (315 deg) -->
                 <g transform="translate(150, 150) rotate(315) translate(0, -92)">
-                  <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(56,189,248,0.9))">🔷</text>
+                  <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
       
                 <!-- Perimeter Golden Rivet Studs (8 pegs exactly placed on slice divider rays) -->
@@ -3408,17 +4311,39 @@
           </div>
         </div>
       
-          <!-- Prominent Winning Prize Showcase Card -->
-          <div class="spin-result-display" id="spinResultBox">
-            <div class="spin-result-badge" id="spinResultTag">🎯 READY TO SPIN</div>
-            <div class="spin-win-content" id="spinWinContent">
-              <div class="spin-win-icon-wrapper" id="spinWinIconWrapper">
-                <span class="spin-win-icon" id="spinWinIcon">🎡</span>
+          <!-- King Event Level Card (1 - 1000 Levels Wave Progression) -->
+          <div class="spin-level-display" id="spinLevelBox">
+            <div class="spin-level-header">
+              <div class="spin-level-title-group">
+                <span class="spin-level-crown-badge">👑</span>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span class="spin-level-name" id="spinLevelTitle">👑 KING EVENT • LEVEL 1 / 1000</span>
+                    <span class="spin-wave-badge crest" id="spinWaveTag">⚡ WAVE CREST</span>
+                  </div>
+                  <div class="spin-level-sub" id="spinLevelSub">Collect 5 👑 King Crowns to unlock Level 1 Gift!</div>
+                </div>
               </div>
-              <div class="spin-win-details" id="spinWinDetails">
-                <div class="spin-win-title" id="spinWinTitle">Cyber Lucky Wheel</div>
-                <div class="spin-win-desc" id="spinWinDesc">Spin to win Coins, Keys, Cards &amp; 10-Coin Jackpot!</div>
+              <div class="spin-level-gift-badge" id="spinLevelGiftBadge" onclick="showMysteryGiftPreview()">
+                <span class="gift-badge-icon">🎁</span>
+                <span class="gift-badge-text">LEVEL GIFT</span>
               </div>
+            </div>
+      
+            <div class="spin-level-progress-container">
+              <div class="spin-crown-track">
+                <div class="spin-crown-fill" id="spinCrownBarFill" style="width: 0%;"></div>
+              </div>
+              <div class="spin-crown-meta">
+                <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5 King Crowns Collected</span>
+                <span class="spin-crown-status" id="spinCrownStatusText">🎯 Crown Chance: 45% (Inverse Odds)</span>
+              </div>
+            </div>
+      
+            <!-- Level Reward Preview Strip -->
+            <div class="spin-level-reward-strip" id="spinLevelRewardStrip">
+              <span style="color: #94a3b8; font-size: 10px;">🎁 Level Reward:</span>
+              <span class="spin-reward-preview-val" id="spinLevelRewardPreviewText">+10 🪙 • +100 💙 • +2 🗝️ • +3 🎫</span>
             </div>
           </div>
       
@@ -3430,7 +4355,7 @@
               <span class="spin-btn-text" id="spinBtnText">SPIN THE WHEEL</span>
             </button>
             <div class="spin-odds-hint">
-              <span>★ 100% Slice Precision • 10% Gold Coin Jackpot ★</span>
+              <span>★ Collect 👑 Crowns on Wheel • Unlock Mystery Gift 🎁 ★</span>
             </div>
           </div>
           </section>
@@ -3474,6 +4399,50 @@
                 <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+10)</span>
               </button>
             </div>
+          </div>
+        </div>
+      
+        <!-- Grand Mystery Gift Winning Modal (Triggered when 👑 Crown Level Goal is Reached) -->
+        <div class="spin-gift-backdrop" id="spinGiftModalBackdrop" onclick="closeMysteryGiftModal(event)">
+          <div class="spin-gift-modal" id="spinGiftModal" onclick="event.stopPropagation()">
+            <div class="spin-gift-glow"></div>
+            
+            <div class="spin-gift-badge">👑 LEVEL COMPLETE!</div>
+            
+            <div class="spin-gift-chest-wrap">
+              <div class="spin-gift-sparkles">✨</div>
+              <div class="spin-gift-chest-icon">🎁</div>
+            </div>
+      
+            <h3 class="spin-gift-title" id="spinGiftTitle">MYSTERY GIFT UNLOCKED!</h3>
+            <p class="spin-gift-sub" id="spinGiftSub">You collected all 👑 crowns and unlocked the Grand Level Gift!</p>
+      
+            <div class="spin-gift-rewards-grid" id="spinGiftRewardsGrid">
+              <div class="gift-reward-card gold">
+                <span class="reward-icon">🪙</span>
+                <span class="reward-val" id="spinGiftCoinsVal">+10</span>
+                <span class="reward-label">Coins</span>
+              </div>
+              <div class="gift-reward-card blue">
+                <span class="reward-icon">💙</span>
+                <span class="reward-val" id="spinGiftBlueVal">+100</span>
+                <span class="reward-label">Blue Coins</span>
+              </div>
+              <div class="gift-reward-card purple">
+                <span class="reward-icon">🗝️</span>
+                <span class="reward-val" id="spinGiftKeysVal">+2</span>
+                <span class="reward-label">Keys</span>
+              </div>
+              <div class="gift-reward-card cyan">
+                <span class="reward-icon">🎟️</span>
+                <span class="reward-val" id="spinGiftTicketsVal">+3</span>
+                <span class="reward-label">Tickets</span>
+              </div>
+            </div>
+      
+            <button class="spin-gift-claim-btn" id="btnClaimMysteryGift" onclick="claimMysteryGiftReward()">
+              <span>🎉 CLAIM ALL GIFTS</span>
+            </button>
           </div>
         </div>
       </div>
@@ -3802,13 +4771,13 @@
           </div>
           <div class="info-strip-chip">
             <span class="chip-dot gold"></span>
-            <span class="chip-label">JACKPOT:</span>
-            <span class="chip-val">100 Coins / 20 💎</span>
+            <span class="chip-label">PRIZES:</span>
+            <span class="chip-val">1-2 🔑, 10-20 🥚, 1-2 🎟️, 10 🪙, 50-75 💙</span>
           </div>
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
-            <span class="chip-label">WIN RATE:</span>
-            <span class="chip-val">100% Instant Prize</span>
+            <span class="chip-label">ODDS:</span>
+            <span class="chip-val">50% Eggs, 20% Keys, 20% Tix, 8% Blue, 2% Coins</span>
           </div>
         </div>
       
@@ -3886,14 +4855,9 @@
       
           <!-- Action Buttons -->
           <div class="scratch-actions-wrapper">
-            <div class="scratch-dual-btn-row">
-              <button class="scratch-btn-secondary" id="btnSingleQuickScratch" onclick="quickScratchSingleCard()">
-                <span>⚡ QUICK REVEAL</span>
-              </button>
-              <button class="scratch-action-main-btn" id="btnSingleNewCard" onclick="dealNewSingleCard(true)">
-                <span id="scratchMainBtnLabel">🎴 NEW TICKET (1 CARD)</span>
-              </button>
-            </div>
+            <button class="scratch-action-main-btn" id="btnSingleNewCard" onclick="dealNewSingleCard(true)">
+              <span id="scratchMainBtnLabel">🎴 NEW TICKET (1 CARD)</span>
+            </button>
           </div>
         </section>
       </div>
@@ -3901,8 +4865,7 @@
 
       <!-- PAGE: EGG -->
       <div class="page-view" id="pageEgg">
-              
-              <!-- Top Action Nav Row -->
+        <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
           <button class="xp-back-btn" onclick="switchPage('reward')">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -3913,7 +4876,7 @@
       
           <div class="egg-header-title-pill">
             <span class="egg-sparkle-icon">✨</span>
-            <span>16-EGG CYBER HATCHERY</span>
+            <span>12-EGG CYBER HATCHERY</span>
           </div>
       
           <!-- Live Egg Coin Balance Header Pill -->
@@ -3939,93 +4902,535 @@
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
             <span class="chip-label">PRIZES:</span>
-            <span class="chip-val">Keys, Tickets, Gems</span>
+            <span class="chip-val">100 💙, 10 🪙, Keys, Tix, Cards</span>
           </div>
         </div>
       
         <!-- Hidden egg coin balance fallback for scripts -->
         <span id="eggAvailableCoins" style="display:none;">0 Eggs</span>
       
-              <!-- Egg Hatch Arena Card (Full Page View) -->
-              <section class="egg-incubator-card">
-                <!-- Header Banner -->
-                <div class="egg-incubator-header">
-                  <span class="egg-badge-tag">HATCH 16 EGGS • 1 EGG COIN PER HATCH</span>
-                  <span class="egg-remain-badge" id="eggRemainingGridText">16 / 16 Remaining</span>
-                </div>
+        <!-- Egg Hatch Arena Card (Full Page View) -->
+        <section class="egg-incubator-card">
+          <!-- Header Banner -->
+          <div class="egg-incubator-header">
+            <span class="egg-badge-tag">HATCH 12 EGGS • 1 EGG COIN PER HATCH</span>
+            <span class="egg-remain-badge" id="eggRemainingGridText">12 / 12 Remaining</span>
+          </div>
       
-                <!-- 4 Collection Meters (Collect 3 of any item to win) -->
-                <div class="egg-collection-meters-bar">
-                  <!-- Keys: 3 -> 1 Key -->
-                  <div class="egg-collect-item" id="eggMeterKey">
-                    <div class="egg-collect-icon">🔑</div>
-                    <div class="egg-collect-info">
-                      <span class="egg-collect-name">KEYS</span>
-                      <span class="egg-collect-progress"><strong id="eggCountKey">0</strong>/3</span>
-                    </div>
-                    <div class="egg-meter-pips" id="eggPipsKey">
-                      <span class="pip"></span><span class="pip"></span><span class="pip"></span>
-                    </div>
-                    <span class="egg-win-label">Win 1 Key</span>
+          <!-- 5 Collection Meters (Collect 3 of any item to win) -->
+          <div class="egg-collection-meters-bar">
+            <!-- Keys: 3 -> 1 Key -->
+            <div class="egg-collect-item" id="eggMeterKey">
+              <div class="egg-collect-icon">🔑</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">KEYS</span>
+                <span class="egg-collect-progress"><strong id="eggCountKey">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsKey">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Key</span>
+            </div>
+      
+            <!-- Tickets: 3 -> 1 Ticket -->
+            <div class="egg-collect-item" id="eggMeterTicket">
+              <div class="egg-collect-icon">🎟️</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">TICKETS</span>
+                <span class="egg-collect-progress"><strong id="eggCountTicket">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsTicket">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Tix</span>
+            </div>
+      
+            <!-- Cards: 3 -> 1 Card -->
+            <div class="egg-collect-item" id="eggMeterCard">
+              <div class="egg-collect-icon">🎴</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">CARDS</span>
+                <span class="egg-collect-progress"><strong id="eggCountCard">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsCard">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label">Win 1 Card</span>
+            </div>
+      
+            <!-- Coins: 3 -> 10 Coins -->
+            <div class="egg-collect-item" id="eggMeterCoin">
+              <div class="egg-collect-icon">🪙</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">COINS</span>
+                <span class="egg-collect-progress"><strong id="eggCountCoin">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsCoin">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label gold">Win 10 Coin</span>
+            </div>
+      
+            <!-- Blue Coins: 3 -> 100 Blue Coins -->
+            <div class="egg-collect-item" id="eggMeterBlueCoin">
+              <div class="egg-collect-icon">💙</div>
+              <div class="egg-collect-info">
+                <span class="egg-collect-name">BLUE COIN</span>
+                <span class="egg-collect-progress"><strong id="eggCountBlueCoin">0</strong>/3</span>
+              </div>
+              <div class="egg-meter-pips" id="eggPipsBlueCoin">
+                <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+              </div>
+              <span class="egg-win-label cyan">Win 100 💙</span>
+            </div>
+          </div>
+      
+          <!-- 12-Egg Interactive Grid (4 columns x 3 rows) -->
+          <div class="egg-grid-16 egg-grid-12" id="eggGrid16">
+            <!-- 12 Eggs dynamically populated by egg.js -->
+          </div>
+      
+          <div class="egg-status-box" id="eggPageStatusBox">
+            <span id="eggStatusText">Tap eggs to hatch (1 Egg Coin). Reveal 10 random items, 11th egg hatches match-3 win!</span>
+          </div>
+      
+          <div class="egg-actions-wrapper">
+            <button class="egg-action-main-btn" id="btnReshuffleEggs" onclick="shuffleEggs16(true)">
+              <span>🔄 RESHUFFLE 12 EGGS</span>
+            </button>
+          </div>
+        </section>
+      
+        <!-- Egg Match-3 Win Result Celebration Modal -->
+        <div class="egg-win-modal-overlay" id="eggWinResultModal" style="display: none;">
+          <div class="egg-win-modal-card">
+            <div class="egg-win-glow-aura"></div>
+            <div class="egg-win-celebration-badge">🎉 MATCH-3 VICTORY! 🎉</div>
+            <div class="egg-win-icon-wrapper" id="eggWinPrizeIcon">💙</div>
+            <h3 class="egg-win-title" id="eggWinPrizeTitle">YOU WON 100 BLUE COINS!</h3>
+            <p class="egg-win-desc" id="eggWinPrizeDesc">3 Blue Coins collected on egg #11! Reward added to your vault.</p>
+            <button type="button" class="egg-win-claim-btn" onclick="closeEggWinModal()">
+              <span>COLLECT &amp; HATCH AGAIN 🥚</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: LEADERBOARD -->
+      <div class="page-view" id="pageLeaderboard">
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('home')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Home</span>
+          </button>
+      
+          <div class="leaderboard-header-title-pill">
+            <span class="leaderboard-trophy-icon">🏆</span>
+            <span>GLOBAL LEADERBOARD</span>
+          </div>
+      
+          <div class="leaderboard-live-pill">
+            <span class="live-dot-pulse"></span>
+            <span>LIVE</span>
+          </div>
+        </div>
+      
+        <!-- Leaderboard Category Filter Tabs Strip -->
+        <div class="leaderboard-filter-tabs">
+          <button type="button" class="lb-tab-btn active" id="lbTabCoins" onclick="switchLeaderboardCategory('coins')">
+            <span class="lb-tab-icon">👑</span>
+            <span class="lb-tab-text">Coin Rankings</span>
+          </button>
+          <button type="button" class="lb-tab-btn" id="lbTabSpin" onclick="switchLeaderboardCategory('spin')">
+            <span class="lb-tab-icon">🎡</span>
+            <span class="lb-tab-text">Spinner Event</span>
+          </button>
+          <button type="button" class="lb-tab-btn" id="lbTabTaps" onclick="switchLeaderboardCategory('taps')">
+            <span class="lb-tab-icon">⚡</span>
+            <span class="lb-tab-text">Energy Taps</span>
+          </button>
+        </div>
+      
+        <!-- Master Leaderboard Card Wrapper -->
+        <section class="leaderboard-master-card">
+          
+          <!-- ================================================================
+               TOP 3 CHAMPIONS 3D STEP PODIUM
+               ================================================================ -->
+          <div class="podium-section-wrap">
+            <div class="podium-stage-glow"></div>
+            
+            <div class="podium-step-container">
+              
+              <!-- STEP 2: 2ND PLACE (SILVER) -->
+              <div class="podium-step step-rank-2" id="podiumRank2">
+                <div class="podium-player-card">
+                  <div class="podium-crown-badge silver">🥈 #2</div>
+                  <div class="podium-avatar-wrapper silver-ring">
+                    <div class="podium-avatar-box" id="podiumAvatar2"></div>
                   </div>
-      
-                  <!-- Tickets: 3 -> 1 Ticket -->
-                  <div class="egg-collect-item" id="eggMeterTicket">
-                    <div class="egg-collect-icon">🎟️</div>
-                    <div class="egg-collect-info">
-                      <span class="egg-collect-name">TICKETS</span>
-                      <span class="egg-collect-progress"><strong id="eggCountTicket">0</strong>/3</span>
-                    </div>
-                    <div class="egg-meter-pips" id="eggPipsTicket">
-                      <span class="pip"></span><span class="pip"></span><span class="pip"></span>
-                    </div>
-                    <span class="egg-win-label">Win 1 Tix</span>
-                  </div>
-      
-                  <!-- Cards: 3 -> 1 Card -->
-                  <div class="egg-collect-item" id="eggMeterCard">
-                    <div class="egg-collect-icon">🎴</div>
-                    <div class="egg-collect-info">
-                      <span class="egg-collect-name">CARDS</span>
-                      <span class="egg-collect-progress"><strong id="eggCountCard">0</strong>/3</span>
-                    </div>
-                    <div class="egg-meter-pips" id="eggPipsCard">
-                      <span class="pip"></span><span class="pip"></span><span class="pip"></span>
-                    </div>
-                    <span class="egg-win-label">Win 1 Card</span>
-                  </div>
-      
-                  <!-- Coins: 3 -> 10 Coins (2% prob) -->
-                  <div class="egg-collect-item" id="eggMeterCoin">
-                    <div class="egg-collect-icon">🪙</div>
-                    <div class="egg-collect-info">
-                      <span class="egg-collect-name">COIN <em class="egg-rare-tag">2%</em></span>
-                      <span class="egg-collect-progress"><strong id="eggCountCoin">0</strong>/3</span>
-                    </div>
-                    <div class="egg-meter-pips" id="eggPipsCoin">
-                      <span class="pip"></span><span class="pip"></span><span class="pip"></span>
-                    </div>
-                    <span class="egg-win-label gold">Win 10 Coin</span>
+                  <div class="podium-player-name" id="podiumName2">CyberWarrior</div>
+                  <div class="podium-event-badge" id="podiumEvent2">🎡 Event Lv.78</div>
+                  <div class="podium-score-pill silver" id="podiumScore2">👑 18,450,000</div>
+                </div>
+                <!-- 3D Pedestal Stand -->
+                <div class="podium-pedestal pedestal-silver">
+                  <div class="pedestal-top"></div>
+                  <div class="pedestal-front">
+                    <span class="pedestal-num">2</span>
+                    <span class="pedestal-medal-tag">SILVER</span>
                   </div>
                 </div>
+              </div>
       
-                <!-- 16-Egg Interactive Grid (4x4) -->
-                <div class="egg-grid-16" id="eggGrid16">
-                  <!-- 16 Eggs dynamically populated by reward.js -->
+              <!-- STEP 1: 1ST PLACE (GOLD CHAMPION) -->
+              <div class="podium-step step-rank-1" id="podiumRank1">
+                <div class="podium-player-card champion">
+                  <div class="podium-halo-rays"></div>
+                  <div class="podium-crown-badge gold">👑 #1 CHAMPION</div>
+                  <div class="podium-avatar-wrapper gold-ring">
+                    <div class="podium-avatar-box" id="podiumAvatar1"></div>
+                    <div class="podium-winner-sparkle">✦</div>
+                  </div>
+                  <div class="podium-player-name champion-name" id="podiumName1">QuantumKing</div>
+                  <div class="podium-event-badge gold-badge" id="podiumEvent1">👑 Event Lv.95</div>
+                  <div class="podium-score-pill gold" id="podiumScore1">👑 28,920,000</div>
                 </div>
+                <!-- 3D Pedestal Stand -->
+                <div class="podium-pedestal pedestal-gold">
+                  <div class="pedestal-top"></div>
+                  <div class="pedestal-front">
+                    <span class="pedestal-num">1</span>
+                    <span class="pedestal-medal-tag">CHAMPION</span>
+                  </div>
+                </div>
+              </div>
       
-                <div class="egg-status-box" id="eggPageStatusBox">
-                  <span id="eggStatusText">Tap any egg to hatch (1 Egg Coin). First to collect 3 wins & reshuffles!</span>
+              <!-- STEP 3: 3RD PLACE (BRONZE) -->
+              <div class="podium-step step-rank-3" id="podiumRank3">
+                <div class="podium-player-card">
+                  <div class="podium-crown-badge bronze">🥉 #3</div>
+                  <div class="podium-avatar-wrapper bronze-ring">
+                    <div class="podium-avatar-box" id="podiumAvatar3"></div>
+                  </div>
+                  <div class="podium-player-name" id="podiumName3">ViperStrike</div>
+                  <div class="podium-event-badge" id="podiumEvent3">🎡 Event Lv.65</div>
+                  <div class="podium-score-pill bronze" id="podiumScore3">👑 12,380,000</div>
                 </div>
-      
-                <div class="egg-actions-wrapper">
-                  <button class="egg-action-main-btn" id="btnReshuffleEggs" onclick="shuffleEggs16(true)">
-                    <span>🔄 RESHUFFLE 16 EGGS</span>
-                  </button>
+                <!-- 3D Pedestal Stand -->
+                <div class="podium-pedestal pedestal-bronze">
+                  <div class="pedestal-top"></div>
+                  <div class="pedestal-front">
+                    <span class="pedestal-num">3</span>
+                    <span class="pedestal-medal-tag">BRONZE</span>
+                  </div>
                 </div>
-              </section>
+              </div>
       
             </div>
+          </div>
+      
+          <!-- ================================================================
+               TOP 4 TO 100 PLAYERS LIST (SCROLLABLE)
+               ================================================================ -->
+          <div class="leaderboard-roster-header">
+            <span class="roster-title">TOP 4 - 100 COMMUNITY RACERS</span>
+            <span class="roster-sub" id="rosterTotalSubtitle">Live Standings</span>
+          </div>
+      
+          <div class="leaderboard-scroll-list" id="leaderboardListContainer">
+            <!-- Populated dynamically by renderLeaderboardRoster() -->
+          </div>
+      
+        </section>
+      
+        <!-- ================================================================
+             STICKY / PINNED USER'S LIVE STANDING BAR
+             ================================================================ -->
+        <div class="leaderboard-my-standing-bar" id="leaderboardMyStandingBar">
+          <div class="my-standing-left">
+            <div class="my-rank-pill" id="lbMyRankPill">#1</div>
+            <div class="my-avatar-mini" id="lbMyAvatarMini">👑</div>
+            <div class="my-info-col">
+              <div class="my-name-row">
+                <span class="my-name" id="lbMyName">Player</span>
+                <span class="my-you-badge">YOU</span>
+              </div>
+              <span class="my-event-chip" id="lbMyEventChip">👑 Event Lv.1</span>
+            </div>
+          </div>
+          <div class="my-standing-right">
+            <div class="my-coin-total" id="lbMyCoinTotal">👑 0</div>
+            <span class="my-coin-label">TOTAL COINS</span>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: MEMORY-MATCH -->
+      <div class="page-view" id="pageMemoryMatch">
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+      
+          <div class="spin-header-title-pill">
+            <span class="spin-sparkle-icon">🧠</span>
+            <span>MEMORY MATCH</span>
+          </div>
+      
+          <div class="spin-ticket-header-pill" onclick="startMemoryMatchGame()">
+            <span class="ticket-pill-icon">🔄</span>
+            <span class="ticket-pill-val">Restart</span>
+          </div>
+        </div>
+      
+        <!-- Quick Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot cyan"></span>
+            <span class="chip-label">GRID:</span>
+            <span class="chip-val">4 × 4 (16 Cards)</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot amber"></span>
+            <span class="chip-label">TIME:</span>
+            <span class="chip-val">60 Seconds</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">REWARD:</span>
+            <span class="chip-val">Coins + Diamonds</span>
+          </div>
+        </div>
+      
+        <!-- Game Arena Card -->
+        <section class="memory-arena-card">
+          <div class="memory-ambient-glow"></div>
+      
+          <!-- Live Performance HUD -->
+          <div class="memory-hud-row">
+            <div class="memory-hud-pill">
+              <span class="hud-icon">⏱️</span>
+              <div class="hud-data">
+                <span class="hud-label">TIME</span>
+                <span class="hud-val" id="memoryTimeVal">60s</span>
+              </div>
+            </div>
+            <div class="memory-hud-pill">
+              <span class="hud-icon">🎯</span>
+              <div class="hud-data">
+                <span class="hud-label">MATCHES</span>
+                <span class="hud-val highlight" id="memoryMatchesVal">0 / 8</span>
+              </div>
+            </div>
+            <div class="memory-hud-pill">
+              <span class="hud-icon">⚠️</span>
+              <div class="hud-data">
+                <span class="hud-label">MISTAKES</span>
+                <span class="hud-val" id="memoryMistakesVal">0</span>
+              </div>
+            </div>
+          </div>
+      
+          <!-- 4x4 Grid of 16 Cards -->
+          <div class="memory-grid-container" id="memoryGridContainer">
+            <!-- Generated dynamically in memory-match.js -->
+          </div>
+      
+          <!-- Controls / Action Strip -->
+          <div class="memory-controls-bar">
+            <button class="memory-action-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
+              <span>🚀</span> Start Memory Match
+            </button>
+          </div>
+        </section>
+      
+        <!-- Victory / Game Over Modal -->
+        <div class="memory-modal-overlay" id="memoryModalOverlay">
+          <div class="memory-modal-card">
+            <div class="memory-modal-glow"></div>
+            <div class="memory-modal-header">
+              <div class="memory-modal-icon" id="memoryResultIcon">🏆</div>
+              <h3 class="memory-modal-title" id="memoryResultTitle">REACTOR SYNCHRONIZED!</h3>
+              <p class="memory-modal-desc" id="memoryResultDesc">All 8 pairs matched successfully!</p>
+            </div>
+      
+            <div class="memory-stars-row" id="memoryStarsRow">
+              <span class="star-item active">⭐</span>
+              <span class="star-item active">⭐</span>
+              <span class="star-item active">⭐</span>
+            </div>
+      
+            <div class="memory-stats-breakdown">
+              <div class="breakdown-row">
+                <span>Time Remaining:</span>
+                <strong id="memoryStatTime">24s</strong>
+              </div>
+              <div class="breakdown-row">
+                <span>Mistakes Made:</span>
+                <strong id="memoryStatMistakes">2</strong>
+              </div>
+              <div class="breakdown-row highlight">
+                <span>Reward Calculated:</span>
+                <strong id="memoryStatReward">+250 Coins 🪙, +35 💎</strong>
+              </div>
+            </div>
+      
+            <div class="memory-modal-actions">
+              <button class="memory-claim-btn" id="memoryClaimBtn" onclick="claimMemoryMatchReward()">
+                <span>🎁</span> Claim Reward
+              </button>
+              <button class="memory-retry-btn" onclick="startMemoryMatchGame()">
+                <span>🔄</span> Play Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: COIN-CATCHER -->
+      <div class="page-view" id="pageCoinCatcher">
+        <!-- Top Action Nav Row -->
+        <div class="xp-top-actions-row">
+          <button class="xp-back-btn" onclick="switchPage('reward')">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Back</span>
+          </button>
+      
+          <div class="spin-header-title-pill">
+            <span class="spin-sparkle-icon">🪙</span>
+            <span>COIN CATCHER</span>
+          </div>
+      
+          <div class="spin-ticket-header-pill" onclick="startCoinCatcherGame()">
+            <span class="ticket-pill-icon">🔄</span>
+            <span class="ticket-pill-val">Restart</span>
+          </div>
+        </div>
+      
+        <!-- Quick Info Strip -->
+        <div class="mini-game-info-strip">
+          <div class="info-strip-chip">
+            <span class="chip-dot gold"></span>
+            <span class="chip-label">TARGET:</span>
+            <span class="chip-val">Tap Falling Coins</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot amber"></span>
+            <span class="chip-label">HAZARD:</span>
+            <span class="chip-val">Avoid 💣 Bombs</span>
+          </div>
+          <div class="info-strip-chip">
+            <span class="chip-dot cyan"></span>
+            <span class="chip-label">TIME:</span>
+            <span class="chip-val">30s Round</span>
+          </div>
+        </div>
+      
+        <!-- Game Arena Card -->
+        <section class="catcher-arena-card">
+          <div class="catcher-ambient-glow"></div>
+      
+          <!-- Live Performance HUD -->
+          <div class="catcher-hud-row">
+            <div class="catcher-hud-pill">
+              <span class="hud-icon">⏱️</span>
+              <div class="hud-data">
+                <span class="hud-label">TIME</span>
+                <span class="hud-val" id="catcherTimeVal">30s</span>
+              </div>
+            </div>
+            <div class="catcher-hud-pill">
+              <span class="hud-icon">🪙</span>
+              <div class="hud-data">
+                <span class="hud-label">COINS</span>
+                <span class="hud-val highlight" id="catcherScoreVal">0</span>
+              </div>
+            </div>
+            <div class="catcher-hud-pill">
+              <span class="hud-icon">🔥</span>
+              <div class="hud-data">
+                <span class="hud-label">COMBO</span>
+                <span class="hud-val" id="catcherComboVal">1.0x</span>
+              </div>
+            </div>
+            <div class="catcher-hud-pill">
+              <span class="hud-icon">❤️</span>
+              <div class="hud-data">
+                <span class="hud-label">LIVES</span>
+                <span class="hud-val" id="catcherLivesVal">❤️❤️❤️</span>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Active Falling Stage -->
+          <div class="catcher-stage" id="catcherStage">
+            <!-- Falling items spawn dynamically here -->
+            <div class="catcher-start-overlay" id="catcherStartOverlay">
+              <div class="catcher-intro-content">
+                <span class="catcher-big-icon">🪙💣</span>
+                <h4 class="catcher-intro-title">Ready to Catch?</h4>
+                <p class="catcher-intro-desc">Tap gold &amp; blue coins as they drop! Don't tap the red 💣 bombs!</p>
+                <button class="catcher-start-btn" onclick="startCoinCatcherGame()">
+                  <span>⚡</span> Start Catching
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      
+        <!-- Victory / Game Over Modal -->
+        <div class="catcher-modal-overlay" id="catcherModalOverlay">
+          <div class="catcher-modal-card">
+            <div class="catcher-modal-glow"></div>
+            <div class="catcher-modal-header">
+              <div class="catcher-modal-icon" id="catcherResultIcon">🪙</div>
+              <h3 class="catcher-modal-title" id="catcherResultTitle">ROUND COMPLETE!</h3>
+              <p class="catcher-modal-desc" id="catcherResultDesc">You gathered reactor bounty from the sky!</p>
+            </div>
+      
+            <div class="catcher-stats-breakdown">
+              <div class="breakdown-row">
+                <span>Coins Caught:</span>
+                <strong id="catcherStatCoins">0</strong>
+              </div>
+              <div class="breakdown-row">
+                <span>Peak Combo:</span>
+                <strong id="catcherStatCombo">2.4x</strong>
+              </div>
+              <div class="breakdown-row">
+                <span>Remaining Lives:</span>
+                <strong id="catcherStatLives">❤️❤️❤️</strong>
+              </div>
+              <div class="breakdown-row highlight">
+                <span>Reward Calculated:</span>
+                <strong id="catcherStatReward">+0 Coins 🪙, +0 💎</strong>
+              </div>
+            </div>
+      
+            <div class="catcher-modal-actions">
+              <button class="catcher-claim-btn" id="catcherClaimBtn" onclick="claimCoinCatcherReward()">
+                <span>🎁</span> Claim Reward
+              </button>
+              <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
+                <span>🔄</span> Play Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       
 
       <!-- Floating Bottom Navigation -->
@@ -4083,6 +5488,40 @@
       </div>
     </div>
 
+    <!-- Notification Center Modal / In-Game Inbox -->
+    <div class="notification-modal-overlay" id="notificationModalOverlay">
+      <div class="notification-modal-sheet">
+        <div class="notification-sheet-handle"></div>
+        
+        <div class="notification-modal-header">
+          <div class="notif-header-title-wrap">
+            <span class="notif-bell-icon">🔔</span>
+            <h3 class="notif-title">Command Center Inbox</h3>
+            <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
+          </div>
+          <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
+        </div>
+
+        <!-- Filter Tabs: All, Rewards, System -->
+        <div class="notif-filter-tabs">
+          <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
+          <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
+          <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
+        </div>
+
+        <!-- Notification Messages List -->
+        <div class="notification-list" id="notificationItemsList">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="notif-sheet-footer">
+          <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
+            <span>✓</span> Mark All as Read
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Firebase Cloud Realtime SDKs -->
@@ -4098,33 +5537,11 @@
   <!-- Shared Core State -->
   <script src="shared/state.js"></script>
 
-  <!-- Modular Page-Wise Scripts -->
+  <!-- Critical Initial Modules (Home & Energy Reactor) -->
   <script src="pages/home/home.js"></script>
   <script src="pages/energy/energy.js"></script>
-  <script src="pages/tasks/tasks.js"></script>
-  <script src="pages/profile/profile.js"></script>
-  <script src="pages/xp/xp.js"></script>
-  <script src="pages/reward/reward.js"></script>
-  <script src="pages/goal/goal.js"></script>
-  <script src="pages/streak/streak.js"></script>
-  <script src="pages/mega-reward/mega-reward.js"></script>
-  <script src="pages/gift-card/gift-card.js"></script>
-  <script src="pages/gadgets/gadgets.js"></script>
-  <script src="pages/accessories/accessories.js"></script>
-  <script src="pages/gaming-tool/gaming-tool.js"></script>
-  <script src="pages/kitchen/kitchen.js"></script>
-  <script src="pages/stationery/stationery.js"></script>
-  <script src="pages/fitness/fitness.js"></script>
-  <script src="pages/home-decorate/home-decorate.js"></script>
-  <script src="pages/custom/custom.js"></script>
-  <script src="pages/suggest-box/suggest-box.js"></script>
-  <script src="pages/ad-rewards/ad-rewards.js"></script>
-  <script src="pages/spin/spin.js"></script>
-  <script src="pages/chest/chest.js"></script>
-  <script src="pages/scratch/scratch.js"></script>
-  <script src="pages/egg/egg.js"></script>
 
-  <!-- App Shell & Router -->
+  <!-- App Shell, Dynamic On-Demand Loader & Router -->
   <script src="shared/app.js"></script>
 </body>
 </html>

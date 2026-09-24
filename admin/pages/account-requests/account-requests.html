@@ -1,0 +1,62 @@
+<!-- PAGE: ACCOUNT CREATION REQUESTS -->
+<section class="page-panel" id="page-account-requests">
+  <div class="plain-user-header">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h2 class="plain-title">Account Requests</h2>
+        <span class="plain-count-pill" id="accountRequestsCountPill">0 Requests</span>
+      </div>
+      <p class="plain-sub">Review and approve new account creation requests submitted by players whose accounts were deleted.</p>
+    </div>
+
+    <div class="plain-header-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <!-- Filter status -->
+      <div style="display: flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 3px; border-radius: 8px;">
+        <button type="button" id="btnAccReqAll" onclick="filterAccountRequests('all')" class="acc-req-filter-btn active">
+          All
+        </button>
+        <button type="button" id="btnAccReqPending" onclick="filterAccountRequests('pending')" class="acc-req-filter-btn">
+          ⏳ Pending <span class="badge-amber" id="subBadgeReqPending" style="display: none; padding: 1px 6px; border-radius: 99px; font-size: 10px; margin-left: 2px;">0</span>
+        </button>
+        <button type="button" id="btnAccReqApproved" onclick="filterAccountRequests('approved')" class="acc-req-filter-btn">
+          ✅ Approved
+        </button>
+        <button type="button" id="btnAccReqRejected" onclick="filterAccountRequests('rejected')" class="acc-req-filter-btn">
+          ❌ Rejected
+        </button>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="openAddPlayerModal()" style="padding: 6px 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+        <span>➕</span>
+        <span>Manual Add User</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- REQUESTS TABLE CARD -->
+  <div class="plain-table-card" style="margin-top: 14px;">
+    <div style="overflow-x: auto;">
+      <table class="plain-data-table">
+        <thead>
+          <tr>
+            <th style="width: 110px;">Req ID</th>
+            <th>Requested Date</th>
+            <th>Player Name</th>
+            <th>Telegram / Contact</th>
+            <th>Old UID</th>
+            <th>User Reason / Note</th>
+            <th>Status</th>
+            <th style="text-align: right; width: 220px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="accountRequestsTableBody">
+          <tr>
+            <td colspan="8" style="text-align: center; color: #64748b; padding: 36px;">
+              Loading account creation requests from Firebase...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

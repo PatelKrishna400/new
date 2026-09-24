@@ -12,64 +12,81 @@
   let activeCountdownInterval = null;
   let isAdActive = false;
 
-  // Ensure modal DOM elements exist
+  let adModalRefs = null;
+
+  // Ensure modal DOM elements exist and cache static references
   function ensureAdModalDOM() {
-    if (document.getElementById('rewardedAdModalBackdrop')) {
-      adModalEl = document.getElementById('rewardedAdModalBackdrop');
+    if (adModalRefs && document.getElementById('rewardedAdModalBackdrop')) {
+      adModalEl = adModalRefs.backdrop;
       return;
     }
 
-    const modal = document.createElement('div');
-    modal.id = 'rewardedAdModalBackdrop';
-    modal.className = 'rewarded-ad-modal-backdrop';
-    modal.style.display = 'none';
+    let modal = document.getElementById('rewardedAdModalBackdrop');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'rewardedAdModalBackdrop';
+      modal.className = 'rewarded-ad-modal-backdrop';
+      modal.style.display = 'none';
 
-    modal.innerHTML = `
-      <div class="rewarded-ad-dialog" id="rewardedAdDialog">
-        <!-- Top Ad Badge Row -->
-        <div class="ad-dialog-top">
-          <div class="ad-sponsor-chip">
-            <span class="ad-pulse-circle"></span>
-            <span>🎬 SPONSORED REWARDED AD</span>
+      modal.innerHTML = `
+        <div class="rewarded-ad-dialog" id="rewardedAdDialog">
+          <!-- Top Ad Badge Row -->
+          <div class="ad-dialog-top">
+            <div class="ad-sponsor-chip">
+              <span class="ad-pulse-circle"></span>
+              <span>🎬 SPONSORED REWARDED AD</span>
+            </div>
+            <span class="ad-timer-countdown" id="adTimerCountdown">3s</span>
           </div>
-          <span class="ad-timer-countdown" id="adTimerCountdown">3s</span>
+
+          <!-- Video Simulation Screen -->
+          <div class="ad-video-screen">
+            <div class="ad-screen-grid-pattern"></div>
+            <div class="ad-center-visual">
+              <div class="ad-core-spinner outer"></div>
+              <div class="ad-core-spinner inner"></div>
+              <div class="ad-sponsor-icon">⚡</div>
+            </div>
+            <div class="ad-screen-branding">
+              <h4 class="ad-screen-title" id="adDialogTitle">ENERGY TAP NETWORK</h4>
+              <p class="ad-screen-desc" id="adDialogDesc">Watching sponsored video to claim bonus reward...</p>
+            </div>
+            <div class="ad-monetag-tag">MONETAG ZONE 11677609</div>
+          </div>
+
+          <!-- Live Progress Strip -->
+          <div class="ad-progress-strip">
+            <div class="ad-progress-track">
+              <div class="ad-progress-fill" id="adDialogProgressFill" style="width: 0%;"></div>
+            </div>
+            <div class="ad-progress-meta">
+              <span class="ad-meta-text" id="adDialogStatusText">Streaming High-Tech Video Ad...</span>
+              <span class="ad-meta-percent" id="adDialogPercentText">0%</span>
+            </div>
+          </div>
+
+          <!-- Collect / Action Button -->
+          <button class="ad-collect-reward-btn disabled" id="btnCollectAdReward">
+            <span id="btnCollectAdText">⏳ WATCHING AD (3s)...</span>
+          </button>
         </div>
+      `;
 
-        <!-- Video Simulation Screen -->
-        <div class="ad-video-screen">
-          <div class="ad-screen-grid-pattern"></div>
-          <div class="ad-center-visual">
-            <div class="ad-core-spinner outer"></div>
-            <div class="ad-core-spinner inner"></div>
-            <div class="ad-sponsor-icon">⚡</div>
-          </div>
-          <div class="ad-screen-branding">
-            <h4 class="ad-screen-title" id="adDialogTitle">ENERGY TAP NETWORK</h4>
-            <p class="ad-screen-desc" id="adDialogDesc">Watching sponsored video to claim bonus reward...</p>
-          </div>
-          <div class="ad-monetag-tag">MONETAG ZONE 11677609</div>
-        </div>
+      document.body.appendChild(modal);
+    }
 
-        <!-- Live Progress Strip -->
-        <div class="ad-progress-strip">
-          <div class="ad-progress-track">
-            <div class="ad-progress-fill" id="adDialogProgressFill" style="width: 0%;"></div>
-          </div>
-          <div class="ad-progress-meta">
-            <span class="ad-meta-text" id="adDialogStatusText">Streaming High-Tech Video Ad...</span>
-            <span class="ad-meta-percent" id="adDialogPercentText">0%</span>
-          </div>
-        </div>
-
-        <!-- Collect / Action Button -->
-        <button class="ad-collect-reward-btn disabled" id="btnCollectAdReward">
-          <span id="btnCollectAdText">⏳ WATCHING AD (3s)...</span>
-        </button>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
     adModalEl = modal;
+    adModalRefs = {
+      backdrop: modal,
+      titleEl: document.getElementById('adDialogTitle'),
+      descEl: document.getElementById('adDialogDesc'),
+      countdownEl: document.getElementById('adTimerCountdown'),
+      fillEl: document.getElementById('adDialogProgressFill'),
+      percentEl: document.getElementById('adDialogPercentText'),
+      statusEl: document.getElementById('adDialogStatusText'),
+      btnCollect: document.getElementById('btnCollectAdReward'),
+      btnText: document.getElementById('btnCollectAdText')
+    };
   }
 
   /**
@@ -93,14 +110,7 @@
       const title = options.adTitle || 'Bonus Reward';
       const desc = options.adDesc || 'Watch full ad to claim reward!';
 
-      const titleEl = document.getElementById('adDialogTitle');
-      const descEl = document.getElementById('adDialogDesc');
-      const countdownEl = document.getElementById('adTimerCountdown');
-      const fillEl = document.getElementById('adDialogProgressFill');
-      const percentEl = document.getElementById('adDialogPercentText');
-      const statusEl = document.getElementById('adDialogStatusText');
-      const btnCollect = document.getElementById('btnCollectAdReward');
-      const btnText = document.getElementById('btnCollectAdText');
+      const { titleEl, descEl, countdownEl, fillEl, percentEl, statusEl, btnCollect, btnText } = adModalRefs;
 
       if (titleEl) titleEl.textContent = title;
       if (descEl) descEl.textContent = desc;
