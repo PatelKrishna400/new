@@ -4,21 +4,21 @@
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "!root.child('deleted_users').child($uid).exists()"
+        ".write": true
       }
     },
     "users": {
       ".read": true,
       "$uid": {
         ".read": true,
-        ".write": "!root.child('deleted_users').child($uid).exists()"
+        ".write": true
       }
     },
     "leaderboard": {
       ".read": true,
       ".indexOn": ["coins", "level", "energyTaps", "lastActive"],
       "$uid": {
-        ".write": "!root.child('deleted_users').child($uid).exists()"
+        ".write": true
       }
     },
     "mega_rewards": {
@@ -107,18 +107,6 @@
       ".read": true,
       ".write": true,
       ".indexOn": ["timestamp"]
-    },
-    "deleted_users": {
-      ".read": true,
-      ".write": true
-    },
-    "account_requests": {
-      ".read": true,
-      ".write": true,
-      "$reqId": {
-        ".read": true,
-        ".write": true
-      }
     }
   }
 }

@@ -1,0 +1,1040 @@
+/* ==========================================================================
+   SUNFLOWER SOLAR TYCOON PAGE STYLES (pages/sunflower/sunflower.css)
+   ========================================================================== */
+
+#pageSunflower {
+  position: relative;
+  padding-bottom: 96px;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Atmospheric Scenic Stage hidden for clean white background */
+.sf-tab-scenic-stage {
+  display: none !important;
+}
+
+.sunflower-tycoon-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Compact Dashboard Header */
+.sunflower-compact-dashboard {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+  background: #fffbeb;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sf-dash-art-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.32;
+  filter: saturate(1.2) contrast(1.05);
+  pointer-events: none;
+}
+
+.sf-dash-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(254, 243, 199, 0.88) 100%);
+  pointer-events: none;
+}
+
+.sf-dash-top-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sf-dash-back-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #f59e0b;
+  color: #78350f;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(120, 53, 15, 0.12);
+  transition: all 0.15s ease;
+}
+.sf-dash-back-btn:hover {
+  background: #fef3c7;
+  transform: translateY(-1px);
+}
+.sf-dash-back-btn:active {
+  transform: translateY(1px);
+}
+
+.sf-dash-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+
+.sf-dash-sun-icon {
+  font-size: 22px;
+}
+
+.sf-dash-title-text {
+  font-weight: 900;
+  font-size: 14px;
+  color: #451a03;
+  letter-spacing: -0.2px;
+}
+
+.sf-dash-page-badge {
+  font-size: 9px;
+  background: #fde68a;
+  color: #78350f;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid #f59e0b;
+  text-transform: uppercase;
+}
+
+.sf-dash-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sf-dash-ctrl-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid #fcd34d;
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sf-dash-ctrl-btn:hover {
+  background: #fef3c7;
+}
+
+/* 5-Resource HUD Counter Pills */
+.sf-dash-resources-row {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.sf-res-pill {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  padding: 5px 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  border: 1.5px solid transparent;
+}
+.pill-amber  { border-color: #f59e0b; }
+.pill-yellow { border-color: #eab308; }
+.pill-cyan   { border-color: #06b6d4; }
+.pill-blue   { border-color: #3b82f6; }
+.pill-stone  { border-color: #78716c; }
+
+.sf-res-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.sf-res-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.sf-res-lbl {
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 800;
+  opacity: 0.75;
+}
+.pill-amber .sf-res-lbl  { color: #b45309; }
+.pill-yellow .sf-res-lbl { color: #a16207; }
+.pill-cyan .sf-res-lbl   { color: #0e7490; }
+.pill-blue .sf-res-lbl   { color: #1d4ed8; }
+.pill-stone .sf-res-lbl  { color: #44403c; }
+
+.sf-res-val {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1c1917;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* Segmented Subtabs */
+.sf-dash-nav-tabs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  background: rgba(254, 243, 199, 0.85);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1.5px solid #fcd34d;
+  gap: 4px;
+}
+
+.sf-nav-tab-item {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #78350f;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.sf-nav-tab-item.active-tab {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
+}
+
+.sf-tab-badge {
+  background: #0284c7;
+  color: white;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  line-height: 1.2;
+}
+
+
+
+/* Page Views */
+.sf-game-page {
+  display: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.sf-game-page.active-page {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Subpages Clean White Background Theme */
+#sfPage1, #sfPage2, #sfPage3, #sfPage4, #sfPage5 {
+  background: #ffffff !important;
+  border: 1.5px solid #fde047 !important;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.1) !important;
+  color: #1e293b !important;
+}
+
+.sf-game-page .bg-stone-800\/80,
+.sf-game-page .bg-stone-900\/95,
+.sf-game-page .bg-stone-950\/80,
+.sf-game-page .bg-stone-900,
+.sf-game-page .bg-stone-950 {
+  background: #fffbeb !important;
+  border-color: #fde047 !important;
+  color: #1e293b !important;
+}
+
+/* Soil Beds */
+.sf-garden-bed {
+  background: radial-gradient(circle at 50% 35%, #78350f 0%, #451a03 70%, #290f02 100%);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.sf-locked-bed {
+  background: radial-gradient(circle at 50% 35%, #475569 0%, #1e293b 70%, #0f172a 100%);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Floating Coin Particle */
+.floating-coin-particle {
+  position: fixed;
+  pointer-events: none;
+  animation: coinAscend 1.1s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+  font-weight: 800;
+  z-index: 999;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes coinAscend {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); }
+  20% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); }
+  80% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(-50%, -46px) scale(0.85); }
+}
+
+@keyframes spinVerySlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes workerPump {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-12deg) translateY(4px) scale(0.96); }
+}
+
+.animate-spin-very-slow {
+  animation: none !important;
+}
+
+.animate-worker-hammer {
+  animation: workerPump 1.8s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   PINNED STICKY TOP HEADER BAR ("STAY HEADING BAR")
+   ========================================================================== */
+.sf-sticky-header-bar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border-bottom: 2px solid #f59e0b;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 0 -10px 10px -10px;
+}
+
+.sf-sticky-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sf-sticky-back-btn {
+  background: #fef3c7;
+  border: 1.5px solid #f59e0b;
+  color: #78350f;
+  border-radius: 10px;
+  padding: 6px 11px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.sf-sticky-back-btn:hover {
+  background: #fde68a;
+  transform: scale(1.05);
+}
+
+.sf-sticky-back-btn:active {
+  transform: scale(0.95);
+}
+
+.sf-back-arrow {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.sf-sticky-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sf-sticky-title-icon {
+  font-size: 21px;
+  line-height: 1;
+  display: inline-block;
+  animation: none !important;
+  transform: none !important;
+}
+
+.sf-sticky-title-text {
+  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  color: #78350f;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.sf-sticky-resources {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sf-sticky-resources::-webkit-scrollbar {
+  display: none;
+}
+
+.sf-hdr-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border: 1.5px solid #d97706;
+  color: #fef08a;
+  box-shadow: 0 2px 6px rgba(69, 26, 3, 0.4), inset 0 1px 0 rgba(254, 240, 138, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sf-hdr-pill:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(69, 26, 3, 0.5);
+}
+
+.sf-hdr-pill.pill-amber {
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border-color: #f59e0b;
+  color: #fde047;
+}
+
+.sf-hdr-pill.pill-stone {
+  background: linear-gradient(135deg, #5c2c10 0%, #3a1905 100%);
+  border-color: #d97706;
+  color: #fef08a;
+}
+
+.sf-hdr-pill.pill-blue {
+  background: linear-gradient(135deg, #4d2309 0%, #2e1203 100%);
+  border-color: #38bdf8;
+  color: #bae6fd;
+}
+
+.sf-hdr-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   QUICK TOOLS STRIP & MULTIPLIER SELECTOR
+   ========================================================================== */
+.sf-garden-tools-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #fffbeb;
+  border: 1.5px solid #fde047;
+  border-radius: 14px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.sf-tools-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-upgrade-mult-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sf-mult-lbl {
+  font-size: 9px;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: 0.5px;
+}
+
+.sf-mult-btns-group {
+  display: flex;
+  align-items: center;
+  background: #fef3c7;
+  border-radius: 8px;
+  padding: 2px;
+  border: 1px solid #fcd34d;
+}
+
+.sf-mult-btn {
+  background: transparent;
+  border: none;
+  color: #78350f;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sf-mult-btn.active {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.sf-garden-cps-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+}
+
+.sf-tools-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sf-quick-tool-btn {
+  border: none;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 5px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.sf-quick-tool-btn:hover {
+  transform: scale(1.04);
+}
+
+.sf-quick-tool-btn:active {
+  transform: scale(0.96);
+}
+
+.sf-quick-tool-btn.blue {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.sf-quick-tool-btn.stone {
+  background: #475569;
+  color: #ffffff;
+}
+
+.sf-sound-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 4px 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   FIXED 2*10 FORMAT LANDS GRID (SUNNY WHITE THEME)
+   ========================================================================== */
+.sf-plots-2x10-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 9px !important;
+  width: 100%;
+}
+
+.sf-plot-tile {
+  position: relative;
+  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border: 1.5px solid #fde047 !important;
+  border-top: 3.5px solid #f59e0b !important;
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 125px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+  overflow: hidden;
+  user-select: none;
+}
+
+.sf-plot-tile:hover {
+  border-color: #fbbf24 !important;
+  border-top-color: #d97706 !important;
+  transform: translateY(-2px);
+}
+
+.sf-plot-tile.locked {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  border-top-color: #94a3b8 !important;
+  opacity: 0.9 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Plot Tile Header */
+.sf-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.sf-tile-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: #78350f !important;
+}
+
+.sf-plot-tile.locked .sf-tile-num {
+  color: #64748b !important;
+}
+
+.sf-tile-level-badge {
+  font-size: 9px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-family: monospace;
+}
+
+/* Plot Tile Body: Sprite & Output */
+.sf-tile-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.sf-tile-sprite {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+  /* Static logo with no rotation animation */
+  animation: none !important;
+  transform: none !important;
+}
+
+.sf-tile-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.sf-tile-output {
+  font-size: 12px;
+  font-weight: 900;
+  color: #b45309 !important;
+  font-family: monospace;
+}
+
+.sf-tile-timer {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #0284c7 !important;
+  font-family: monospace;
+}
+
+/* Real-Time Progress Bar */
+.sf-tile-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+.sf-tile-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
+  border-radius: 9999px;
+  transition: width 0.08s linear;
+}
+
+.sf-tile-progress-fill.speed-hyper {
+  width: 100% !important;
+  background: linear-gradient(90deg, #f59e0b, #38bdf8, #fde047);
+  animation: hyperPulse 0.4s infinite alternate;
+}
+
+@keyframes hyperPulse {
+  from { opacity: 0.75; }
+  to { opacity: 1; filter: drop-shadow(0 0 4px #38bdf8); }
+}
+
+/* Upgrade Button */
+.sf-tile-up-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid rgba(254, 240, 138, 0.4);
+  border-radius: 9px;
+  padding: 5px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  transition: all 0.15s ease;
+}
+
+.sf-tile-up-btn:hover {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  transform: scale(1.02);
+}
+
+.sf-tile-up-btn:active {
+  transform: scale(0.97);
+}
+
+.sf-tile-up-btn.disabled {
+  background: #334155;
+  color: #94a3b8;
+  border-color: #475569;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ==========================================================================
+   SUNFLOWER LIFECYCLE: Plant -> Growing -> Flower Bloom & Win + Water
+   ========================================================================== */
+.sf-tile-lifecycle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.sf-stage-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1.5px 5.5px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.sf-stage-badge.stage-plant {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.sf-stage-badge.stage-growing {
+  background: #fefce8;
+  color: #854d0e;
+  border: 1px solid #eab308;
+}
+
+.sf-stage-badge.stage-bloom {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.sf-stage-badge.stage-withered {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.sf-tile-life {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1.5px 5px;
+  border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sf-tile-life.life-good {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.sf-tile-life.life-low {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  animation: pulseLowWater 1.2s infinite;
+}
+
+.sf-tile-life.life-dry {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+@keyframes pulseLowWater {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.sf-tile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.sf-tile-water-btn {
+  width: 100%;
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 3px 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.1);
+}
+
+.sf-tile-water-btn:hover {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.sf-tile-water-btn:active {
+  transform: scale(0.97);
+}
+
+.coin-win-burst {
+  animation: coinWinBurst 0.6s ease-out forwards;
+}
+
+@keyframes coinWinBurst {
+  0% { transform: scale(1); filter: drop-shadow(0 0 0px #f59e0b); }
+  50% { transform: scale(1.3); filter: drop-shadow(0 0 14px #f59e0b); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px #f59e0b); }
+}
+
+/* ==========================================================================
+   SUNFLOWER DEDICATED FLOATING BOTTOM MENU BAR (PERMANENTLY LOCKED AT BOTTOM)
+   ========================================================================== */
+#pageSunflower.active ~ .bottom-nav,
+body.page-sunflower-active .bottom-nav {
+  display: none !important;
+}
+
+.sf-bottom-menu-bar {
+  display: none;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px + max(0px, env(safe-area-inset-bottom)));
+  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
+  width: calc(100% - 24px);
+  max-width: 420px;
+  background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  border-radius: 32px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(255, 230, 160, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.6),
+    0 6px 0 rgba(10, 5, 22, 0.9),
+    0 16px 36px rgba(0, 0, 0, 0.8),
+    0 0 24px rgba(245, 158, 11, 0.35);
+  z-index: 120;
+  flex-shrink: 0;
+}
+
+#pageSunflower.active ~ .sf-bottom-menu-bar,
+#pageSunflower.active ~ #sfBottomMenuBar,
+body.page-sunflower-active .sf-bottom-menu-bar,
+body.page-sunflower-active #sfBottomMenuBar {
+  display: flex !important;
+}
+
+/* Festive mirror-work top studs along Sunflower bottom navigation */
+.sf-bottom-menu-bar::before {
+  content: '';
+  position: absolute;
+  top: -3.5px;
+  left: 24px;
+  right: 24px;
+  height: 5px;
+  background: radial-gradient(circle, #fde047 35%, #b45309 80%, transparent 85%);
+  background-size: 20px 5px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.sf-menu-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 4px 2px;
+  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  border-radius: 16px;
+  position: relative;
+  min-width: 0;
+}
+
+.sf-menu-tab-btn:hover {
+  color: #fde047;
+}
+
+.sf-menu-tab-btn.active {
+  color: #f59e0b;
+}
+
+.sf-menu-tab-btn.active .sf-menu-ico {
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.85));
+  transform: translateY(-1px);
+}
+
+.sf-menu-tab-btn .sf-menu-ico {
+  font-size: 19px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.sf-menu-tab-btn .sf-menu-txt {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Center Elevated Play Button */
+.sf-menu-tab-btn.center-play-btn {
+  position: relative;
+  top: -14px;
+  flex: 1.15;
+}
+
+.center-play-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fde047 0%, #f59e0b 60%, #b45309 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6), 0 0 14px rgba(245, 158, 11, 0.45);
+  border: 2.5px solid rgba(255, 255, 255, 0.85);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+}
+
+.sf-menu-tab-btn.center-play-btn:hover .center-play-circle {
+  transform: scale(1.08);
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.8), 0 0 18px rgba(245, 158, 11, 0.65);
+}
+
+.sf-menu-tab-btn.center-play-btn:active .center-play-circle {
+  transform: scale(0.94);
+}
+
+.sf-menu-tab-btn.center-play-btn.active .center-play-circle {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.9), 0 0 35px rgba(253, 224, 71, 0.6);
+  border-color: #fff;
+}
+
+.sf-menu-play-icon {
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Workers and Managers HQ Cards */
+.sf-worker-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.sf-worker-card:hover {
+  transform: translateY(-2px);
+  border-color: #fbbf24;
+}
+

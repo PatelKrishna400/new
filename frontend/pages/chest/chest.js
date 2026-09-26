@@ -9,7 +9,8 @@ const CHEST_AND_CARD_REWARDS = [
   { label: '1 Winning Key', type: 'keys', amount: 1, icon: '🔑' },
   { label: '10 Energy', type: 'energy', amount: 10, icon: '⚡' },
   { label: '1 Cyber Egg', type: 'egg', amount: 1, icon: '🥚' },
-  { label: '10 Coins', type: 'coins', amount: 10, icon: '🪙' },
+  { label: '1 Coin', type: 'coins', amount: 1, icon: '🪙' },
+  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙' },
   { label: '5 Diamonds', type: 'diamonds', amount: 5, icon: '💎' },
   { label: '1 Spin Ticket', type: 'tickets', amount: 1, icon: '🎟️' }
 ];
@@ -142,6 +143,8 @@ function awardChestPrize(reward) {
     }
   } else if (reward.type === 'diamonds') {
     gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
+  } else if (reward.type === 'blue_coins' || reward.type === 'blueCoins' || reward.type === 'blue') {
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + reward.amount;
   }
 
   if (typeof saveGame === 'function') saveGame();

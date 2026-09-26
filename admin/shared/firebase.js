@@ -21,7 +21,6 @@ window.adminState = {
   users: [],
   rewards: [],
   requests: [],
-  accountRequests: [],
   customRequests: [],
   websiteTasks: [],
   telegramTasks: [],
@@ -532,26 +531,6 @@ function listenToFirebase() {
     dispatchAdminEvent('requestsUpdated');
   }, err => onFirebasePermissionError(err, '/reward_requests'));
 
-  // 3b. Account Creation Requests
-  db.ref('/account_requests').on('value', snapshot => {
-    const val = snapshot.val();
-    const list = [];
-    if (val) {
-      Object.keys(val).forEach(id => {
-        list.push({ id, ...val[id] });
-      });
-    }
-    window.adminState.accountRequests = list.reverse();
-    const pendingCount = list.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
-    const badge = document.getElementById('badgeAccountRequestsCount');
-    if (badge) {
-      badge.textContent = pendingCount;
-      badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
-    }
-    clearFirebaseRulesWarningBanner();
-    dispatchAdminEvent('accountRequestsUpdated');
-  }, err => onFirebasePermissionError(err, '/account_requests'));
-
   // 4. Website Tasks Config
   db.ref('/website_tasks_config').on('value', snapshot => {
     const val = snapshot.val();
@@ -874,14 +853,6 @@ function deleteUserFromFirebase(uid) {
   updates[`/users/${uid}`] = null;
   updates[`/leaderboard/${uid}`] = null;
   updates[`/whitelist/${uid}`] = null;
-
-  // Set permanent tombstone in /deleted_users so user panel locks out, purges cache, and halts sync
-  updates[`/deleted_users/${uid}`] = {
-    deletedAt: Date.now(),
-    reason: 'Account and data permanently deleted by admin',
-    uid: uid,
-    status: 'deleted'
-  };
 
   // Clean identityIndex if player has known telegram, phone, email
   if (player.telegramId || player.telegram) {

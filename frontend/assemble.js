@@ -36,7 +36,10 @@ const PAGE_KEYS = [
   'egg',
   'leaderboard',
   'memory-match',
-  'coin-catcher'
+  'coin-catcher',
+  'sunflower',
+  'bee-farm',
+  'mining'
 ];
 
 console.log('--- Verifying Modular Page Structure ---');
@@ -84,7 +87,7 @@ const headerContent = `<!DOCTYPE html>
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -92,18 +95,39 @@ const headerContent = `<!DOCTYPE html>
       corePlugins: { preflight: false },
       theme: {
         extend: {
+          fontFamily: {
+            sci: ['Orbitron', 'monospace'],
+            tech: ['Rajdhani', 'sans-serif'],
+            fredoka: ['Fredoka', 'sans-serif']
+          },
           colors: {
             sunamber: '#f59e0b',
             sunyellow: '#fde047',
             leafgreen: '#22c55e',
             earthbrown: '#78350f',
-            stonegray: '#334155'
+            stonegray: '#334155',
+            honeygold: '#f59e0b',
+            honeyamber: '#d97706',
+            combcream: '#fef3c7',
+            hivebrown: '#78350f',
+            nectarrose: '#fb7185',
+            abyss: '#040711',
+            cavern: '#090f1e',
+            cybercyan: '#00f0ff',
+            neonviolet: '#bd00ff',
+            plasmaamber: '#ffaa00',
+            cryoice: '#38bdf8',
+            volcanicslag: '#ff3344',
+            coremetal: '#141e33'
           },
           animation: {
             'bounce-gentle': 'bounceGentle 2s infinite ease-in-out',
             'spin-very-slow': 'spin 25s linear infinite',
             'worker-hammer': 'workerPump 1.8s infinite ease-in-out',
-            'float-slow': 'floatSlow 3s ease-in-out infinite'
+            'float-slow': 'floatSlow 3s ease-in-out infinite',
+            'buzz-float': 'buzzDance 0.8s infinite ease-in-out',
+            'float-gentle': 'floatGentle 2.5s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 2s infinite'
           },
           keyframes: {
             bounceGentle: {
@@ -117,6 +141,20 @@ const headerContent = `<!DOCTYPE html>
             workerPump: {
               '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
               '50%': { transform: 'rotate(-12deg) translateY(4px) scale(0.96)' }
+            },
+            buzzDance: {
+              '0%, 100%': { transform: 'translate(0px, 0px) rotate(0deg)' },
+              '25%': { transform: 'translate(2px, -3px) rotate(3deg)' },
+              '50%': { transform: 'translate(-2px, 1px) rotate(-3deg)' },
+              '75%': { transform: 'translate(2px, 2px) rotate(2deg)' }
+            },
+            floatGentle: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { filter: 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.4))' },
+              '50%': { filter: 'drop-shadow(0 0 16px rgba(245, 158, 11, 0.85))' }
             }
           }
         }
@@ -534,6 +572,54 @@ const footerContent = `
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
+        </button>
+      </nav>
+
+      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Permanently Locked at Bottom) -->
+      <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar">
+        <!-- Tab 1: Water (💧 Water) -->
+        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
+          <div class="sf-menu-ico">💧</div>
+          <span class="sf-menu-txt">Water</span>
+        </button>
+
+        <!-- Tab 2: Managers & Workers (👷 Workers - Half-Man Logo) -->
+        <button class="sf-menu-tab-btn" id="sfMenuTabWorkers" onclick="navigateSunflowerPage(4)" title="Managers & Workers">
+          <div class="sf-menu-ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="7" r="4"/>
+              <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
+              <line x1="12" y1="11" x2="12" y2="21" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/>
+            </svg>
+          </div>
+          <span class="sf-menu-txt">Workers</span>
+        </button>
+
+        <!-- Center Primary Button: Play / Garden (🌻 Play) -->
+        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Play Garden & Lands">
+          <div class="center-play-circle">
+            <span class="sf-menu-play-icon">🌻</span>
+          </div>
+          <span class="sf-menu-txt font-black">Garden</span>
+        </button>
+
+        <!-- Tab 4: Shop / Store (🏪 Store Logo) -->
+        <button class="sf-menu-tab-btn" id="sfMenuTabShop" onclick="navigateSunflowerPage(3)" title="Store & Boosters">
+          <div class="sf-menu-ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l2-5h14l2 5"/>
+              <path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/>
+              <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
+              <path d="M9 21V13h6v8"/>
+            </svg>
+          </div>
+          <span class="sf-menu-txt">Shop</span>
+        </button>
+
+        <!-- Tab 5: Solar Converter / 29⚡ (⚡ 29⚡ Logo) -->
+        <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
+          <div class="sf-menu-ico">⚡</div>
+          <span class="sf-menu-txt">29⚡ Exch</span>
         </button>
       </nav>
 

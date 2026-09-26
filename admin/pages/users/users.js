@@ -935,20 +935,6 @@ function saveNewPlayerToFirebase(event) {
 
   db.ref('/players/' + newUid).set(newPlayerPayload)
     .then(() => {
-      // If created in response to an account creation request, approve the request
-      if (window.currentProcessingRequestId) {
-        db.ref(`account_requests/${window.currentProcessingRequestId}`).update({
-          status: 'approved',
-          approvedAt: Date.now(),
-          createdUid: newUid
-        }).catch(() => {});
-      }
-
-      // If previous user was in deleted_users, lift the tombstone so user can log in
-      if (window.currentProcessingOldUserId) {
-        db.ref(`deleted_users/${window.currentProcessingOldUserId}`).remove().catch(() => {});
-      }
-
       closeAddPlayerModal();
       if (btn) {
         btn.disabled = false;

@@ -20,6 +20,9 @@ const ALL_REWARD_SUB_PAGES = [
 ];
 const REWARD_SUB_PAGES_SET = new Set(ALL_REWARD_SUB_PAGES);
 
+const ALL_ENERGY_SUB_PAGES = ['sunflower', 'bee-farm', 'beefarm', 'mining'];
+const ENERGY_SUB_PAGES_SET = new Set(ALL_ENERGY_SUB_PAGES);
+
 let _cachedPageMap = null;
 let _currentActivePageElem = null;
 
@@ -61,7 +64,12 @@ function getPageMap() {
       memoryMatch: document.getElementById('pageMemoryMatch'),
       'memory-match': document.getElementById('pageMemoryMatch'),
       coinCatcher: document.getElementById('pageCoinCatcher'),
-      'coin-catcher': document.getElementById('pageCoinCatcher')
+      'coin-catcher': document.getElementById('pageCoinCatcher'),
+      sunflower: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      beeFarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
+      'bee-farm': document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
+      beefarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
+      mining: document.getElementById('pageMining') || DOM.pageMining
     };
   }
   return _cachedPageMap;
@@ -105,7 +113,11 @@ const PAGE_FILE_MAP = {
   'memoryMatch': 'memory-match',
   'memory-match': 'memory-match',
   'coinCatcher': 'coin-catcher',
-  'coin-catcher': 'coin-catcher'
+  'coin-catcher': 'coin-catcher',
+  'sunflower': 'sunflower',
+  'bee-farm': 'bee-farm',
+  'beefarm': 'bee-farm',
+  'mining': 'mining'
 };
 
 const _loadedPageScripts = new Set(['home', 'energy']);
@@ -152,7 +164,8 @@ function preloadNonCriticalPages() {
     'memory-match', 'coin-catcher', 'mega-reward',
     'gift-card', 'gadgets', 'accessories', 'gaming-tool',
     'kitchen', 'stationery', 'fitness', 'home-decorate',
-    'custom', 'suggest-box', 'ad-rewards'
+    'custom', 'suggest-box', 'ad-rewards',
+    'sunflower', 'bee-farm', 'mining'
   ];
 
   let idx = 0;
@@ -195,14 +208,33 @@ function switchPage(pageName) {
   // Bottom Nav active pill sync with O(1) Set lookup
   const isRewardSubPage = REWARD_SUB_PAGES_SET.has(pageName);
   const isProfileSubPage = (pageName === 'suggestBox' || pageName === 'suggest-box');
+  const isEnergySubPage = ENERGY_SUB_PAGES_SET.has(pageName);
 
   DOM.navButtons.forEach(btn => {
-    if (btn.dataset.tab === pageName || (btn.dataset.tab === 'reward' && isRewardSubPage) || (btn.dataset.tab === 'profile' && isProfileSubPage)) {
+    if (btn.dataset.tab === pageName || 
+        (btn.dataset.tab === 'reward' && isRewardSubPage) || 
+        (btn.dataset.tab === 'profile' && isProfileSubPage) ||
+        (btn.dataset.tab === 'energy' && isEnergySubPage)) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
     }
   });
+
+  // Dedicated Bottom Nav visibility sync (Sunflower Tycoon replaces global bottom nav with its own below menu bar)
+  const bottomNavEl = document.querySelector('.bottom-nav') || (typeof DOM !== 'undefined' ? DOM.bottomNav : null);
+  const sfBottomMenuBar = document.getElementById('sfBottomMenuBar');
+  if (bottomNavEl) {
+    if (pageName === 'sunflower') {
+      bottomNavEl.style.display = 'none';
+      if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'flex';
+      document.body.classList.add('page-sunflower-active');
+    } else {
+      bottomNavEl.style.display = '';
+      if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
+      document.body.classList.remove('page-sunflower-active');
+    }
+  }
 
   // Hide previously active page view directly without global querySelectorAll
   if (_currentActivePageElem) {
@@ -225,7 +257,7 @@ function switchPage(pageName) {
   // Telegram Native BackButton Sync
   const tg = window.Telegram?.WebApp;
   if (tg && tg.BackButton) {
-    if (allRewardSubPages.includes(pageName) || pageName === 'suggestBox' || pageName === 'suggest-box') {
+    if (isRewardSubPage || pageName === 'suggestBox' || pageName === 'suggest-box' || isEnergySubPage) {
       tg.BackButton.show();
     } else {
       tg.BackButton.hide();
@@ -240,6 +272,13 @@ function switchPage(pageName) {
       if (typeof updateHomeUI === 'function') updateHomeUI();
     } else if (targetPage === 'energy') {
       if (typeof updateEnergyUI === 'function') updateEnergyUI();
+      if (typeof refreshEnergyStationMiniStats === 'function') refreshEnergyStationMiniStats();
+    } else if (targetPage === 'sunflower') {
+      if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
+    } else if (targetPage === 'bee-farm' || targetPage === 'beefarm') {
+      if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
+    } else if (targetPage === 'mining') {
+      if (typeof updateMiningUI === 'function') updateMiningUI();
     } else if (targetPage === 'tasks') {
       if (typeof renderTasksList === 'function') renderTasksList();
     } else if (targetPage === 'profile') {

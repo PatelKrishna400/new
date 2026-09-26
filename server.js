@@ -1018,19 +1018,6 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { ok: false, error: 'Unsupported resolution action' });
       }
 
-      // GET & POST /api/account_requests
-      if (apiRoute === '/account_requests') {
-        if (req.method === 'GET') {
-          return sendJson(res, 200, { ok: true, requests: memoryStore.accountRequests || [] });
-        }
-        if (req.method === 'POST') {
-          const body = await parseRequestBody(req);
-          if (!memoryStore.accountRequests) memoryStore.accountRequests = [];
-          memoryStore.accountRequests.unshift(body);
-          return sendJson(res, 200, { ok: true, request: body });
-        }
-      }
-
       // POST /api/auth/migrate-indexes - Safely scan and populate identityIndex from existing players
       if (apiRoute === '/auth/migrate-indexes' && req.method === 'POST') {
         const users = Object.values(memoryStore.users);

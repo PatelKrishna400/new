@@ -638,6 +638,11 @@ function updateHomeUI() {
   if (typeof updateMultiTapOptions === 'function') {
     updateMultiTapOptions();
   }
+
+  // Update 5-Hour Energy Booster Icon Visibility
+  if (typeof updateHomeEnergyBoosterVisibility === 'function') {
+    updateHomeEnergyBoosterVisibility();
+  }
 }
 
 // Initialize Combo Decay Engine automatically on load
@@ -813,9 +818,67 @@ function updateHome2xBadge() {
   }
 }
 
-// Check initial 2x timer and cooldown state
-if (isHome2xBoostActive() || isHome2xCooldownActive()) {
-  startHome2xTimerTick();
+// ==========================================================================
+// 5-HOUR ENERGY AD BOOSTER ENGINE (BACKGROUND COOLDOWN)
+// User requirement:
+// "home page in have show pop up than in energy popup in edit a one time ads
+//  throw energy if win than after 5 hours timer start in background not show in
+//  user panel but count this timer in backend than after a timer finish than
+//  show a popup in home page otherwise remove a popup."
+// ==========================================================================
+const ENERGY_AD_COOLDOWN_MS = 5 * 60 * 60 * 1000; // 5 Hours (18,000,000 ms)
+let wasEnergyAdOnCooldown = false;
+let energyPopupShownForCycle = false;
+
+function isEnergyAdCooldownActive() {
+  return !!(gameState && gameState.reactor && gameState.reactor.energyAdCooldownEndTime && Date.now() < gameState.reactor.energyAdCooldownEndTime);
+}
+
+function getEnergyAdCooldownRemainingSeconds() {
+  if (!isEnergyAdCooldownActive()) return 0;
+  return Math.max(0, Math.ceil((gameState.reactor.energyAdCooldownEndTime - Date.now()) / 1000));
+}
+
+// "otherwise remove a popup" -> Hide booster button from home page while on cooldown
+function updateHomeEnergyBoosterVisibility() {
+  const btn = document.getElementById('btnBoosterEnergy');
+  if (!btn) return;
+  if (isEnergyAdCooldownActive()) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = 'flex';
+  }
+}
+
+// Background tick to monitor the 5-hour cooldown without rendering a countdown in user panel
+function checkEnergyAdCooldownBackground() {
+  const isCool = isEnergyAdCooldownActive();
+  updateHomeEnergyBoosterVisibility();
+
+  if (isCool) {
+    wasEnergyAdOnCooldown = true;
+    energyPopupShownForCycle = false;
+  } else {
+    // If it was on cooldown and now finished: "after a timer finish than show a popup in home page"
+    if (wasEnergyAdOnCooldown) {
+      wasEnergyAdOnCooldown = false;
+      energyPopupShownForCycle = true;
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('HOME_ENERGY_POPUP_LOAD_SHOWN');
+      }
+      const homePage = document.getElementById('pageHome');
+      const backdrop = document.getElementById('homePopupBackdrop');
+      const isModalOpen = backdrop && backdrop.classList.contains('open');
+      if (homePage && homePage.classList.contains('active') && !isModalOpen) {
+        openHomeActionPopup('booster_energy');
+      }
+    }
+  }
+}
+
+// Background 1-second interval ticker for cooldown tracking
+if (typeof window !== 'undefined') {
+  setInterval(checkEnergyAdCooldownBackground, 1000);
 }
 
 // Automatic Fixed Popup on Initial Game Load
@@ -823,12 +886,15 @@ function checkAndShowHomeFixedPopupOnLoad() {
   setTimeout(() => {
     const homePage = document.getElementById('pageHome');
     if (homePage && homePage.classList.contains('active')) {
-      const alreadyShown = sessionStorage.getItem('HOME_FIRST_LOAD_POPUP_SHOWN');
-      if (!alreadyShown) {
-        sessionStorage.setItem('HOME_FIRST_LOAD_POPUP_SHOWN', 'true');
-        openHomeActionPopup('ads_2x');
-      } else if (!isHome2xBoostActive() && !isHome2xCooldownActive()) {
-        openHomeActionPopup('ads_2x');
+      if (!isEnergyAdCooldownActive()) {
+        const alreadyShown = (typeof sessionStorage !== 'undefined') ? sessionStorage.getItem('HOME_ENERGY_POPUP_LOAD_SHOWN') : null;
+        if (!alreadyShown) {
+          if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('HOME_ENERGY_POPUP_LOAD_SHOWN', 'true');
+          }
+          energyPopupShownForCycle = true;
+          openHomeActionPopup('booster_energy');
+        }
       }
     }
   }, 900);
@@ -838,6 +904,7 @@ function checkAndShowHomeFixedPopupOnLoad() {
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     updateHome2xIconVisibility();
+    updateHomeEnergyBoosterVisibility();
     checkAndShowHomeFixedPopupOnLoad();
   });
 }
@@ -850,7 +917,13 @@ function openHomeActionPopup(type) {
 
   currentHomePopupType = type;
 
-  if (type === 'booster_energy') {
+  if (type === 'booster_energy' || type === 'coin') {
+    if (isEnergyAdCooldownActive()) {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚡ Energy booster is recharging! Available every 5 hours.');
+      }
+      return;
+    }
     renderBoosterEnergyPopup(header, body);
   } else if (type === 'booster_profit') {
     renderBoosterProfitPopup(header, body);
@@ -864,8 +937,6 @@ function openHomeActionPopup(type) {
     renderHomeAutoClickPopup(header, body);
   } else if (type === 'profile') {
     renderHomeProfilePopup(header, body);
-  } else if (type === 'coin') {
-    renderBoosterEnergyPopup(header, body);
   } else if (type === 'blue') {
     renderBoosterBankPopup(header, body);
   } else if (type === 'bonus') {
@@ -892,8 +963,13 @@ function refreshHomePopupIfOpen(type) {
     const header = document.getElementById('homePopupHeader');
     const body = document.getElementById('homePopupBody');
     if (header && body) {
-      if (type === 'booster_energy') renderBoosterEnergyPopup(header, body);
-      else if (type === 'booster_profit') renderBoosterProfitPopup(header, body);
+      if (type === 'booster_energy' || type === 'coin') {
+        if (isEnergyAdCooldownActive()) {
+          closeHomeActionPopup();
+        } else {
+          renderBoosterEnergyPopup(header, body);
+        }
+      } else if (type === 'booster_profit') renderBoosterProfitPopup(header, body);
       else if (type === 'booster_bank') renderBoosterBankPopup(header, body);
       else if (type === 'booster_fast_xp') renderBoosterFastXpPopup(header, body);
       else if (type === 'ads_2x') renderBoosterProfitPopup(header, body);
@@ -904,19 +980,19 @@ function refreshHomePopupIfOpen(type) {
 
 // ==========================================================================
 // 4 NEW BOOSTER POPUPS & ACTIONS (TASKS #3)
-// 1. 10 Energy (1 Ad or 100 Coins)
+// 1. 10 Energy (1-Time Ad every 5 hours)
 // 2. 3 Hours *2 Profit (1 Ad or 150 Coins)
 // 3. Big Bank Blue Coin Deposit/Withdraw (1 Ad = 100 Coins, 100 Diamonds = Full + 24h Pass)
 // 4. Fast XP Surge (100 Diamonds or 5 Ads)
 // ==========================================================================
 
-// 1. 10 Energy Booster Popup View
+// 1. 10 Energy Booster Popup View (1-Time Ad every 5 hours)
 function renderBoosterEnergyPopup(header, body) {
   header.innerHTML = `
-    <div class="home-popup-festive-pill">⚡ ENERGY GENERATOR</div>
+    <div class="home-popup-festive-pill">⚡ SACRED ENERGY BOOST</div>
     <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(2, 132, 199, 0.1) 100%); border: 2px solid #38bdf8; color: #38bdf8; font-size: 28px;">⚡</div>
     <h3 class="home-popup-title">10 ENERGY BOOSTER</h3>
-    <p class="home-popup-subtitle">Instantly get +10 Energy units to keep tapping and powering up your reactor!</p>
+    <p class="home-popup-subtitle">Watch 1 quick ad to instantly recharge +10 Energy units for your reactor! Available once every 5 hours.</p>
   `;
   body.innerHTML = `
     <div class="popup-stat-banner">
@@ -927,23 +1003,46 @@ function renderBoosterEnergyPopup(header, body) {
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyEnergyBoosterWithAd()">
         <span style="font-size: 18px;">🎬</span> WATCH 1 AD FOR +10 ENERGY
       </button>
-      <button class="popup-action-btn btn-gold-glow" style="background: linear-gradient(135deg, #d97706, #b45309); border: 1.5px solid #fbbf24; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyEnergyBoosterWithCoins()">
-        <span style="font-size: 18px;">🪙</span> BUY FOR 100 COINS (+10 ENERGY)
-      </button>
     </div>
   `;
 }
 
 window.buyEnergyBoosterWithAd = function() {
-  const doReward = () => {
-    gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 10;
-    sfx.playEnergyRechargeSound ? sfx.playEnergyRechargeSound() : sfx.playTapSound(2);
+  if (isEnergyAdCooldownActive()) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('⚡ +10 Energy Recharged via Ad!');
+      showFloatingToast('⚡ Energy booster is recharging! Available every 5 hours.');
     }
     closeHomeActionPopup();
-    updateUI();
-    saveGame();
+    return;
+  }
+
+  const doReward = () => {
+    gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 10;
+    
+    // Start 5 hours timer in background (not shown in user panel, but counted in backend)
+    const now = Date.now();
+    if (!gameState.reactor) gameState.reactor = {};
+    gameState.reactor.energyAdCooldownEndTime = now + ENERGY_AD_COOLDOWN_MS;
+    wasEnergyAdOnCooldown = true;
+    energyPopupShownForCycle = false;
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('HOME_ENERGY_POPUP_LOAD_SHOWN');
+    }
+
+    if (typeof sfx !== 'undefined' && sfx.playEnergyRechargeSound) {
+      sfx.playEnergyRechargeSound();
+    } else if (typeof sfx !== 'undefined' && sfx.playTapSound) {
+      sfx.playTapSound(2);
+    }
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ +10 Energy Claimed via Ad! Next available in 5 hours.');
+    }
+
+    closeHomeActionPopup();
+    updateHomeEnergyBoosterVisibility();
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame();
     if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
       window.firebaseSync.saveToCloudImmediate();
     }
@@ -959,25 +1058,15 @@ window.buyEnergyBoosterWithAd = function() {
 };
 
 window.buyEnergyBoosterWithCoins = function() {
-  if ((gameState.player.coins || 0) < 100) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('Need 100 Coins to recharge +10 Energy!');
-    }
-    return;
-  }
-  gameState.player.coins -= 100;
-  gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 10;
-  sfx.playEnergyRechargeSound ? sfx.playEnergyRechargeSound() : sfx.playTapSound(2);
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast('⚡ +10 Energy Purchased! (-100 Coins)');
-  }
-  closeHomeActionPopup();
-  updateUI();
-  saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
+    showFloatingToast('⚡ Energy booster is available exclusively via 1 Ad once every 5 hours!');
   }
 };
+
+window.isEnergyAdCooldownActive = isEnergyAdCooldownActive;
+window.getEnergyAdCooldownRemainingSeconds = getEnergyAdCooldownRemainingSeconds;
+window.updateHomeEnergyBoosterVisibility = updateHomeEnergyBoosterVisibility;
+window.checkEnergyAdCooldownBackground = checkEnergyAdCooldownBackground;
 
 // 2. 3 Hours *2 Profit Booster Popup View
 function renderBoosterProfitPopup(header, body) {

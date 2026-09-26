@@ -77,8 +77,8 @@
           <div class="orb-stage" id="orbStage">
             <!-- Left Side Action Circles: Booster 1 (10 Energy) & Booster 2 (3h *2 Profit) -->
             <div class="orb-side-column orb-side-left">
-              <!-- Booster 1: 10 Energy (1 Ad or 100 Coins) -->
-              <button class="home-action-circle circle-gold" id="btnBoosterEnergy" onclick="openHomeActionPopup('booster_energy')" title="10 Energy Booster (1 Ad or 100 Coins)">
+              <!-- Booster 1: 10 Energy (Watch 1 Ad) -->
+              <button class="home-action-circle circle-gold" id="btnBoosterEnergy" onclick="openHomeActionPopup('booster_energy')" title="10 Energy Booster (Watch 1 Ad)">
                 <div class="circle-badge" id="badgeBoosterEnergy">+10 ⚡</div>
                 <div class="circle-icon">⚡</div>
                 <span class="circle-label">10 ENERGY</span>
@@ -316,87 +316,76 @@
           </div>
         </section>
 
-        <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
-        <section class="home-leaderboard-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" style="cursor: pointer;" title="Tap to open full Top 100 Leaderboard">
-          <!-- Leaderboard Header Strip -->
-          <div class="hlb-header">
-            <div class="hlb-title-wrap">
-              <div class="hlb-trophy-icon">🏆</div>
-              <div class="hlb-title-info">
-                <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
-                <span class="hlb-subtitle">Top 100 Champions &amp; Live Step Podium</span>
+        <!-- Home Page Upgraded Leaderboard Tab Entry Card -->
+        <section class="home-leaderboard-tab-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('leaderboard');}" role="button" tabindex="0" title="Tap to open Global Leaderboard">
+          <!-- Ambient Shimmer & Atmospheric Glow -->
+          <div class="hlb-card-glow"></div>
+          <div class="hlb-shimmer-sweep"></div>
+          
+          <!-- 1. Header Row: 3D Trophy + Prominent Heading + Live Badge + Right Action Arrow -->
+          <div class="hlb-header-row">
+            <div class="hlb-header-left">
+              <div class="hlb-badge-box">
+                <div class="hlb-trophy-symbol">🏆</div>
+                <div class="hlb-sparkle-dot s1">✦</div>
+                <div class="hlb-sparkle-dot s2">✨</div>
               </div>
-            </div>
-            <!-- Live Indicator & Open Arrow -->
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div class="hlb-live-indicator">
-                <span class="hlb-live-pulse-dot"></span>
-                <span class="hlb-live-text">LIVE</span>
-              </div>
-              <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fde047; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
-                <span>OPEN</span> <span>›</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Category Filter Tabs (Taps, Coins, Level, Blue Coins) -->
-          <div class="hlb-tabs-strip">
-            <button type="button" class="hlb-tab-btn active" id="hlbTabTaps" onclick="switchHomeLeaderboardTab('taps')">
-              <span class="hlb-tab-icon">⚡</span>
-              <span class="hlb-tab-name">Tap Count</span>
-            </button>
-            <button type="button" class="hlb-tab-btn" id="hlbTabCoins" onclick="switchHomeLeaderboardTab('coins')">
-              <span class="hlb-tab-icon">🪙</span>
-              <span class="hlb-tab-name">Coins</span>
-            </button>
-            <button type="button" class="hlb-tab-btn" id="hlbTabLevel" onclick="switchHomeLeaderboardTab('level')">
-              <span class="hlb-tab-icon">⭐</span>
-              <span class="hlb-tab-name">Level</span>
-            </button>
-            <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
-              <span class="hlb-tab-icon">💙</span>
-              <span class="hlb-tab-name">Blue</span>
-            </button>
-          </div>
-
-          <!-- Player's Own Live Ranking & Real-Time Count Card -->
-          <div class="hlb-my-rank-card" id="hlbMyRankCard">
-            <div class="hlb-my-rank-left">
-              <div class="hlb-rank-badge" id="hlbMyRankBadge">#1</div>
-              <div class="hlb-my-avatar-wrap">
-                <span class="hlb-my-avatar" id="hlbMyAvatar">👑</span>
-              </div>
-              <div class="hlb-my-info">
-                <div class="hlb-my-name-row">
-                  <span class="hlb-my-name" id="hlbMyName">Player (You)</span>
-                  <span class="hlb-you-tag">YOU</span>
+              <div class="hlb-heading-group">
+                <div class="hlb-top-meta-pills">
+                  <span class="hlb-season-pill">🔥 SEASON 1</span>
+                  <span class="hlb-live-pill">
+                    <span class="hlb-pulse-dot"></span>
+                    <span>LIVE</span>
+                  </span>
                 </div>
-                <span class="hlb-my-handle" id="hlbMyHandle">@player</span>
+                <h3 class="hlb-main-heading">GLOBAL LEADERBOARD</h3>
               </div>
             </div>
-            <div class="hlb-my-score-wrap">
-              <div class="hlb-my-score-value" id="hlbMyScoreValue">0</div>
-              <div class="hlb-my-score-unit" id="hlbMyScoreUnit">TAPS ⚡</div>
+
+            <div class="hlb-header-right">
+              <div class="hlb-open-cta-pill">
+                <span>TOP 100</span>
+                <svg class="hlb-chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </div>
             </div>
           </div>
 
-          <!-- Top Players Leaderboard List -->
-          <div class="hlb-list-wrap" id="hlbListWrap">
-            <!-- Dynamically populated by renderHomeLeaderboard() -->
+          <!-- 2. Middle Spotlight Row: Podium Leaders Teaser & Prize Tag -->
+          <div class="hlb-spotlight-row">
+            <div class="hlb-leaders-preview">
+              <div class="hlb-avatar-stack">
+                <div class="hlb-mini-avatar gold-av" title="#1 Champion">👑</div>
+                <div class="hlb-mini-avatar silver-av" title="#2 Silver">🥈</div>
+                <div class="hlb-mini-avatar bronze-av" title="#3 Bronze">🥉</div>
+              </div>
+              <div class="hlb-leader-details">
+                <span class="hlb-leader-label">#1 LEADER</span>
+                <span class="hlb-leader-name">QuantumKing</span>
+                <span class="hlb-leader-score">28.9M 🪙</span>
+              </div>
+            </div>
+            <div class="hlb-prize-tag">
+              <span class="hlb-prize-emoji">🎁</span>
+              <span class="hlb-prize-amount">500K Pool</span>
+            </div>
           </div>
 
-          <!-- Footer Quick Stats Strip -->
-          <div class="hlb-footer-stats">
-            <div class="hlb-footer-item">
-              <span class="hlb-footer-icon">⚡</span>
-              <span class="hlb-footer-label">Total Taps:</span>
-              <strong class="hlb-footer-val" id="hlbTotalCommunityTaps">1,480,250</strong>
-            </div>
-            <div class="hlb-footer-item">
-              <span class="hlb-footer-icon">👥</span>
-              <span class="hlb-footer-label">Active Racers:</span>
-              <strong class="hlb-footer-val" id="hlbActiveRacers">24,590</strong>
-            </div>
+          <!-- 3. Bottom Interactive Quick Category Tabs -->
+          <div class="hlb-category-tabs-grid" role="group" aria-label="Leaderboard Categories">
+            <button type="button" class="hlb-cat-btn gold" onclick="event.stopPropagation(); switchHomeLeaderboardTab('coins');" title="Open Coin Rankings">
+              <span class="hlb-cat-icon">👑</span>
+              <span class="hlb-cat-text">Coin Rankings</span>
+            </button>
+            <button type="button" class="hlb-cat-btn purple" onclick="event.stopPropagation(); switchHomeLeaderboardTab('spin');" title="Open Spinner Event Rankings">
+              <span class="hlb-cat-icon">🎡</span>
+              <span class="hlb-cat-text">Spin Event</span>
+            </button>
+            <button type="button" class="hlb-cat-btn cyan" onclick="event.stopPropagation(); switchHomeLeaderboardTab('taps');" title="Open Energy Tap Rankings">
+              <span class="hlb-cat-icon">⚡</span>
+              <span class="hlb-cat-text">Energy Taps</span>
+            </button>
           </div>
         </section>
 

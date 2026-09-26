@@ -32,7 +32,6 @@ class FirebaseSyncService {
     this.isAuthenticated = false;
     this.authPromise = null;
     this.saveTimeout = null;
-    this.isPermanentlyDeleted = false;
     this.syncStatus = 'connecting'; // 'connecting' | 'synced' | 'saving' | 'offline' | 'auth_required'
     this.authConfig = {
       telegramAuth: true,
@@ -44,8 +43,8 @@ class FirebaseSyncService {
       accountLinking: true
     };
 
-    if (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true') {
-      this.isPermanentlyDeleted = true;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('ENERGY_TAP_USER_TERMINATED');
     }
 
     this.init();
@@ -53,30 +52,9 @@ class FirebaseSyncService {
 
   init() {
     try {
-      if (this.isPermanentlyDeleted) {
-        if (typeof firebase !== 'undefined' && firebase.database) {
-          try {
-            const tempDb = firebase.database();
-            const localUid = this.userId || this.getOrCreateLocalUid();
-            tempDb.ref(`deleted_users/${localUid}`).once('value').then(snap => {
-              if (snap.exists()) {
-                this.lockUserPanelPermanently(snap.val()?.reason || 'Account Terminated by Administrator.');
-              } else {
-                console.log('🔓 Clearing local termination flag: User is not marked deleted in Firebase.');
-                this.isPermanentlyDeleted = false;
-                localStorage.removeItem('ENERGY_TAP_USER_TERMINATED');
-                const overlay = document.getElementById('userAccountLockedOverlay');
-                if (overlay) overlay.style.display = 'none';
-                this.init();
-              }
-            }).catch(() => {
-              this.lockUserPanelPermanently('Account Terminated: This account and data were permanently deleted by administrator.');
-            });
-            return;
-          } catch (e) {}
-        }
-        this.lockUserPanelPermanently('Account Terminated: This account and data were permanently deleted by administrator.');
-        return;
+      if (typeof document !== 'undefined') {
+        const overlay = document.getElementById('userAccountLockedOverlay');
+        if (overlay) overlay.remove();
       }
 
       if (typeof firebase !== 'undefined') {
@@ -122,19 +100,6 @@ class FirebaseSyncService {
             this.isOnline = true;
             this.setSyncStatus('synced');
             console.log('🔥 Firebase Auth verified! Authenticated Player UID:', this.userId);
-            
-            // Check tombstone listener on /deleted_users to enforce security lockdown (idempotent)
-            if (this._listeningDeletedUser !== this.userId) {
-              this._listeningDeletedUser = this.userId;
-              this.database.ref(`deleted_users/${this.userId}`).on('value', (delSnap) => {
-                if (delSnap.exists()) {
-                  const delVal = delSnap.val() || {};
-                  this.lockUserPanelPermanently(delVal.reason || 'Account Terminated & Purged by Administrator.');
-                }
-              });
-            }
-
-            if (this.isPermanentlyDeleted) return;
 
             // Initial cloud sync: load from Firebase, then attach real-time presence
             this.loadFromCloud();
@@ -382,217 +347,6 @@ class FirebaseSyncService {
       });
   }
 
-  // Permanent Security Lockout for Terminated / Deleted Accounts
-  lockUserPanelPermanently(reason = 'Account has been terminated by administrator.') {
-    this.isPermanentlyDeleted = true;
-    try {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('ENERGY_TAP_USER_TERMINATED', 'true');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V3');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V2');
-        localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V1');
-        localStorage.removeItem('energy_tap_game_state');
-      }
-    } catch (e) {}
-
-    if (this.saveTimeout) {
-      clearTimeout(this.saveTimeout);
-      this.saveTimeout = null;
-    }
-
-    if (typeof resetAllDataToZero === 'function') {
-      resetAllDataToZero();
-    }
-
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      gameState.player.coins = 0;
-      gameState.player.blueCoins = 0;
-      gameState.player.diamonds = 0;
-      gameState.player.chestKeys = 0;
-      gameState.player.scratchCards = 0;
-      gameState.player.chestTickets = 0;
-      gameState.player.eggs = 0;
-      gameState.player.status = 'deleted';
-    }
-
-    // Disconnect Firebase listeners
-    if (this.database && this.userId) {
-      try {
-        this.database.ref(`players/${this.userId}`).off();
-        this.database.ref(`users/${this.userId}`).off();
-      } catch (e) {}
-    }
-
-    this.setSyncStatus('offline');
-    this.renderAccountLockScreen(reason);
-  }
-
-  renderAccountLockScreen(reason) {
-    let overlay = document.getElementById('userAccountLockedOverlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'userAccountLockedOverlay';
-      overlay.className = 'user-account-locked-overlay';
-      document.body.appendChild(overlay);
-    }
-
-    const defaultName = (typeof gameState !== 'undefined' && gameState.player && gameState.player.name) ? gameState.player.name : 'Player';
-    const defaultHandle = (typeof gameState !== 'undefined' && gameState.player && gameState.player.handle) ? gameState.player.handle : '';
-
-    overlay.innerHTML = `
-      <div class="user-lock-card">
-        <div class="user-lock-icon">🔒</div>
-        <div class="user-lock-badge">SECURITY NOTICE</div>
-        <h2 class="user-lock-title">ACCOUNT TERMINATED</h2>
-        <p class="user-lock-desc">${reason || 'Account Deleted: This player account was removed from Firebase by administrator.'}</p>
-        
-        <div class="user-lock-meta">
-          <div class="lock-meta-row"><span>STATUS:</span> <strong style="color: #ef4444;">REVOKED &amp; SECURED</strong></div>
-          <div class="lock-meta-row"><span>TIMESTAMP:</span> <strong>${new Date().toLocaleTimeString()}</strong></div>
-        </div>
-
-        <!-- Interactive Account Reconnect & Request Form -->
-        <div class="user-lock-form-box" id="lockRequestFormContainer">
-          <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 8px; text-align: left;">
-            ✏️ Edit Player Details &amp; Reconnect:
-          </div>
-          <div class="user-lock-input-group">
-            <input type="text" id="reqAccName" class="user-lock-input" placeholder="Player Name" value="${defaultName}">
-            <input type="text" id="reqAccTelegram" class="user-lock-input" placeholder="Telegram / Handle (e.g. @username)" value="${defaultHandle}">
-            <textarea id="reqAccReason" class="user-lock-textarea" rows="2" placeholder="Note to Administrator (optional)"></textarea>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 4px;">
-            <!-- Primary Action: Edit & Reconnect immediately to Firebase -->
-            <button type="button" class="user-lock-edit-reconnect-btn" onclick="window.firebaseSync && window.firebaseSync.reconnectAndEditAccount()">
-              <span>⚡ Edit &amp; Reconnect to Firebase</span>
-            </button>
-
-            <!-- Secondary Action: Send request to Admin Panel -->
-            <button type="button" class="user-lock-submit-btn" onclick="window.firebaseSync && window.firebaseSync.handleUserRequestSubmit()">
-              <span>📨 Send Request to Admin</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="user-lock-note">
-          ℹ️ You can edit your player name above and reconnect immediately to start fresh, or send a request to the administrator.
-        </div>
-      </div>
-    `;
-    overlay.style.display = 'flex';
-  }
-
-  handleUserRequestSubmit() {
-    const nameEl = document.getElementById('reqAccName');
-    const tgEl = document.getElementById('reqAccTelegram');
-    const reasonEl = document.getElementById('reqAccReason');
-
-    const name = nameEl ? nameEl.value.trim() : '';
-    const telegram = tgEl ? tgEl.value.trim() : '';
-    const reason = reasonEl ? reasonEl.value.trim() : '';
-
-    if (!name) {
-      alert('Please enter your name.');
-      if (nameEl) nameEl.focus();
-      return;
-    }
-
-    this.submitAccountCreationRequest(name, telegram, '', reason);
-  }
-
-  submitAccountCreationRequest(name, handle, phone, message) {
-    if (!this.database) {
-      alert('Firebase is currently offline. Please check your internet connection.');
-      return Promise.reject(new Error('Firebase offline'));
-    }
-
-    const reqId = 'REQ_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4);
-    const payload = {
-      id: reqId,
-      oldUserId: this.userId || (typeof localStorage !== 'undefined' ? localStorage.getItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5') : '') || 'unknown',
-      name: name || 'Player',
-      username: handle ? handle.replace(/^@/, '') : 'player',
-      telegram: handle || '',
-      phone: phone || '',
-      reason: message || 'Account recreation requested after administrator deletion.',
-      status: 'pending',
-      requestedAt: Date.now(),
-      dateStr: new Date().toLocaleString()
-    };
-
-    return this.database.ref(`account_requests/${reqId}`).set(payload).then(() => {
-      const box = document.getElementById('lockRequestFormContainer');
-      if (box) {
-        box.innerHTML = `
-          <div class="user-lock-success" style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10b981; border-radius: 12px; padding: 12px; text-align: center; color: #a7f3d0;">
-            <div style="font-size: 24px; margin-bottom: 4px;">✅</div>
-            <strong style="color: #34d399; font-size: 13.5px; display: block;">Request Sent to Administrator!</strong>
-            <p style="margin: 4px 0 8px 0; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
-              Your request (ID: <code>#${reqId.slice(-6).toUpperCase()}</code>) has been submitted. The admin can review and approve it from the Admin Portal.
-            </p>
-            <button type="button" class="user-lock-edit-reconnect-btn" style="margin-top: 6px;" onclick="window.firebaseSync && window.firebaseSync.reconnectAndEditAccount()">
-              <span>⚡ Or Reconnect Now Instantly</span>
-            </button>
-          </div>
-        `;
-      }
-    }).catch(err => {
-      alert('Error submitting request: ' + err.message);
-      throw err;
-    });
-  }
-
-  // Edit details and reconnect to Firebase
-  reconnectAndEditAccount() {
-    const nameEl = document.getElementById('reqAccName');
-    const tgEl = document.getElementById('reqAccTelegram');
-    const name = nameEl ? nameEl.value.trim() : '';
-    const telegram = tgEl ? tgEl.value.trim() : '';
-
-    this.isPermanentlyDeleted = false;
-    try {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.removeItem('ENERGY_TAP_USER_TERMINATED');
-        const newUid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
-        localStorage.setItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5', newUid);
-        this.userId = newUid;
-      }
-    } catch (e) {}
-
-    const overlay = document.getElementById('userAccountLockedOverlay');
-    if (overlay) {
-      overlay.style.display = 'none';
-      overlay.remove();
-    }
-
-    if (typeof resetAllDataToZero === 'function') {
-      resetAllDataToZero();
-    }
-
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      if (name) gameState.player.name = name;
-      if (telegram) gameState.player.handle = telegram.startsWith('@') ? telegram : `@${telegram}`;
-      gameState.player.status = 'active';
-    }
-
-    this.init();
-    setTimeout(() => {
-      this.saveToCloudImmediate();
-      if (typeof updateUI === 'function') updateUI();
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`✅ Connected to Firebase as ${name || 'Player'}!`);
-      }
-    }, 700);
-  }
-
-  reconnectAndResetAccount() {
-    this.reconnectAndEditAccount();
-  }
-
   // Real-time listener for user updates / resets from Admin Portal (idempotent per user)
   listenToUser() {
     if (!this.database || !this.userId) return;
@@ -601,30 +355,16 @@ class FirebaseSyncService {
 
     const userRef = this.database.ref(`players/${this.userId}`);
     userRef.on('value', (snapshot) => {
-      if (this.isPermanentlyDeleted) return;
-
       const cloudData = snapshot.val();
       if (!cloudData || typeof cloudData !== 'object') {
-        // Verify with /deleted_users before locking out!
-        if (this.database && this.userId) {
-          this.database.ref(`deleted_users/${this.userId}`).once('value').then(delSnap => {
-            if (delSnap.exists()) {
-              const delVal = delSnap.val() || {};
-              this.lockUserPanelPermanently(delVal.reason || 'Account Deleted: This player account was removed from Firebase by administrator.');
-            } else {
-              console.log('🆕 User record not yet initialized in cloud, syncing fresh session...');
-              this.saveToCloudImmediate();
-            }
-          }).catch(() => {
-            this.saveToCloudImmediate();
-          });
-        }
+        console.log('🆕 User record not yet initialized in cloud, syncing fresh session...');
+        this.saveToCloudImmediate();
         return;
       }
 
       const playerStatus = (cloudData.player && cloudData.player.status) || cloudData.status;
-      if (playerStatus === 'deleted' || playerStatus === 'disabled') {
-        this.lockUserPanelPermanently(`Account ${playerStatus === 'disabled' ? 'Suspended' : 'Deleted'}: Access revoked by administrator.`);
+      if (playerStatus === 'disabled') {
+        console.warn('Account disabled by administrator.');
         return;
       }
 
@@ -1138,9 +878,6 @@ class FirebaseSyncService {
 
   // Debounced Save (efficient for fast taps)
   debouncedSave() {
-    if (this.isPermanentlyDeleted || (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true')) {
-      return;
-    }
     if (!this.database || !this.userId) return;
     this.setSyncStatus('saving');
     clearTimeout(this.saveTimeout);
@@ -1151,16 +888,11 @@ class FirebaseSyncService {
 
   // Immediate Save to Firebase
   saveToCloudImmediate() {
-    if (this.isPermanentlyDeleted || (typeof localStorage !== 'undefined' && localStorage.getItem('ENERGY_TAP_USER_TERMINATED') === 'true')) {
-      console.warn('⛔ Save blocked: Account has been terminated by administrator.');
-      return;
-    }
     if (!this.database) return;
 
     // Authentication is strictly required for all user data store
     this.ensureAuthenticated().then(() => {
       if (!this.userId) return;
-      if (this.isPermanentlyDeleted) return;
 
       // Calculate aggregated activity metrics
       const totalAdsWatched = (gameState.player.adsWatchedCount || 0) + 
@@ -1201,7 +933,8 @@ class FirebaseSyncService {
           comboTaps: gameState.reactor.comboTaps || 0,
           profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
           fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
-          fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
+          fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0,
+          energyAdCooldownEndTime: gameState.reactor.energyAdCooldownEndTime || 0
         },
         energyGenerator: {
           epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
@@ -3017,12 +2750,6 @@ window.signInWithPhone = function(phone, hash, code, mode = 'login') {
 };
 window.handleTelegramAuthorization = function(tgUser) {
   return window.firebaseSync ? window.firebaseSync.handleTelegramAuthorization(tgUser) : Promise.resolve({ ok: false });
-};
-window.reconnectAndEditAccount = function() {
-  if (window.firebaseSync) window.firebaseSync.reconnectAndEditAccount();
-};
-window.reconnectAndResetAccount = function() {
-  if (window.firebaseSync) window.firebaseSync.reconnectAndResetAccount();
 };
 
 

@@ -12,7 +12,6 @@ const SHARED_DIR = path.join(ROOT_DIR, 'shared');
 const PAGE_KEYS = [
   'dashboard',
   'users',
-  'account-requests',
   'mega-add',
   'mega-request',
   'tasks-web',
@@ -110,12 +109,6 @@ const headerContent = `<!DOCTYPE html>
         <span class="nav-icon">👥</span>
         <span>User</span>
         <span class="nav-badge" id="badgeUsersCount">0</span>
-      </button>
-
-      <button class="nav-item" data-page="account-requests" onclick="switchAdminPage('account-requests', 'Account Creation Requests')">
-        <span class="nav-icon">👤+</span>
-        <span>Account Requests</span>
-        <span class="nav-badge badge-amber" id="badgeAccountRequestsCount" style="display: none;">0</span>
       </button>
 
       <button class="nav-item" data-page="mega-add" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">

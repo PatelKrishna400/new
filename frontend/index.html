@@ -13,7 +13,7 @@
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -21,18 +21,39 @@
       corePlugins: { preflight: false },
       theme: {
         extend: {
+          fontFamily: {
+            sci: ['Orbitron', 'monospace'],
+            tech: ['Rajdhani', 'sans-serif'],
+            fredoka: ['Fredoka', 'sans-serif']
+          },
           colors: {
             sunamber: '#f59e0b',
             sunyellow: '#fde047',
             leafgreen: '#22c55e',
             earthbrown: '#78350f',
-            stonegray: '#334155'
+            stonegray: '#334155',
+            honeygold: '#f59e0b',
+            honeyamber: '#d97706',
+            combcream: '#fef3c7',
+            hivebrown: '#78350f',
+            nectarrose: '#fb7185',
+            abyss: '#040711',
+            cavern: '#090f1e',
+            cybercyan: '#00f0ff',
+            neonviolet: '#bd00ff',
+            plasmaamber: '#ffaa00',
+            cryoice: '#38bdf8',
+            volcanicslag: '#ff3344',
+            coremetal: '#141e33'
           },
           animation: {
             'bounce-gentle': 'bounceGentle 2s infinite ease-in-out',
             'spin-very-slow': 'spin 25s linear infinite',
             'worker-hammer': 'workerPump 1.8s infinite ease-in-out',
-            'float-slow': 'floatSlow 3s ease-in-out infinite'
+            'float-slow': 'floatSlow 3s ease-in-out infinite',
+            'buzz-float': 'buzzDance 0.8s infinite ease-in-out',
+            'float-gentle': 'floatGentle 2.5s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 2s infinite'
           },
           keyframes: {
             bounceGentle: {
@@ -46,6 +67,20 @@
             workerPump: {
               '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
               '50%': { transform: 'rotate(-12deg) translateY(4px) scale(0.96)' }
+            },
+            buzzDance: {
+              '0%, 100%': { transform: 'translate(0px, 0px) rotate(0deg)' },
+              '25%': { transform: 'translate(2px, -3px) rotate(3deg)' },
+              '50%': { transform: 'translate(-2px, 1px) rotate(-3deg)' },
+              '75%': { transform: 'translate(2px, 2px) rotate(2deg)' }
+            },
+            floatGentle: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { filter: 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.4))' },
+              '50%': { filter: 'drop-shadow(0 0 16px rgba(245, 158, 11, 0.85))' }
             }
           }
         }
@@ -496,8 +531,8 @@
                 <div class="orb-stage" id="orbStage">
                   <!-- Left Side Action Circles: Booster 1 (10 Energy) & Booster 2 (3h *2 Profit) -->
                   <div class="orb-side-column orb-side-left">
-                    <!-- Booster 1: 10 Energy (1 Ad or 100 Coins) -->
-                    <button class="home-action-circle circle-gold" id="btnBoosterEnergy" onclick="openHomeActionPopup('booster_energy')" title="10 Energy Booster (1 Ad or 100 Coins)">
+                    <!-- Booster 1: 10 Energy (Watch 1 Ad) -->
+                    <button class="home-action-circle circle-gold" id="btnBoosterEnergy" onclick="openHomeActionPopup('booster_energy')" title="10 Energy Booster (Watch 1 Ad)">
                       <div class="circle-badge" id="badgeBoosterEnergy">+10 ⚡</div>
                       <div class="circle-icon">⚡</div>
                       <span class="circle-label">10 ENERGY</span>
@@ -735,87 +770,76 @@
                 </div>
               </section>
       
-              <!-- Home Page Leaderboard Section (Below Reactor Tap Button) -->
-              <section class="home-leaderboard-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" style="cursor: pointer;" title="Tap to open full Top 100 Leaderboard">
-                <!-- Leaderboard Header Strip -->
-                <div class="hlb-header">
-                  <div class="hlb-title-wrap">
-                    <div class="hlb-trophy-icon">🏆</div>
-                    <div class="hlb-title-info">
-                      <h3 class="hlb-title">GLOBAL LEADERBOARD</h3>
-                      <span class="hlb-subtitle">Top 100 Champions &amp; Live Step Podium</span>
+              <!-- Home Page Upgraded Leaderboard Tab Entry Card -->
+              <section class="home-leaderboard-tab-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('leaderboard');}" role="button" tabindex="0" title="Tap to open Global Leaderboard">
+                <!-- Ambient Shimmer & Atmospheric Glow -->
+                <div class="hlb-card-glow"></div>
+                <div class="hlb-shimmer-sweep"></div>
+                
+                <!-- 1. Header Row: 3D Trophy + Prominent Heading + Live Badge + Right Action Arrow -->
+                <div class="hlb-header-row">
+                  <div class="hlb-header-left">
+                    <div class="hlb-badge-box">
+                      <div class="hlb-trophy-symbol">🏆</div>
+                      <div class="hlb-sparkle-dot s1">✦</div>
+                      <div class="hlb-sparkle-dot s2">✨</div>
                     </div>
-                  </div>
-                  <!-- Live Indicator & Open Arrow -->
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="hlb-live-indicator">
-                      <span class="hlb-live-pulse-dot"></span>
-                      <span class="hlb-live-text">LIVE</span>
-                    </div>
-                    <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fde047; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
-                      <span>OPEN</span> <span>›</span>
-                    </div>
-                  </div>
-                </div>
-      
-                <!-- Category Filter Tabs (Taps, Coins, Level, Blue Coins) -->
-                <div class="hlb-tabs-strip">
-                  <button type="button" class="hlb-tab-btn active" id="hlbTabTaps" onclick="switchHomeLeaderboardTab('taps')">
-                    <span class="hlb-tab-icon">⚡</span>
-                    <span class="hlb-tab-name">Tap Count</span>
-                  </button>
-                  <button type="button" class="hlb-tab-btn" id="hlbTabCoins" onclick="switchHomeLeaderboardTab('coins')">
-                    <span class="hlb-tab-icon">🪙</span>
-                    <span class="hlb-tab-name">Coins</span>
-                  </button>
-                  <button type="button" class="hlb-tab-btn" id="hlbTabLevel" onclick="switchHomeLeaderboardTab('level')">
-                    <span class="hlb-tab-icon">⭐</span>
-                    <span class="hlb-tab-name">Level</span>
-                  </button>
-                  <button type="button" class="hlb-tab-btn" id="hlbTabBlue" onclick="switchHomeLeaderboardTab('blue')">
-                    <span class="hlb-tab-icon">💙</span>
-                    <span class="hlb-tab-name">Blue</span>
-                  </button>
-                </div>
-      
-                <!-- Player's Own Live Ranking & Real-Time Count Card -->
-                <div class="hlb-my-rank-card" id="hlbMyRankCard">
-                  <div class="hlb-my-rank-left">
-                    <div class="hlb-rank-badge" id="hlbMyRankBadge">#1</div>
-                    <div class="hlb-my-avatar-wrap">
-                      <span class="hlb-my-avatar" id="hlbMyAvatar">👑</span>
-                    </div>
-                    <div class="hlb-my-info">
-                      <div class="hlb-my-name-row">
-                        <span class="hlb-my-name" id="hlbMyName">Player (You)</span>
-                        <span class="hlb-you-tag">YOU</span>
+                    <div class="hlb-heading-group">
+                      <div class="hlb-top-meta-pills">
+                        <span class="hlb-season-pill">🔥 SEASON 1</span>
+                        <span class="hlb-live-pill">
+                          <span class="hlb-pulse-dot"></span>
+                          <span>LIVE</span>
+                        </span>
                       </div>
-                      <span class="hlb-my-handle" id="hlbMyHandle">@player</span>
+                      <h3 class="hlb-main-heading">GLOBAL LEADERBOARD</h3>
                     </div>
                   </div>
-                  <div class="hlb-my-score-wrap">
-                    <div class="hlb-my-score-value" id="hlbMyScoreValue">0</div>
-                    <div class="hlb-my-score-unit" id="hlbMyScoreUnit">TAPS ⚡</div>
+      
+                  <div class="hlb-header-right">
+                    <div class="hlb-open-cta-pill">
+                      <span>TOP 100</span>
+                      <svg class="hlb-chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                      </svg>
+                    </div>
                   </div>
                 </div>
       
-                <!-- Top Players Leaderboard List -->
-                <div class="hlb-list-wrap" id="hlbListWrap">
-                  <!-- Dynamically populated by renderHomeLeaderboard() -->
+                <!-- 2. Middle Spotlight Row: Podium Leaders Teaser & Prize Tag -->
+                <div class="hlb-spotlight-row">
+                  <div class="hlb-leaders-preview">
+                    <div class="hlb-avatar-stack">
+                      <div class="hlb-mini-avatar gold-av" title="#1 Champion">👑</div>
+                      <div class="hlb-mini-avatar silver-av" title="#2 Silver">🥈</div>
+                      <div class="hlb-mini-avatar bronze-av" title="#3 Bronze">🥉</div>
+                    </div>
+                    <div class="hlb-leader-details">
+                      <span class="hlb-leader-label">#1 LEADER</span>
+                      <span class="hlb-leader-name">QuantumKing</span>
+                      <span class="hlb-leader-score">28.9M 🪙</span>
+                    </div>
+                  </div>
+                  <div class="hlb-prize-tag">
+                    <span class="hlb-prize-emoji">🎁</span>
+                    <span class="hlb-prize-amount">500K Pool</span>
+                  </div>
                 </div>
       
-                <!-- Footer Quick Stats Strip -->
-                <div class="hlb-footer-stats">
-                  <div class="hlb-footer-item">
-                    <span class="hlb-footer-icon">⚡</span>
-                    <span class="hlb-footer-label">Total Taps:</span>
-                    <strong class="hlb-footer-val" id="hlbTotalCommunityTaps">1,480,250</strong>
-                  </div>
-                  <div class="hlb-footer-item">
-                    <span class="hlb-footer-icon">👥</span>
-                    <span class="hlb-footer-label">Active Racers:</span>
-                    <strong class="hlb-footer-val" id="hlbActiveRacers">24,590</strong>
-                  </div>
+                <!-- 3. Bottom Interactive Quick Category Tabs -->
+                <div class="hlb-category-tabs-grid" role="group" aria-label="Leaderboard Categories">
+                  <button type="button" class="hlb-cat-btn gold" onclick="event.stopPropagation(); switchHomeLeaderboardTab('coins');" title="Open Coin Rankings">
+                    <span class="hlb-cat-icon">👑</span>
+                    <span class="hlb-cat-text">Coin Rankings</span>
+                  </button>
+                  <button type="button" class="hlb-cat-btn purple" onclick="event.stopPropagation(); switchHomeLeaderboardTab('spin');" title="Open Spinner Event Rankings">
+                    <span class="hlb-cat-icon">🎡</span>
+                    <span class="hlb-cat-text">Spin Event</span>
+                  </button>
+                  <button type="button" class="hlb-cat-btn cyan" onclick="event.stopPropagation(); switchHomeLeaderboardTab('taps');" title="Open Energy Tap Rankings">
+                    <span class="hlb-cat-icon">⚡</span>
+                    <span class="hlb-cat-text">Energy Taps</span>
+                  </button>
                 </div>
               </section>
       
@@ -835,18 +859,28 @@
 
       <!-- PAGE: ENERGY -->
       <div class="page-view" id="pageEnergy">
-              <!-- Subtab Switcher Header at top of Energy Page -->
-              <div class="energy-subtab-nav" id="energySubtabNav">
-                <button class="energy-subtab-pill active" id="subtabBtnFuelGenerator" onclick="switchEnergySubview('fuel')">
-                  <span>⚡ Fuel Cells & Reactor</span>
-                </button>
-                <button class="energy-subtab-pill" id="subtabBtnSunflowerFarm" onclick="switchEnergySubview('sunflower')">
-                  <span>🌻 Sunflower Farming <span class="sf-nav-badge" id="sfNavLiveBadge">20 Lands</span></span>
-                </button>
-              </div>
+        <!-- Top Segmented Station Navigation Bar (Reactor, Sunflowers, Bee Farm, Crystal Mine) -->
+        <nav class="energy-top-subtabs" id="energyTopSubtabs" aria-label="Energy Stations Navigation">
+          <button class="energy-subtab-btn active" id="subtabBtnFuelGenerator" onclick="switchEnergySubview('fuel')">
+            <span class="subtab-icon">⚡</span>
+            <span class="subtab-label">Reactor</span>
+          </button>
+          <button class="energy-subtab-btn" id="subtabBtnSunflowerFarm" onclick="switchEnergySubview('sunflower')">
+            <span class="subtab-icon">🌻</span>
+            <span class="subtab-label">Sunflowers</span>
+          </button>
+          <button class="energy-subtab-btn" id="subtabBtnBeeFarm" onclick="switchEnergySubview('beefarm')">
+            <span class="subtab-icon">🐝</span>
+            <span class="subtab-label">Bee Farm</span>
+          </button>
+          <button class="energy-subtab-btn" id="subtabBtnMining" onclick="switchEnergySubview('mining')">
+            <span class="subtab-icon">🔮</span>
+            <span class="subtab-label">Gem Mine</span>
+          </button>
+        </nav>
       
-              <!-- VIEW 1: Fuel Generator & Existing Cells -->
-              <div id="energyFuelGeneratorView">
+        <!-- VIEW 1: Fuel Generator & Existing Cells -->
+        <div id="energyFuelGeneratorView">
               <section class="energy-gauge-section">
                 <div class="gauge-wrapper" id="energyGaugeWrapper">
                   <svg class="gauge-svg" viewBox="0 0 200 200">
@@ -873,6 +907,7 @@
                   <span class="ep-badge-icon">0.00</span>
                   <span class="ep-label">EP</span>
                 </div>
+      
               </section>
       
               <section class="energy-metrics-row">
@@ -1020,58 +1055,7 @@
                   </div>
                 </div>
       
-                <!-- 5. Blue Fuel Cell (30s Skip) -->
-                <div class="fuel-card blue-fuel-card" id="fuelCardBlue">
-                  <div class="fuel-card-top-row">
-                    <div class="fuel-card-left">
-                      <div class="fuel-icon-box blue-icon-box">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(2, 132, 199, 0.2)"/>
-                        </svg>
-                      </div>
-                      <div class="fuel-card-details">
-                        <div class="fuel-title-row">
-                          <h3 class="fuel-name" style="color: #0284c7;">Blue Fuel</h3>
-                          <span class="fuel-cell-badge blue-badge-pill" id="blueCellCount">0 Cells</span>
-                        </div>
-                        <p class="fuel-timer-bonus" style="color: #38bdf8;">⚡ 30s Generator Timer Skip</p>
-                      </div>
-                    </div>
-                    <div class="fuel-card-right">
-                      <button class="fuel-action-btn blue-btn" id="btnUseBlueFuel" onclick="executeFuelButtonAction('blue')">
-                        <span id="btnBlueText">⚡ Use Fuel</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-      
-                <!-- 6. Light Blue Fuel Cell (1 Min Skip) -->
-                <div class="fuel-card lightblue-fuel-card" id="fuelCardLightBlue">
-                  <div class="fuel-card-top-row">
-                    <div class="fuel-card-left">
-                      <div class="fuel-icon-box lightblue-icon-box">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="12" cy="12" r="10" fill="rgba(6, 182, 212, 0.2)"/>
-                          <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                      </div>
-                      <div class="fuel-card-details">
-                        <div class="fuel-title-row">
-                          <h3 class="fuel-name" style="color: #06b6d4;">Light Blue Fuel</h3>
-                          <span class="fuel-cell-badge lightblue-badge-pill" id="lightblueCellCount">0 Cells</span>
-                        </div>
-                        <p class="fuel-timer-bonus" style="color: #22d3ee;">❄️ 1 Min Generator Timer Skip</p>
-                      </div>
-                    </div>
-                    <div class="fuel-card-right">
-                      <button class="fuel-action-btn lightblue-btn" id="btnUseLightBlueFuel" onclick="executeFuelButtonAction('lightblue')">
-                        <span id="btnLightBlueText">⚡ Use Fuel</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-      
-                <!-- 7. Red Fuel Cell -->
+                <!-- 5. Red Fuel Cell -->
                 <div class="fuel-card red-fuel-card" id="fuelCardRed">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1098,7 +1082,7 @@
                   </div>
                 </div>
       
-                <!-- 8. Dark Red Fuel Cell -->
+                <!-- 6. Dark Red Fuel Cell -->
                 <div class="fuel-card darkred-fuel-card" id="fuelCardDarkRed">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1126,7 +1110,7 @@
                   </div>
                 </div>
       
-                <!-- 9. Pink Boost Fuel Cell -->
+                <!-- 7. Pink Boost Fuel Cell -->
                 <div class="fuel-card pink-fuel-card" id="fuelCardPink">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1140,7 +1124,7 @@
                           <h3 class="fuel-name" style="color: #f472b6;">Pink Boost Fuel</h3>
                           <span class="fuel-cell-badge pink-badge-pill" id="pinkCellCount">0 Cells</span>
                         </div>
-                        <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Speed Boost (10 Min)</p>
+                        <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Timer Speed (Consumes 2s/sec for 10 Min)</p>
                         <div class="boost-status-container" id="pinkStatusInfo">
                           <span class="boost-ready-badge" id="pinkStatusBadge">Ready</span>
                         </div>
@@ -1154,7 +1138,7 @@
                   </div>
                 </div>
       
-                <!-- 10. Purple Boost Fuel Cell -->
+                <!-- 8. Purple Boost Fuel Cell -->
                 <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
                   <div class="fuel-card-top-row">
                     <div class="fuel-card-left">
@@ -1170,7 +1154,7 @@
                           <h3 class="fuel-name" style="color: #c084fc;">Purple Boost Fuel</h3>
                           <span class="fuel-cell-badge purple-badge-pill" id="purpleCellCount">0 Cells</span>
                         </div>
-                        <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Speed Boost (10 Min)</p>
+                        <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Timer Speed (Consumes 5s/sec for 10 Min)</p>
                         <div class="boost-status-container" id="purpleStatusInfo">
                           <span class="boost-ready-badge" id="purpleStatusBadge">Ready</span>
                         </div>
@@ -1183,637 +1167,154 @@
                     </div>
                   </div>
                 </div>
+                <!-- 9. Blue Fuel Cell (30s Skip) -->
+                <div class="fuel-card blue-fuel-card" id="fuelCardBlue">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box blue-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(2, 132, 199, 0.2)"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #0284c7;">Blue Fuel</h3>
+                          <span class="fuel-cell-badge blue-badge-pill" id="blueCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #38bdf8;">⚡ 30s Generator Timer Skip</p>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn blue-btn" id="btnUseBlueFuel" onclick="executeFuelButtonAction('blue')">
+                        <span id="btnBlueText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+      
+                <!-- 10. Light Blue Fuel Cell (1 Min Skip) -->
+                <div class="fuel-card lightblue-fuel-card" id="fuelCardLightBlue">
+                  <div class="fuel-card-top-row">
+                    <div class="fuel-card-left">
+                      <div class="fuel-icon-box lightblue-icon-box">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" fill="rgba(6, 182, 212, 0.2)"/>
+                          <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                      </div>
+                      <div class="fuel-card-details">
+                        <div class="fuel-title-row">
+                          <h3 class="fuel-name" style="color: #06b6d4;">Light Blue Fuel</h3>
+                          <span class="fuel-cell-badge lightblue-badge-pill" id="lightblueCellCount">0 Cells</span>
+                        </div>
+                        <p class="fuel-timer-bonus" style="color: #22d3ee;">❄️ 1 Min Generator Timer Skip</p>
+                      </div>
+                    </div>
+                    <div class="fuel-card-right">
+                      <button class="fuel-action-btn lightblue-btn" id="btnUseLightBlueFuel" onclick="executeFuelButtonAction('lightblue')">
+                        <span id="btnLightBlueText">⚡ Use Fuel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+      
               </section>
               <!-- Entry Tab to Sunflower Farming below all 10 fuel cards -->
-              <div class="sunflower-entry-tab-card" id="sunflowerEntryCard" onclick="switchEnergySubview('sunflower')">
-                <div class="sf-entry-glow"></div>
-                <div class="sf-entry-left">
-                  <div class="sf-entry-icon-wrap animate-spin-very-slow">
-                    <span class="sf-entry-emoji">🌻</span>
+              <!-- ================================================================ -->
+              <!-- TYCOON STATIONS & MINING HUB (3 Autonomous Energy Farms)        -->
+              <!-- ================================================================ -->
+              <section class="energy-tycoon-hub-section">
+                <div class="tycoon-hub-header">
+                  <div class="tycoon-hub-title-wrap">
+                    <span class="tycoon-hub-sparkle">⚡</span>
+                    <h2 class="tycoon-hub-title">More Games for Earn Energy</h2>
                   </div>
-                  <div class="sf-entry-text">
-                    <div class="sf-entry-title-row">
-                      <h3 class="sf-entry-title">Sunflower Solar Farming</h3>
-                      <span class="sf-entry-badge">20 Lands System</span>
+                  <span class="tycoon-hub-subtitle">20-Plot Mini Games &bull; 100&rarr;29⚡</span>
+                </div>
+      
+                <!-- Card 1: Sunflower Solar Farming -->
+                <div class="sunflower-entry-tab-card" id="sunflowerEntryCard" onclick="switchEnergySubview('sunflower')">
+                  <div class="sf-tab-bg-art"></div>
+                  <div class="sf-entry-glow"></div>
+                  <div class="sf-entry-left">
+                    <div class="sf-entry-icon-wrap animate-spin-very-slow">
+                      <span class="sf-entry-emoji">🌻</span>
                     </div>
-                    <p class="sf-entry-desc">
-                      Plant sunflowers for <span class="sf-highlight">+2 ☀️ Coins/s</span>! Cistern well worker, 20 unlockable plots, &amp; convert <span class="sf-highlight">100 🪙 &rarr; 29 ⚡ Solar Energy</span>!
-                    </p>
-                    <div class="sf-entry-mini-stats">
-                      <span class="sf-mini-stat">🗺️ <span id="sfEntryPlotsUnlocked">1</span>/20 Lands</span>
-                      <span class="sf-mini-stat">🧺 <span id="sfEntryBaskets">2</span> Baskets</span>
-                      <span class="sf-mini-stat">⚡ 100🪙=29⚡</span>
+                    <div class="sf-entry-text">
+                      <div class="sf-entry-title-row">
+                        <h3 class="sf-entry-title">Sunflower Solar Farming</h3>
+                        <span class="sf-entry-badge">20 Lands System</span>
+                      </div>
+                      <div class="sf-entry-mini-stats">
+                        <span class="sf-mini-stat">☀️ <span id="sfEntryCoins">150</span> Coins</span>
+                        <span class="sf-mini-stat">🧺 <span id="sfEntryBaskets">2</span> Buckets</span>
+                        <span class="sf-mini-stat">🪏 <span id="sfEntryShovels">1</span> Shovels</span>
+                      </div>
                     </div>
+                  </div>
+                  <div class="sf-entry-right">
+                    <button class="sf-entry-btn" title="Play Sunflower Solar Tycoon">
+                      <span>Play ▶</span>
+                    </button>
                   </div>
                 </div>
-                <div class="sf-entry-right">
-                  <button class="sf-entry-btn">
-                    <span>Enter Garden 🌻 &rarr;</span>
-                  </button>
+      
+                <!-- Card 2: Honey Bee Farm Tycoon -->
+                <div class="beefarm-entry-tab-card" id="beeFarmEntryCard" onclick="switchEnergySubview('beefarm')">
+                  <div class="bf-tab-honeycomb-bg"></div>
+                  <div class="bf-entry-glow"></div>
+                  <div class="bf-entry-left">
+                    <div class="bf-entry-icon-wrap animate-buzz-float">
+                      <span class="bf-entry-emoji">🐝</span>
+                    </div>
+                    <div class="bf-entry-text">
+                      <div class="bf-entry-title-row">
+                        <h3 class="bf-entry-title">Honey Bee Farm Tycoon</h3>
+                        <span class="bf-entry-badge">20 Hive Apiary</span>
+                      </div>
+                      <div class="bf-entry-mini-stats">
+                        <span class="bf-mini-stat">🍯 <span id="bfEntryHoney">0</span> Drops</span>
+                        <span class="bf-mini-stat">🏺 <span id="bfEntryPollen">2</span> Pollen</span>
+                        <span class="bf-mini-stat">💨 <span id="bfEntrySmoker">1</span> Smokers</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bf-entry-right">
+                    <button class="bf-entry-btn" title="Play Honey Bee Farm Tycoon">
+                      <span>Play ▶</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+      
+                <!-- Card 3: Crystal Mining & Gem Forge Tycoon -->
+                <div class="mining-entry-tab-card" id="miningEntryCard" onclick="switchEnergySubview('mining')">
+                  <div class="mining-tab-cyber-bg"></div>
+                  <div class="mining-entry-glow"></div>
+                  <div class="mining-entry-left">
+                    <div class="mining-entry-icon-wrap animate-pulse">
+                      <span class="mining-entry-emoji">🔮</span>
+                    </div>
+                    <div class="mining-entry-text">
+                      <div class="mining-entry-title-row">
+                        <h3 class="mining-entry-title">Crystal Mining &amp; Gem Forge</h3>
+                        <span class="mining-entry-badge">20 Terraces Deep</span>
+                      </div>
+                      <div class="mining-entry-mini-stats">
+                        <span class="mining-mini-stat">🔮 <span id="mineEntryCrystals">0</span> Crystals</span>
+                        <span class="mining-mini-stat">🧪 <span id="mineEntryCoolant">2</span> Cryo</span>
+                        <span class="mining-mini-stat">⛏️ <span id="mineEntryPickaxe">1</span> Pickaxes</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mining-entry-right">
+                    <button class="mining-entry-btn" title="Play Crystal Mining & Gem Forge">
+                      <span>Play ▶</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
             </div><!-- /#energyFuelGeneratorView -->
-      
-            <!-- VIEW 2: Complete Sunflower Solar Tycoon Game (Opened when clicking Sunflower Farming tab) -->
-            <div id="energySunflowerFarmingView" style="display: none;" class="sunflower-tycoon-container flex flex-col min-h-screen text-stone-800 pb-20 sm:pb-6">
-      
-              <!-- Top Navigation / Return Bar -->
-              <div class="flex items-center justify-between mb-3 px-1 pt-1">
-                <button onclick="switchEnergySubview('fuel')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/85 hover:bg-white text-stone-800 font-bold text-xs shadow-sm border border-amber-300 transition active:scale-95">
-                  <span>&larr; Back to Fuel Generator</span>
-                </button>
-                <div class="text-[11px] text-amber-950 font-black bg-amber-200/90 px-3 py-1 rounded-xl border border-amber-300 shadow-sm flex items-center gap-1">
-                  <span>🌻</span> <span>Sunflower Tycoon Garden</span>
-                </div>
-              </div>
-      
-              <!-- Sticky Tycoon Game Header -->
-              <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b-4 border-amber-300 shadow-md px-3 sm:px-6 py-2 rounded-2xl mb-4">
-                <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
-                  
-                  <!-- Brand & Page Title -->
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-3xl sm:text-4xl animate-spin-very-slow">🌻</span>
-                    <div>
-                      <h1 class="text-base sm:text-lg font-black text-amber-950 leading-tight flex items-center gap-1.5">
-                        <span>Sunflower Solar Tycoon</span>
-                        <span id="sfActivePageBadge" class="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                          Page 1: Garden
-                        </span>
-                      </h1>
-                      <p class="text-[11px] text-stone-500 font-medium hidden sm:block">20 Plots Garden &bull; Cistern Worker &bull; 100🪙 &rarr; 29⚡ &bull; Diamond Vault</p>
-                    </div>
-                  </div>
-      
-                  <!-- Persistent Resource Indicators -->
-                  <div class="flex flex-wrap items-center gap-2 sm:gap-3 bg-amber-50/90 border-2 border-amber-200 px-3 py-1.5 rounded-2xl shadow-inner text-xs sm:text-sm">
-                    
-                    <!-- Solar Coins -->
-                    <div class="flex items-center gap-1.5" title="Solar Coins generated by blooming sunflowers (+2 ☀️/s)">
-                      <span class="text-lg sm:text-xl">☀️🪙</span>
-                      <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-bold text-amber-700 leading-none">Coins</span>
-                        <span id="sfCoinCount" class="font-black text-stone-900 text-xs sm:text-sm leading-none mt-0.5">150</span>
-                      </div>
-                    </div>
-      
-                    <div class="w-px h-5 bg-amber-300"></div>
-      
-                    <!-- Solar Energy -->
-                    <div class="flex items-center gap-1.5" title="Solar Energy converted in Shop (100 Coins = 29 Energy)">
-                      <span class="text-lg sm:text-xl">⚡</span>
-                      <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-bold text-yellow-600 leading-none">Energy</span>
-                        <span id="sfEnergyCount" class="font-black text-yellow-700 text-xs sm:text-sm leading-none mt-0.5">0</span>
-                      </div>
-                    </div>
-      
-                    <div class="w-px h-5 bg-amber-300"></div>
-      
-                    <!-- Diamonds -->
-                    <div class="flex items-center gap-1.5" title="Diamonds to unlock land & buy requirements">
-                      <span class="text-lg sm:text-xl">💎</span>
-                      <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-bold text-cyan-600 leading-none">Diamonds</span>
-                        <span id="sfDiamondCount" class="font-black text-cyan-700 text-xs sm:text-sm leading-none mt-0.5">25</span>
-                      </div>
-                    </div>
-      
-                    <div class="w-px h-5 bg-amber-300"></div>
-      
-                    <!-- Water Baskets -->
-                    <div class="flex items-center gap-1.5" title="Water Baskets collected from Wall Cistern">
-                      <span class="text-lg sm:text-xl">🧺</span>
-                      <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-bold text-blue-600 leading-none">Baskets</span>
-                        <span id="sfBasketCount" class="font-black text-blue-700 text-xs sm:text-sm leading-none mt-0.5">2</span>
-                      </div>
-                    </div>
-      
-                    <div class="w-px h-5 bg-amber-300"></div>
-      
-                    <!-- Shovels -->
-                    <div class="flex items-center gap-1.5" title="Shovels to clear withered plants">
-                      <span class="text-lg sm:text-xl">🪏</span>
-                      <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-bold text-stone-700 leading-none">Shovels</span>
-                        <span id="sfShovelCount" class="font-black text-stone-800 text-xs sm:text-sm leading-none mt-0.5">1</span>
-                      </div>
-                    </div>
-                  </div>
-      
-                  <!-- Quick Audio & Guide Buttons -->
-                  <div class="flex items-center gap-1.5">
-                    <button id="sfSoundBtn" class="p-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-sm shadow-sm active:scale-95 transition" title="Toggle Sound">
-                      🔊
-                    </button>
-                    <button id="sfGuideBtn" class="p-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-sm shadow-sm active:scale-95 transition" title="Game Guide">
-                      📖
-                    </button>
-                  </div>
-                </div>
-      
-                <!-- Desktop Navigation Bar: Left = Page 3, Middle = Page 1, Right = Page 2 -->
-                <nav class="max-w-6xl mx-auto mt-2 hidden sm:flex items-center justify-between bg-amber-100/90 p-1.5 rounded-2xl border border-amber-200 gap-2">
-                  <!-- LEFT: Page 3 (Merged Solar & Diamond Shop) -->
-                  <button onclick="navigateSunflowerPage(3)" id="sfDesktopTab3" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm text-stone-700 hover:bg-amber-200/70 transition flex items-center justify-center gap-2">
-                    <span>⚡</span> <span>Page 3: Solar &amp; Diamond Shop</span>
-                  </button>
-      
-                  <!-- MIDDLE: Page 1 (Garden Field) -->
-                  <button onclick="navigateSunflowerPage(1)" id="sfDesktopTab1" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-amber-500 text-white shadow">
-                    <span>🌻</span> <span>Page 1: Garden Field (<span id="sfUnlockedPlotsCounter">1</span>/20 Lands)</span>
-                  </button>
-      
-                  <!-- RIGHT: Page 2 (Side Wall Cistern) -->
-                  <button onclick="navigateSunflowerPage(2)" id="sfDesktopTab2" class="page-nav-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm text-stone-700 hover:bg-amber-200/70 transition flex items-center justify-center gap-2">
-                    <span>🧱</span> <span>Page 2: Side Wall Cistern</span>
-                    <span id="sfDesktopNavCrateBadge" class="bg-blue-600 text-white text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
-                  </button>
-                </nav>
-              </header>
-      
-              <!-- Mobile Navigation Bar -->
-              <nav class="sm:hidden mb-3 bg-white/95 backdrop-blur-md border-2 border-amber-300 py-1.5 px-3 rounded-2xl flex items-center justify-between shadow-md">
-                <!-- LEFT: Page 3 -->
-                <button onclick="navigateSunflowerPage(3)" id="sfMobileTab3" class="flex flex-col items-center p-1 text-stone-500 font-bold text-[10px] flex-1">
-                  <span class="text-xl">⚡</span>
-                  <span>Shop &amp; Solar</span>
-                </button>
-      
-                <!-- MIDDLE: Page 1 -->
-                <button onclick="navigateSunflowerPage(1)" id="sfMobileTab1" class="flex flex-col items-center p-1 text-amber-600 font-black text-[10px] flex-1 border-x border-amber-200">
-                  <span class="text-xl">🌻</span>
-                  <span>Garden (<span id="sfMobileUnlockedCount">1</span>/20)</span>
-                </button>
-      
-                <!-- RIGHT: Page 2 -->
-                <button onclick="navigateSunflowerPage(2)" id="sfMobileTab2" class="flex flex-col items-center p-1 text-stone-500 font-bold text-[10px] flex-1 relative">
-                  <span class="text-xl">🧱</span>
-                  <span>Wall Cistern</span>
-                  <span id="sfMobileNavCrateBadge" class="absolute top-0 right-4 bg-blue-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono">0</span>
-                </button>
-              </nav>
-      
-              <main class="max-w-6xl mx-auto w-full flex-1 flex flex-col gap-4">
-      
-                <!-- PAGE 1: Garden Field (20 Land Plots) -->
-                <section id="sfPage1" class="game-page active-page bg-white/95 rounded-3xl p-4 sm:p-6 border-4 border-amber-300 shadow-md flex flex-col gap-4">
-                  
-                  <!-- Page 1 Header -->
-                  <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-amber-100 pb-3">
-                    <div class="flex items-center gap-3">
-                      <span class="text-3xl sm:text-4xl">🌻</span>
-                      <div>
-                        <h2 class="text-base sm:text-lg font-black text-amber-950 flex items-center gap-2">
-                          Garden Field (20 Land Plots Created)
-                          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">
-                            Land 1 Free &bull; Land 2: 10 💎 &bull; Land 3: 100 💎...
-                          </span>
-                        </h2>
-                        <p class="text-xs text-stone-500">
-                          Sunflowers auto-generate <strong>+2 ☀️ Coins/s</strong>! Pour Water Baskets (🧺) to extend life by +35s, or Shovel (🪏) withered stalks to free plots.
-                        </p>
-                      </div>
-                    </div>
-      
-                    <!-- Field Actions -->
-                    <div class="flex flex-wrap items-center gap-2">
-                      <button id="sfWaterAllBtn" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
-                        <span>🧺 Water All</span>
-                      </button>
-                      <button id="sfClearAllWitheredBtn" class="bg-stone-700 hover:bg-stone-800 active:scale-95 text-white font-black text-xs px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
-                        <span>🪏 Dig Withered</span>
-                      </button>
-                      <button onclick="navigateSunflowerPage(3)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1">
-                        <span>🌱 Buy Sprouts (Page 3)</span>
-                      </button>
-                    </div>
-                  </div>
-      
-                  <!-- Land Progress Ribbon -->
-                  <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xl">🗺️</span>
-                      <div>
-                        <span class="font-black text-stone-900">Garden Expansion:</span>
-                        <span id="sfLandSummaryLabel" class="text-stone-600 font-semibold ml-1">1 of 20 Lands Unlocked</span>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <span class="text-stone-500 text-[11px]">Next plot cost:</span>
-                      <span id="sfNextLandCostBadge" class="bg-cyan-100 text-cyan-900 border border-cyan-300 font-black px-2.5 py-0.5 rounded-full text-xs">10 💎</span>
-                    </div>
-                  </div>
-      
-                  <!-- 20 Plots Grid Layout -->
-                  <div id="sfPlotsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 my-2">
-                    <!-- Rendered dynamically for all 20 plots -->
-                  </div>
-                </section>
-      
-                <!-- PAGE 2: Side Wall Cistern Tab -->
-                <section id="sfPage2" class="game-page stone-wall-pattern rounded-3xl p-4 sm:p-6 border-4 border-slate-700 text-white shadow-xl flex flex-col gap-5">
-                  
-                  <!-- Page 2 Header -->
-                  <div class="bg-slate-900/90 backdrop-blur rounded-2xl p-4 border border-slate-600 flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                      <span class="text-3xl sm:text-4xl">🧱</span>
-                      <div>
-                        <h2 class="text-base sm:text-lg font-black text-cyan-300 flex items-center gap-2">
-                          Side Wall Cistern &amp; Well Worker Station
-                          <span class="text-[10px] bg-cyan-950 text-cyan-300 font-mono border border-cyan-500/40 px-2 py-0.5 rounded-full">Automated Irrigation</span>
-                        </h2>
-                        <p class="text-xs text-slate-300">
-                          The worker continuously pumps groundwater into wooden baskets. The wall crate holds up to 5 baskets!
-                        </p>
-                      </div>
-                    </div>
-      
-                    <div class="flex items-center gap-2">
-                      <span id="sfBoostActiveBadge" class="hidden text-xs bg-amber-400 text-stone-900 font-black px-3 py-1 rounded-xl animate-pulse">
-                        ⚡ 2x Worker Boost Active (<span id="sfBoostTimeRemaining">60</span>s)
-                      </span>
-                      <div class="bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-600 text-xs font-mono text-cyan-300 font-bold">
-                        Wall Crate: <span id="sfWallCrateCounter" class="text-white text-sm font-black">0</span> / 5 🧺
-                      </div>
-                    </div>
-                  </div>
-      
-                  <!-- Worker Presentation Stage -->
-                  <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center bg-slate-800/90 rounded-2xl p-5 border border-slate-600 shadow-inner">
-                    
-                    <!-- Worker Mascot -->
-                    <div class="md:col-span-4 flex items-center gap-4 border-b md:border-b-0 md:border-r border-slate-700 pb-3 md:pb-0 md:pr-4">
-                      <div class="text-6xl animate-worker-hammer select-none filter drop-shadow">👷‍♂️</div>
-                      <div>
-                        <div class="text-base font-extrabold text-cyan-200">Foreman Dave</div>
-                        <div class="text-xs text-slate-400" id="sfWorkerStatusText">Pumping water into crate...</div>
-                        <div class="text-xs text-amber-300 font-semibold mt-1">
-                          Pump Rate: <span id="sfWorkerSpeedLabel" class="font-mono">1 basket / 4s</span>
-                        </div>
-                      </div>
-                    </div>
-      
-                    <!-- Progress Gauge -->
-                    <div class="md:col-span-5 flex flex-col gap-2">
-                      <div class="flex justify-between text-xs text-slate-300 font-semibold">
-                        <span>Next Basket Extraction:</span>
-                        <span id="sfWorkerCyclePercent" class="font-mono text-cyan-300 font-bold">0%</span>
-                      </div>
-                      <div class="w-full bg-slate-950 rounded-full h-4 overflow-hidden border border-slate-700 p-0.5">
-                        <div id="sfWorkerProgressBar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full w-0 rounded-full transition-all duration-100"></div>
-                      </div>
-                      <p class="text-[11px] text-slate-400">
-                        Water Baskets poured on blooming sunflowers add +35s to their coin-generation timer!
-                      </p>
-                    </div>
-      
-                    <!-- Action / Collect Button -->
-                    <div class="md:col-span-3 flex flex-col gap-2">
-                      <button id="sfCollectBasketsBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 active:scale-95 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-                        <span>🧺 Collect Baskets</span>
-                        <span id="sfCollectableBadge" class="bg-white/20 px-2 py-0.5 rounded-full font-mono text-xs">0</span>
-                      </button>
-      
-                      <button onclick="navigateSunflowerPage(3)" class="w-full bg-slate-700 hover:bg-slate-600 text-cyan-300 font-bold text-xs py-2 rounded-xl transition border border-slate-500 flex items-center justify-center gap-1">
-                        <span>⚡ Overdrive Speed (Shop)</span>
-                      </button>
-                    </div>
-                  </div>
-      
-                  <!-- Cistern Stats Grid -->
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
-                      <div class="text-[10px] uppercase font-bold text-slate-400">Inventory Baskets</div>
-                      <div class="text-xl font-black text-cyan-300" id="sfCisternInvBaskets">2 🧺</div>
-                    </div>
-                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
-                      <div class="text-[10px] uppercase font-bold text-slate-400">Wall Crate Storage</div>
-                      <div class="text-xl font-black text-blue-400" id="sfCisternCrateBaskets">0 / 5 🧺</div>
-                    </div>
-                    <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
-                      <div class="text-[10px] uppercase font-bold text-slate-400">Water Boost Effect</div>
-                      <div class="text-xl font-black text-emerald-400">+35s per Sunflower</div>
-                    </div>
-                  </div>
-                </section>
-      
-                <!-- PAGE 3: Solar & Diamond Shop Tab -->
-                <section id="sfPage3" class="game-page bg-white/95 rounded-3xl p-4 sm:p-6 border-4 border-amber-300 shadow-md flex flex-col gap-6">
-                  
-                  <!-- Unified Page 3 Header -->
-                  <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-amber-100 pb-3">
-                    <div class="flex items-center gap-3">
-                      <div class="flex items-center text-3xl sm:text-4xl">
-                        <span class="animate-bounce-gentle">⚡</span>
-                        <span class="text-2xl sm:text-3xl -ml-1">💎</span>
-                      </div>
-                      <div>
-                        <h2 class="text-base sm:text-lg font-black text-amber-950 flex items-center gap-2">
-                          Page 3: Solar &amp; Diamond Shop
-                          <span class="text-[10px] bg-gradient-to-r from-yellow-200 to-cyan-200 text-stone-900 font-mono font-black px-2 py-0.5 rounded-full border border-amber-300">
-                            Converter + Vault
-                          </span>
-                        </h2>
-                        <p class="text-xs text-stone-500">
-                          Convert Sunflower Coins into Solar Energy (100 ☀️🪙 &rarr; 29 ⚡), buy requirements with Diamonds, or watch voluntary 5s Ads!
-                        </p>
-                      </div>
-                    </div>
-      
-                    <div class="flex items-center gap-2">
-                      <div class="bg-cyan-50 border-2 border-cyan-200 px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
-                        <span class="text-lg">💎</span>
-                        <span class="text-xs text-cyan-900 font-extrabold">
-                          Diamonds: <span id="sfVaultDiamondCount" class="text-cyan-700 font-black text-sm">25 💎</span>
-                        </span>
-                      </div>
-                      <div class="bg-amber-100/80 border border-amber-300 px-3.5 py-1.5 rounded-2xl text-xs font-bold text-amber-900">
-                        Ratio: <span class="font-black text-amber-950">100 ☀️🪙 = 29 ⚡</span>
-                      </div>
-                    </div>
-                  </div>
-      
-                  <!-- SECTION A: Sunflower Coin Throw Energy Converter (100 🪙 -> 29 ⚡) -->
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between">
-                      <h3 class="text-sm font-black text-stone-800 flex items-center gap-1.5">
-                        <span class="text-lg">☀️</span> Section A: Coin Throw Solar Converter
-                      </h3>
-                      <span class="text-[11px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
-                        Formula: 100 Sunflower Coins &rarr; 29 Solar Energy
-                      </span>
-                    </div>
-      
-                    <!-- Central Throw Station Visual -->
-                    <div class="bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-500 rounded-3xl p-5 text-stone-900 shadow-xl border-4 border-yellow-200 relative overflow-hidden flex flex-col items-center text-center gap-3">
-                      
-                      <div class="text-5xl animate-float-slow filter drop-shadow-md select-none">
-                        ⚡
-                      </div>
-      
-                      <div>
-                        <h4 class="text-lg sm:text-xl font-black text-stone-900 tracking-tight">Solar Synthesis Core</h4>
-                        <p class="text-xs text-stone-800 font-medium max-w-md mt-0.5">
-                          Throw Sunflower Coins generated from Page 1 into the solar chamber. Each batch converts 100 ☀️🪙 into 29 ⚡ Solar Energy!
-                        </p>
-                      </div>
-      
-                      <!-- Interactive Coin Throw Buttons -->
-                      <div class="flex flex-wrap items-center justify-center gap-3 mt-1 w-full max-w-md">
-                        <button id="sfConvert100Btn" class="flex-1 bg-stone-900 hover:bg-stone-800 text-yellow-300 active:scale-95 font-black text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-xl transition flex items-center justify-center gap-2">
-                          <span>🪙 Throw 100 Coins</span>
-                          <span class="bg-yellow-400/20 text-yellow-200 px-2 py-0.5 rounded-full text-xs font-mono">+29 ⚡</span>
-                        </button>
-      
-                        <button id="sfConvertAllBtn" class="flex-1 bg-white hover:bg-yellow-50 text-stone-900 active:scale-95 font-black text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-xl transition border-2 border-stone-800 flex items-center justify-center gap-2">
-                          <span>⚡ Throw ALL Available</span>
-                        </button>
-                      </div>
-                    </div>
-      
-                    <!-- Live Conversion Metrics -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-                      <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 shadow-sm">
-                        <div class="text-[10px] uppercase font-bold text-amber-700">Available Sunflower Coins</div>
-                        <div class="text-xl font-black text-amber-950 mt-0.5" id="sfShopCoinsDisplay">150 🪙</div>
-                        <div class="text-[10px] text-amber-700 mt-0.5">Generated (+2 ☀️/s) on Page 1</div>
-                      </div>
-      
-                      <div class="bg-yellow-50 rounded-2xl p-3 border border-yellow-200 shadow-sm">
-                        <div class="text-[10px] uppercase font-bold text-yellow-800">Convertible Batches</div>
-                        <div class="text-xl font-black text-yellow-700 mt-0.5" id="sfConvertibleBatchesDisplay">1 Batch (29 ⚡)</div>
-                        <div class="text-[10px] text-yellow-800 mt-0.5">Ready for immediate toss</div>
-                      </div>
-      
-                      <div class="bg-emerald-50 rounded-2xl p-3 border border-emerald-200 shadow-sm">
-                        <div class="text-[10px] uppercase font-bold text-emerald-800">Total Solar Energy Banked</div>
-                        <div class="text-xl font-black text-emerald-700 mt-0.5" id="sfShopEnergyDisplay">0 ⚡</div>
-                        <div class="text-[10px] text-emerald-800 mt-0.5">Permanent energy reserve</div>
-                      </div>
-                    </div>
-                  </div>
-      
-                  <div class="w-full h-px bg-amber-200 my-1"></div>
-      
-                  <!-- SECTION B: Diamond Requirements & Ad Station -->
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between">
-                      <h3 class="text-sm font-black text-stone-800 flex items-center gap-1.5">
-                        <span class="text-lg">💎</span> Section B: Diamond Requirements &amp; Ad Station
-                      </h3>
-                      <span class="text-[11px] text-cyan-800 font-semibold bg-cyan-100 px-2 py-0.5 rounded-lg border border-cyan-300">
-                        Price Scaling: +1 💎 per Sprout purchase
-                      </span>
-                    </div>
-      
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                      
-                      <!-- Requirement 1: Sunflower Sprout Seed (+1 💎 Escalation OR Watch Ad) -->
-                      <div class="bg-emerald-50/90 rounded-2xl p-3.5 border-2 border-emerald-300 flex flex-col justify-between gap-3 shadow-sm">
-                        <div class="flex items-start justify-between">
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-3xl">🌱</span>
-                            <div>
-                              <h4 class="text-xs sm:text-sm font-black text-emerald-950">Sunflower Sprout Seed</h4>
-                              <p class="text-[11px] text-emerald-800 leading-snug">
-                                Starts at 1 💎. Permanently increases by +1 💎 after every diamond purchase!
-                              </p>
-                            </div>
-                          </div>
-                          <span id="sfCurrentSproutPriceBadge" class="bg-emerald-200 text-emerald-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
-                            1 💎
-                          </span>
-                        </div>
-      
-                        <div class="flex items-center gap-2 pt-1">
-                          <button id="sfBuySproutDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
-                            <span>Throw <span id="sfBtnSproutDiamondPrice">1</span> 💎 &rarr; Plant 🌱</span>
-                          </button>
-                          <button onclick="openSfAdWatchModal('sprout')" class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
-                            <span>🎬 Watch Ad (FREE 🌱)</span>
-                          </button>
-                        </div>
-                      </div>
-      
-                      <!-- Requirement 2: Garden Shovel (10 💎 OR Watch Ad) -->
-                      <div class="bg-stone-50 rounded-2xl p-3.5 border-2 border-stone-300 flex flex-col justify-between gap-3 shadow-sm">
-                        <div class="flex items-start justify-between">
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-3xl">🪏</span>
-                            <div>
-                              <h4 class="text-xs sm:text-sm font-black text-stone-900">Garden Shovel</h4>
-                              <p class="text-[11px] text-stone-600 leading-snug">
-                                Required to dig up withered sunflowers (🥀) on Page 1 to free soil beds.
-                              </p>
-                            </div>
-                          </div>
-                          <span class="bg-stone-200 text-stone-800 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
-                            10 💎
-                          </span>
-                        </div>
-      
-                        <div class="flex items-center gap-2 pt-1">
-                          <button id="sfBuyShovelDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
-                            <span>Throw 10 💎 &rarr; +1 🪏</span>
-                          </button>
-                          <button onclick="openSfAdWatchModal('shovel')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
-                            <span>🎬 Watch Ad (FREE 🪏)</span>
-                          </button>
-                        </div>
-                      </div>
-      
-                      <!-- Requirement 3: Water Basket (2 💎) -->
-                      <div class="bg-blue-50/90 rounded-2xl p-3.5 border-2 border-blue-300 flex flex-col justify-between gap-2.5 shadow-sm">
-                        <div class="flex items-start justify-between">
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-3xl">🧺</span>
-                            <div>
-                              <h4 class="text-xs sm:text-sm font-black text-blue-950">Instant Water Basket</h4>
-                              <p class="text-[11px] text-blue-800 leading-snug">
-                                Adds +35s coin generating lifespan to an active sunflower!
-                              </p>
-                            </div>
-                          </div>
-                          <span class="bg-blue-200 text-blue-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
-                            2 💎
-                          </span>
-                        </div>
-      
-                        <button id="sfBuyBasketDiamondBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5">
-                          <span>Throw 2 💎 &rarr; Get 1 Water Basket 🧺</span>
-                        </button>
-                      </div>
-      
-                      <!-- Requirement 4: Coin Treasury Pack (5 💎 for 250 Coins) -->
-                      <div class="bg-amber-50/90 rounded-2xl p-3.5 border-2 border-amber-300 flex flex-col justify-between gap-2.5 shadow-sm">
-                        <div class="flex items-start justify-between">
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-3xl">🪙</span>
-                            <div>
-                              <h4 class="text-xs sm:text-sm font-black text-amber-950">Sunflower Coin Treasury</h4>
-                              <p class="text-[11px] text-amber-800 leading-snug">
-                                Instant coins to throw into the Section A Solar Converter.
-                              </p>
-                            </div>
-                          </div>
-                          <span class="bg-amber-200 text-amber-900 text-xs font-mono font-black px-2 py-0.5 rounded-full shrink-0">
-                            5 💎
-                          </span>
-                        </div>
-      
-                        <button id="sfBuyCoinsDiamondBtn" class="w-full bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5">
-                          <span>Throw 5 💎 &rarr; Get 250 Coins 🪙</span>
-                        </button>
-                      </div>
-      
-                      <!-- Requirement 5: Worker Speed Boost (8 💎 for 2x pump speed for 60s) -->
-                      <div class="md:col-span-2 bg-gradient-to-r from-cyan-100 to-blue-100 rounded-2xl p-3.5 border-2 border-cyan-400 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
-                        <div class="flex items-center gap-2.5">
-                          <span class="text-3xl">⚡</span>
-                          <div>
-                            <h4 class="text-xs sm:text-sm font-black text-cyan-950">Worker High-Speed Pump Overdrive</h4>
-                            <p class="text-[11px] text-cyan-800">
-                              Cistern Well Worker pumps 2x faster (1 basket every 2 seconds) for 60 seconds on Page 2!
-                            </p>
-                          </div>
-                        </div>
-      
-                        <button id="sfBuyWorkerBoostDiamondBtn" class="w-full sm:w-auto bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 text-white font-black text-xs px-4 py-2 rounded-xl shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                          <span>Throw 8 💎 &rarr; 2x Worker Speed ⚡</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </main>
-      
-              <!-- Ad Reel Modal (5-second simulation) -->
-              <div id="sfAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-                <div class="bg-stone-900 border-4 border-amber-400 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
-                  
-                  <!-- Top Bar -->
-                  <div class="bg-stone-800 px-4 py-2 border-b border-stone-700 flex items-center justify-between">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-[9px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
-                      <span id="sfAdBrandName" class="text-xs text-stone-400">GreenSprout Garden</span>
-                    </div>
-                    
-                    <span id="sfAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-xs px-2.5 py-0.5 rounded-full">
-                      ⏳ 5s
-                    </span>
-                  </div>
-      
-                  <!-- Commercial Screen -->
-                  <div class="p-5 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[190px]">
-                    <div id="sfAdGraphicEmoji" class="text-5xl mb-2 animate-bounce-gentle">🌻</div>
-                    <h3 id="sfAdHeadline" class="text-base font-black text-amber-300">MaxiSun Golden Fertilizer</h3>
-                    <p id="sfAdCatchphrase" class="text-stone-300 text-xs mt-1 max-w-xs">
-                      "Double the sunshine, triple the blooms. The trusted sponsor of solar gardens everywhere!"
-                    </p>
-      
-                    <div class="mt-3 inline-flex items-center gap-1 bg-stone-800/80 px-2.5 py-1 rounded-full border border-stone-700 text-xs">
-                      <span class="text-amber-300 font-semibold">Reward:</span>
-                      <span id="sfAdRewardTag" class="font-bold text-white">1 Free Sprout 🌱</span>
-                    </div>
-      
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-stone-800 h-2 rounded-full mt-4 overflow-hidden">
-                      <div id="sfAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
-                    </div>
-                  </div>
-      
-                  <!-- Claim Button Footer -->
-                  <div class="p-3 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
-                    <span class="text-[10px] text-stone-400">Watch full 5s clip for reward.</span>
-                    <button id="sfAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-xs px-3.5 py-1.5 rounded-xl cursor-not-allowed transition">
-                      Watching...
-                    </button>
-                  </div>
-                </div>
-              </div>
-      
-              <!-- 20 Land Farm Guide Rules Modal -->
-              <div id="sfRulesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-                <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border-4 border-amber-300 relative max-h-[90vh] overflow-y-auto">
-                  <button id="sfCloseRulesBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold p-1">✕</button>
-                  <h3 class="text-lg font-black text-amber-950 mb-1 flex items-center gap-2">
-                    <span>📖</span> 20 Land Garden Farm Guide
-                  </h3>
-                  <p class="text-xs text-stone-500 mb-3">Complete gameplay guide and land unlock rules:</p>
-      
-                  <div class="space-y-2.5 text-xs text-stone-700 leading-relaxed">
-                    <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                      <strong class="text-emerald-950 block font-bold">🗺️ 20 Land Plots System</strong>
-                      Plot 1 is unlocked for free! Plot 2 costs <strong>10 💎</strong>, Plot 3 costs <strong>100 💎</strong>, and subsequent plots scale up to Plot 20. Tap any locked plot to unlock it with Diamonds.
-                    </div>
-      
-                    <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
-                      <strong class="text-amber-950 block font-bold">🌻 Continuous Coin Emission</strong>
-                      Blooming Sunflowers generate <strong>+2 ☀️ Coins every second</strong>! Use Water Baskets (🧺) to prolong life (+35s). If a flower runs out of water, it withers (🥀) and must be cleared with a Shovel (🪏).
-                    </div>
-      
-                    <div class="p-2.5 bg-yellow-50 rounded-xl border border-yellow-200">
-                      <strong class="text-yellow-950 block font-bold">⚡ Solar Converter (100 🪙 &rarr; 29 ⚡)</strong>
-                      Throw 100 Sunflower Coins into the Page 3 converter to yield 29 Solar Energy units!
-                    </div>
-      
-                    <div class="p-2.5 bg-blue-50 rounded-xl border border-blue-200">
-                      <strong class="text-blue-950 block font-bold">🧱 Wall Cistern Worker</strong>
-                      Foreman Dave pumps water into wooden baskets on the wall crate (max 5 🧺). Collect them into your inventory on Page 2!
-                    </div>
-                  </div>
-      
-                  <div class="mt-4 flex justify-end">
-                    <button id="sfCloseRulesBtn2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-1.5 rounded-xl text-xs transition">
-                      Got It!
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div><!-- /#energySunflowerFarmingView -->
-            </div>
+      </div><!-- /#pageEnergy -->
       
 
       <!-- PAGE: TASKS -->
@@ -2714,7 +2215,7 @@
                     <circle cx="12" cy="12" r="9"/>
                     <path d="M12 7v10M15 9.5a3 3 0 0 0-6 0c0 3 6 2 6 5a3 3 0 0 1-6 0"/>
                   </svg>
-                  <span>10,000 Mega Reward</span>
+                  <span>1,000 Diamonds Mega</span>
                 </button>
               </div>
       
@@ -2726,30 +2227,21 @@
                   
                   <!-- Grand Reward Glowing Icon -->
                   <div class="grand-reward-emblem-wrap">
-                    <div class="grand-emblem-aura"></div>
-                    <div class="grand-reward-circle">
-                      <svg viewBox="0 0 100 100" class="grand-coins-svg">
-                        <!-- Two overlapping glowing coins -->
-                        <circle cx="42" cy="45" r="24" fill="#042f2e" stroke="#10b981" stroke-width="3.5" />
-                        <circle cx="42" cy="45" r="18" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="3 2"/>
-                        <text x="42" y="52" font-size="18" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" fill="#34d399" text-anchor="middle">1</text>
-                        
-                        <circle cx="60" cy="58" r="22" fill="#022c22" stroke="#22d3ee" stroke-width="3" />
-                        <circle cx="60" cy="58" r="16" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3 2"/>
-                        <text x="60" y="65" font-size="16" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" fill="#22d3ee" text-anchor="middle">1</text>
-                      </svg>
+                    <div class="grand-emblem-aura" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);"></div>
+                    <div class="grand-reward-circle" style="border-color: #38bdf8; box-shadow: 0 0 32px rgba(56, 189, 248, 0.6); display: flex; align-items: center; justify-content: center;">
+                      <span style="font-size: 44px; filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.8));">💎</span>
                     </div>
-                    <div class="grand-reward-pill-tag">GRAND REWARD</div>
+                    <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #0284c7, #38bdf8);">GRAND REWARD</div>
                   </div>
       
-                  <!-- Coins Badge -->
-                  <div class="mega-coins-badge">
+                  <!-- Diamonds Badge -->
+                  <div class="mega-coins-badge" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.4); color: #38bdf8;">
                     <span class="sparkle-icon">✨</span>
-                    <span>10,000 COINS</span>
+                    <span>1,000 DIAMONDS 💎</span>
                   </div>
       
-                  <h3 class="mega-card-title">Level 1000 Mega Cash Prize</h3>
-                  <p class="mega-card-desc">Complete Level 1000, then watch 1,000 ads to claim your 10,000 Coins real money reward via UPI / Paytm!</p>
+                  <h3 class="mega-card-title">Level 1000 Mega Diamond Prize</h3>
+                  <p class="mega-card-desc">Complete Level 1000, then watch 100 ads to claim your 1,000 Diamonds mega reward!</p>
       
                   <!-- Step 1 Card -->
                   <div class="mega-step-card" id="megaStep1Card">
@@ -2783,17 +2275,17 @@
                     </div>
                     <div class="mega-step-body">
                       <div class="mega-step-header">
-                        <span class="mega-step-title">Step 2: Watch 1,000 Ads</span>
-                        <span class="mega-ads-counter-text" id="megaAdsCounterHeader">0 / 1000 Ads (0%)</span>
+                        <span class="mega-step-title">Step 2: Watch 100 Ads</span>
+                        <span class="mega-ads-counter-text" id="megaAdsCounterHeader">0 / 100 Ads (0%)</span>
                       </div>
                       
                       <div class="mega-progress-track">
-                        <div class="mega-progress-fill" id="megaAdsProgressFill" style="width: 0%;"></div>
+                        <div class="mega-progress-fill" id="megaAdsProgressFill" style="width: 0%; background: linear-gradient(90deg, #0284c7, #38bdf8); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);"></div>
                       </div>
       
                       <div class="mega-progress-footer">
-                        <span class="ads-remain-text" id="megaAdsRemainText">1000 ads remaining</span>
-                        <span class="prize-tag">Prize: 10,000 Coins</span>
+                        <span class="ads-remain-text" id="megaAdsRemainText">100 ads remaining</span>
+                        <span class="prize-tag" style="color: #38bdf8;">Prize: 1,000 Diamonds 💎</span>
                       </div>
                     </div>
                   </div>
@@ -4205,7 +3697,7 @@
                 <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
       
-                <!-- Slice 1: 100 Blue Coins (45 deg / 1:30) -->
+                <!-- Slice 1: 50 Blue Coins (45 deg / 1:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
@@ -4220,10 +3712,10 @@
                 <!-- Slice 5: 1 Ticket (225 deg / 7:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
-                <!-- Slice 6: 10 Coins Jackpot (270 deg / 9 o'clock) -->
+                <!-- Slice 6: 1 Gold Coin Jackpot (270 deg / 9 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
       
-                <!-- Slice 7: 100 Blue Coins (315 deg / 10:30) -->
+                <!-- Slice 7: 50 Blue Coins (315 deg / 10:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Divider Rays between Slices with Golden Metallic Sheen -->
@@ -4247,7 +3739,7 @@
                   <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
                 </g>
       
-                <!-- Slice 1: 100 Blue Coins (45 deg) -->
+                <!-- Slice 1: 50 Blue Coins (45 deg) -->
                 <g transform="translate(150, 150) rotate(45) translate(0, -92)">
                   <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
@@ -4272,12 +3764,12 @@
                   <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(8,145,178,0.5))">🎟️</text>
                 </g>
       
-                <!-- Slice 6: 10 Gold Coins (270 deg) -->
+                <!-- Slice 6: 1 Gold Coin (270 deg) -->
                 <g transform="translate(150, 150) rotate(270) translate(0, -92)">
                   <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
                 </g>
       
-                <!-- Slice 7: 100 Blue Coins (315 deg) -->
+                <!-- Slice 7: 50 Blue Coins (315 deg) -->
                 <g transform="translate(150, 150) rotate(315) translate(0, -92)">
                   <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
@@ -4375,13 +3867,13 @@
             </div>
       
             <!-- Prize Written Details -->
-            <h3 class="spin-modal-title" id="spinModalTitle">YOU WON 10 GOLD COINS!</h3>
+            <h3 class="spin-modal-title" id="spinModalTitle">YOU WON 1 GOLD COIN!</h3>
             <p class="spin-modal-subtitle" id="spinModalSubtitle">Slice prize unlocked from the Cyber Lucky Wheel!</p>
       
             <!-- 2X Profit Highlight Banner -->
             <div class="spin-modal-2x-preview" id="spinModal2xPreview">
               <span class="preview-sparkle">⚡</span>
-              <span class="preview-text" id="spinModal2xText">Watch 1 ad to double this to <strong>+20 Gold Coins (2X Profit)</strong>!</span>
+              <span class="preview-text" id="spinModal2xText">Watch 1 ad to double this to <strong>+2 Gold Coins (2X Profit)</strong>!</span>
             </div>
       
             <!-- Modal Action Buttons Row -->
@@ -4390,13 +3882,13 @@
               <button class="spin-modal-btn spin-btn-2x" id="btnSpinDoubleReward" onclick="claimDoubleSpinReward()">
                 <span class="btn-2x-badge">2X PROFIT</span>
                 <span class="btn-2x-icon">🎬</span>
-                <span class="btn-2x-text" id="spinDoubleBtnText">DOUBLE TO +20 (2X)</span>
+                <span class="btn-2x-text" id="spinDoubleBtnText">DOUBLE TO +2 (2X)</span>
               </button>
       
               <!-- Button 2: Claim Regular -->
               <button class="spin-modal-btn spin-btn-claim" id="btnSpinClaimRegular" onclick="claimRegularSpinReward()">
                 <span class="btn-claim-icon">✓</span>
-                <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+10)</span>
+                <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+1)</span>
               </button>
             </div>
           </div>
@@ -4482,7 +3974,7 @@
           <div class="info-strip-chip">
             <span class="chip-dot gold"></span>
             <span class="chip-label">JACKPOT:</span>
-            <span class="chip-val">10 Coins / 5 💎</span>
+            <span class="chip-val">1 Coin / 5 💎</span>
           </div>
           <div class="info-strip-chip">
             <span class="chip-dot purple"></span>
@@ -4772,7 +4264,7 @@
           <div class="info-strip-chip">
             <span class="chip-dot gold"></span>
             <span class="chip-label">PRIZES:</span>
-            <span class="chip-val">1-2 🔑, 10-20 🥚, 1-2 🎟️, 10 🪙, 50-75 💙</span>
+            <span class="chip-val">1-2 🔑, 10-20 🥚, 1-2 🎟️, 1 🪙, 50 💙</span>
           </div>
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
@@ -4902,7 +4394,7 @@
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
             <span class="chip-label">PRIZES:</span>
-            <span class="chip-val">100 💙, 10 🪙, Keys, Tix, Cards</span>
+            <span class="chip-val">50 💙, 1 🪙, Keys, Tix, Cards</span>
           </div>
         </div>
       
@@ -4968,7 +4460,7 @@
               <div class="egg-meter-pips" id="eggPipsCoin">
                 <span class="pip"></span><span class="pip"></span><span class="pip"></span>
               </div>
-              <span class="egg-win-label gold">Win 10 Coin</span>
+              <span class="egg-win-label gold">Win 1 Coin</span>
             </div>
       
             <!-- Blue Coins: 3 -> 100 Blue Coins -->
@@ -4981,7 +4473,7 @@
               <div class="egg-meter-pips" id="eggPipsBlueCoin">
                 <span class="pip"></span><span class="pip"></span><span class="pip"></span>
               </div>
-              <span class="egg-win-label cyan">Win 100 💙</span>
+              <span class="egg-win-label cyan">Win 50 💙</span>
             </div>
           </div>
       
@@ -5426,6 +4918,1712 @@
               </button>
               <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
                 <span>🔄</span> Play Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: SUNFLOWER -->
+      <div class="page-view" id="pageSunflower">
+        <!-- Pinned Sticky Top Header Bar ("Stay Heading Bar") as the Top First Bar -->
+        <header class="sf-sticky-header-bar" id="sfStickyHeader">
+          <div class="sf-sticky-left">
+            <button onclick="switchPage('energy')" class="sf-sticky-back-btn" title="Back to Energy" aria-label="Back">
+              <span class="sf-back-arrow">←</span>
+            </button>
+            <div class="sf-sticky-title-wrap">
+              <span class="sf-sticky-title-icon">🌻</span>
+              <span class="sf-sticky-title-text font-black">Sunflower Grow</span>
+            </div>
+          </div>
+      
+          <!-- Sticky Live Resource Balances: Coin, Shovel, Water Bucket -->
+          <div class="sf-sticky-resources">
+            <!-- 1. Coin Balance -->
+            <div class="sf-hdr-pill pill-amber" title="Sunflower Coins">
+              <span class="sf-hdr-ico">☀️</span>
+              <span id="sfStickyCoins" class="sf-hdr-val font-mono font-black">150</span>
+            </div>
+            <!-- 2. Shovel Balance -->
+            <div class="sf-hdr-pill pill-stone" title="Garden Shovels">
+              <span class="sf-hdr-ico">🪏</span>
+              <span id="sfStickyShovels" class="sf-hdr-val font-mono font-black">1</span>
+            </div>
+            <!-- 3. Water Bucket Balance -->
+            <div class="sf-hdr-pill pill-blue" title="Water Buckets">
+              <span class="sf-hdr-ico">🪣</span>
+              <span id="sfStickyBaskets" class="sf-hdr-val font-mono font-black">2</span>
+            </div>
+          </div>
+        </header>
+      
+        <div class="sunflower-tycoon-container flex flex-col text-stone-800 pb-20">
+      
+          <!-- Quick Action & Upgrade Multiplier Tool Strip -->
+          <div class="sf-garden-tools-strip my-2.5">
+            <div class="sf-tools-left">
+              <!-- Upgrade Multiplier Selector [1x | 10x | 100x | MAX] -->
+              <div class="sf-upgrade-mult-wrap">
+                <span class="sf-mult-lbl">BUY:</span>
+                <div class="sf-mult-btns-group">
+                  <button class="sf-mult-btn active" data-mult="1" onclick="setSfUpgradeMultiplier(1)">1x</button>
+                  <button class="sf-mult-btn" data-mult="10" onclick="setSfUpgradeMultiplier(10)">10x</button>
+                  <button class="sf-mult-btn" data-mult="100" onclick="setSfUpgradeMultiplier(100)">100x</button>
+                  <button class="sf-mult-btn" data-mult="max" onclick="setSfUpgradeMultiplier('max')">MAX</button>
+                </div>
+              </div>
+      
+              <div class="sf-garden-cps-badge">
+                <span class="text-amber-400 font-bold">⚡ Total:</span>
+                <span id="sfTotalIncomeRate" class="font-mono font-black text-amber-200">0.0</span>
+                <span class="text-amber-300 text-[10px]">☀️/s</span>
+              </div>
+            </div>
+      
+            <div class="sf-tools-right">
+              <button id="sfWaterAllBtn" onclick="waterAllSfPlots(event)" class="sf-quick-tool-btn blue" title="Water all unlocked plots (+35s life)">
+                <span>🧺 Water All</span>
+              </button>
+              <button id="sfShovelAllBtn" onclick="shovelAllSfPlots(event)" class="sf-quick-tool-btn stone" title="Clear all withered plots">
+                <span>🪏 Shovel All</span>
+              </button>
+              <button id="sfSoundBtn" class="sf-sound-toggle-btn" title="Toggle Sound">🔊</button>
+            </div>
+          </div>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 1: 🌻 20 LAND PLOTS GARDEN (FIXED 2*10 FORMAT)         -->
+          <!-- ============================================================== -->
+          <section id="sfPage1" class="sf-game-page active-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-amber-500/50 shadow-xl flex flex-col gap-3">
+            <!-- Garden Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🌻</span>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                    <span>Sunflower Valley (20 Lands &bull; 2&times;10 Grid)</span>
+                    <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Land 1 Free</span>
+                  </h2>
+                  <p class="text-[10.5px] text-stone-300 font-medium">
+                    Upgrade each Land from <strong class="text-amber-300">Level 1 &rarr; 5000</strong>! Speed drops to <strong class="text-amber-300">0.001s</strong> &amp; coins scale up!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <span id="sfPlotsSummaryLabel" class="text-amber-300 text-xs font-bold bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-700/60 font-mono">
+                  1 of 20 Lands Unlocked
+                </span>
+              </div>
+            </div>
+      
+            <!-- 20 Plots Grid in Fixed 2*10 Format -->
+            <div id="sfPlotsContainer" class="sf-plots-2x10-grid">
+              <!-- Rendered dynamically by renderSunflowerPlots() in sunflower.js -->
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 2: 💧 WATER (WALL CISTERN & MAYA WELL PUMP)             -->
+          <!-- ============================================================== -->
+          <section id="sfPage2" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-cyan-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="bg-stone-950/80 backdrop-blur rounded-xl p-3 border border-stone-800 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl sm:text-3xl">🧱💧</span>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-cyan-400 flex items-center gap-1.5">
+                    <span>Water Cistern &amp; Mountain Pump Station</span>
+                    <span class="text-[9px] bg-cyan-950 text-cyan-300 font-mono border border-cyan-500/40 px-1.5 py-0.2 rounded-full">Spring Well</span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Draw fresh spring water from the wall pump and pack it into Water Baskets (🧺) to hydrate your 20 lands!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <span id="sfBoostActiveBadge" class="hidden text-[10px] bg-yellow-400 text-stone-900 font-black px-2 py-0.5 rounded-lg animate-pulse">
+                  ⚡ 2x Boost (<span id="sfBoostTimeRemaining">60</span>s)
+                </span>
+                <div class="bg-stone-800 px-2.5 py-1 rounded-lg border border-stone-700 text-[10px] font-mono text-cyan-400 font-bold">
+                  Wall Storage: <span id="sfCrateCounter" class="text-white text-xs font-black">0</span> / 5 🧺
+                </div>
+              </div>
+            </div>
+      
+            <!-- Pump Stage -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-stone-800/90 rounded-xl p-3.5 border border-stone-700 shadow-inner">
+              <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-stone-700 pb-2.5 md:pb-0 md:pr-3">
+                <div class="text-4xl animate-worker-hammer select-none filter drop-shadow">👩🌾</div>
+                <div>
+                  <div class="text-xs sm:text-sm font-extrabold text-amber-200">Worker Maya &amp; Walter</div>
+                  <div class="text-[10px] text-stone-400" id="sfWorkerStatusText">Pumping mountain spring water...</div>
+                  <div class="text-[10px] text-cyan-300 font-semibold mt-0.5">
+                    Speed: <span id="sfPumpSpeedLabel" class="font-mono font-bold">1 basket / 4s</span>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Progress Gauge -->
+              <div class="md:col-span-5 flex flex-col gap-1.5">
+                <div class="flex justify-between text-[10px] text-stone-300 font-semibold">
+                  <span>Next Water Basket:</span>
+                  <span id="sfCisternFillPercent" class="font-mono text-cyan-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-stone-950 rounded-full h-3 overflow-hidden border border-stone-700 p-0.5">
+                  <div id="sfCisternProgressBar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 rounded-full transition-all duration-100"></div>
+                </div>
+                <p class="text-[9.5px] text-stone-400">
+                  Water baskets give sunflowers +35s life and accelerate plot growth!
+                </p>
+              </div>
+      
+              <!-- Action Button -->
+              <div class="md:col-span-3 flex flex-col gap-1.5">
+                <button id="sfCollectBasketsBtn" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 active:scale-95 text-white font-black text-xs px-3 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
+                  <span>🧺 Collect Baskets</span>
+                  <span id="sfCollectableBadge" class="bg-white/20 px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
+                </button>
+                <button onclick="navigateSunflowerPage(3)" class="w-full bg-stone-700 hover:bg-stone-600 text-cyan-300 font-bold text-[10px] py-1.5 rounded-lg transition border border-stone-600 flex items-center justify-center gap-1">
+                  <span>⚡ Overdrive Pump Boost</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-stone-800/80 rounded-xl p-2.5 border border-stone-700">
+                <div class="text-[9px] uppercase font-bold text-stone-400">Inventory Buckets</div>
+                <div class="text-base font-black text-blue-400 mt-0.5" id="sfInvBaskets">2 🧺</div>
+              </div>
+              <div class="bg-stone-800/80 rounded-xl p-2.5 border border-stone-700">
+                <div class="text-[9px] uppercase font-bold text-stone-400">Wall Storage</div>
+                <div class="text-base font-black text-amber-400 mt-0.5" id="sfWallStorageBaskets">0 / 5 🧺</div>
+              </div>
+              <div class="bg-stone-800/80 rounded-xl p-2.5 border border-stone-700">
+                <div class="text-[9px] uppercase font-bold text-stone-400">Water Effect</div>
+                <div class="text-base font-black text-emerald-400 mt-0.5">+35s per Land</div>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 3: 🏪 SHOP & STORE (STORE LOGO)                        -->
+          <!-- ============================================================== -->
+          <section id="sfPage3" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">🏪💎</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-400 flex items-center gap-1.5">
+                    <span>Garden Store &amp; Tool Depot</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-1.5 py-0.5 rounded-full border border-amber-500/40">
+                      Official Supply
+                    </span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Purchase Seeds, Shovels, Water Baskets, and Overdrive Boosts with Diamonds (💎) or watch 5s ads!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="bg-cyan-950/80 border border-cyan-500/40 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs">
+                <span>💎</span>
+                <span class="text-cyan-200 font-extrabold text-[10px]">
+                  Vault: <span id="sfShopDiamondCount" class="text-cyan-400 font-black">25 💎</span>
+                </span>
+              </div>
+            </div>
+      
+            <!-- Items Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              <!-- Item 1: Sunflower Sprout Seed -->
+              <div class="bg-stone-950/80 rounded-xl p-3 border border-amber-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">🌱</span>
+                    <div>
+                      <h4 class="text-xs font-black text-amber-300">Sunflower Sprout</h4>
+                      <p class="text-[10px] text-stone-300 leading-snug">
+                        Seeds to plant on any empty bed to begin production!
+                      </p>
+                    </div>
+                  </div>
+                  <span id="sfCurrentSproutPriceBadge" class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0 border border-amber-500/40">
+                    1 💎
+                  </span>
+                </div>
+      
+                <div class="flex items-center gap-1.5 pt-0.5">
+                  <button id="sfBuySproutDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Throw <span id="sfBtnSproutPrice">1</span> 💎 &rarr; Plant 🌱</span>
+                  </button>
+                  <button onclick="openSunflowerAdModal('sprout')" class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>🎬 Watch Ad (FREE 🌱)</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Item 2: Garden Shovel -->
+              <div class="bg-stone-950/80 rounded-xl p-3 border border-stone-700 flex flex-col justify-between gap-2 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">🪏</span>
+                    <div>
+                      <h4 class="text-xs font-black text-stone-200">Garden Shovel</h4>
+                      <p class="text-[10px] text-stone-400 leading-snug">
+                        Required to clear withered stalks (🥀) on Page 1 to free plots.
+                      </p>
+                    </div>
+                  </div>
+                  <span class="bg-stone-800 text-stone-300 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0 border border-stone-600">
+                    10 💎
+                  </span>
+                </div>
+      
+                <div class="flex items-center gap-1.5 pt-0.5">
+                  <button id="sfBuyShovelDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Throw 10 💎 &rarr; +1 🪏</span>
+                  </button>
+                  <button onclick="openSunflowerAdModal('shovel')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>🎬 Watch Ad (FREE 🪏)</span>
+                  </button>
+                </div>
+              </div>
+      
+              <!-- Item 3: Water Basket -->
+              <div class="bg-stone-950/80 rounded-xl p-3 border border-blue-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">🧺</span>
+                    <div>
+                      <h4 class="text-xs font-black text-cyan-300">Water Basket</h4>
+                      <p class="text-[10px] text-stone-300 leading-snug">
+                        Adds +35s solar production lifespan to an active flower!
+                      </p>
+                    </div>
+                  </div>
+                  <span class="bg-blue-950 text-cyan-300 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0 border border-blue-500/40">
+                    2 💎
+                  </span>
+                </div>
+                <button id="sfBuyBasketDiamondBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                  <span>Throw 2 💎 &rarr; Get 1 Water Basket 🧺</span>
+                </button>
+              </div>
+      
+              <!-- Item 4: Pump Overdrive Boost -->
+              <div class="bg-stone-950/80 rounded-xl p-3 border border-yellow-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                      <h4 class="text-xs font-black text-yellow-300">Cistern Pump Overdrive</h4>
+                      <p class="text-[10px] text-stone-300 leading-snug">
+                        Pump 2x faster (1 basket every 2 seconds) for 60 seconds on Page 2!
+                      </p>
+                    </div>
+                  </div>
+                  <span class="bg-yellow-950 text-yellow-300 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0 border border-yellow-500/40">
+                    8 💎
+                  </span>
+                </div>
+                <button id="sfBuyBoostDiamondBtn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 active:scale-95 text-white font-black text-[10px] py-1.5 rounded-lg shadow transition">
+                  <span>Throw 8 💎 &rarr; 2x Pump Speed ⚡</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 4: 👷 MANAGERS & WORKERS (HALF-MAN LOGO)               -->
+          <!-- ============================================================== -->
+          <section id="sfPage4" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">👷🧑‍🌾</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                    <span>Managers &amp; Automated Workers</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-1.5 py-0.5 rounded-full border border-amber-500/40">Automation HQ</span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Hire specialized farm workers to automate land harvesting and water pumping so your garden earns 24/7!
+                  </p>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Workers List -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="sfWorkersList">
+              <!-- Worker 1: Walter the Cistern Pumper -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-cyan-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-cyan-900/60 border border-cyan-400 flex items-center justify-center text-xl">💧</div>
+                    <div>
+                      <h4 class="text-xs font-black text-cyan-300">Walter &bull; Well Pump Master</h4>
+                      <p class="text-[10px] text-stone-300">Auto-pumps mountain water into baskets continuously!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeWalter" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerWalterBtn" onclick="hireSunflowerWorker('walter')" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Walter &bull; 500 ☀️ Coins (or 10 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 2: Dave the Golden Harvester -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-amber-900/60 border border-amber-400 flex items-center justify-center text-xl">🌻</div>
+                    <div>
+                      <h4 class="text-xs font-black text-amber-300">Dave &bull; Solar Harvester</h4>
+                      <p class="text-[10px] text-stone-300">Automatically harvests coins from Lands 1 to 5!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeDave" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerDaveBtn" onclick="hireSunflowerWorker('dave')" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Dave &bull; 1,500 ☀️ Coins (or 25 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 3: Elena the Sun Botanist -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-emerald-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-emerald-900/60 border border-emerald-400 flex items-center justify-center text-xl">🌿</div>
+                    <div>
+                      <h4 class="text-xs font-black text-emerald-300">Elena &bull; Sun Botanist</h4>
+                      <p class="text-[10px] text-stone-300">Auto-harvests Lands 6 to 10 + gives +20% Coin boost!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeElena" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerElenaBtn" onclick="hireSunflowerWorker('elena')" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Elena &bull; 10,000 ☀️ Coins (or 50 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 4: Leo the Master Overseer -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-purple-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-400 flex items-center justify-center text-xl">👑</div>
+                    <div>
+                      <h4 class="text-xs font-black text-purple-300">Leo &bull; Master Overseer</h4>
+                      <p class="text-[10px] text-stone-300">Auto-harvests Lands 11 to 20 + doubles all garden speed!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeLeo" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerLeoBtn" onclick="hireSunflowerWorker('leo')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Leo &bull; 50,000 ☀️ Coins (or 100 💎)</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 5: ⚡ SOLAR CONVERTER (100 COINS = 29⚡)                -->
+          <!-- ============================================================== -->
+          <section id="sfPage5" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-yellow-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
+                    <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
+                    <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
+                  </p>
+                </div>
+              </div>
+            </div>
+      
+            <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
+              <div class="text-5xl animate-bounce">⚡☀️</div>
+              <div>
+                <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
+                <p class="text-xs text-stone-300 max-w-sm mt-1">
+                  Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
+                </p>
+              </div>
+      
+              <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Your Coins</span>
+                  <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
+                </div>
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Batch Rate</span>
+                  <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
+                </div>
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Total Converted</span>
+                  <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
+                </div>
+              </div>
+      
+              <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
+                <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                  <span>Throw 100 ☀️</span>
+                  <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
+                </button>
+                <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                  <span>Throw 1000 ☀️</span>
+                  <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
+                </button>
+                <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
+                  <span>⚡ Throw ALL Available Coins</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+        </div>
+      
+        <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon -->
+        <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar">
+          <!-- Tab 1: Water (💧 Water) -->
+          <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
+            <div class="sf-menu-ico">💧</div>
+            <span class="sf-menu-txt">Water</span>
+          </button>
+      
+          <!-- Tab 2: Managers & Workers (👷 Workers - Half-Man Logo) -->
+          <button class="sf-menu-tab-btn" id="sfMenuTabWorkers" onclick="navigateSunflowerPage(4)" title="Managers & Workers">
+            <div class="sf-menu-ico">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="7" r="4"/>
+                <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
+                <line x1="12" y1="11" x2="12" y2="21" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/>
+              </svg>
+            </div>
+            <span class="sf-menu-txt">Workers</span>
+          </button>
+      
+          <!-- Center Primary Button: Play / Garden (🌻 Play) -->
+          <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Play Garden & Lands">
+            <div class="center-play-circle">
+              <span class="sf-menu-play-icon">🌻</span>
+            </div>
+            <span class="sf-menu-txt font-black">Garden</span>
+          </button>
+      
+          <!-- Tab 4: Shop / Store (🏪 Store Logo) -->
+          <button class="sf-menu-tab-btn" id="sfMenuTabShop" onclick="navigateSunflowerPage(3)" title="Store & Boosters">
+            <div class="sf-menu-ico">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l2-5h14l2 5"/>
+                <path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/>
+                <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
+                <path d="M9 21V13h6v8"/>
+              </svg>
+            </div>
+            <span class="sf-menu-txt">Shop</span>
+          </button>
+      
+          <!-- Tab 5: Solar Converter / 29⚡ (⚡ 29⚡ Logo) -->
+          <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
+            <div class="sf-menu-ico">⚡</div>
+            <span class="sf-menu-txt">29⚡ Exch</span>
+          </button>
+        </nav>
+      
+        <!-- 5-Second Rewarded Sponsor Ad Reel Modal -->
+        <div id="sfAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+          <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
+            <div class="bg-stone-800 px-3.5 py-2 border-b border-stone-700 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[8.5px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
+                <span id="sfAdBrandName" class="text-xs text-stone-400">SunHarvest Bio</span>
+              </div>
+              <span id="sfAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
+                ⏳ 5s
+              </span>
+            </div>
+      
+            <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px]">
+              <div id="sfAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">🌻</div>
+              <h3 id="sfAdHeadline" class="text-sm font-black text-amber-300">Golden Bloom Fertilizer</h3>
+              <p id="sfAdCatchphrase" class="text-stone-300 text-[10.5px] mt-1 max-w-xs">
+                "Accelerate sunflower photosynthesis and harvest double solar coins effortlessly."
+              </p>
+      
+              <div class="mt-2.5 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
+                <span class="text-amber-300 font-semibold">Reward:</span>
+                <span id="sfAdRewardTag" class="font-bold text-white">1 Free Sprout 🌱</span>
+              </div>
+      
+              <div class="w-full bg-stone-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div id="sfAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
+              </div>
+            </div>
+      
+            <div class="p-2.5 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
+              <span class="text-[9.5px] text-stone-400">Watch full 5s clip for reward.</span>
+              <button id="sfAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
+                Watching...
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Panoramic Master Image View & Edit Inspection Modal -->
+        <div id="sfImageViewerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+          <div class="bg-stone-900 border-2 border-amber-500/70 rounded-2xl max-w-4xl w-full p-4 sm:p-5 shadow-2xl relative max-h-[92vh] overflow-y-auto flex flex-col gap-3 text-white">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🖼️</span>
+                <div>
+                  <h3 class="font-black text-sm text-amber-300">Sunflower Valley Master Panoramic Landscape Artwork</h3>
+                  <p class="text-[10px] text-stone-400">
+                    File Path: <code class="bg-stone-800 text-amber-200 px-1.5 py-0.5 rounded font-mono text-[9.5px]">pages/sunflower/sunflower-bg.png</code> &bull; Native Resolution: 1024 &times; 254 px
+                  </p>
+                </div>
+              </div>
+              <button onclick="closeSunflowerImageViewer()" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center font-bold text-lg">&times;</button>
+            </div>
+      
+            <!-- High-Def Image Scrollable Canvas Frame -->
+            <div class="relative w-full overflow-x-auto rounded-xl border border-stone-800 bg-stone-950 p-2 flex justify-start sm:justify-center shadow-inner custom-scrollbar">
+              <img src="sunflower-bg.png" alt="Sunflower Panoramic Master Artwork View" class="rounded-lg max-w-none w-full min-w-[760px] h-auto object-contain select-none shadow-2xl">
+            </div>
+      
+            <!-- Scene Sections Map Guide -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-blue-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-cyan-300 flex items-center gap-1"><span>💧</span> Left: Ancient Water Well</span>
+                <span class="text-stone-300">Represents the <strong>Water Cistern &amp; Pump Station</strong> (Page 2) for drawing water baskets.</span>
+              </div>
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-emerald-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-emerald-300 flex items-center gap-1"><span>🌲</span> Center: Valley Pine Forest</span>
+                <span class="text-stone-300">Represents the misty dawn mountains connecting the valley to the solar gardens.</span>
+              </div>
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-amber-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-amber-300 flex items-center gap-1"><span>🌻</span> Right: Sunflower Harvesting</span>
+                <span class="text-stone-300">Represents the <strong>20 Land Plots Garden</strong> and <strong>100 ☀️ &rarr; 29 ⚡ Solar Converter</strong>.</span>
+              </div>
+            </div>
+      
+            <!-- Edit / Customization Instructions Card -->
+            <div class="bg-amber-950/40 rounded-xl p-3 border border-amber-500/30 text-[10.5px] text-stone-200 flex flex-col gap-1.5">
+              <div class="flex items-center gap-1.5 font-bold text-amber-400">
+                <span>✏️</span>
+                <span>How to Edit or Swap this Image in the Codebase:</span>
+              </div>
+              <p class="leading-relaxed text-[10px]">
+                1. Replace the file at <code class="text-amber-200 bg-stone-900 px-1 py-0.5 rounded font-mono">frontend/pages/sunflower/sunflower-bg.png</code> and <code class="text-amber-200 bg-stone-900 px-1 py-0.5 rounded font-mono">frontend/sunflower-bg.png</code>.<br>
+                2. Recommended aspect ratio is <strong>~4:1</strong> (e.g. 1024 &times; 254 px or 2048 &times; 508 px).<br>
+                3. Changes immediately reflect across the subtabs, cards, and atmospheric background.
+              </p>
+              <div class="flex flex-wrap items-center gap-2 mt-1">
+                <a href="sunflower-bg.png" download="sunflower-bg.png" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow">
+                  <span>⬇️ Download Master Image</span>
+                </a>
+                <button onclick="closeSunflowerImageViewer()" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-[10px] px-3 py-1.5 rounded-lg transition">
+                  Close Viewer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: BEE-FARM -->
+      <div class="page-view" id="pageBeeFarm">
+        <!-- Top Segmented Station Navigation Bar (Reactor, Sunflowers, Bee Farm, Crystal Mine) -->
+        <nav class="energy-top-subtabs" id="beeTopSubtabs" aria-label="Energy Stations Navigation">
+          <button class="energy-subtab-btn" id="beeSubtabBtnReactor" onclick="switchPage('energy')">
+            <span class="subtab-icon">⚡</span>
+            <span class="subtab-label">Reactor</span>
+          </button>
+          <button class="energy-subtab-btn" id="beeSubtabBtnSunflower" onclick="switchPage('sunflower')">
+            <span class="subtab-icon">🌻</span>
+            <span class="subtab-label">Sunflowers</span>
+          </button>
+          <button class="energy-subtab-btn active" id="beeSubtabBtnBeeFarm" onclick="switchPage('bee-farm')">
+            <span class="subtab-icon">🐝</span>
+            <span class="subtab-label">Bee Farm</span>
+          </button>
+          <button class="energy-subtab-btn" id="beeSubtabBtnMining" onclick="switchPage('mining')">
+            <span class="subtab-icon">🔮</span>
+            <span class="subtab-label">Gem Mine</span>
+          </button>
+        </nav>
+      
+        <!-- Atmospheric Scenic Landscape Stage for Honey Bee Farm (Background Canvas Layer) -->
+        <div class="bee-tab-scenic-stage" id="beeTabScenicStage" aria-hidden="true">
+          <div class="bee-stage-artwork" id="beeStageArtwork"></div>
+          <div class="bee-stage-sunbeam"></div>
+          <div class="bee-stage-ambient-glow"></div>
+          <div class="bee-stage-vignette"></div>
+        </div>
+      
+        <div class="beefarm-tycoon-container flex flex-col text-amber-950 pb-6">
+          <!-- Unified Compact Hero Dashboard -->
+          <div class="bee-compact-dashboard mb-3">
+            <div class="bee-dash-art-bg"></div>
+            <div class="bee-dash-honeycomb-bg"></div>
+            <div class="bee-dash-amber-overlay"></div>
+      
+            <!-- Top Row: Back Button, Title, Sound & Guide -->
+            <div class="bee-dash-top-row">
+              <button onclick="switchPage('energy')" class="bee-dash-back-btn" title="Return to Fuel Reactor">
+                <span>&larr;</span> <span>Reactor</span>
+              </button>
+      
+              <div class="bee-dash-title-wrap">
+                <span class="bee-dash-bee-icon animate-buzz-float">🐝</span>
+                <span class="bee-dash-title-text">Honey Bee Farm Tycoon</span>
+                <span id="beeActivePageBadge" class="bee-dash-page-badge">Page 1: Apiary</span>
+              </div>
+      
+              <div class="bee-dash-controls">
+                <button id="beeSoundBtn" class="bee-dash-ctrl-btn" title="Toggle Sound">🔊</button>
+                <button id="beeGuideBtn" class="bee-dash-ctrl-btn" title="Game Guide">📖</button>
+              </div>
+            </div>
+      
+            <!-- Middle Row: Sleek 5-Resource Counter Pills -->
+            <div class="bee-dash-resources-row">
+              <!-- Honey Drops -->
+              <div class="bee-res-pill pill-honey" title="Honey Drops (+2 🍯/s from active hives)">
+                <span class="bee-res-icon">🍯</span>
+                <div class="bee-res-content">
+                  <span class="bee-res-lbl">Honey</span>
+                  <span id="beeHoneyCount" class="bee-res-val">150</span>
+                </div>
+              </div>
+      
+              <!-- Royal Jelly Energy -->
+              <div class="bee-res-pill pill-energy" title="Royal Jelly Energy (100 Honey = 29 Energy)">
+                <span class="bee-res-icon">⚡</span>
+                <div class="bee-res-content">
+                  <span class="bee-res-lbl">Energy</span>
+                  <span id="beeEnergyCount" class="bee-res-val">0</span>
+                </div>
+              </div>
+      
+              <!-- Diamonds -->
+              <div class="bee-res-pill pill-diamond" title="Diamonds for Land &amp; Larvae">
+                <span class="bee-res-icon">💎</span>
+                <div class="bee-res-content">
+                  <span class="bee-res-lbl">Diamonds</span>
+                  <span id="beeDiamondCount" class="bee-res-val">25</span>
+                </div>
+              </div>
+      
+              <!-- Pollen Pots -->
+              <div class="bee-res-pill pill-pollen" title="Pollen Pots (+35s hive life)">
+                <span class="bee-res-icon">🏺</span>
+                <div class="bee-res-content">
+                  <span class="bee-res-lbl">Pollen</span>
+                  <span id="beePollenCount" class="bee-res-val">2</span>
+                </div>
+              </div>
+      
+              <!-- Smokers -->
+              <div class="bee-res-pill pill-smoker" title="Hive Smokers to clear dormant hives">
+                <span class="bee-res-icon">💨</span>
+                <div class="bee-res-content">
+                  <span class="bee-res-lbl">Smokers</span>
+                  <span id="beeSmokerCount" class="bee-res-val">1</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Bottom Row: 3-Tab Segmented Switcher (Page 3 Left | Page 1 Middle | Page 2 Right) -->
+            <nav class="bee-dash-nav-tabs">
+              <button onclick="navigateBeePage(3)" id="beeTab3" class="bee-nav-tab-item">
+                <span class="bee-tab-ico">⚡🏪</span>
+                <span class="bee-tab-txt">Shop &amp; Power</span>
+              </button>
+              <button onclick="navigateBeePage(1)" id="beeTab1" class="bee-nav-tab-item active-tab">
+                <span class="bee-tab-ico">🐝</span>
+                <span class="bee-tab-txt">Apiary (<span id="beeLandCount">1</span>/20)</span>
+              </button>
+              <button onclick="navigateBeePage(2)" id="beeTab2" class="bee-nav-tab-item">
+                <span class="bee-tab-ico">🌸🧱</span>
+                <span class="bee-tab-txt">Nectar Wall</span>
+                <span id="beeWallBadge" class="bee-tab-badge">0</span>
+              </button>
+            </nav>
+          </div>
+      
+      
+          <!-- ============================================================== -->
+          <!-- BEE PAGE 1: 🐝 APIARY GROVES (20 LAND PLOTS)                   -->
+          <!-- ============================================================== -->
+          <section id="beePage1" class="bee-game-page active-page bg-white/95 rounded-2xl p-3 sm:p-4 border-2 border-amber-300 shadow-sm flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl animate-buzz-float">🐝</span>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-950 flex items-center gap-1.5">
+                    <span>Apiary Hive Groves (20 Land Plots)</span>
+                    <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full border border-emerald-300">
+                      Plot 1 Free
+                    </span>
+                  </h2>
+                  <p class="text-[10px] text-amber-800 font-medium">
+                    Active hives auto-generate <strong class="text-amber-900">+2 🍯 Honey Drops/s</strong>! Pour Pollen (🏺) for +35s life.
+                  </p>
+                </div>
+              </div>
+      
+              <!-- Field Action Buttons -->
+              <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+                <button id="beePollenAllBtn" class="flex-1 sm:flex-none bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-[10px] px-2.5 py-1.5 rounded-xl shadow transition flex items-center justify-center gap-1">
+                  <span>🏺 Nourish All</span>
+                </button>
+                <button id="beeSmokeAllBtn" class="flex-1 sm:flex-none bg-stone-700 hover:bg-stone-800 active:scale-95 text-white font-black text-[10px] px-2.5 py-1.5 rounded-xl shadow transition flex items-center justify-center gap-1">
+                  <span>💨 Smoke All</span>
+                </button>
+                <button onclick="navigateBeePage(3)" class="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black text-[10px] px-3 py-1.5 rounded-xl shadow transition flex items-center justify-center gap-1">
+                  <span>🐝 Buy Larvae</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Expansion Ribbon -->
+            <div class="bg-amber-50 rounded-xl p-2 border border-amber-200 flex items-center justify-between gap-2 text-[10px]">
+              <div class="flex items-center gap-1.5">
+                <span>🗺️</span>
+                <span class="font-bold text-amber-950">Apiary Expansion:</span>
+                <span id="beeLandSummaryLabel" class="text-amber-800 font-bold">1 of 20 Lands Unlocked</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-stone-500 text-[9.5px]">Next:</span>
+                <span id="beeNextLandCostBadge" class="bg-cyan-100 text-cyan-900 border border-cyan-300 font-black px-2 py-0.5 rounded-full text-[9.5px]">Plot #2: 10 💎</span>
+              </div>
+            </div>
+      
+            <!-- 20 Plots Grid in Fixed 2*10 Format -->
+            <div id="beePlotsContainer" class="bee-plots-2x10-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- BEE PAGE 2: 🌸 NECTAR BLOSSOM WALL & HARVESTER                 -->
+          <!-- ============================================================== -->
+          <section id="beePage2" class="bee-game-page bg-gradient-to-b from-stone-800 to-slate-900 rounded-2xl p-3 sm:p-5 border-2 border-stone-700 text-white shadow-xl flex flex-col gap-4">
+            <div class="bg-slate-950/80 backdrop-blur rounded-xl p-3 border border-slate-700 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl sm:text-3xl">🌸🧱</span>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-rose-300 flex items-center gap-1.5">
+                    <span>Nectar Blossom Wall &amp; Harvester Maya</span>
+                    <span class="text-[9px] bg-rose-950 text-rose-300 font-mono border border-rose-500/40 px-1.5 py-0.2 rounded-full">Automated</span>
+                  </h2>
+                  <p class="text-[10px] text-slate-300">
+                    Harvester Maya gathers floral pollen and packs it into wooden pots. Holds up to 5 Pollen Pots!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <span id="beeBoostActiveBadge" class="hidden text-[10px] bg-yellow-400 text-stone-900 font-black px-2 py-0.5 rounded-lg animate-pulse">
+                  ⚡ 2x Boost (<span id="beeBoostTimeRemaining">60</span>s)
+                </span>
+                <div class="bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-600 text-[10px] font-mono text-rose-300 font-bold">
+                  Wall Crate: <span id="beeWallCrateCounter" class="text-white text-xs font-black">0</span> / 5 🏺
+                </div>
+              </div>
+            </div>
+      
+            <!-- Harvester Worker Presentation Stage -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-800/90 rounded-xl p-3.5 border border-slate-600 shadow-inner">
+              <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
+                <div class="text-4xl animate-bounce select-none filter drop-shadow">👩🌾</div>
+                <div>
+                  <div class="text-xs sm:text-sm font-extrabold text-rose-200">Harvester Maya</div>
+                  <div class="text-[10px] text-slate-400" id="beeHarvesterStatusText">Gathering floral pollen from wild trellis...</div>
+                  <div class="text-[10px] text-amber-300 font-semibold mt-0.5">
+                    Speed: <span id="beeHarvesterSpeedLabel" class="font-mono font-bold">1 pot / 4s</span>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Progress Gauge -->
+              <div class="md:col-span-5 flex flex-col gap-1.5">
+                <div class="flex justify-between text-[10px] text-slate-300 font-semibold">
+                  <span>Next Pollen Extraction:</span>
+                  <span id="beeHarvesterCyclePercent" class="font-mono text-rose-300 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-700 p-0.5">
+                  <div id="beeHarvesterProgressBar" class="bg-gradient-to-r from-amber-400 to-rose-500 h-full w-0 rounded-full transition-all duration-100"></div>
+                </div>
+                <p class="text-[9.5px] text-slate-400">
+                  Pollen Pots poured on active hives add +35s to their honey-producing timer!
+                </p>
+              </div>
+      
+              <!-- Action Button -->
+              <div class="md:col-span-3 flex flex-col gap-1.5">
+                <button id="beeCollectPollenBtn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 active:scale-95 text-white font-black text-xs px-3 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
+                  <span>🏺 Collect Pots</span>
+                  <span id="beeCollectableBadge" class="bg-white/20 px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
+                </button>
+                <button onclick="navigateBeePage(3)" class="w-full bg-slate-700 hover:bg-slate-600 text-rose-300 font-bold text-[10px] py-1.5 rounded-lg transition border border-slate-500 flex items-center justify-center gap-1">
+                  <span>⚡ Overdrive Speed (Shop)</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Cistern Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-700">
+                <div class="text-[9px] uppercase font-bold text-slate-400">Inventory Pots</div>
+                <div class="text-base font-black text-rose-300 mt-0.5" id="beeWallInvPollen">2 🏺</div>
+              </div>
+              <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-700">
+                <div class="text-[9px] uppercase font-bold text-slate-400">Wall Crate Storage</div>
+                <div class="text-base font-black text-amber-400 mt-0.5" id="beeWallCratePollen">0 / 5 🏺</div>
+              </div>
+              <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-700">
+                <div class="text-[9px] uppercase font-bold text-slate-400">Nourish Effect</div>
+                <div class="text-base font-black text-emerald-400 mt-0.5">+35s per Hive</div>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- BEE PAGE 3: ⚡ HONEY REFINERY & DIAMOND SHOP                   -->
+          <!-- ============================================================== -->
+          <section id="beePage3" class="bee-game-page bg-white/95 rounded-2xl p-3 sm:p-5 border-2 border-amber-300 shadow-sm flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">⚡💎</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-950 flex items-center gap-1.5">
+                    <span>Honey Refinery &amp; Diamond Shop</span>
+                    <span class="text-[9px] bg-gradient-to-r from-amber-200 to-cyan-200 text-stone-900 font-mono font-black px-1.5 py-0.5 rounded-full border border-amber-300">
+                      Converter + Vault
+                    </span>
+                  </h2>
+                  <p class="text-[10px] text-amber-800 font-medium">
+                    Refine Honey Drops into Royal Jelly Energy (100 🍯 &rarr; 29 ⚡), buy larvae, or watch 5s sponsor ads!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <div class="bg-cyan-50 border border-cyan-200 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs">
+                  <span>💎</span>
+                  <span class="text-cyan-900 font-extrabold text-[10px]">
+                    Vault: <span id="beeShopDiamondCount" class="text-cyan-700 font-black">25 💎</span>
+                  </span>
+                </div>
+                <div class="bg-amber-100/80 border border-amber-300 px-2.5 py-1 rounded-xl text-[10px] font-bold text-amber-900">
+                  Ratio: <span class="font-black text-amber-950">100 🍯 = 29 ⚡</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- SECTION A: Honey Drop Throw Energy Converter (100 🍯 -> 29 ⚡) -->
+            <div class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black text-amber-950 flex items-center gap-1">
+                  <span>🍯</span> Section A: Honey Power Refinery Core
+                </h3>
+                <span class="text-[9.5px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300">
+                  100 Honey Drops &rarr; 29 Royal Jelly Energy
+                </span>
+              </div>
+      
+              <div class="bg-gradient-to-br from-amber-500 via-amber-400 to-yellow-500 rounded-2xl p-4 text-amber-950 shadow-md border-2 border-yellow-200 relative overflow-hidden flex flex-col items-center text-center gap-2.5">
+                <div class="text-4xl animate-float-gentle filter drop-shadow select-none">
+                  ⚡⚗️
+                </div>
+                <div>
+                  <h4 class="text-sm sm:text-base font-black text-stone-900">Royal Centrifuge Refinery</h4>
+                  <p class="text-[10px] text-stone-800 font-medium max-w-sm mt-0.5">
+                    Throw Honey Drops into the royal distillery. Each batch converts 100 🍯 Honey into 29 ⚡ Royal Jelly Energy!
+                  </p>
+                </div>
+      
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
+                  <button id="beeConvert100Btn" class="flex-1 bg-stone-900 hover:bg-stone-800 text-yellow-300 active:scale-95 font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
+                    <span>🍯 Throw 100 Honey</span>
+                    <span class="bg-yellow-400/20 text-yellow-200 px-1.5 py-0.2 rounded-full text-[9px] font-mono">+29 ⚡</span>
+                  </button>
+                  <button id="beeConvertAllBtn" class="flex-1 bg-white hover:bg-amber-50 text-amber-950 active:scale-95 font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl shadow-lg transition border border-stone-800 flex items-center justify-center gap-1">
+                    <span>⚡ Throw ALL Available</span>
+                  </button>
+                </div>
+              </div>
+      
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-amber-50 rounded-xl p-2.5 border border-amber-200">
+                  <div class="text-[9px] uppercase font-bold text-amber-700">Available Honey Drops</div>
+                  <div class="text-base font-black text-amber-950 mt-0.5" id="beeShopHoneyDisplay">150 🍯</div>
+                </div>
+                <div class="bg-yellow-50 rounded-xl p-2.5 border border-yellow-200">
+                  <div class="text-[9px] uppercase font-bold text-yellow-800">Convertible Batches</div>
+                  <div class="text-base font-black text-yellow-700 mt-0.5" id="beeShopBatchesDisplay">1 Batch (29 ⚡)</div>
+                </div>
+                <div class="bg-emerald-50 rounded-xl p-2.5 border border-emerald-200">
+                  <div class="text-[9px] uppercase font-bold text-emerald-800">Royal Jelly Banked</div>
+                  <div class="text-base font-black text-emerald-700 mt-0.5" id="beeShopEnergyDisplay">0 ⚡</div>
+                </div>
+              </div>
+            </div>
+      
+            <div class="w-full h-px bg-amber-200 my-0.5"></div>
+      
+            <!-- SECTION B: Diamond Requirements & Ad Station -->
+            <div class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black text-amber-950 flex items-center gap-1">
+                  <span>💎</span> Section B: Diamond Requirements &amp; Sponsor Ads
+                </h3>
+                <span class="text-[9.5px] text-cyan-800 font-semibold bg-cyan-100 px-2 py-0.5 rounded-lg border border-cyan-300">
+                  Price Scaling: +1 💎 per Queen Larva
+                </span>
+              </div>
+      
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                <!-- Item 1: Queen Bee Larva (+1 💎 Escalation OR Watch Ad) -->
+                <div class="bg-amber-50/90 rounded-xl p-3 border border-amber-300 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🐝</span>
+                      <div>
+                        <h4 class="text-xs font-black text-amber-950">Queen Bee Larva</h4>
+                        <p class="text-[10px] text-amber-800 leading-snug">
+                          Starts at 1 💎. Permanently increases by +1 💎 after every diamond purchase!
+                        </p>
+                      </div>
+                    </div>
+                    <span id="beeCurrentLarvaPriceBadge" class="bg-amber-200 text-amber-900 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0">
+                      1 💎
+                    </span>
+                  </div>
+      
+                  <div class="flex items-center gap-1.5 pt-0.5">
+                    <button id="beeBuyLarvaDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                      <span>Throw <span id="beeBtnLarvaPrice">1</span> 💎 &rarr; Place 🐝</span>
+                    </button>
+                    <button onclick="openBeeAdModal('larva')" class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                      <span>🎬 Watch Ad (FREE 🐝)</span>
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- Item 2: Apiary Hive Smoker (10 💎 OR Watch Ad) -->
+                <div class="bg-stone-50 rounded-xl p-3 border border-stone-300 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">💨</span>
+                      <div>
+                        <h4 class="text-xs font-black text-stone-900">Apiary Hive Smoker</h4>
+                        <p class="text-[10px] text-stone-600 leading-snug">
+                          Required to clear dormant/abandoned hives (🕸️) to free plots.
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-stone-200 text-stone-800 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0">
+                      10 💎
+                    </span>
+                  </div>
+      
+                  <div class="flex items-center gap-1.5 pt-0.5">
+                    <button id="beeBuySmokerDiamondBtn" class="flex-1 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                      <span>Throw 10 💎 &rarr; +1 💨</span>
+                    </button>
+                    <button onclick="openBeeAdModal('smoker')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                      <span>🎬 Watch Ad (FREE 💨)</span>
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- Item 3: Pollen Pot (2 💎) -->
+                <div class="bg-rose-50/90 rounded-xl p-3 border border-rose-300 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🏺</span>
+                      <div>
+                        <h4 class="text-xs font-black text-rose-950">Instant Pollen Pot</h4>
+                        <p class="text-[10px] text-rose-800 leading-snug">
+                          Adds +35s honey-producing lifespan to an active hive!
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-rose-200 text-rose-900 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0">
+                      2 💎
+                    </span>
+                  </div>
+                  <button id="beeBuyPollenDiamondBtn" class="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Throw 2 💎 &rarr; Get 1 Pollen Pot 🏺</span>
+                  </button>
+                </div>
+      
+                <!-- Item 4: Honey Treasury Pack (5 💎 for 250 Honey) -->
+                <div class="bg-yellow-50/90 rounded-xl p-3 border border-yellow-300 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🍯</span>
+                      <div>
+                        <h4 class="text-xs font-black text-yellow-950">Wild Honey Treasury</h4>
+                        <p class="text-[10px] text-yellow-800 leading-snug">
+                          Instant honey drops to throw into the Section A Royal Converter.
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-yellow-200 text-yellow-900 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0">
+                      5 💎
+                    </span>
+                  </div>
+                  <button id="beeBuyHoneyDiamondBtn" class="w-full bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-[10px] py-1.5 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Throw 5 💎 &rarr; Get 250 Honey Drops 🍯</span>
+                  </button>
+                </div>
+      
+                <!-- Item 5: Harvester Speed Boost (8 💎 for 2x pump speed for 60s) -->
+                <div class="md:col-span-2 bg-gradient-to-r from-amber-100 to-rose-100 rounded-xl p-3 border border-amber-400 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                      <h4 class="text-xs font-black text-amber-950">Harvester High-Speed Overdrive</h4>
+                      <p class="text-[10px] text-amber-800">
+                        Harvester Maya gathers 2x faster (1 pot every 2 seconds) for 60 seconds on Page 2!
+                      </p>
+                    </div>
+                  </div>
+                  <button id="beeBuyBoostDiamondBtn" class="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 active:scale-95 text-white font-black text-[10px] px-3.5 py-1.5 rounded-lg shadow transition whitespace-nowrap">
+                    <span>Throw 8 💎 &rarr; 2x Harvester Speed ⚡</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      
+        <!-- 5-Second Rewarded Sponsor Ad Reel Modal -->
+        <div id="beeAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+          <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
+            <div class="bg-stone-800 px-3.5 py-2 border-b border-stone-700 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[8.5px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
+                <span id="beeAdBrandName" class="text-xs text-stone-400">HoneyNectar Lab</span>
+              </div>
+              <span id="beeAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
+                ⏳ 5s
+              </span>
+            </div>
+      
+            <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px]">
+              <div id="beeAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">🐝</div>
+              <h3 id="beeAdHeadline" class="text-sm font-black text-amber-300">Wild Clover Pollen Mist</h3>
+              <p id="beeAdCatchphrase" class="text-stone-300 text-[10.5px] mt-1 max-w-xs">
+                "Double the buzzing, triple the sweet nectar. The top sponsor of apiaries nationwide!"
+              </p>
+      
+              <div class="mt-2.5 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
+                <span class="text-amber-300 font-semibold">Reward:</span>
+                <span id="beeAdRewardTag" class="font-bold text-white">1 Free Queen Larva 🐝</span>
+              </div>
+      
+              <div class="w-full bg-stone-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div id="beeAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
+              </div>
+            </div>
+      
+            <div class="p-2.5 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
+              <span class="text-[9.5px] text-stone-400">Watch full 5s clip for reward.</span>
+              <button id="beeAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
+                Watching...
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Rules & Guide Modal -->
+        <div id="beeRulesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+          <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-5 shadow-2xl border-2 border-amber-300 relative max-h-[90vh] overflow-y-auto">
+            <button id="beeCloseRulesBtn" class="absolute top-3 right-3 text-stone-400 hover:text-stone-700 text-lg font-bold p-1">✕</button>
+            <h3 class="text-base font-black text-amber-950 mb-1 flex items-center gap-1.5">
+              <span>📖</span> Honey Bee Farm Guide
+            </h3>
+            <p class="text-[10px] text-stone-500 mb-2.5">Apiary economy rules and progression:</p>
+      
+            <div class="space-y-2 text-[10.5px] text-stone-700 leading-relaxed">
+              <div class="p-2 bg-amber-50 rounded-xl border border-amber-200">
+                <strong class="text-amber-950 block font-bold">🗺️ 20 Land Plots System</strong>
+                Land 1 is free and starts active! Land 2 costs <strong>10 💎</strong>, Land 3 costs <strong>100 💎</strong>, scaling up to Plot 20. Tap any locked plot to unlock it.
+              </div>
+              <div class="p-2 bg-yellow-50 rounded-xl border border-yellow-200">
+                <strong class="text-yellow-950 block font-bold">🍯 Continuous +2 Honey/s Generation</strong>
+                Mature hives auto-produce <strong>+2 🍯 Honey Drops every second</strong>! Use Pollen Pots (🏺) to add +35s life. If life reaches zero, the hive goes dormant (🕸️) and needs a Smoker (💨) to clear.
+              </div>
+              <div class="p-2 bg-emerald-50 rounded-xl border border-emerald-200">
+                <strong class="text-emerald-950 block font-bold">⚡ Royal Energy Refinery (100 🍯 &rarr; 29 ⚡)</strong>
+                Throw 100 Honey Drops on Page 3 to synthesize 29 Royal Jelly Energy units that recharge your main reactor!
+              </div>
+              <div class="p-2 bg-rose-50 rounded-xl border border-rose-200">
+                <strong class="text-rose-950 block font-bold">🌸 Harvester Maya on Page 2</strong>
+                Maya continuously packs floral pollen into pots (max 5 🏺 in crate). Collect them on Page 2 and feed your hives!
+              </div>
+            </div>
+      
+            <div class="mt-3 flex justify-end">
+              <button id="beeCloseRulesBtn2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs transition">
+                Got It!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- PAGE: MINING -->
+      <div class="page-view" id="pageMining">
+        <!-- Top Segmented Station Navigation Bar (Reactor, Sunflowers, Bee Farm, Crystal Mine) -->
+        <nav class="energy-top-subtabs" id="mineTopSubtabs" aria-label="Energy Stations Navigation">
+          <button class="energy-subtab-btn" id="mineSubtabBtnReactor" onclick="switchPage('energy')">
+            <span class="subtab-icon">⚡</span>
+            <span class="subtab-label">Reactor</span>
+          </button>
+          <button class="energy-subtab-btn" id="mineSubtabBtnSunflower" onclick="switchPage('sunflower')">
+            <span class="subtab-icon">🌻</span>
+            <span class="subtab-label">Sunflowers</span>
+          </button>
+          <button class="energy-subtab-btn" id="mineSubtabBtnBeeFarm" onclick="switchPage('bee-farm')">
+            <span class="subtab-icon">🐝</span>
+            <span class="subtab-label">Bee Farm</span>
+          </button>
+          <button class="energy-subtab-btn active" id="mineSubtabBtnMining" onclick="switchPage('mining')">
+            <span class="subtab-icon">🔮</span>
+            <span class="subtab-label">Gem Mine</span>
+          </button>
+        </nav>
+      
+        <div class="mining-tycoon-container flex flex-col text-slate-100 pb-6">
+          <!-- Unified Compact Cyberpunk Dashboard -->
+          <div class="mine-compact-dashboard mb-3">
+            <div class="mine-dash-cyber-bg"></div>
+            <div class="mine-dash-abyss-overlay"></div>
+      
+            <!-- Top Row: Back Button, Title, Sound & Guide -->
+            <div class="mine-dash-top-row">
+              <button onclick="switchPage('energy')" class="mine-dash-back-btn font-sci" title="Return to Fuel Reactor">
+                <span>&larr;</span> <span>Reactor</span>
+              </button>
+      
+              <div class="mine-dash-title-wrap">
+                <span class="mine-dash-gem-icon animate-pulse">🔮</span>
+                <span class="mine-dash-title-text font-sci">Crystal Forge Tycoon</span>
+                <span id="mineActivePageBadge" class="mine-dash-page-badge font-sci">Page 1: Cavern</span>
+              </div>
+      
+              <div class="mine-dash-controls">
+                <button id="mineSoundBtn" class="mine-dash-ctrl-btn" title="Toggle Sound">🔊</button>
+                <button id="mineGuideBtn" class="mine-dash-ctrl-btn" title="Mining Codex">📘</button>
+              </div>
+            </div>
+      
+            <!-- Depth Status -->
+            <div class="mine-depth-row font-sci text-[10px] text-cyan-300 flex items-center justify-between px-1">
+              <span>SECTOR: ALPHA-7 &bull; DEPTH: <strong id="mineDepthIndicator" class="text-cyan-400 font-mono">150m</strong></span>
+              <span class="text-slate-400">20 CAVERN TERRACES</span>
+            </div>
+      
+            <!-- Middle Row: Sleek 5-Resource Counter Pills -->
+            <div class="mine-dash-resources-row font-sci">
+              <!-- Shards -->
+              <div class="mine-res-pill pill-shard" title="Crystal Shards (+2 🔮/s from active spires)">
+                <span class="mine-res-icon">🔮</span>
+                <div class="mine-res-content">
+                  <span class="mine-res-lbl">Shards</span>
+                  <span id="mineShardCount" class="mine-res-val">150</span>
+                </div>
+              </div>
+      
+              <!-- Plasma Energy -->
+              <div class="mine-res-pill pill-plasma" title="Plasma Energy (100 Shards = 29 Energy)">
+                <span class="mine-res-icon">⚡</span>
+                <div class="mine-res-content">
+                  <span class="mine-res-lbl">Plasma</span>
+                  <span id="mineEnergyCount" class="mine-res-val">0</span>
+                </div>
+              </div>
+      
+              <!-- Diamonds -->
+              <div class="mine-res-pill pill-diamond" title="Diamonds for Terraces &amp; Geodes">
+                <span class="mine-res-icon">💎</span>
+                <div class="mine-res-content">
+                  <span class="mine-res-lbl">Diamonds</span>
+                  <span id="mineDiamondCount" class="mine-res-val">25</span>
+                </div>
+              </div>
+      
+              <!-- Coolant Canisters -->
+              <div class="mine-res-pill pill-coolant" title="Cryo-Canisters (+35s thermal life)">
+                <span class="mine-res-icon">🧪</span>
+                <div class="mine-res-content">
+                  <span class="mine-res-lbl">Coolant</span>
+                  <span id="mineCoolantCount" class="mine-res-val">2</span>
+                </div>
+              </div>
+      
+              <!-- Sonic Pickaxes -->
+              <div class="mine-res-pill pill-pickaxe" title="Sonic Pickaxes (Clears Overheated Slag)">
+                <span class="mine-res-icon">🔨</span>
+                <div class="mine-res-content">
+                  <span class="mine-res-lbl">Pickaxes</span>
+                  <span id="minePickaxeCount" class="mine-res-val">1</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Bottom Row: 3-Tab Segmented Switcher (Page 3 Left | Page 1 Middle | Page 2 Right) -->
+            <nav class="mine-dash-nav-tabs font-sci">
+              <button onclick="navigateMiningTab(3)" id="mineTab3" class="mine-nav-tab-item">
+                <span class="mine-tab-ico">⚡🏪</span>
+                <span class="mine-tab-txt">Forge &amp; Shop</span>
+              </button>
+              <button onclick="navigateMiningTab(1)" id="mineTab1" class="mine-nav-tab-item active-tab">
+                <span class="mine-tab-ico">🔮</span>
+                <span class="mine-tab-txt">Terraces (<span id="mineTerraceCount">1</span>/20)</span>
+              </button>
+              <button onclick="navigateMiningTab(2)" id="mineTab2" class="mine-nav-tab-item">
+                <span class="mine-tab-ico">🌊🧱</span>
+                <span class="mine-tab-txt">Geyser Wall</span>
+                <span id="mineWallBadge" class="mine-tab-badge">0</span>
+              </button>
+            </nav>
+          </div>
+      
+      
+          <!-- ============================================================== -->
+          <!-- MINING PAGE 1: 🔮 CAVERN TERRACES (20 LAND PLOTS)              -->
+          <!-- ============================================================== -->
+          <section id="minePage1" class="mine-game-page active-page flex flex-col gap-3">
+            <div class="bg-gradient-to-r from-coremetal via-cavern to-coremetal border border-cyan-500/40 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl animate-pulse">💎</span>
+                <div>
+                  <h2 class="font-sci text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-1.5">
+                    <span>Subterranean Crystal Terraces (20 Plots)</span>
+                    <span class="text-[9px] bg-cyan-900/60 text-cyan-300 font-mono border border-cyan-500/40 px-1.5 py-0.5 rounded-full">
+                      Plot 1 Free
+                    </span>
+                  </h2>
+                  <p class="text-[10px] text-slate-300 font-medium">
+                    Active Gem Spires resonate <strong class="text-cyan-400 font-mono">+2 🔮 Shards/s</strong>! Tap spires for extra shards, stabilize with Cryo (🧪), or shatter slag (🔨).
+                  </p>
+                </div>
+              </div>
+      
+              <!-- Field Command Buttons -->
+              <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+                <button id="mineCoolAllBtn" class="sci-btn flex-1 sm:flex-none bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-sci text-[10px] px-2.5 py-1.5 rounded-xl border border-sky-400/50 flex items-center justify-center gap-1">
+                  <span>🧪 Cool All</span>
+                </button>
+                <button id="mineMineAllSlagBtn" class="sci-btn flex-1 sm:flex-none bg-rose-700 hover:bg-rose-600 active:scale-95 text-white font-sci text-[10px] px-2.5 py-1.5 rounded-xl border border-rose-400/50 flex items-center justify-center gap-1">
+                  <span>🔨 Shatter All</span>
+                </button>
+                <button onclick="navigateMiningTab(3)" class="sci-btn flex-1 sm:flex-none bg-gradient-to-r from-fuchsia-600 to-cyan-600 active:scale-95 text-white font-sci text-[10px] px-3 py-1.5 rounded-xl border border-cyan-400/50 flex items-center justify-center gap-1">
+                  <span>✨ Buy Geodes</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Expansion Ribbon -->
+            <div class="bg-cavern/90 rounded-xl p-2 border border-slate-700/80 flex items-center justify-between gap-2 text-[10px]">
+              <div class="flex items-center gap-1.5">
+                <span class="text-cyan-400 font-sci font-bold">DRILL:</span>
+                <span id="mineDrillProgressText" class="text-slate-300 font-mono">1 / 20 Terraces Excavated</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-slate-400 text-[9.5px]">Next:</span>
+                <span id="mineNextTerraceBadge" class="bg-cyan-950 text-cyan-300 border border-cyan-400 font-sci text-[9.5px] px-2 py-0.5 rounded-full shadow-glow-cyan">Plot #2: 10 💎</span>
+              </div>
+            </div>
+      
+            <!-- 20 Terraces Grid in Fixed 2*10 Format -->
+            <div id="mineTerracesContainer" class="mine-plots-2x10-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- MINING PAGE 2: 🌊 CRYO-GEYSER WALL & EXTRACTION DEPOT          -->
+          <!-- ============================================================== -->
+          <section id="minePage2" class="mine-game-page bg-gradient-to-r from-slate-900 via-coremetal to-slate-900 rounded-2xl p-3 sm:p-5 border border-sky-500/40 shadow-xl flex flex-col gap-4">
+            <div class="bg-slate-950/80 backdrop-blur rounded-xl p-3 border border-sky-500/30 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl sm:text-3xl">🌊🧱</span>
+                <div>
+                  <h2 class="font-sci text-xs sm:text-sm font-black text-sky-300 flex items-center gap-1.5">
+                    <span>Cryo-Geyser Wall &amp; Engineer Nora</span>
+                    <span class="text-[9px] bg-sky-950 text-sky-300 font-mono border border-sky-500/50 px-1.5 py-0.2 rounded-full">Auto-Compression</span>
+                  </h2>
+                  <p class="text-[10px] text-slate-300 font-medium">
+                    Sub-zero thermal vents discharge vapor. Engineer Nora condenses coolant into pressurized canisters (max 5 🧪)!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <div id="mineOverdriveActiveTag" class="hidden text-[10px] bg-amber-400 text-black font-sci font-black px-2 py-0.5 rounded-lg animate-pulse shadow-glow-amber">
+                  ⚡ 2x VAPOR (<span id="mineOverdriveSecLeft">60</span>s)
+                </div>
+                <div class="bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-400/60 font-sci text-[10px] text-sky-300">
+                  DEPOT: <span id="mineWallCrateCounter" class="text-white text-xs font-bold font-mono">0</span> / 5 🧪
+                </div>
+              </div>
+            </div>
+      
+            <!-- Nora Station Presentation Stage -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-coremetal/90 rounded-xl p-3.5 border border-sky-500/30 shadow-inner">
+              <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
+                <div class="text-4xl animate-bounce filter drop-shadow">👩🔬</div>
+                <div>
+                  <h3 class="font-sci text-xs sm:text-sm text-sky-200 font-bold">Engineer Nora</h3>
+                  <p id="mineGeyserStatusText" class="text-[10px] text-slate-400 font-medium">Condensing thermal subterranean steam...</p>
+                  <div class="text-[10px] text-amber-300 font-mono mt-0.5">
+                    RATE: <span id="mineGeyserCycleRateLabel" class="text-cyan-400 font-bold">1 Canister / 4.0s</span>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Progress Gauge -->
+              <div class="md:col-span-5 flex flex-col gap-1.5">
+                <div class="flex justify-between text-[10px] font-sci text-slate-300">
+                  <span>VAPOR PRESSURE CHARGE:</span>
+                  <span id="mineGeyserPercentLabel" class="text-sky-300 font-mono font-bold">0%</span>
+                </div>
+                <div class="w-full bg-abyss rounded-full h-3 overflow-hidden border border-sky-500/40 p-0.5 shadow-inner">
+                  <div id="mineGeyserProgressBar" class="bg-gradient-to-r from-sky-500 via-cyan-400 to-indigo-500 h-full w-0 rounded-full transition-all duration-100 shadow-glow-cyan"></div>
+                </div>
+                <p class="text-[9.5px] text-slate-400">
+                  Infusing an active spire with coolant adds <strong class="text-sky-300 font-mono">+35s</strong> thermal life!
+                </p>
+              </div>
+      
+              <!-- Action Buttons -->
+              <div class="md:col-span-3 flex flex-col gap-1.5">
+                <button id="mineCollectCanistersBtn" class="sci-btn w-full bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-500 hover:to-cyan-400 active:scale-95 text-black font-sci font-black text-xs px-3 py-2.5 rounded-xl shadow-glow-cyan border border-cyan-300 flex items-center justify-center gap-1.5">
+                  <span>🧪 COLLECT CRYO</span>
+                  <span id="mineCrateBadgeInner" class="bg-black/30 text-white px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
+                </button>
+                <button onclick="navigateMiningTab(3)" class="sci-btn w-full bg-slate-800 hover:bg-slate-700 text-sky-300 font-sci text-[10px] py-1.5 rounded-lg border border-slate-600 flex items-center justify-center gap-1">
+                  <span>⚡ OVERDRIVE (SHOP)</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Telemetry Dashboard -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+                <div class="text-[9px] font-sci uppercase text-slate-400">INVENTORY CRYO</div>
+                <div class="text-base font-sci font-bold text-sky-300 mt-0.5" id="mineWallInvCoolant">2 🧪</div>
+              </div>
+              <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+                <div class="text-[9px] font-sci uppercase text-slate-400">BULKHEAD STORAGE</div>
+                <div class="text-base font-sci font-bold text-cyan-400 mt-0.5" id="mineWallCrateDisplay">0 / 5 🧪</div>
+              </div>
+              <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+                <div class="text-[9px] font-sci uppercase text-slate-400">THERMAL STABILIZATION</div>
+                <div class="text-base font-sci font-bold text-emerald-400 mt-0.5">+35s / Spire</div>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- MINING PAGE 3: ⚡ PLASMA FORGE & DIAMOND VAULT                  -->
+          <!-- ============================================================== -->
+          <section id="minePage3" class="mine-game-page bg-gradient-to-r from-coremetal via-slate-900 to-coremetal border border-amber-500/40 rounded-2xl p-3 sm:p-5 shadow-xl flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/30 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">⚡💎</div>
+                <div>
+                  <h2 class="font-sci text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                    <span>PLASMA RESONANCE FORGE &amp; DIAMOND VAULT</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-mono border border-amber-500/50 px-1.5 py-0.5 rounded-full">
+                      100 🔮 = 29 ⚡
+                    </span>
+                  </h2>
+                  <p class="text-[10px] text-slate-300 font-medium">
+                    Catalyze Crystal Shards into Concentrated Plasma (100 🔮 &rarr; 29 ⚡), claim Seed Geodes, or watch 5s holographic feeds!
+                  </p>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-2">
+                <div class="bg-fuchsia-950/80 border border-fuchsia-400/60 px-3 py-1 rounded-xl flex items-center gap-1.5 shadow-glow-violet text-xs">
+                  <span>💎</span>
+                  <span class="font-sci text-[10px] font-black text-fuchsia-200">
+                    VAULT: <span id="mineShopDiamondCount" class="text-fuchsia-300 text-xs">25 💎</span>
+                  </span>
+                </div>
+                <div class="bg-amber-950/80 border border-amber-400/60 px-2.5 py-1 rounded-xl font-sci text-[10px] text-amber-300">
+                  RATIO: <span class="font-bold text-white">100 🔮 = 29 ⚡</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- SECTION A: 100 Shards -> 29 Plasma Energy Converter Core -->
+            <div id="minePlasmaForgeCore" class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="font-sci text-xs font-black text-amber-400 flex items-center gap-1.5">
+                  <span>🔮⚡</span> SECTION A: RESONANCE PLASMA CENTRIFUGE
+                </h3>
+                <span class="text-[9.5px] font-sci text-amber-300 bg-amber-950/70 border border-amber-500/50 px-2 py-0.5 rounded-lg">
+                  Exact Ratio: 100 Shards &rarr; 29 Plasma
+                </span>
+              </div>
+      
+              <div class="bg-gradient-to-br from-coremetal via-cavern to-coremetal rounded-2xl p-4 border border-amber-400/60 relative overflow-hidden flex flex-col items-center text-center gap-2.5 shadow-xl">
+                <div class="relative w-16 h-16 bg-abyss border-2 border-amber-400 rounded-full flex items-center justify-center text-3xl shadow-glow-amber animate-pulse">
+                  ⚡
+                  <div class="absolute inset-0 border border-cyan-400 rounded-full animate-ping opacity-25"></div>
+                </div>
+                <div>
+                  <h4 class="font-sci text-sm sm:text-base font-black text-amber-200">Subterranean Resonance Reactor</h4>
+                  <p class="text-[10px] text-slate-300 font-medium max-w-sm mt-0.5">
+                    Throw extracted raw Crystal Shards into the magnetic core. Each cycle transforms 100 🔮 Shards into 29 ⚡ Concentrated Plasma!
+                  </p>
+                </div>
+      
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
+                  <button id="mineConvert100Btn" class="sci-btn flex-1 bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-sci font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl shadow-glow-amber border border-amber-300 flex items-center justify-center gap-1.5">
+                    <span>🔮 THROW 100 SHARDS</span>
+                    <span class="bg-black/30 text-amber-200 text-[9px] px-1.5 py-0.2 rounded-full font-mono">+29 ⚡</span>
+                  </button>
+                  <button id="mineConvertAllBtn" class="sci-btn flex-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-sci font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl border border-amber-400/50 flex items-center justify-center gap-1">
+                    <span>⚡ THROW ALL SHARDS</span>
+                  </button>
+                </div>
+              </div>
+      
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-cavern/80 rounded-xl p-2.5 border border-cyan-500/30">
+                  <div class="text-[9px] font-sci uppercase text-cyan-400">AVAILABLE SHARDS</div>
+                  <div class="text-base font-sci font-black text-cyan-200 mt-0.5" id="mineShopShardsDisplay">150 🔮</div>
+                </div>
+                <div class="bg-cavern/80 rounded-xl p-2.5 border border-amber-500/30">
+                  <div class="text-[9px] font-sci uppercase text-amber-400">READY BATCHES</div>
+                  <div class="text-base font-sci font-black text-amber-300 mt-0.5" id="mineShopBatchesDisplay">1 Batch (29 ⚡)</div>
+                </div>
+                <div class="bg-cavern/80 rounded-xl p-2.5 border border-fuchsia-500/30">
+                  <div class="text-[9px] font-sci uppercase text-fuchsia-400">PLASMA STORED</div>
+                  <div class="text-base font-sci font-black text-fuchsia-300 mt-0.5" id="mineShopEnergyDisplay">0 ⚡</div>
+                </div>
+              </div>
+            </div>
+      
+            <div class="w-full h-px bg-slate-800 my-0.5"></div>
+      
+            <!-- SECTION B: Diamond Outpost & Rewarded Uplinks -->
+            <div class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="font-sci text-xs font-black text-fuchsia-400 flex items-center gap-1.5">
+                  <span>💎🛒</span> SECTION B: DIAMOND OUTPOST &amp; SPONSOR REELS
+                </h3>
+                <span class="text-[9.5px] font-sci text-fuchsia-300 bg-fuchsia-950/70 border border-fuchsia-500/50 px-2 py-0.5 rounded-lg">
+                  Price Scaling: +1 💎 per Seed Geode
+                </span>
+              </div>
+      
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                <!-- Requirement 1: Seed Geode (+1 💎 Escalation OR Watch Ad) -->
+                <div class="bg-coremetal/90 rounded-xl p-3 border border-cyan-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">✨</span>
+                      <div>
+                        <h4 class="font-sci text-xs font-black text-cyan-200">Raw Seed Geode</h4>
+                        <p class="text-[10px] text-slate-300 leading-snug">
+                          Starts at 1 💎. Permanently increases by +1 💎 after every diamond purchase!
+                        </p>
+                      </div>
+                    </div>
+                    <span id="mineCurrentGeodePriceBadge" class="bg-cyan-950 text-cyan-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-cyan-500 shrink-0">
+                      1 💎
+                    </span>
+                  </div>
+      
+                  <div class="flex items-center gap-1.5 pt-0.5">
+                    <button id="mineBuyGeodeDiamondBtn" class="sci-btn flex-1 bg-cyan-600 hover:bg-cyan-500 active:scale-95 text-black font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                      <span>THROW <span id="mineBtnGeodePrice">1</span> 💎 &rarr; PLACE ✨</span>
+                    </button>
+                    <button onclick="openMiningAdModal('geode')" class="sci-btn flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                      <span>🎬 REEL (FREE ✨)</span>
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- Requirement 2: Sonic Pickaxe (10 💎 OR Watch Ad) -->
+                <div class="bg-coremetal/90 rounded-xl p-3 border border-rose-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🔨</span>
+                      <div>
+                        <h4 class="font-sci text-xs font-black text-rose-200">Heavy Sonic Pickaxe</h4>
+                        <p class="text-[10px] text-slate-300 leading-snug">
+                          Resonates to shatter overheated volcanic slag (🌋) on Page 1.
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-rose-950 text-rose-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-rose-500 shrink-0">
+                      10 💎
+                    </span>
+                  </div>
+      
+                  <div class="flex items-center gap-1.5 pt-0.5">
+                    <button id="mineBuyPickaxeDiamondBtn" class="sci-btn flex-1 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                      <span>THROW 10 💎 &rarr; +1 🔨</span>
+                    </button>
+                    <button onclick="openMiningAdModal('pickaxe')" class="sci-btn flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                      <span>🎬 REEL (FREE 🔨)</span>
+                    </button>
+                  </div>
+                </div>
+      
+                <!-- Requirement 3: Instant Cryo-Canister (2 💎) -->
+                <div class="bg-coremetal/90 rounded-xl p-3 border border-sky-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🧪</span>
+                      <div>
+                        <h4 class="font-sci text-xs font-black text-sky-200">Instant Cryo-Canister</h4>
+                        <p class="text-[10px] text-slate-300 leading-snug">
+                          Replenishes +35s thermal life to prevent spires from overheating.
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-sky-950 text-sky-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-sky-500 shrink-0">
+                      2 💎
+                    </span>
+                  </div>
+                  <button id="mineBuyCoolantDiamondBtn" class="sci-btn w-full bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                    <span>THROW 2 💎 &rarr; GET 1 CRYO CANISTER 🧪</span>
+                  </button>
+                </div>
+      
+                <!-- Requirement 4: Raw Shard Cache (5 💎 for 250 Shards) -->
+                <div class="bg-coremetal/90 rounded-xl p-3 border border-amber-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🔮</span>
+                      <div>
+                        <h4 class="font-sci text-xs font-black text-amber-200">Subterranean Shard Cache</h4>
+                        <p class="text-[10px] text-slate-300 leading-snug">
+                          Instantly obtain 250 raw shards for immediate plasma conversion.
+                        </p>
+                      </div>
+                    </div>
+                    <span class="bg-amber-950 text-amber-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-amber-500 shrink-0">
+                      5 💎
+                    </span>
+                  </div>
+                  <button id="mineBuyShardsDiamondBtn" class="sci-btn w-full bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                    <span>THROW 5 💎 &rarr; GET 250 RAW SHARDS 🔮</span>
+                  </button>
+                </div>
+      
+                <!-- Requirement 5: Overdrive Boost (8 💎 for 2x pump speed for 60s) -->
+                <div class="md:col-span-2 bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                      <h4 class="font-sci text-xs font-black text-cyan-200">Thermal Vapor Overdrive Pump</h4>
+                      <p class="text-[10px] text-slate-300">
+                        Accelerates Nora's condensers to 2x speed (1 canister every 2s) for 60s on Page 2!
+                      </p>
+                    </div>
+                  </div>
+                  <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] px-3.5 py-1.5 rounded-lg transition whitespace-nowrap shadow-glow-cyan">
+                    <span>THROW 8 💎 &rarr; 2X VAPOR SPEED ⚡</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      
+        <!-- 5-Second Rewarded Sponsor Hologram Modal -->
+        <div id="mineAdReelModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+          <div class="bg-coremetal border-2 border-cyan-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-slate-100 shadow-glow-cyan">
+            <div class="bg-abyss px-3.5 py-2 border-b border-cyan-500/40 flex items-center justify-between font-sci">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[8.5px] bg-red-600 text-white font-bold px-1.5 py-0.5 rounded tracking-wider uppercase">CORP FEED</span>
+                <span id="mineAdBrandName" class="text-xs text-cyan-300">NovaMining Industrial</span>
+              </div>
+              <span id="mineAdTimerBadge" class="bg-cyan-400 text-black font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
+                ⏳ 5s
+              </span>
+            </div>
+      
+            <div class="p-4 flex flex-col items-center justify-center text-center bg-cavern min-h-[170px]">
+              <div id="mineAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">💎</div>
+              <h3 id="mineAdHeadline" class="font-sci text-sm font-black text-cyan-300">Cryo-Resonance Sub-Drill</h3>
+              <p id="mineAdCatchphrase" class="text-slate-300 text-[10.5px] mt-1 max-w-xs font-medium">
+                "Unleash 400% deeper cavern resonance with zero coolant decay. Official sponsor of Deep Core 9."
+              </p>
+      
+              <div class="mt-2.5 inline-flex items-center gap-1 bg-coremetal px-2.5 py-0.5 rounded-full border border-cyan-500/40 text-[10px]">
+                <span class="text-cyan-400 font-sci">UPLINK REWARD:</span>
+                <span id="mineAdRewardTag" class="font-bold text-white font-sci">1 Free Seed Geode ✨</span>
+              </div>
+      
+              <div class="w-full bg-abyss h-2 rounded-full mt-3 overflow-hidden border border-slate-700">
+                <div id="mineAdProgressBar" class="bg-gradient-to-r from-cyan-400 via-sky-400 to-fuchsia-400 h-full w-0 transition-all ease-linear shadow-glow-cyan"></div>
+              </div>
+            </div>
+      
+            <div class="p-2.5 bg-abyss border-t border-slate-700 flex items-center justify-between">
+              <span class="text-[9.5px] text-slate-400 font-mono">Holographic feed running...</span>
+              <button id="mineAdClaimBtn" disabled class="bg-slate-800 text-slate-500 font-sci text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
+                TRANSMITTING...
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Mining Codex & Guide Modal -->
+        <div id="mineRulesModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+          <div class="bg-coremetal rounded-2xl max-w-md w-full p-4 sm:p-5 shadow-2xl border-2 border-cyan-400 relative max-h-[90vh] overflow-y-auto shadow-glow-cyan">
+            <button id="mineCloseRulesBtn" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg font-bold p-1">✕</button>
+            <h3 class="font-sci text-base font-black text-cyan-300 mb-1 flex items-center gap-1.5">
+              <span>📘</span> MINING &amp; GEM FORGE PROTOCOL
+            </h3>
+            <p class="text-[10px] text-slate-400 mb-2.5 font-mono">Subterranean Economy Manual:</p>
+      
+            <div class="space-y-2 text-[10.5px] text-slate-300 leading-relaxed font-medium">
+              <div class="p-2 bg-abyss/80 rounded-xl border border-cyan-500/30">
+                <strong class="font-sci text-cyan-300 block mb-0.5">🗺️ 20 Terraces System</strong>
+                Terrace 1 is unlocked and active! Terrace 2 costs <strong>10 💎</strong>, Terrace 3 costs <strong>100 💎</strong>, scaling down through Plot 20 (up to 60,000 💎).
+              </div>
+              <div class="p-2 bg-abyss/80 rounded-xl border border-cyan-500/30">
+                <strong class="font-sci text-cyan-300 block mb-0.5">🔮 +2 Shards/Sec &amp; Thermal Decay</strong>
+                Active Gem Spires continuously resonate <strong>+2 🔮 Shards/sec</strong>! Pour Cryo-Canisters (🧪) to restore +35s thermal life. If life reaches zero, the spire overheats into fractured Volcanic Slag (🌋) requiring a Sonic Pickaxe (🔨).
+              </div>
+              <div class="p-2 bg-abyss/80 rounded-xl border border-amber-500/30">
+                <strong class="font-sci text-amber-300 block mb-0.5">⚡ Plasma Refinery (100 🔮 &rarr; 29 ⚡)</strong>
+                Throw 100 Shards into the Section A Plasma Reactor on Page 3 to synthesize 29 Units of Concentrated Plasma that recharge your main reactor!
+              </div>
+              <div class="p-2 bg-abyss/80 rounded-xl border border-sky-500/30">
+                <strong class="font-sci text-sky-300 block mb-0.5">🌊 Cryo-Geyser Wall (Page 2)</strong>
+                Engineer Nora captures sub-zero vapor into canisters (max 5 in crate). Collect them on Page 2 to replenish your terrace coolant!
+              </div>
+            </div>
+      
+            <div class="mt-3 flex justify-end">
+              <button id="mineCloseRulesBtn2" class="sci-btn bg-cyan-500 hover:bg-cyan-400 text-black font-sci font-bold px-3.5 py-1.5 rounded-lg text-xs transition">
+                CONFIRM READOUT
               </button>
             </div>
           </div>

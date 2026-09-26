@@ -5,13 +5,13 @@
    ========================================================================== */
 
 // 1. REWARD POOLS WITH EXACT PROBABILITIES:
-// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 10 Coins (2%), 50-75 Blue Coins (8%)
+// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 1 Coin (2%), 50 Blue Coins (8%)
 const SCRATCH_CARD_TIERS = [
   { type: 'keys', min: 1, max: 2, weight: 20, icon: '🔑', tier: 'KEY REWARD 🔑', tierColor: '#f59e0b', desc: 'Keys to unlock mystery chests!' },
   { type: 'egg', min: 10, max: 20, weight: 50, icon: '🥚', tier: 'EGG REWARD 🥚', tierColor: '#10b981', desc: 'Egg coins to hatch 12-Egg cyber prizes!' },
   { type: 'tickets', min: 1, max: 2, weight: 20, icon: '🎟️', tier: 'TICKET REWARD 🎟️', tierColor: '#ec4899', desc: 'Tickets to spin the lucky wheel!' },
-  { type: 'coins', min: 10, max: 10, weight: 2, icon: '🪙', tier: 'RARE COINS 🪙', tierColor: '#fbbf24', desc: 'Coins deposited into your vault balance!' },
-  { type: 'blue_coins', min: 50, max: 75, weight: 8, icon: '💙', tier: 'BLUE COINS 💙', tierColor: '#38bdf8', desc: 'Premium blue coins deposited to your balance!' }
+  { type: 'coins', min: 1, max: 1, weight: 2, icon: '🪙', tier: 'RARE COIN 🪙', tierColor: '#fbbf24', desc: 'Coin deposited into your vault balance!' },
+  { type: 'blue_coins', min: 50, max: 50, weight: 8, icon: '💙', tier: 'BLUE COINS 💙', tierColor: '#38bdf8', desc: 'Premium blue coins deposited to your balance!' }
 ];
 
 function generateScratchReward() {
@@ -34,7 +34,7 @@ function generateScratchReward() {
   } else if (selected.type === 'tickets') {
     label = `${amount} Ticket${amount > 1 ? 's' : ''}`;
   } else if (selected.type === 'coins') {
-    label = `${amount} Coins`;
+    label = `${amount} Coin${amount > 1 ? 's' : ''}`;
   } else if (selected.type === 'blue_coins') {
     label = `${amount} Blue Coins`;
   }
@@ -193,7 +193,7 @@ function renderSingleRewardCard() {
       amountEl.textContent = `+${reward.amount} TICKET${reward.amount > 1 ? 'S' : ''} 🎟️`;
       amountEl.style.color = '#ec4899';
     } else if (reward.type === 'coins') {
-      amountEl.textContent = `+${reward.amount} COINS 🪙`;
+      amountEl.textContent = `+${reward.amount} COIN${reward.amount > 1 ? 'S' : ''} 🪙`;
       amountEl.style.color = '#fbbf24';
     } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
       amountEl.textContent = `+${reward.amount} BLUE COINS 💙`;
@@ -213,7 +213,7 @@ function renderSingleRewardCard() {
     } else if (reward.type === 'tickets') {
       descEl.textContent = `+${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} added to spin the lucky wheel!`;
     } else if (reward.type === 'coins') {
-      descEl.textContent = `+${reward.amount} Gold coins deposited to your vault!`;
+      descEl.textContent = `+${reward.amount} Gold coin${reward.amount > 1 ? 's' : ''} deposited to your vault!`;
     } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
       descEl.textContent = `+${reward.amount} Premium blue coins deposited to your vault!`;
     } else {

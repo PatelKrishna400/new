@@ -5,8 +5,8 @@
      * Keys (3 -> Win 1 Key)
      * Tickets (3 -> Win 1 Ticket)
      * Cards (3 -> Win 1 Card)
-     * Coins (3 -> Win 10 Coins)
-     * Blue Coins (3 -> Win 100 Blue Coins!)
+     * Coins (3 -> Win 1 Coin)
+     * Blue Coins (3 -> Win 50 Blue Coins!)
    - Hatched one by one (1 Egg Coin per hatch).
    - In first 10 hatches: Random distribution of 2 of each category (none reaches 3).
    - On 11th hatch: 3rd matching item revealed -> Match-3 Victory Result Modal!
@@ -17,8 +17,8 @@ const EGG_HATCH_REWARDS = {
   key: { type: 'key', label: '1 Key', icon: '🔑', winAmount: 1, unit: 'Key', weight: 25 },
   ticket: { type: 'ticket', label: '1 Ticket', icon: '🎟️', winAmount: 1, unit: 'Ticket', weight: 25 },
   card: { type: 'card', label: '1 Card', icon: '🎴', winAmount: 1, unit: 'Card', weight: 20 },
-  coin: { type: 'coin', label: '10 Coins', icon: '🪙', winAmount: 10, unit: 'Coins', weight: 15 },
-  blueCoin: { type: 'blueCoin', label: '100 Blue Coins', icon: '💙', winAmount: 100, unit: 'Blue Coins', weight: 15 }
+  coin: { type: 'coin', label: '1 Coin', icon: '🪙', winAmount: 1, unit: 'Coins', weight: 15 },
+  blueCoin: { type: 'blueCoin', label: '50 Blue Coins', icon: '💙', winAmount: 50, unit: 'Blue Coins', weight: 15 }
 };
 
 if (!gameState.eggHatchState) {
@@ -228,9 +228,9 @@ function triggerEggWinCelebration(itemType, rewardDef) {
 
   // 1. Credit the respective winning prize
   if (itemType === 'blueCoin') {
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 100;
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + (rewardDef.winAmount || 50);
   } else if (itemType === 'coin') {
-    gameState.player.coins = (gameState.player.coins || 0) + 10;
+    gameState.player.coins = (gameState.player.coins || 0) + (rewardDef.winAmount || 1);
   } else if (itemType === 'key') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + 1);

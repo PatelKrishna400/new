@@ -2,13 +2,13 @@
    LUCKY SPIN WHEEL MINI-GAME (pages/spin/spin.js)
    - 8 Precise Slices:
      0: 👑 1 Crown (Collect 👑 for Level Mystery Gift!)
-     1: 💙 100 Blue Coins
+     1: 💙 50 Blue Coins
      2: 🔑 1 Winning Key
      3: 🎴 1 Scratch Card
      4: ❌ Try Again
      5: 🎟️ 1 Spin Ticket
-     6: 🪙 10 Gold Coins (10% Jackpot)
-     7: 💙 100 Blue Coins
+     6: 🪙 1 Gold Coin (Jackpot)
+     7: 💙 50 Blue Coins
    - Mathematically exact pointer alignment at 12 o'clock
    - Clean White Luxury Wedges for high contrast
    - Crown Quest Level Tab: Track and collect 👑 crowns to unlock Grand Gifts
@@ -18,13 +18,13 @@
 
 const SPIN_PRIZES = [
   { label: '1 Crown', type: 'crown', amount: 1, icon: '👑', isCrown: true, rarity: 'epic' },
-  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '💙', rarity: 'rare' },
+  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' },
   { label: '1 Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
   { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
-  { label: '10 Gold Coins', type: 'coins', amount: 10, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
-  { label: '100 Blue Coins', type: 'blue_coins', amount: 100, icon: '💙', rarity: 'rare' }
+  { label: '1 Gold Coin', type: 'coins', amount: 1, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
+  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' }
 ];
 
 // ==========================================================================

@@ -253,9 +253,9 @@ window.handleMegaRewardAction = function() {
     return;
   }
 
-  if (gameState.xpState.watchedAds < 1000) {
+  if (gameState.xpState.watchedAds < 100) {
     const doAd = () => {
-      gameState.xpState.watchedAds = Math.min(1000, (gameState.xpState.watchedAds || 0) + 1);
+      gameState.xpState.watchedAds = Math.min(100, (gameState.xpState.watchedAds || 0) + 1);
       switchPage('xp');
       updateUI();
       saveGame();
@@ -263,22 +263,22 @@ window.handleMegaRewardAction = function() {
         window.firebaseSync.saveToCloudImmediate();
       }
       if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎬 Ad Watched! Progress: ${gameState.xpState.watchedAds}/1,000 Ads`);
+        showFloatingToast(`🎬 Ad Watched! Progress: ${gameState.xpState.watchedAds}/100 Ads`);
       }
     };
 
     if (typeof showRewardedAd === 'function') {
       showRewardedAd(doAd);
     } else if (typeof startAdSimulation === 'function') {
-      startAdSimulation('xp', 'Level 1000 Mega Ad Watcher', '+1 Ad Progress Towards 10,000 Cash Prize', doAd);
+      startAdSimulation('xp', 'Level 1000 Mega Ad Watcher', '+1 Ad Progress Towards 1,000 Diamonds Prize', doAd);
     } else {
       doAd();
     }
   } else if (!gameState.xpState.megaRewardClaimed) {
-    // Claim Mega Reward
+    // Claim Mega Reward: 1,000 Diamonds
     const doClaimMega = () => {
       gameState.xpState.megaRewardClaimed = true;
-      gameState.player.coins += 10000;
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + 1000;
       sfx.playLevelUpSound();
       updateUI();
       saveGame();
@@ -286,7 +286,7 @@ window.handleMegaRewardAction = function() {
         window.firebaseSync.saveToCloudImmediate();
       }
       if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎉 10,000 Coins Mega Reward Claimed!');
+        showFloatingToast('🎉 1,000 Diamonds Mega Reward Claimed! 💎');
       }
     };
 
@@ -309,12 +309,12 @@ window.testSetLevel1000 = function() {
 };
 window.testSetLevel100 = window.testSetLevel1000;
 
-window.testAddAds = function(count = 100) {
+window.testAddAds = function(count = 10) {
   if (gameState.player.level < 1000) {
     gameState.player.level = 1000;
     gameState.player.xp = 1000000;
   }
-  gameState.xpState.watchedAds = Math.min(1000, (gameState.xpState.watchedAds || 0) + count);
+  gameState.xpState.watchedAds = Math.min(100, (gameState.xpState.watchedAds || 0) + count);
   sfx.playTapSound(2);
   updateUI();
   saveGame();
@@ -325,7 +325,7 @@ window.testFillAllAds = function() {
     gameState.player.level = 1000;
     gameState.player.xp = 1000000;
   }
-  gameState.xpState.watchedAds = 1000;
+  gameState.xpState.watchedAds = 100;
   sfx.playLevelUpSound();
   updateUI();
   saveGame();
@@ -384,12 +384,12 @@ function updateXpViewUI() {
     }
   }
 
-  // Step 2: Watch 1,000 Ads
+  // Step 2: Watch 100 Ads
   const watched = gameState.xpState.watchedAds || 0;
-  const adsPercent = Math.min(100, Math.floor((watched / 1000) * 100));
-  if (DOM.megaAdsCounterHeader) DOM.megaAdsCounterHeader.textContent = `${watched} / 1000 Ads (${adsPercent}%)`;
+  const adsPercent = Math.min(100, Math.floor((watched / 100) * 100));
+  if (DOM.megaAdsCounterHeader) DOM.megaAdsCounterHeader.textContent = `${watched} / 100 Ads (${adsPercent}%)`;
   if (DOM.megaAdsProgressFill) DOM.megaAdsProgressFill.style.width = `${adsPercent}%`;
-  if (DOM.megaAdsRemainText) DOM.megaAdsRemainText.textContent = `${Math.max(0, 1000 - watched)} ads remaining`;
+  if (DOM.megaAdsRemainText) DOM.megaAdsRemainText.textContent = `${Math.max(0, 100 - watched)} ads remaining`;
 
   // Action Button
   if (DOM.megaActionBtn) {
@@ -397,17 +397,17 @@ function updateXpViewUI() {
       DOM.megaActionBtn.className = 'mega-action-btn disabled';
       if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = 'REACH LEVEL 1000 TO UNLOCK AD WATCHER';
       if (DOM.megaActionLockIcon) DOM.megaActionLockIcon.style.display = 'block';
-    } else if (watched < 1000) {
+    } else if (watched < 100) {
       DOM.megaActionBtn.className = 'mega-action-btn active-watch';
-      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = `WATCH AD (+1 / 1,000) [${watched}/1000]`;
+      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = `WATCH AD (+1 / 100) [${watched}/100]`;
       if (DOM.megaActionLockIcon) DOM.megaActionLockIcon.style.display = 'none';
     } else if (!gameState.xpState.megaRewardClaimed) {
       DOM.megaActionBtn.className = 'mega-action-btn claim-ready';
-      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = '🎉 CLAIM 10,000 COINS MEGA REWARD';
+      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = '🎉 CLAIM 1,000 DIAMONDS MEGA REWARD 💎';
       if (DOM.megaActionLockIcon) DOM.megaActionLockIcon.style.display = 'none';
     } else {
       DOM.megaActionBtn.className = 'mega-action-btn disabled';
-      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = '✓ 10,000 COINS REWARD CLAIMED';
+      if (DOM.megaActionBtnText) DOM.megaActionBtnText.textContent = '✓ 1,000 DIAMONDS REWARD CLAIMED';
       if (DOM.megaActionLockIcon) DOM.megaActionLockIcon.style.display = 'none';
     }
   }

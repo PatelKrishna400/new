@@ -155,7 +155,7 @@ window.chooseAvatarPreset = function(presetId) {
   }
 };
 
-window.applyAvatarPresetToElements = function(presetId) {
+function applyAvatarPresetToElements(presetId) {
   const preset = AVATAR_PRESETS.find(p => p.id === presetId) || AVATAR_PRESETS[0];
   
   // Profile SVG gradient stops
@@ -184,7 +184,8 @@ window.applyAvatarPresetToElements = function(presetId) {
       <stop offset="100%" stop-color="#06b6d4" />
     `;
   }
-};
+}
+window.applyAvatarPresetToElements = applyAvatarPresetToElements;
 
 window.saveProfileData = async function() {
   const nameInput = document.getElementById('editPlayerNameInput');
@@ -796,15 +797,15 @@ const DEFAULT_FUEL_CELLS_CONFIG = {
     pink: {
       name: 'Pink Boost Fuel',
       icon: '🌸',
-      badge: '×7 BOOST',
-      effect: '2x speed generator boost for 10 min',
+      badge: '2x TIMER SPEED',
+      effect: '2x generator timer speed (2s drain per sec for 10 min)',
       color: '#ec4899'
     },
     purple: {
       name: 'Purple Boost Fuel',
       icon: '🔮',
-      badge: '×8.5 BOOST',
-      effect: '5x speed generator boost for 10 min',
+      badge: '5x TIMER SPEED',
+      effect: '5x generator timer speed (5s drain per sec for 10 min)',
       color: '#a855f7'
     },
     red: {
@@ -889,13 +890,40 @@ window.switchFuelTab = switchFuelTab;
 // RENDER ALL 8 FUEL CELL CARDS VERTICALLY (Pure Currencies: Blue, Gold, Diamonds • ZERO ADS)
 // Order: Dark Green -> Green -> Yellow -> Orange -> Pink -> Purple -> Red -> Dark Red
 // ==========================================================================
+// Diamond Cost Calculator with Progressive Pricing for Dark Red, Blue, and Light Blue
+function getFuelCellDiamondCost(color) {
+  if (color === 'darkgreen') return 2;
+  if (color === 'green') return 5;
+  if (color === 'yellow') return 10;
+  if (color === 'orange') return 20;
+  if (color === 'red') return 50;
+  if (color === 'pink') return 100;
+  if (color === 'purple') return 200;
+
+  // Scaling fuels: darkred, blue, lightblue (10, 15, 20, 25, 50, 100, 150, 200, ...)
+  if (color === 'darkred' || color === 'blue' || color === 'lightblue') {
+    const ladder = [10, 15, 20, 25, 50, 100];
+    const purchases = (gameState.energyGenerator && gameState.energyGenerator.fuelPurchases && gameState.energyGenerator.fuelPurchases[color]) || 0;
+    if (purchases < ladder.length) {
+      return ladder[purchases];
+    }
+    return 100 + (purchases - (ladder.length - 1)) * 50;
+  }
+
+  return 1;
+}
+window.getFuelCellDiamondCost = getFuelCellDiamondCost;
+
+// ==========================================================================
+// RENDER ALL 10 FUEL CELL CARDS VERTICALLY (Pure Diamonds • ZERO ADS)
+// Order: Dark Green -> Green -> Yellow -> Orange -> Red -> Dark Red -> Pink -> Purple -> Blue -> Light Blue
+// ==========================================================================
 function renderAllFuelShopCards() {
   const listContainer = document.getElementById('fuelShopCardsList');
   if (!listContainer) return;
 
-  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'blue', 'lightblue', 'pink', 'purple', 'red', 'darkred'];
+  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'red', 'darkred', 'pink', 'purple', 'blue', 'lightblue'];
   const cfg = getFuelCellsConfig();
-  const dgOpts = (cfg && cfg.darkGreenOptions) || DEFAULT_FUEL_CELLS_CONFIG.darkGreenOptions;
 
   let html = '';
 
@@ -910,24 +938,20 @@ function renderAllFuelShopCards() {
 
     const ownedCount = (gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[color]) || 0;
 
-    let blueCost, goldCost, diamondCost, diamondGainText, multiplierBadge;
-
-    if (color === 'darkgreen') {
-      multiplierBadge = meta.badge || 'STARTER PACK';
-      blueCost = dgOpts.blueCoin || 100;
-      goldCost = dgOpts.goldCoin || 500;
-      diamondCost = dgOpts.diamond || 10;
-      diamondGainText = `+${dgOpts.diamondRewardCells || 10} Cells!`;
-    } else {
-      const pricing = getFuelCellPricing(color);
-      multiplierBadge = meta.badge || `×${pricing.multiplier} MULTIPLIER`;
-      blueCost = pricing.blueCost;
-      goldCost = pricing.goldCost;
-      diamondCost = pricing.diamondCost;
-      diamondGainText = '+1 Cell';
+    let multiplierBadge = meta.badge;
+    if (!multiplierBadge) {
+      if (color === 'darkgreen') multiplierBadge = 'STARTER PACK';
+      else {
+        const pricing = getFuelCellPricing(color);
+        multiplierBadge = `×${pricing.multiplier} MULTIPLIER`;
+      }
     }
 
     const colorHex = meta.color || '#10b981';
+    const diamondCost = getFuelCellDiamondCost(color);
+    const isScaling = (color === 'darkred' || color === 'blue' || color === 'lightblue');
+    const purchases = (gameState.energyGenerator && gameState.energyGenerator.fuelPurchases && gameState.energyGenerator.fuelPurchases[color]) || 0;
+    const scalingBadge = isScaling ? `<span class="scaling-step-badge" style="background: rgba(6, 182, 212, 0.25); border: 1px solid rgba(6, 182, 212, 0.5); padding: 2px 7px; border-radius: 9999px; font-size: 10px; color: #a5f3fc; margin-left: 6px; font-weight: 700;">Buy #${purchases + 1}</span>` : '';
 
     html += `
       <div class="fuel-shop-card fuel-card-${color}" style="border-color: ${colorHex}55; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px ${colorHex}22; background: linear-gradient(180deg, ${colorHex}15 0%, rgba(10, 16, 32, 0.95) 100%);">
@@ -949,35 +973,19 @@ function renderAllFuelShopCards() {
           </div>
         </div>
 
-        <div>
-          <div class="fuel-pricing-section-title">
-            <span>⚡ Instant Purchase (Zero Ads)</span>
-          </div>
-          <div class="fuel-pricing-grid">
-            <!-- Option 1: Blue Coins -->
-            <button type="button" class="fuel-buy-btn fuel-btn-blue" onclick="purchaseFuelCell('${color}', 'blueCoin')" title="Buy ${meta.name} with ${formatNumber(blueCost)} Blue Coins">
-              <span class="fuel-btn-icon">💙</span>
-              <span class="fuel-btn-cost">${formatNumber(blueCost)}</span>
-              <span class="fuel-btn-label">Blue Coins</span>
-              <span class="method-gain" style="color: ${colorHex};">+1 Cell</span>
-            </button>
-
-            <!-- Option 2: Gold Coins -->
-            <button type="button" class="fuel-buy-btn fuel-btn-gold" onclick="purchaseFuelCell('${color}', 'goldCoin')" title="Buy ${meta.name} with ${formatNumber(goldCost)} Gold Coins">
-              <span class="fuel-btn-icon">🪙</span>
-              <span class="fuel-btn-cost">${formatNumber(goldCost)}</span>
-              <span class="fuel-btn-label">Gold Coins</span>
-              <span class="method-gain" style="color: ${colorHex};">+1 Cell</span>
-            </button>
-
-            <!-- Option 3: Diamonds -->
-            <button type="button" class="fuel-buy-btn fuel-btn-diamond" onclick="purchaseFuelCell('${color}', 'diamond')" title="Buy ${meta.name} with ${formatNumber(diamondCost)} Diamonds">
+        <div class="fuel-pricing-single-wrap">
+          <button type="button" class="fuel-buy-btn fuel-btn-diamond fuel-buy-btn-single" onclick="purchaseFuelCell('${color}', 'diamond')" title="Buy 1 ${meta.name} for ${formatNumber(diamondCost)} Diamonds">
+            <div class="fuel-single-left">
               <span class="fuel-btn-icon">💎</span>
               <span class="fuel-btn-cost">${formatNumber(diamondCost)}</span>
-              <span class="fuel-btn-label">Diamonds</span>
-              <span class="method-gain" style="color: #38bdf8; font-weight: 800;">${diamondGainText}</span>
-            </button>
-          </div>
+              <span class="fuel-btn-label">${diamondCost === 1 ? 'Diamond' : 'Diamonds'}</span>
+              ${scalingBadge}
+            </div>
+            <div class="fuel-single-arrow">➔</div>
+            <div class="fuel-single-gain">
+              <span>+1 Fuel Cell</span>
+            </div>
+          </button>
         </div>
       </div>
     `;
@@ -989,8 +997,8 @@ window.renderAllFuelShopCards = renderAllFuelShopCards;
 window.renderDarkGreenShopCard = renderAllFuelShopCards;
 window.renderFuelShopTab = renderAllFuelShopCards;
 
-// Comprehensive Fuel Purchase Handler with Concurrency Protection & Pure Currency (Zero Ads)
-async function purchaseFuelCell(color, method) {
+// Comprehensive Fuel Purchase Handler with Concurrency Protection (Dynamic Diamond Pricing)
+async function purchaseFuelCell(color, method = 'diamond') {
   if (isFuelPurchaseInProgress) return;
   isFuelPurchaseInProgress = true;
 
@@ -1001,128 +1009,40 @@ async function purchaseFuelCell(color, method) {
   const cfg = getFuelCellsConfig();
   const meta = (cfg.meta && cfg.meta[color]) || DEFAULT_FUEL_CELLS_CONFIG.meta[color] || { name: `${color.toUpperCase()} Fuel Cell` };
 
-  // Ads are completely disabled for buying fuel
-  if (method === 'ad') {
-    showShopToast('🚫 Fuel cells cannot be purchased with ads. Use Blue Coins, Gold Coins, or Diamonds!', '⚠️');
-    resetLock();
-    return;
-  }
-
   // Make sure fuelCells object exists
   if (!gameState.energyGenerator) gameState.energyGenerator = {};
   if (!gameState.energyGenerator.fuelCells) {
-    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0 };
+    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
   }
   if (!gameState.player) gameState.player = {};
 
-  // 1. DARK GREEN FUEL (Special Fixed Deals)
-  if (color === 'darkgreen') {
-    const dgOpts = (cfg && cfg.darkGreenOptions) || DEFAULT_FUEL_CELLS_CONFIG.darkGreenOptions;
-
-    // Dark Green Option 1: Spend 100 Blue Coins -> Receive 1 Fuel Cell
-    if (method === 'blueCoin') {
-      const cost = dgOpts.blueCoin || 100;
-      const current = gameState.player.blueCoins || 0;
-      if (current < cost) {
-        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-        showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '💙');
-        resetLock();
-        return;
-      }
-      gameState.player.blueCoins -= cost;
-      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Blue Coins`, 1);
-      resetLock();
-      return;
-    }
-
-    // Dark Green Option 2: Spend 500 Gold Coins -> Receive 1 Fuel Cell
-    if (method === 'goldCoin') {
-      const cost = dgOpts.goldCoin || 500;
-      const current = gameState.player.coins || 0;
-      if (current < cost) {
-        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-        showShopToast(`⚠️ Need ${formatNumber(cost)} Gold Coins! (Have ${formatNumber(current)})`, '🪙');
-        resetLock();
-        return;
-      }
-      gameState.player.coins -= cost;
-      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Gold Coins`, 1);
-      resetLock();
-      return;
-    }
-
-    // Dark Green Option 3: Spend 10 Diamonds -> Receive 10 Fuel Cells
-    if (method === 'diamond') {
-      const cost = dgOpts.diamond || 10;
-      const rewardCells = dgOpts.diamondRewardCells || 10;
-      const current = gameState.player.diamonds || 0;
-      if (current < cost) {
-        if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-        showShopToast(`⚠️ Need ${formatNumber(cost)} Diamonds! (Have ${formatNumber(current)})`, '💎');
-        resetLock();
-        return;
-      }
-      gameState.player.diamonds -= cost;
-      awardFuelCellAndSave('darkgreen', meta.name, `${formatNumber(cost)} Diamonds`, rewardCells);
-      resetLock();
-      return;
-    }
-
+  // All fuel cells only buyable with Diamonds
+  if (method && method !== 'diamond') {
+    showShopToast('💎 Fuel cells can only be purchased with Diamonds!', '⚠️');
     resetLock();
     return;
   }
 
-  // 2. MULTIPLIER FUEL COLORS (Green, Yellow, Orange, Pink, Purple, Red, Dark Red)
-  const pricing = getFuelCellPricing(color);
-
-  // Option 1: Blue Coins
-  if (method === 'blueCoin') {
-    const cost = pricing.blueCost;
-    const current = gameState.player.blueCoins || 0;
-    if (current < cost) {
-      if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Blue Coins! (Have ${formatNumber(current)})`, '💙');
-      resetLock();
-      return;
-    }
-    gameState.player.blueCoins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Blue Coins`, 1);
+  const cost = getFuelCellDiamondCost(color);
+  const currentDiamonds = gameState.player.diamonds || 0;
+  if (currentDiamonds < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+    showShopToast(`⚠️ Need ${formatNumber(cost)} Diamonds! (Have ${formatNumber(currentDiamonds)})`, '💎');
     resetLock();
     return;
   }
 
-  // Option 2: Gold Coins
-  if (method === 'goldCoin') {
-    const cost = pricing.goldCost;
-    const current = gameState.player.coins || 0;
-    if (current < cost) {
-      if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Gold Coins! (Have ${formatNumber(current)})`, '🪙');
-      resetLock();
-      return;
-    }
-    gameState.player.coins -= cost;
-    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Gold Coins`, 1);
-    resetLock();
-    return;
-  }
+  // Deduct Diamonds
+  gameState.player.diamonds -= cost;
 
-  // Option 3: Diamonds
-  if (method === 'diamond') {
-    const cost = pricing.diamondCost;
-    const current = gameState.player.diamonds || 0;
-    if (current < cost) {
-      if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-      showShopToast(`⚠️ Need ${formatNumber(cost)} Diamonds! (Have ${formatNumber(current)})`, '💎');
-      resetLock();
-      return;
-    }
-    gameState.player.diamonds -= cost;
-    awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Diamonds`, 1);
-    resetLock();
-    return;
+  // Track purchase count for scaling fuels (darkred, blue, lightblue)
+  if (!gameState.energyGenerator.fuelPurchases) {
+    gameState.energyGenerator.fuelPurchases = {};
   }
+  gameState.energyGenerator.fuelPurchases[color] = (gameState.energyGenerator.fuelPurchases[color] || 0) + 1;
 
+  // Award 1 Fuel Cell of this color
+  awardFuelCellAndSave(color, meta.name, `${formatNumber(cost)} Diamonds`, 1);
   resetLock();
 }
 window.purchaseFuelCell = purchaseFuelCell;
@@ -1142,9 +1062,8 @@ function awardFuelCellAndSave(color, fuelName, spentDetails, count = 1) {
 }
 
 function finishFuelTransaction() {
-  if (typeof renderDarkGreenShopCard === 'function') renderDarkGreenShopCard();
-  renderFuelShopTab();
-  updateShopUI();
+  if (typeof renderAllFuelShopCards === 'function') renderAllFuelShopCards();
+  if (typeof updateShopUI === 'function') updateShopUI();
   if (typeof updateProfileUI === 'function') updateProfileUI();
   if (typeof updateEnergyUI === 'function') updateEnergyUI();
   if (typeof updateHomeUI === 'function') updateHomeUI();
@@ -1159,11 +1078,11 @@ function finishFuelTransaction() {
 
 // Backwards-compatible wrappers
 window.buyFuelWithAds = function(fuelType) {
-  return purchaseFuelCell(fuelType, 'ad');
+  return purchaseFuelCell(fuelType, 'diamond');
 };
 
 window.buyFuelWithCoins = function(fuelType) {
-  return purchaseFuelCell(fuelType, 'goldCoin');
+  return purchaseFuelCell(fuelType, 'diamond');
 };
 
 window.buyFuelWithDiamonds = function(fuelType) {
@@ -1600,12 +1519,12 @@ function updateProfileUI() {
   }
 
   // Apply avatar preset if saved
-  if (gameState.player.avatarPreset) {
+  if (gameState.player.avatarPreset && typeof applyAvatarPresetToElements === 'function') {
     applyAvatarPresetToElements(gameState.player.avatarPreset);
   }
 
   // Sync shop & blue tab UI metrics
-  updateShopUI();
+  if (typeof updateShopUI === 'function') updateShopUI();
   if (typeof updateBlueTabUI === 'function') updateBlueTabUI();
 }
 

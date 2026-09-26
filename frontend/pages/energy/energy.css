@@ -1,4 +1,96 @@
 /* ==========================================================================
+   ENERGY STATIONS TOP SUBTABS NAVIGATION (Hidden across all game pages)
+   ========================================================================== */
+.energy-top-subtabs {
+  display: none !important;
+}
+
+.energy-subtab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #94a3b8;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.energy-subtab-btn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.energy-subtab-btn:active {
+  transform: scale(0.96);
+}
+
+.energy-subtab-btn .subtab-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.energy-subtab-btn .subtab-label {
+  line-height: 1.1;
+  letter-spacing: -0.1px;
+}
+
+/* Active states for each station button */
+.energy-subtab-btn.active {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.energy-subtab-btn#subtabBtnFuelGenerator.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+
+.energy-subtab-btn#subtabBtnSunflowerFarm.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #fde047;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.energy-subtab-btn#subtabBtnBeeFarm.active {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  border-color: #fef08a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
+  color: #451a03;
+}
+
+.energy-subtab-btn#subtabBtnMining.active {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  border-color: #00f0ff;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.45);
+  color: #ffffff;
+}
+
+@media (max-width: 480px) {
+  .energy-top-subtabs {
+    gap: 4px;
+    padding: 4px;
+  }
+  .energy-subtab-btn {
+    padding: 6px 6px;
+    font-size: 10px;
+    gap: 3px;
+  }
+  .energy-subtab-btn .subtab-icon {
+    font-size: 12.5px;
+  }
+}
+
+/* ==========================================================================
    PAGE VIEW 2: ENERGY GENERATOR
    ========================================================================== */
 
@@ -625,54 +717,6 @@
   white-space: nowrap;
 }
 
-/* ==========================================================================
-   ENERGY SUBTAB NAVIGATION (Reactor Fuel vs Sunflower Farming)
-   ========================================================================== */
-.energy-subtab-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1.5px solid rgba(56, 189, 248, 0.25);
-  border-radius: 16px;
-  padding: 4px;
-}
-
-.energy-subtab-pill {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.energy-subtab-pill:hover {
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.energy-subtab-pill.active {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-}
-
-.energy-subtab-pill.active#subtabBtnSunflowerFarm {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
-}
-
 .sunflower-badge-tag {
   font-size: 9px;
   font-weight: 800;
@@ -684,130 +728,347 @@
 }
 
 /* ==========================================================================
-   SUNFLOWER FARMING ENTRY CARD (Below all fuel cards)
+   AUTONOMOUS TYCOONS SECTION (Managed in Tycoons Hub below)
    ========================================================================== */
-.sunflower-entry-tab-card {
+
+/* Sunflower Tycoon View Background with Water Well & Garden Artwork */
+#energySunflowerFarmingView {
   position: relative;
-  margin-top: 14px;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #fed7aa 100%);
-  border: 2.5px solid #fbbf24;
-  border-radius: 20px;
-  padding: 14px 16px;
+  background-color: #fefce8;
+  background-image: 
+    linear-gradient(180deg, rgba(254, 252, 232, 0.92) 0%, rgba(254, 243, 199, 0.95) 600px, #fefce8 100%),
+    url('pages/energy/sunflower-bg.png');
+  background-position: top center;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+}
+
+/* ==========================================================================
+   SUNFLOWER COMPACT DASHBOARD & GAMELOOP SYSTEM
+   ========================================================================== */
+.sunflower-compact-dashboard {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid #f59e0b;
+  background: #fffbeb;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sf-dash-art-bg {
+  position: absolute;
+  inset: 0;
+  background-position: center right;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sf-dash-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.94) 0%, rgba(254, 252, 232, 0.88) 50%, rgba(254, 240, 138, 0.82) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sf-dash-top-row {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.22);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
+  gap: 8px;
 }
 
-.sunflower-entry-tab-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.32);
-  border-color: #f59e0b;
-}
-
-.sunflower-entry-tab-card:active {
-  transform: scale(0.98);
-}
-
-.sf-tab-glow {
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.45) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.sf-tab-left {
+.sf-dash-back-btn {
+  background: #451a03;
+  color: #fef3c7;
+  border: 1.5px solid #d97706;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 5px rgba(69, 26, 3, 0.25);
+  flex-shrink: 0;
 }
 
-.sf-tab-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: radial-gradient(circle, #fde047 0%, #f59e0b 100%);
+.sf-dash-back-btn:hover {
+  background: #78350f;
+  transform: translateX(-2px);
+}
+
+.sf-dash-back-btn:active {
+  transform: scale(0.95);
+}
+
+.sf-dash-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sf-dash-sun-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.5));
+}
+
+.sf-dash-title-text {
+  font-family: 'Fredoka', cursive, sans-serif;
+  font-weight: 900;
+  font-size: 14.5px;
+  color: #78350f;
+  letter-spacing: -0.2px;
+}
+
+.sf-dash-page-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  background: #fef08a;
+  color: #854d0e;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid #facc15;
+  white-space: nowrap;
+}
+
+.sf-dash-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.sf-dash-ctrl-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #fde047;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sf-dash-ctrl-btn:hover {
+  background: #fef9c3;
+  transform: scale(1.06);
+}
+
+.sf-dash-ctrl-btn:active {
+  transform: scale(0.92);
+}
+
+/* Middle Row: Sleek 5 Resource Counter Pills */
+.sf-dash-resources-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.sf-res-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border-radius: 10px;
+  border-width: 1.5px;
+  border-style: solid;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease;
+  min-width: 0;
+}
+
+.sf-res-pill:hover {
+  transform: translateY(-1px);
+}
+
+.sf-res-icon {
+  font-size: 13px;
+  line-height: 1;
   flex-shrink: 0;
 }
 
-.sf-tab-emoji {
-  font-size: 26px;
-  line-height: 1;
-  display: inline-block;
-}
-
-.sf-tab-info {
+.sf-res-content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.sf-tab-title-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.sf-tab-title {
-  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 800;
-  color: #451a03;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.sf-tab-tag {
-  font-size: 9px;
-  font-weight: 800;
-  background: #10b981;
-  color: #ffffff;
-  padding: 2px 6px;
-  border-radius: 9999px;
-  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.35);
-}
-
-.sf-tab-desc {
-  font-size: 11px;
-  color: #78350f;
-  margin: 0;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.sf-tab-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 8px 14px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 12px;
+.sf-res-lbl {
+  font-size: 8.5px;
   font-weight: 700;
-  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.35);
-  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #78716c;
   white-space: nowrap;
-  flex-shrink: 0;
-  transition: transform 0.15s ease;
 }
 
-.sf-tab-action-btn:hover {
-  transform: scale(1.04);
+.sf-res-val {
+  font-size: 12px;
+  font-weight: 900;
+  font-family: 'Fredoka', sans-serif;
+  white-space: nowrap;
+}
+
+.pill-amber {
+  border-color: #fcd34d;
+}
+.pill-amber .sf-res-val {
+  color: #b45309;
+}
+
+.pill-yellow {
+  border-color: #fde047;
+}
+.pill-yellow .sf-res-val {
+  color: #ca8a04;
+}
+
+.pill-cyan {
+  border-color: #67e8f9;
+}
+.pill-cyan .sf-res-val {
+  color: #0891b2;
+}
+
+.pill-blue {
+  border-color: #93c5fd;
+}
+.pill-blue .sf-res-val {
+  color: #2563eb;
+}
+
+.pill-stone {
+  border-color: #cbd5e1;
+}
+.pill-stone .sf-res-val {
+  color: #475569;
+}
+
+/* Bottom Row: Unified 3-Tab Segmented Switcher */
+.sf-dash-nav-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 5px;
+  background: rgba(245, 158, 11, 0.16);
+  padding: 3px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+}
+
+.sf-nav-tab-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  font-family: 'Fredoka', cursive, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #78350f;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.sf-nav-tab-item:hover {
+  background: rgba(254, 240, 138, 0.7);
+  color: #451a03;
+}
+
+.sf-nav-tab-item.active-tab {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff !important;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+}
+
+.sf-tab-ico {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.sf-tab-txt {
+  line-height: 1;
+}
+
+.sf-tab-badge {
+  font-size: 9px;
+  font-weight: 900;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  margin-left: 2px;
+  line-height: 1;
+}
+
+
+
+/* Responsive Rules for Small Devices (Under 640px) */
+@media (max-width: 640px) {
+  .sf-dash-resources-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .sf-dash-resources-row .sf-res-pill:nth-child(4),
+  .sf-dash-resources-row .sf-res-pill:nth-child(5) {
+    grid-column: span 1;
+  }
+  .sf-dash-title-text {
+    font-size: 13px;
+  }
+  .sf-nav-tab-item {
+    font-size: 10px;
+    padding: 5px 6px;
+  }
+  .sf-step-desc {
+    display: none;
+  }
+  .sf-htp-step-box {
+    padding: 4px;
+  }
+  .sf-step-action {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sf-dash-resources-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sf-dash-resources-row .sf-res-pill:last-child {
+    grid-column: span 2;
+  }
 }
 
 /* ==========================================================================
@@ -883,4 +1144,703 @@
   50% { transform: rotate(-12deg) translateY(4px) scale(0.96); }
 }
 
+/* ==========================================================================
+   ENERGY STATIONS TOP NAVIGATION BAR (Reactor, Sunflowers, Bee Farm, Gem Mine)
+   ========================================================================== */
+.energy-top-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.energy-top-subtabs::-webkit-scrollbar {
+  display: none;
+}
+
+.energy-subtab-btn {
+  flex: 1;
+  min-width: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.energy-subtab-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.energy-subtab-btn.active {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.95) 0%, rgba(2, 132, 199, 0.95) 100%);
+  color: #030712 !important;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(34, 211, 238, 0.35);
+}
+
+.energy-subtab-btn .subtab-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.energy-subtab-btn .subtab-label {
+  line-height: 1;
+}
+
+/* ==========================================================================
+   ENERGY TYCOON STATIONS HUB SECTION (Cards on Fuel View)
+   ========================================================================== */
+.energy-tycoon-hub-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.tycoon-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.tycoon-hub-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tycoon-hub-sparkle {
+  font-size: 15px;
+  color: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+}
+
+.tycoon-hub-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.2px;
+  margin: 0;
+}
+
+.tycoon-hub-subtitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 2px 7px;
+  border-radius: 9999px;
+}
+
+/* Sunflower Solar Farming Entry Card with Master Artwork Background */
+.sunflower-entry-tab-card {
+  position: relative;
+  background-color: #0b1324;
+  border: 1.5px solid rgba(245, 158, 11, 0.7);
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(245, 158, 11, 0.18);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  min-height: 98px;
+}
+
+.sunflower-entry-tab-card:hover {
+  transform: translateY(-2px);
+  border-color: #fbbf24;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(245, 158, 11, 0.35);
+}
+
+.sunflower-entry-tab-card:active {
+  transform: scale(0.985);
+}
+
+/* Master Panoramic Artwork Display */
+.sunflower-entry-tab-card .sf-tab-bg-art {
+  position: absolute;
+  inset: 0;
+  background-image: url('sunflower-bg.png');
+  background-size: cover;
+  background-position: right 35%;
+  background-repeat: no-repeat;
+  opacity: 0.82;
+  filter: saturate(1.25) contrast(1.1) brightness(0.92);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, filter 0.35s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sunflower-entry-tab-card:hover .sf-tab-bg-art {
+  transform: scale(1.05);
+  opacity: 0.95;
+  filter: saturate(1.35) contrast(1.15) brightness(1.02);
+}
+
+/* Frosted Scrim & Golden Vignette (Keeps Left Text 100% Readable While Artwork Shines on Right) */
+.sunflower-entry-tab-card .sf-entry-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.94) 0%, 
+    rgba(6, 11, 24, 0.88) 42%, 
+    rgba(10, 18, 36, 0.65) 65%, 
+    rgba(15, 23, 42, 0.25) 85%, 
+    rgba(245, 158, 11, 0.12) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.sunflower-entry-tab-card:hover .sf-entry-glow {
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.90) 0%, 
+    rgba(6, 11, 24, 0.82) 42%, 
+    rgba(10, 18, 36, 0.52) 65%, 
+    rgba(15, 23, 42, 0.15) 85%, 
+    rgba(245, 158, 11, 0.22) 100%
+  );
+}
+
+.sf-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+}
+
+.sf-entry-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: radial-gradient(circle, #fde047 0%, #f59e0b 60%, #b45309 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.sf-entry-emoji {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.sf-entry-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sf-entry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sf-entry-title {
+  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fef08a;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.sf-entry-badge {
+  font-size: 9px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid rgba(254, 240, 138, 0.4);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+  letter-spacing: 0.2px;
+}
+
+.sf-entry-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.35;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.sf-entry-desc .sf-highlight {
+  color: #fde047;
+  font-weight: 700;
+}
+
+.sf-entry-mini-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.sf-mini-stat {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fef3c7;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.sf-entry-right {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+}
+
+.sf-entry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid rgba(254, 240, 138, 0.45);
+  border-radius: 13px;
+  padding: 9px 15px;
+  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.sf-entry-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.65);
+}
+
+.sf-entry-btn:active {
+  transform: scale(0.97);
+}
+
+/* Bee Farm Entry Card */
+.beefarm-entry-tab-card {
+  position: relative;
+  background: linear-gradient(135deg, #181512 0%, #0f172a 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 18px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(245, 158, 11, 0.18);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  min-height: 98px;
+}
+
+.beefarm-entry-tab-card:hover {
+  transform: translateY(-2px);
+  border-color: #fbbf24;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(245, 158, 11, 0.35);
+}
+
+.beefarm-entry-tab-card:active {
+  transform: scale(0.985);
+}
+
+.beefarm-entry-tab-card .bf-tab-honeycomb-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('bee-farm-bg.png');
+  background-size: cover;
+  background-position: right 30%;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  filter: saturate(1.25) contrast(1.1) brightness(0.92);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, filter 0.35s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.beefarm-entry-tab-card:hover .bf-tab-honeycomb-bg {
+  transform: scale(1.05);
+  opacity: 0.95;
+  filter: saturate(1.35) contrast(1.15) brightness(1.02);
+}
+
+.beefarm-entry-tab-card .bf-entry-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.94) 0%, 
+    rgba(6, 11, 24, 0.88) 42%, 
+    rgba(10, 18, 36, 0.65) 65%, 
+    rgba(15, 23, 42, 0.25) 85%, 
+    rgba(245, 158, 11, 0.12) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.beefarm-entry-tab-card:hover .bf-entry-glow {
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.90) 0%, 
+    rgba(6, 11, 24, 0.82) 42%, 
+    rgba(10, 18, 36, 0.52) 65%, 
+    rgba(15, 23, 42, 0.15) 85%, 
+    rgba(245, 158, 11, 0.22) 100%
+  );
+}
+
+.beefarm-entry-tab-card .bf-entry-title {
+  color: #fef08a;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.beefarm-entry-tab-card .bf-entry-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border-color: rgba(254, 240, 138, 0.4);
+}
+
+.beefarm-entry-tab-card .bf-entry-mini-stats .bf-mini-stat {
+  color: #cbd5e1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.bf-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.bf-entry-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: radial-gradient(circle, #fef3c7 0%, #f59e0b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.3);
+  flex-shrink: 0;
+}
+
+.bf-entry-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bf-entry-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bf-entry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bf-entry-title {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #451a03;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.bf-entry-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  background: #f59e0b;
+  color: #451a03;
+  padding: 1.5px 6px;
+  border-radius: 9999px;
+  border: 1px solid #d97706;
+}
+
+.bf-entry-desc {
+  font-size: 10.5px;
+  color: #78350f;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.bf-highlight {
+  color: #b45309;
+  font-weight: 800;
+}
+
+.bf-entry-mini-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.bf-mini-stat {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #78350f;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
+.bf-entry-right {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.bf-entry-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 11px;
+  padding: 7px 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.35);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease;
+}
+
+.bf-entry-btn:hover {
+  transform: scale(1.04);
+}
+
+/* Mining Entry Card */
+.mining-entry-tab-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(16, 26, 48, 0.95) 0%, rgba(9, 15, 30, 0.95) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+  border-radius: 18px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.15), 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.mining-entry-tab-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 240, 255, 0.3), 0 12px 28px rgba(0, 0, 0, 0.6);
+  border-color: #00f0ff;
+}
+
+.mining-entry-tab-card:active {
+  transform: scale(0.98);
+}
+
+.mining-tab-cyber-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0, 240, 255, 0.04) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mining-entry-glow {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mining-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.mining-entry-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: radial-gradient(circle, #0e2a47 0%, #03060d 100%);
+  border: 1.5px solid #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.mining-entry-emoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.mining-entry-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mining-entry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mining-entry-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: #67e8f9;
+  letter-spacing: 0.3px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mining-entry-badge {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 8.5px;
+  font-weight: 800;
+  background: rgba(0, 240, 255, 0.18);
+  color: #00f0ff;
+  padding: 1.5px 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  letter-spacing: 0.3px;
+}
+
+.mining-entry-desc {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  color: #cbd5e1;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mining-highlight {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.mining-entry-mini-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.mining-mini-stat {
+  font-family: 'Rajdhani', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #a5f3fc;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
+.mining-entry-right {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.mining-entry-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid #38bdf8;
+  border-radius: 11px;
+  padding: 7px 12px;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease;
+}
+
+.mining-entry-btn:hover {
+  transform: scale(1.04);
+}
 

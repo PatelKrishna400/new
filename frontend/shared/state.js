@@ -270,7 +270,8 @@ const gameState = {
     comboDecayInterval: null,
     profit2xEndTime: 0, // 3-Hour *2 Profit Boost
     fastXpEndTime: 0,   // 10-Minute Fast XP Surge (+1 XP per tap)
-    fastXpAdsWatched: 0 // Progress towards 5 ads
+    fastXpAdsWatched: 0, // Progress towards 5 ads
+    energyAdCooldownEndTime: 0 // 5-Hour background cooldown after watching ad for +10 energy
   },
   energyGenerator: {
     epTotal: 0,
@@ -303,6 +304,11 @@ const gameState = {
       darkred: 0,
       pink: 0,
       purple: 0,
+      blue: 0,
+      lightblue: 0
+    },
+    fuelPurchases: {
+      darkred: 0,
       blue: 0,
       lightblue: 0
     },
@@ -893,7 +899,8 @@ function _performActualSave() {
         comboMultiplier: gameState.reactor.comboMultiplier,
         profit2xEndTime: gameState.reactor.profit2xEndTime || 0,
         fastXpEndTime: gameState.reactor.fastXpEndTime || 0,
-        fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0
+        fastXpAdsWatched: gameState.reactor.fastXpAdsWatched || 0,
+        energyAdCooldownEndTime: gameState.reactor.energyAdCooldownEndTime || 0
       },
       energyGenerator: {
         epTotal: Number((gameState.energyGenerator.epTotal || 0).toFixed(2)),
@@ -1169,6 +1176,9 @@ const DOM = {
   
   pageHome: document.getElementById('pageHome'),
   pageEnergy: document.getElementById('pageEnergy'),
+  pageSunflower: document.getElementById('pageSunflower'),
+  pageBeeFarm: document.getElementById('pageBeeFarm'),
+  pageMining: document.getElementById('pageMining'),
   pageTasks: document.getElementById('pageTasks'),
   pageProfile: document.getElementById('pageProfile'),
   pageXP: document.getElementById('pageXP'),
