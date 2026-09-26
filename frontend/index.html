@@ -92,71 +92,71 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Ambient background glow elements for desktop backdrop -->
+  <!-- High-Tech Quantum Loading Splash Screen -->
+  <div class="app-splash-screen" id="appSplashScreen">
+    <div class="splash-backdrop-glow"></div>
+    <div class="splash-content">
+      <!-- Animated Reactor Core Logo -->
+      <div class="splash-reactor-core">
+        <div class="splash-core-ring outer"></div>
+        <div class="splash-core-ring middle"></div>
+        <div class="splash-core-ring inner"></div>
+        <div class="splash-core-center">
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.25)"/>
+          </svg>
+        </div>
+        <div class="splash-core-pulsar"></div>
+      </div>
+
+      <!-- App Title & Branding -->
+      <div class="splash-branding">
+        <h1 class="splash-title">ENERGY TAP</h1>
+        <div class="splash-subtitle-badge">
+          <span class="splash-pulse-dot"></span>
+          <span>QUANTUM REACTOR v5.0</span>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="splash-progress-wrapper">
+        <div class="splash-progress-track">
+          <div class="splash-progress-bar" id="splashProgressBar"></div>
+          <div class="splash-progress-glow" id="splashProgressGlow"></div>
+        </div>
+        <div class="splash-progress-meta">
+          <span class="splash-status-text" id="splashStatusText">Initializing Quantum Core...</span>
+          <span class="splash-percent-text" id="splashPercentText">0%</span>
+        </div>
+      </div>
+
+      <!-- Telegram / Network Security Pill -->
+      <div class="splash-security-pill">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>SECURE QUANTUM CLOUD READY</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ambient background glow elements -->
   <div class="ambient-glow glow-top"></div>
   <div class="ambient-glow glow-bottom"></div>
   <div class="particles-container" id="ambientParticles"></div>
 
-  <!-- Main Mobile Shell Container (Strict Smartphone Viewport) -->
+  <!-- Floating Navratri Marigold Petals Container -->
+  <div class="navratri-petals-container" id="navratriPetals">
+    <div class="marigold-petal" style="left: 8%; animation-duration: 9.5s; animation-delay: 0s;"></div>
+    <div class="marigold-petal" style="left: 26%; animation-duration: 12.5s; animation-delay: 3s;"></div>
+    <div class="marigold-petal" style="left: 48%; animation-duration: 8.8s; animation-delay: 1.5s;"></div>
+    <div class="marigold-petal" style="left: 68%; animation-duration: 11.2s; animation-delay: 4s;"></div>
+    <div class="marigold-petal" style="left: 85%; animation-duration: 10s; animation-delay: 2s;"></div>
+    <div class="marigold-petal" style="left: 93%; animation-duration: 13s; animation-delay: 5.5s;"></div>
+  </div>
+
+  <!-- Main Mobile Shell Container -->
   <div class="app-viewport">
-    <!-- High-Tech Quantum Loading Splash Screen (Fitted to Mobile Screen) -->
-    <div class="app-splash-screen" id="appSplashScreen">
-      <div class="splash-backdrop-glow"></div>
-      <div class="splash-content">
-        <!-- Animated Reactor Core Logo -->
-        <div class="splash-reactor-core">
-          <div class="splash-core-ring outer"></div>
-          <div class="splash-core-ring middle"></div>
-          <div class="splash-core-ring inner"></div>
-          <div class="splash-core-center">
-            <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.25)"/>
-            </svg>
-          </div>
-          <div class="splash-core-pulsar"></div>
-        </div>
-
-        <!-- App Title & Branding -->
-        <div class="splash-branding">
-          <h1 class="splash-title">ENERGY TAP</h1>
-          <div class="splash-subtitle-badge">
-            <span class="splash-pulse-dot"></span>
-            <span>QUANTUM REACTOR v5.0</span>
-          </div>
-        </div>
-
-        <!-- Progress Section -->
-        <div class="splash-progress-wrapper">
-          <div class="splash-progress-track">
-            <div class="splash-progress-bar" id="splashProgressBar"></div>
-            <div class="splash-progress-glow" id="splashProgressGlow"></div>
-          </div>
-          <div class="splash-progress-meta">
-            <span class="splash-status-text" id="splashStatusText">Initializing Quantum Core...</span>
-            <span class="splash-percent-text" id="splashPercentText">0%</span>
-          </div>
-        </div>
-
-        <!-- Telegram / Network Security Pill -->
-        <div class="splash-security-pill">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          <span>SECURE QUANTUM CLOUD READY</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Floating Navratri Marigold Petals Container -->
-    <div class="navratri-petals-container" id="navratriPetals">
-      <div class="marigold-petal" style="left: 8%; animation-duration: 9.5s; animation-delay: 0s;"></div>
-      <div class="marigold-petal" style="left: 26%; animation-duration: 12.5s; animation-delay: 3s;"></div>
-      <div class="marigold-petal" style="left: 48%; animation-duration: 8.8s; animation-delay: 1.5s;"></div>
-      <div class="marigold-petal" style="left: 68%; animation-duration: 11.2s; animation-delay: 4s;"></div>
-      <div class="marigold-petal" style="left: 85%; animation-duration: 10s; animation-delay: 2s;"></div>
-      <div class="marigold-petal" style="left: 93%; animation-duration: 13s; animation-delay: 5.5s;"></div>
-    </div>
-
     <main class="mobile-container" id="app">
       
       <!-- Top Status / Header (Shared across pages) -->
@@ -5691,11 +5691,11 @@
             </div>
       
             <!-- Harvester Worker Presentation Stage -->
-            <div class="flex flex-col gap-3.5 bg-slate-800/90 rounded-xl p-3 border border-slate-600 shadow-inner">
-              <div class="flex items-center gap-3 border-b border-slate-700 pb-2.5">
-                <div class="text-3xl animate-bounce select-none filter drop-shadow">👩‍🌾</div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-800/90 rounded-xl p-3.5 border border-slate-600 shadow-inner">
+              <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
+                <div class="text-4xl animate-bounce select-none filter drop-shadow">👩‍🌾</div>
                 <div>
-                  <div class="text-xs font-extrabold text-rose-200">Harvester Maya</div>
+                  <div class="text-xs sm:text-sm font-extrabold text-rose-200">Harvester Maya</div>
                   <div class="text-[10px] text-slate-400" id="beeHarvesterStatusText">Gathering floral pollen from wild trellis...</div>
                   <div class="text-[10px] text-amber-300 font-semibold mt-0.5">
                     Speed: <span id="beeHarvesterSpeedLabel" class="font-mono font-bold">1 pot / 4s</span>
@@ -5704,7 +5704,7 @@
               </div>
       
               <!-- Progress Gauge -->
-              <div class="flex flex-col gap-1.5">
+              <div class="md:col-span-5 flex flex-col gap-1.5">
                 <div class="flex justify-between text-[10px] text-slate-300 font-semibold">
                   <span>Next Pollen Extraction:</span>
                   <span id="beeHarvesterCyclePercent" class="font-mono text-rose-300 font-bold">0%</span>
@@ -5718,7 +5718,7 @@
               </div>
       
               <!-- Action Button -->
-              <div class="flex flex-col gap-1.5">
+              <div class="md:col-span-3 flex flex-col gap-1.5">
                 <button id="beeCollectPollenBtn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 active:scale-95 text-white font-black text-xs px-3 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
                   <span>🏺 Collect Pots</span>
                   <span id="beeCollectableBadge" class="bg-white/20 px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
@@ -5841,7 +5841,7 @@
                 </span>
               </div>
       
-              <div class="flex flex-col gap-2.5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 <!-- Item 1: Queen Bee Larva (+1 💎 Escalation OR Watch Ad) -->
                 <div class="bg-amber-50/90 rounded-xl p-3 border border-amber-300 flex flex-col justify-between gap-2 shadow-sm">
                   <div class="flex items-start justify-between">
@@ -5939,8 +5939,8 @@
                 </div>
       
                 <!-- Item 5: Harvester Speed Boost (8 💎 for 2x pump speed for 60s) -->
-                <div class="bg-gradient-to-r from-amber-100 to-rose-100 rounded-xl p-3 border border-amber-400 flex flex-col items-center justify-between gap-2.5 shadow-sm">
-                  <div class="flex items-center gap-2 w-full">
+                <div class="md:col-span-2 bg-gradient-to-r from-amber-100 to-rose-100 rounded-xl p-3 border border-amber-400 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+                  <div class="flex items-center gap-2">
                     <span class="text-2xl">⚡</span>
                     <div>
                       <h4 class="text-xs font-black text-amber-950">Harvester High-Speed Overdrive</h4>
@@ -5949,7 +5949,7 @@
                       </p>
                     </div>
                   </div>
-                  <button id="beeBuyBoostDiamondBtn" class="w-full bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 active:scale-95 text-white font-black text-[10px] py-2 rounded-lg shadow transition">
+                  <button id="beeBuyBoostDiamondBtn" class="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 active:scale-95 text-white font-black text-[10px] px-3.5 py-1.5 rounded-lg shadow transition whitespace-nowrap">
                     <span>Throw 8 💎 &rarr; 2x Harvester Speed ⚡</span>
                   </button>
                 </div>
@@ -6215,11 +6215,11 @@
             </div>
       
             <!-- Nora Station Presentation Stage -->
-            <div class="flex flex-col gap-3.5 bg-coremetal/90 rounded-xl p-3 border border-sky-500/30 shadow-inner">
-              <div class="flex items-center gap-3 border-b border-slate-700 pb-2.5">
-                <div class="text-3xl animate-bounce filter drop-shadow">👩‍🔬</div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-coremetal/90 rounded-xl p-3.5 border border-sky-500/30 shadow-inner">
+              <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
+                <div class="text-4xl animate-bounce filter drop-shadow">👩‍🔬</div>
                 <div>
-                  <h3 class="font-sci text-xs text-sky-200 font-bold">Engineer Nora</h3>
+                  <h3 class="font-sci text-xs sm:text-sm text-sky-200 font-bold">Engineer Nora</h3>
                   <p id="mineGeyserStatusText" class="text-[10px] text-slate-400 font-medium">Condensing thermal subterranean steam...</p>
                   <div class="text-[10px] text-amber-300 font-mono mt-0.5">
                     RATE: <span id="mineGeyserCycleRateLabel" class="text-cyan-400 font-bold">1 Canister / 4.0s</span>
@@ -6228,7 +6228,7 @@
               </div>
       
               <!-- Progress Gauge -->
-              <div class="flex flex-col gap-1.5">
+              <div class="md:col-span-5 flex flex-col gap-1.5">
                 <div class="flex justify-between text-[10px] font-sci text-slate-300">
                   <span>VAPOR PRESSURE CHARGE:</span>
                   <span id="mineGeyserPercentLabel" class="text-sky-300 font-mono font-bold">0%</span>
@@ -6242,7 +6242,7 @@
               </div>
       
               <!-- Action Buttons -->
-              <div class="flex flex-col gap-1.5">
+              <div class="md:col-span-3 flex flex-col gap-1.5">
                 <button id="mineCollectCanistersBtn" class="sci-btn w-full bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-500 hover:to-cyan-400 active:scale-95 text-black font-sci font-black text-xs px-3 py-2.5 rounded-xl shadow-glow-cyan border border-cyan-300 flex items-center justify-center gap-1.5">
                   <span>🧪 COLLECT CRYO</span>
                   <span id="mineCrateBadgeInner" class="bg-black/30 text-white px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
@@ -6366,7 +6366,7 @@
                 </span>
               </div>
       
-              <div class="flex flex-col gap-2.5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 <!-- Requirement 1: Seed Geode (+1 💎 Escalation OR Watch Ad) -->
                 <div class="bg-coremetal/90 rounded-xl p-3 border border-cyan-500/40 flex flex-col justify-between gap-2 shadow-sm">
                   <div class="flex items-start justify-between">
@@ -6464,8 +6464,8 @@
                 </div>
       
                 <!-- Requirement 5: Overdrive Boost (8 💎 for 2x pump speed for 60s) -->
-                <div class="bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col items-center justify-between gap-2.5 shadow-sm">
-                  <div class="flex items-center gap-2 w-full">
+                <div class="md:col-span-2 bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+                  <div class="flex items-center gap-2">
                     <span class="text-2xl">⚡</span>
                     <div>
                       <h4 class="font-sci text-xs font-black text-cyan-200">Thermal Vapor Overdrive Pump</h4>
@@ -6474,7 +6474,7 @@
                       </p>
                     </div>
                   </div>
-                  <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] py-2 rounded-lg transition shadow-glow-cyan">
+                  <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] px-3.5 py-1.5 rounded-lg transition whitespace-nowrap shadow-glow-cyan">
                     <span>THROW 8 💎 &rarr; 2X VAPOR SPEED ⚡</span>
                   </button>
                 </div>
@@ -6601,8 +6601,8 @@
         </button>
       </nav>
 
-      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Permanently Locked at Bottom) -->
-      <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar">
+      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Hidden unless active) -->
+      <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar" style="display: none;">
         <!-- Tab 1: Water (💧 Water) -->
         <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
           <div class="sf-menu-ico">💧</div>

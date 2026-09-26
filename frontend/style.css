@@ -223,11 +223,7 @@ html, body {
   100% { transform: translateY(-10vh) scale(1); opacity: 0; }
 }
 
-/* ==========================================================================
-   ONLY MOBILE DEVICE VIEW - SHELL & SMARTPHONE DEVICE VIEWPORT
-   ========================================================================== */
-
-/* Universal mobile-first viewport */
+/* Shell */
 .app-viewport {
   position: relative;
   width: 100%;
@@ -249,12 +245,14 @@ html, body {
 .mobile-container {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   height: 100%;
   height: 100dvh;
   margin: 0 auto;
   background: linear-gradient(180deg, #050b1d 0%, #030815 50%, #020610 100%);
   border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   max-height: 100dvh;
@@ -263,95 +261,6 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-/* On Desktop & Tablet screens: Render strictly inside an ultra-sleek Mobile Phone Mockup */
-@media (min-width: 481px) {
-  html, body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 50% 25%, #0c1a3b 0%, #040919 55%, #01040a 100%);
-    min-height: 100vh;
-    padding: 14px 0;
-  }
-
-  .app-viewport {
-    position: relative;
-    width: 100%;
-    max-width: 430px;
-    height: 94vh;
-    max-height: 920px;
-    min-height: 620px;
-    border-radius: 46px;
-    border: 3.5px solid rgba(56, 189, 248, 0.45);
-    outline: 1.5px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 
-      0 0 0 8px #081329,
-      0 0 0 10px rgba(56, 189, 248, 0.25),
-      0 30px 70px rgba(0, 0, 0, 0.9),
-      0 0 45px rgba(37, 99, 235, 0.35);
-    overflow: hidden !important;
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-  }
-
-  /* Smartphone Dynamic Island / Camera & Speaker Notch */
-  .app-viewport::before {
-    content: '';
-    position: absolute;
-    top: 9px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 112px;
-    height: 24px;
-    background: #030712;
-    border-radius: 20px;
-    z-index: 9999;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
-    pointer-events: none;
-  }
-
-  /* Smartphone Camera Lens */
-  .app-viewport::after {
-    content: '';
-    position: absolute;
-    top: 17px;
-    left: calc(50% + 28px);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #1e293b 30%, #030712 70%);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    z-index: 10000;
-    pointer-events: none;
-  }
-
-  .mobile-container {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    border-radius: 42px;
-    overflow: hidden !important;
-  }
-
-  /* Restrict all floating modals and overlays to the phone frame */
-  .modal-backdrop,
-  .notification-modal-overlay,
-  .rewarded-ad-modal-backdrop,
-  .web-code-modal-backdrop,
-  .web-result-modal-backdrop,
-  .redemption-modal-backdrop,
-  .app-splash-screen {
-    position: absolute !important;
-    max-width: 430px;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-  }
-}
-
-/* On Real Mobile Devices: 100% Full-Screen Edge-to-Edge Experience */
 @media (max-width: 480px) {
   html, body {
     height: 100dvh;
@@ -1005,9 +914,10 @@ div[id^="page"].active {
    GLOBAL RESPONSIVE & SHELL VIEWPORT STYLES
    ========================================================================== */
 /* ==========================================================================
-   COMPREHENSIVE UNIVERSAL MOBILE DEVICE VIEW RULES (ALL PAGES & SCREENS)
+   COMPREHENSIVE MOBILE VIEW OPTIMIZATIONS (ALL PAGES & SCREENS)
    ========================================================================== */
-/* Universal Mobile Rules applied as core base styles for only mobile device view */
+
+@media (max-width: 480px) {
   /* App Header */
   .app-header {
     padding: max(10px, env(safe-area-inset-top, 8px)) 12px 6px 12px;
@@ -1433,6 +1343,7 @@ div[id^="page"].active {
   .sheet-title {
     font-size: 17px;
   }
+}
 
 /* Extra small mobile screens (e.g. width <= 360px) */
 @media (max-width: 360px) {
@@ -1507,10 +1418,11 @@ div[id^="page"].active {
    HIGH-TECH QUANTUM SPLASH & LOADING SCREEN
    ========================================================================== */
 .app-splash-screen {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   z-index: 99999;
   background: radial-gradient(circle at 50% 38%, #071942 0%, #030816 60%, #01040a 100%);
   display: flex;
@@ -2198,10 +2110,8 @@ body.page-sunflower-active .bottom-nav {
 
 /* --- Floating Navratri Marigold Petals Background Particles --- */
 .navratri-petals-container {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
   z-index: 4;
   overflow: hidden;
@@ -14472,9 +14382,20 @@ body.page-sunflower-active .bottom-nav {
 
 .feature-btn:active { transform: scale(0.95); }
 
-/* Desktop Controls (Permanently Disabled for Only Mobile Device View) */
+/* Desktop Controls */
 .desktop-controls {
-  display: none !important;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .desktop-controls {
+    display: none; /* Hidden on mobile devices to prevent touch interference with bottom navigation */
+  }
 }
 
 .ctrl-btn {
@@ -22509,7 +22430,7 @@ body.page-sunflower-active .bottom-nav {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
   user-select: none;
@@ -23715,7 +23636,7 @@ body.page-sunflower-active #sfBottomMenuBar {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
   user-select: none;
@@ -24037,7 +23958,7 @@ body.page-sunflower-active #sfBottomMenuBar {
 
 .mining-tycoon-container {
   width: 100%;
-  max-width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   font-family: 'Rajdhani', sans-serif;
   user-select: none;
