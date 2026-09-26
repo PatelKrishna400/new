@@ -166,71 +166,71 @@ const headerContent = `<!DOCTYPE html>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- High-Tech Quantum Loading Splash Screen -->
-  <div class="app-splash-screen" id="appSplashScreen">
-    <div class="splash-backdrop-glow"></div>
-    <div class="splash-content">
-      <!-- Animated Reactor Core Logo -->
-      <div class="splash-reactor-core">
-        <div class="splash-core-ring outer"></div>
-        <div class="splash-core-ring middle"></div>
-        <div class="splash-core-ring inner"></div>
-        <div class="splash-core-center">
-          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.25)"/>
-          </svg>
-        </div>
-        <div class="splash-core-pulsar"></div>
-      </div>
-
-      <!-- App Title & Branding -->
-      <div class="splash-branding">
-        <h1 class="splash-title">ENERGY TAP</h1>
-        <div class="splash-subtitle-badge">
-          <span class="splash-pulse-dot"></span>
-          <span>QUANTUM REACTOR v5.0</span>
-        </div>
-      </div>
-
-      <!-- Progress Section -->
-      <div class="splash-progress-wrapper">
-        <div class="splash-progress-track">
-          <div class="splash-progress-bar" id="splashProgressBar"></div>
-          <div class="splash-progress-glow" id="splashProgressGlow"></div>
-        </div>
-        <div class="splash-progress-meta">
-          <span class="splash-status-text" id="splashStatusText">Initializing Quantum Core...</span>
-          <span class="splash-percent-text" id="splashPercentText">0%</span>
-        </div>
-      </div>
-
-      <!-- Telegram / Network Security Pill -->
-      <div class="splash-security-pill">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <span>SECURE QUANTUM CLOUD READY</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Ambient background glow elements -->
+  <!-- Ambient background glow elements for desktop backdrop -->
   <div class="ambient-glow glow-top"></div>
   <div class="ambient-glow glow-bottom"></div>
   <div class="particles-container" id="ambientParticles"></div>
 
-  <!-- Floating Navratri Marigold Petals Container -->
-  <div class="navratri-petals-container" id="navratriPetals">
-    <div class="marigold-petal" style="left: 8%; animation-duration: 9.5s; animation-delay: 0s;"></div>
-    <div class="marigold-petal" style="left: 26%; animation-duration: 12.5s; animation-delay: 3s;"></div>
-    <div class="marigold-petal" style="left: 48%; animation-duration: 8.8s; animation-delay: 1.5s;"></div>
-    <div class="marigold-petal" style="left: 68%; animation-duration: 11.2s; animation-delay: 4s;"></div>
-    <div class="marigold-petal" style="left: 85%; animation-duration: 10s; animation-delay: 2s;"></div>
-    <div class="marigold-petal" style="left: 93%; animation-duration: 13s; animation-delay: 5.5s;"></div>
-  </div>
-
-  <!-- Main Mobile Shell Container -->
+  <!-- Main Mobile Shell Container (Strict Smartphone Viewport) -->
   <div class="app-viewport">
+    <!-- High-Tech Quantum Loading Splash Screen (Fitted to Mobile Screen) -->
+    <div class="app-splash-screen" id="appSplashScreen">
+      <div class="splash-backdrop-glow"></div>
+      <div class="splash-content">
+        <!-- Animated Reactor Core Logo -->
+        <div class="splash-reactor-core">
+          <div class="splash-core-ring outer"></div>
+          <div class="splash-core-ring middle"></div>
+          <div class="splash-core-ring inner"></div>
+          <div class="splash-core-center">
+            <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.25)"/>
+            </svg>
+          </div>
+          <div class="splash-core-pulsar"></div>
+        </div>
+
+        <!-- App Title & Branding -->
+        <div class="splash-branding">
+          <h1 class="splash-title">ENERGY TAP</h1>
+          <div class="splash-subtitle-badge">
+            <span class="splash-pulse-dot"></span>
+            <span>QUANTUM REACTOR v5.0</span>
+          </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="splash-progress-wrapper">
+          <div class="splash-progress-track">
+            <div class="splash-progress-bar" id="splashProgressBar"></div>
+            <div class="splash-progress-glow" id="splashProgressGlow"></div>
+          </div>
+          <div class="splash-progress-meta">
+            <span class="splash-status-text" id="splashStatusText">Initializing Quantum Core...</span>
+            <span class="splash-percent-text" id="splashPercentText">0%</span>
+          </div>
+        </div>
+
+        <!-- Telegram / Network Security Pill -->
+        <div class="splash-security-pill">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>SECURE QUANTUM CLOUD READY</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Navratri Marigold Petals Container -->
+    <div class="navratri-petals-container" id="navratriPetals">
+      <div class="marigold-petal" style="left: 8%; animation-duration: 9.5s; animation-delay: 0s;"></div>
+      <div class="marigold-petal" style="left: 26%; animation-duration: 12.5s; animation-delay: 3s;"></div>
+      <div class="marigold-petal" style="left: 48%; animation-duration: 8.8s; animation-delay: 1.5s;"></div>
+      <div class="marigold-petal" style="left: 68%; animation-duration: 11.2s; animation-delay: 4s;"></div>
+      <div class="marigold-petal" style="left: 85%; animation-duration: 10s; animation-delay: 2s;"></div>
+      <div class="marigold-petal" style="left: 93%; animation-duration: 13s; animation-delay: 5.5s;"></div>
+    </div>
+
     <main class="mobile-container" id="app">
       
       <!-- Top Status / Header (Shared across pages) -->

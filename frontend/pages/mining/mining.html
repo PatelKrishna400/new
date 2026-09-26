@@ -177,11 +177,11 @@
       </div>
 
       <!-- Nora Station Presentation Stage -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-coremetal/90 rounded-xl p-3.5 border border-sky-500/30 shadow-inner">
-        <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
-          <div class="text-4xl animate-bounce filter drop-shadow">👩🔬</div>
+      <div class="flex flex-col gap-3.5 bg-coremetal/90 rounded-xl p-3 border border-sky-500/30 shadow-inner">
+        <div class="flex items-center gap-3 border-b border-slate-700 pb-2.5">
+          <div class="text-3xl animate-bounce filter drop-shadow">👩‍🔬</div>
           <div>
-            <h3 class="font-sci text-xs sm:text-sm text-sky-200 font-bold">Engineer Nora</h3>
+            <h3 class="font-sci text-xs text-sky-200 font-bold">Engineer Nora</h3>
             <p id="mineGeyserStatusText" class="text-[10px] text-slate-400 font-medium">Condensing thermal subterranean steam...</p>
             <div class="text-[10px] text-amber-300 font-mono mt-0.5">
               RATE: <span id="mineGeyserCycleRateLabel" class="text-cyan-400 font-bold">1 Canister / 4.0s</span>
@@ -190,7 +190,7 @@
         </div>
 
         <!-- Progress Gauge -->
-        <div class="md:col-span-5 flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1.5">
           <div class="flex justify-between text-[10px] font-sci text-slate-300">
             <span>VAPOR PRESSURE CHARGE:</span>
             <span id="mineGeyserPercentLabel" class="text-sky-300 font-mono font-bold">0%</span>
@@ -204,7 +204,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="md:col-span-3 flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1.5">
           <button id="mineCollectCanistersBtn" class="sci-btn w-full bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-500 hover:to-cyan-400 active:scale-95 text-black font-sci font-black text-xs px-3 py-2.5 rounded-xl shadow-glow-cyan border border-cyan-300 flex items-center justify-center gap-1.5">
             <span>🧪 COLLECT CRYO</span>
             <span id="mineCrateBadgeInner" class="bg-black/30 text-white px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
@@ -328,7 +328,7 @@
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        <div class="flex flex-col gap-2.5">
           <!-- Requirement 1: Seed Geode (+1 💎 Escalation OR Watch Ad) -->
           <div class="bg-coremetal/90 rounded-xl p-3 border border-cyan-500/40 flex flex-col justify-between gap-2 shadow-sm">
             <div class="flex items-start justify-between">
@@ -426,8 +426,8 @@
           </div>
 
           <!-- Requirement 5: Overdrive Boost (8 💎 for 2x pump speed for 60s) -->
-          <div class="md:col-span-2 bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
-            <div class="flex items-center gap-2">
+          <div class="bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col items-center justify-between gap-2.5 shadow-sm">
+            <div class="flex items-center gap-2 w-full">
               <span class="text-2xl">⚡</span>
               <div>
                 <h4 class="font-sci text-xs font-black text-cyan-200">Thermal Vapor Overdrive Pump</h4>
@@ -436,7 +436,7 @@
                 </p>
               </div>
             </div>
-            <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] px-3.5 py-1.5 rounded-lg transition whitespace-nowrap shadow-glow-cyan">
+            <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] py-2 rounded-lg transition shadow-glow-cyan">
               <span>THROW 8 💎 &rarr; 2X VAPOR SPEED ⚡</span>
             </button>
           </div>

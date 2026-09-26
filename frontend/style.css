@@ -223,7 +223,11 @@ html, body {
   100% { transform: translateY(-10vh) scale(1); opacity: 0; }
 }
 
-/* Shell */
+/* ==========================================================================
+   ONLY MOBILE DEVICE VIEW - SHELL & SMARTPHONE DEVICE VIEWPORT
+   ========================================================================== */
+
+/* Universal mobile-first viewport */
 .app-viewport {
   position: relative;
   width: 100%;
@@ -245,14 +249,12 @@ html, body {
 .mobile-container {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
   height: 100%;
   height: 100dvh;
   margin: 0 auto;
   background: linear-gradient(180deg, #050b1d 0%, #030815 50%, #020610 100%);
   border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   max-height: 100dvh;
@@ -261,6 +263,95 @@ html, body {
   -webkit-touch-callout: none;
 }
 
+/* On Desktop & Tablet screens: Render strictly inside an ultra-sleek Mobile Phone Mockup */
+@media (min-width: 481px) {
+  html, body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 25%, #0c1a3b 0%, #040919 55%, #01040a 100%);
+    min-height: 100vh;
+    padding: 14px 0;
+  }
+
+  .app-viewport {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    height: 94vh;
+    max-height: 920px;
+    min-height: 620px;
+    border-radius: 46px;
+    border: 3.5px solid rgba(56, 189, 248, 0.45);
+    outline: 1.5px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 0 0 8px #081329,
+      0 0 0 10px rgba(56, 189, 248, 0.25),
+      0 30px 70px rgba(0, 0, 0, 0.9),
+      0 0 45px rgba(37, 99, 235, 0.35);
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+  }
+
+  /* Smartphone Dynamic Island / Camera & Speaker Notch */
+  .app-viewport::before {
+    content: '';
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 112px;
+    height: 24px;
+    background: #030712;
+    border-radius: 20px;
+    z-index: 9999;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+  }
+
+  /* Smartphone Camera Lens */
+  .app-viewport::after {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: calc(50% + 28px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1e293b 30%, #030712 70%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    z-index: 10000;
+    pointer-events: none;
+  }
+
+  .mobile-container {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 42px;
+    overflow: hidden !important;
+  }
+
+  /* Restrict all floating modals and overlays to the phone frame */
+  .modal-backdrop,
+  .notification-modal-overlay,
+  .rewarded-ad-modal-backdrop,
+  .web-code-modal-backdrop,
+  .web-result-modal-backdrop,
+  .redemption-modal-backdrop,
+  .app-splash-screen {
+    position: absolute !important;
+    max-width: 430px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+  }
+}
+
+/* On Real Mobile Devices: 100% Full-Screen Edge-to-Edge Experience */
 @media (max-width: 480px) {
   html, body {
     height: 100dvh;
@@ -274,6 +365,10 @@ html, body {
     max-width: 100vw;
     width: 100vw;
     padding: 0;
+    border: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
   .mobile-container {
     max-width: 100vw;
@@ -910,10 +1005,9 @@ div[id^="page"].active {
    GLOBAL RESPONSIVE & SHELL VIEWPORT STYLES
    ========================================================================== */
 /* ==========================================================================
-   COMPREHENSIVE MOBILE VIEW OPTIMIZATIONS (ALL PAGES & SCREENS)
+   COMPREHENSIVE UNIVERSAL MOBILE DEVICE VIEW RULES (ALL PAGES & SCREENS)
    ========================================================================== */
-
-@media (max-width: 480px) {
+/* Universal Mobile Rules applied as core base styles for only mobile device view */
   /* App Header */
   .app-header {
     padding: max(10px, env(safe-area-inset-top, 8px)) 12px 6px 12px;
@@ -1339,7 +1433,6 @@ div[id^="page"].active {
   .sheet-title {
     font-size: 17px;
   }
-}
 
 /* Extra small mobile screens (e.g. width <= 360px) */
 @media (max-width: 360px) {
@@ -1376,7 +1469,7 @@ div[id^="page"].active {
    PORTRAIT & VERTICAL MOBILE DEVICE VIEWPORT OPTIMIZATIONS
    ========================================================================== */
 
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-width: 480px) {
   html, body {
     position: fixed;
     width: 100%;
@@ -1414,11 +1507,10 @@ div[id^="page"].active {
    HIGH-TECH QUANTUM SPLASH & LOADING SCREEN
    ========================================================================== */
 .app-splash-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  width: 100%;
+  height: 100%;
   z-index: 99999;
   background: radial-gradient(circle at 50% 38%, #071942 0%, #030816 60%, #01040a 100%);
   display: flex;
@@ -2106,8 +2198,10 @@ body.page-sunflower-active .bottom-nav {
 
 /* --- Floating Navratri Marigold Petals Background Particles --- */
 .navratri-petals-container {
-  position: fixed;
+  position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 4;
   overflow: hidden;
@@ -4376,20 +4470,10 @@ body.page-sunflower-active .bottom-nav {
 
 /* --- PAGE: ENERGY --- */
 /* ==========================================================================
-   ENERGY STATIONS TOP SUBTABS NAVIGATION (Reactor, Sunflowers, Bee Farm, Mine)
+   ENERGY STATIONS TOP SUBTABS NAVIGATION (Hidden across all game pages)
    ========================================================================== */
 .energy-top-subtabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px;
-  background: rgba(9, 15, 30, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  border-radius: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  display: none !important;
 }
 
 .energy-subtab-btn {
@@ -14388,20 +14472,9 @@ body.page-sunflower-active .bottom-nav {
 
 .feature-btn:active { transform: scale(0.95); }
 
-/* Desktop Controls */
+/* Desktop Controls (Permanently Disabled for Only Mobile Device View) */
 .desktop-controls {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: flex;
-  gap: 8px;
-  z-index: 100;
-}
-
-@media (max-width: 768px) {
-  .desktop-controls {
-    display: none; /* Hidden on mobile devices to prevent touch interference with bottom navigation */
-  }
+  display: none !important;
 }
 
 .ctrl-btn {
@@ -22436,7 +22509,7 @@ body.page-sunflower-active .bottom-nav {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1100px;
+  max-width: 100%;
   margin: 0 auto;
   font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
   user-select: none;
@@ -22830,42 +22903,46 @@ body.page-sunflower-active .bottom-nav {
 .sf-hdr-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8.5px;
+  gap: 5px;
+  padding: 4px 9px;
   border-radius: 9999px;
   font-size: 11.5px;
   font-weight: 800;
   white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s ease;
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border: 1.5px solid #d97706;
+  color: #fef08a;
+  box-shadow: 0 2px 6px rgba(69, 26, 3, 0.4), inset 0 1px 0 rgba(254, 240, 138, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .sf-hdr-pill:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(69, 26, 3, 0.5);
 }
 
 .sf-hdr-pill.pill-amber {
-  background: #fef3c7;
-  border: 1.5px solid #f59e0b;
-  color: #92400e;
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border-color: #f59e0b;
+  color: #fde047;
 }
 
 .sf-hdr-pill.pill-stone {
-  background: #f1f5f9;
-  border: 1.5px solid #94a3b8;
-  color: #334155;
+  background: linear-gradient(135deg, #5c2c10 0%, #3a1905 100%);
+  border-color: #d97706;
+  color: #fef08a;
 }
 
 .sf-hdr-pill.pill-blue {
-  background: #e0f2fe;
-  border: 1.5px solid #38bdf8;
-  color: #0369a1;
+  background: linear-gradient(135deg, #4d2309 0%, #2e1203 100%);
+  border-color: #38bdf8;
+  color: #bae6fd;
 }
 
 .sf-hdr-val {
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 900;
-  font-size: 11.5px;
+  font-size: 12px;
 }
 
 /* ==========================================================================
@@ -23163,7 +23240,136 @@ body.page-sunflower-active .bottom-nav {
 }
 
 /* ==========================================================================
-   SUNFLOWER DEDICATED FLOATING BOTTOM MENU BAR (REPLACES GLOBAL BOTTOM NAV)
+   SUNFLOWER LIFECYCLE: Plant -> Growing -> Flower Bloom & Win + Water
+   ========================================================================== */
+.sf-tile-lifecycle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.sf-stage-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1.5px 5.5px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.sf-stage-badge.stage-plant {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.sf-stage-badge.stage-growing {
+  background: #fefce8;
+  color: #854d0e;
+  border: 1px solid #eab308;
+}
+
+.sf-stage-badge.stage-bloom {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.sf-stage-badge.stage-withered {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.sf-tile-life {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1.5px 5px;
+  border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sf-tile-life.life-good {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.sf-tile-life.life-low {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  animation: pulseLowWater 1.2s infinite;
+}
+
+.sf-tile-life.life-dry {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+@keyframes pulseLowWater {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.sf-tile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.sf-tile-water-btn {
+  width: 100%;
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 3px 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.1);
+}
+
+.sf-tile-water-btn:hover {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.sf-tile-water-btn:active {
+  transform: scale(0.97);
+}
+
+.coin-win-burst {
+  animation: coinWinBurst 0.6s ease-out forwards;
+}
+
+@keyframes coinWinBurst {
+  0% { transform: scale(1); filter: drop-shadow(0 0 0px #f59e0b); }
+  50% { transform: scale(1.3); filter: drop-shadow(0 0 14px #f59e0b); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px #f59e0b); }
+}
+
+/* ==========================================================================
+   SUNFLOWER DEDICATED FLOATING BOTTOM MENU BAR (PERMANENTLY LOCKED AT BOTTOM)
    ========================================================================== */
 #pageSunflower.active ~ .bottom-nav,
 body.page-sunflower-active .bottom-nav {
@@ -23171,7 +23377,8 @@ body.page-sunflower-active .bottom-nav {
 }
 
 .sf-bottom-menu-bar {
-  position: fixed;
+  display: none;
+  position: sticky;
   bottom: 0;
   left: 0;
   right: 0;
@@ -23182,7 +23389,6 @@ body.page-sunflower-active .bottom-nav {
   background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%);
   border: 1.5px solid rgba(251, 191, 36, 0.55);
   border-radius: 32px;
-  display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
@@ -23195,6 +23401,14 @@ body.page-sunflower-active .bottom-nav {
     0 16px 36px rgba(0, 0, 0, 0.8),
     0 0 24px rgba(245, 158, 11, 0.35);
   z-index: 120;
+  flex-shrink: 0;
+}
+
+#pageSunflower.active ~ .sf-bottom-menu-bar,
+#pageSunflower.active ~ #sfBottomMenuBar,
+body.page-sunflower-active .sf-bottom-menu-bar,
+body.page-sunflower-active #sfBottomMenuBar {
+  display: flex !important;
 }
 
 /* Festive mirror-work top studs along Sunflower bottom navigation */
@@ -23384,7 +23598,7 @@ body.page-sunflower-active .bottom-nav {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1100px;
+  max-width: 100%;
   margin: 0 auto;
   font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
   user-select: none;
@@ -23706,7 +23920,7 @@ body.page-sunflower-active .bottom-nav {
 
 .mining-tycoon-container {
   width: 100%;
-  max-width: 1100px;
+  max-width: 100%;
   margin: 0 auto;
   font-family: 'Rajdhani', sans-serif;
   user-select: none;

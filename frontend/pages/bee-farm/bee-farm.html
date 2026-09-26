@@ -181,11 +181,11 @@
       </div>
 
       <!-- Harvester Worker Presentation Stage -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-800/90 rounded-xl p-3.5 border border-slate-600 shadow-inner">
-        <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
-          <div class="text-4xl animate-bounce select-none filter drop-shadow">👩🌾</div>
+      <div class="flex flex-col gap-3.5 bg-slate-800/90 rounded-xl p-3 border border-slate-600 shadow-inner">
+        <div class="flex items-center gap-3 border-b border-slate-700 pb-2.5">
+          <div class="text-3xl animate-bounce select-none filter drop-shadow">👩‍🌾</div>
           <div>
-            <div class="text-xs sm:text-sm font-extrabold text-rose-200">Harvester Maya</div>
+            <div class="text-xs font-extrabold text-rose-200">Harvester Maya</div>
             <div class="text-[10px] text-slate-400" id="beeHarvesterStatusText">Gathering floral pollen from wild trellis...</div>
             <div class="text-[10px] text-amber-300 font-semibold mt-0.5">
               Speed: <span id="beeHarvesterSpeedLabel" class="font-mono font-bold">1 pot / 4s</span>
@@ -194,7 +194,7 @@
         </div>
 
         <!-- Progress Gauge -->
-        <div class="md:col-span-5 flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1.5">
           <div class="flex justify-between text-[10px] text-slate-300 font-semibold">
             <span>Next Pollen Extraction:</span>
             <span id="beeHarvesterCyclePercent" class="font-mono text-rose-300 font-bold">0%</span>
@@ -208,7 +208,7 @@
         </div>
 
         <!-- Action Button -->
-        <div class="md:col-span-3 flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1.5">
           <button id="beeCollectPollenBtn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 active:scale-95 text-white font-black text-xs px-3 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
             <span>🏺 Collect Pots</span>
             <span id="beeCollectableBadge" class="bg-white/20 px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
@@ -331,7 +331,7 @@
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        <div class="flex flex-col gap-2.5">
           <!-- Item 1: Queen Bee Larva (+1 💎 Escalation OR Watch Ad) -->
           <div class="bg-amber-50/90 rounded-xl p-3 border border-amber-300 flex flex-col justify-between gap-2 shadow-sm">
             <div class="flex items-start justify-between">
@@ -429,8 +429,8 @@
           </div>
 
           <!-- Item 5: Harvester Speed Boost (8 💎 for 2x pump speed for 60s) -->
-          <div class="md:col-span-2 bg-gradient-to-r from-amber-100 to-rose-100 rounded-xl p-3 border border-amber-400 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
-            <div class="flex items-center gap-2">
+          <div class="bg-gradient-to-r from-amber-100 to-rose-100 rounded-xl p-3 border border-amber-400 flex flex-col items-center justify-between gap-2.5 shadow-sm">
+            <div class="flex items-center gap-2 w-full">
               <span class="text-2xl">⚡</span>
               <div>
                 <h4 class="text-xs font-black text-amber-950">Harvester High-Speed Overdrive</h4>
@@ -439,7 +439,7 @@
                 </p>
               </div>
             </div>
-            <button id="beeBuyBoostDiamondBtn" class="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 active:scale-95 text-white font-black text-[10px] px-3.5 py-1.5 rounded-lg shadow transition whitespace-nowrap">
+            <button id="beeBuyBoostDiamondBtn" class="w-full bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 active:scale-95 text-white font-black text-[10px] py-2 rounded-lg shadow transition">
               <span>Throw 8 💎 &rarr; 2x Harvester Speed ⚡</span>
             </button>
           </div>
