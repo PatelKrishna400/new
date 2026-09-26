@@ -32,43 +32,47 @@ const SF_LAND_UNLOCK_COSTS = [
 
 // 20 Lands Base Starting Production Times (at Level 1)
 const SF_LAND_BASE_TIMES = [
-  5,        // Land 1: 5s
-  30,       // Land 2: 30s
-  60,       // Land 3: 1 min (60s)
-  300,      // Land 4: 5 min (300s)
-  600,      // Land 5: 10 min
-  1200,     // Land 6: 20 min
-  1800,     // Land 7: 30 min
-  2700,     // Land 8: 45 min
-  3600,     // Land 9: 1 hr
-  5400,     // Land 10: 1.5 hr
-  7200,     // Land 11: 2 hr
-  10800,    // Land 12: 3 hr
-  14400,    // Land 13: 4 hr
-  21600,    // Land 14: 6 hr
-  28800,    // Land 15: 8 hr
-  43200,    // Land 16: 12 hr
-  57600,    // Land 17: 16 hr
-  72000,    // Land 18: 20 hr
-  86400,    // Land 19: 24 hr
-  172800    // Land 20: 48 hr
+  5,        // Land 1: 5 seconds
+  30,       // Land 2: 30 seconds
+  60,       // Land 3: 1 minute (60s)
+  300,      // Land 4: 5 minutes (300s)
+  600,      // Land 5: 10 minutes (600s)
+  900,      // Land 6: 15 minutes (900s)
+  1200,     // Land 7: 20 minutes (1200s)
+  1800,     // Land 8: 30 minutes (1800s)
+  2700,     // Land 9: 45 minutes (2700s)
+  3600,     // Land 10: 1 hour (3600s)
+  5400,     // Land 11: 1.5 hours (5400s)
+  7200,     // Land 12: 2 hours (7200s)
+  10800,    // Land 13: 3 hours (10800s)
+  14400,    // Land 14: 4 hours (14400s)
+  18000,    // Land 15: 5 hours (18000s)
+  21600,    // Land 16: 6 hours (21600s)
+  28800,    // Land 17: 8 hours (28800s)
+  36000,    // Land 18: 10 hours (36000s)
+  43200,    // Land 19: 12 hours (43200s)
+  86400     // Land 20: 24 hours (86400s)
 ];
 
-// Innate Land Output Multipliers
-const SF_LAND_MULTIPLIERS = [
-  1, 2, 5, 12, 30, 80, 200, 500, 1200, 3000,
-  8000, 20000, 50000, 120000, 300000, 800000, 2000000, 5000000, 12000000, 30000000
-];
+// Innate Land Multiplier (default 1)
+const SF_LAND_MULTIPLIERS = new Array(20).fill(1);
 
 function createDefaultSfPlots() {
   const plots = [];
   for (let i = 1; i <= 20; i++) {
     const isUnlocked = i === 1;
+    const baseTime = SF_LAND_BASE_TIMES[i - 1];
     plots.push({
       id: i,
       unlocked: isUnlocked,
       unlockCost: SF_LAND_UNLOCK_COSTS[i - 1],
       level: 1, // Levels 1 to 5000
+      productionTime: baseTime,
+      coinProduction: 1,
+      upgradeCost: 10,
+      status: isUnlocked ? 'active' : 'locked',
+      timer: baseTime,
+      totalCoinsGenerated: 0,
       progress: 0, // 0 to 1 cycle progress
       lifeTimer: isUnlocked ? 60 : 0,
       maxLifeTimer: 60,
@@ -88,8 +92,15 @@ function loadInitialSunflowerState() {
         // Upgrade existing plot schemas to Level 1-5000 format
         parsed.plots.forEach((p, idx) => {
           if (typeof p.level !== 'number') p.level = 1;
-          if (typeof p.progress !== 'number') p.progress = 0;
+          p.level = Math.min(5000, Math.max(1, p.level));
           if (typeof p.unlockCost !== 'number') p.unlockCost = SF_LAND_UNLOCK_COSTS[idx];
+          p.productionTime = getSfPlotCycleTime(idx, p.level);
+          p.coinProduction = getSfPlotCoinsPerCycle(idx, p.level);
+          p.upgradeCost = getSfPlotUpgradeCost(idx, p.level);
+          if (typeof p.timer !== 'number') p.timer = p.productionTime;
+          if (typeof p.totalCoinsGenerated !== 'number') p.totalCoinsGenerated = 0;
+          if (!p.status) p.status = p.unlocked ? 'active' : 'locked';
+          if (typeof p.progress !== 'number') p.progress = 0;
         });
         if (!parsed.workers) {
           parsed.workers = { walter: false, dave: false, elena: false, leo: false };
@@ -152,21 +163,19 @@ function getSfPlotCycleTime(plotIndex, level) {
   const L = Math.min(5000, Math.max(1, level || 1));
   if (L >= 5000) return 0.001;
 
-  // Smooth progression from baseTime at Level 1 to 0.001s at Level 5000
-  const progress = (L - 1) / 4999;
-  let time = baseTime * (1 - progress) + 0.001 * progress;
+  // Smooth exponential decay from baseTime down to 0.001s at Level 5000
+  let time = baseTime * Math.pow(0.001 / baseTime, (L - 1) / 4999);
 
   // Leo Worker speed boost (halves cycle duration)
-  if (sunflowerState.workers && sunflowerState.workers.leo) {
+  if (typeof sunflowerState !== 'undefined' && sunflowerState.workers && sunflowerState.workers.leo) {
     time = time / 2;
   }
   return Math.max(0.001, time);
 }
 
 // 2. Sunflower Coins Generated Per Cycle
-// Level 1 = 1 coin, Level 2 = 50 coins, Level 3 = 500 coins, Level > 3 scales up!
+// Level 1 = 1 coin, Level 2 = 50 coins, Level 3 = 500 coins, Level 4 = 5,000 coins ... up to Level 5000
 function getSfPlotCoinsPerCycle(plotIndex, level) {
-  const mult = SF_LAND_MULTIPLIERS[plotIndex] || 1;
   const L = Math.min(5000, Math.max(1, level || 1));
   let baseCoins = 1;
 
@@ -176,27 +185,29 @@ function getSfPlotCoinsPerCycle(plotIndex, level) {
     baseCoins = 50;
   } else if (L === 3) {
     baseCoins = 500;
+  } else if (L === 4) {
+    baseCoins = 5000;
   } else {
-    const diff = L - 3;
-    baseCoins = 500 + diff * 120 + Math.floor(15 * Math.pow(diff, 1.25));
+    // Progressive compound scaling for levels 5 to 5000
+    baseCoins = Math.floor(5000 * Math.pow(1.025, L - 4));
   }
-
-  let total = Math.round(baseCoins * mult);
 
   // Elena Worker output boost (+20%)
-  if (sunflowerState.workers && sunflowerState.workers.elena) {
-    total = Math.round(total * 1.2);
+  if (typeof sunflowerState !== 'undefined' && sunflowerState.workers && sunflowerState.workers.elena) {
+    baseCoins = Math.round(baseCoins * 1.2);
   }
-  return Math.max(1, total);
+  return Math.max(1, baseCoins);
 }
 
-// 3. Upgrade Cost: generating coin value * 10 + Level
-// Level was upgraded -> cost becomes (coinsGenerated * 10) + L
+// 3. Upgrade Cost: Current Level Coin Generation * 10
+// Level 1 generates 1 coin -> Level 2 upgrade cost = 1 * 10 = 10 coins
+// Level 2 generates 50 coins -> Level 3 upgrade cost = 50 * 10 = 500 coins
+// Level 3 generates 500 coins -> Level 4 upgrade cost = 500 * 10 = 5,000 coins
 function getSfPlotUpgradeCost(plotIndex, level) {
   const L = Math.min(5000, Math.max(1, level || 1));
-  if (L >= 5000) return Infinity; // Max Level!
+  if (L >= 5000) return Infinity; // Max Level reached!
   const coinsGen = getSfPlotCoinsPerCycle(plotIndex, L);
-  return Math.round(coinsGen * 10 + L);
+  return Math.round(coinsGen * 10);
 }
 
 // Multi-Buy Calculator (1x, 10x, 100x, MAX)
@@ -212,7 +223,8 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
 
   while (curL < 5000 && levelsToAdd < targetLevels) {
     const cost = getSfPlotUpgradeCost(plotIndex, curL);
-    if (multMode === 'max' && totalCost + cost > playerCoins) {
+    if (cost === Infinity) break;
+    if (multMode === 'max' && totalCost + cost > playerCoins && levelsToAdd > 0) {
       break;
     }
     totalCost += cost;
@@ -221,7 +233,7 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
     if (multMode !== 'max' && levelsToAdd >= targetLevels) break;
   }
 
-  if (levelsToAdd === 0 && multMode === 'max') {
+  if (levelsToAdd === 0) {
     levelsToAdd = 1;
     totalCost = getSfPlotUpgradeCost(plotIndex, currentLevel);
   }
@@ -231,6 +243,30 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
     totalCost,
     targetLevel: Math.min(5000, currentLevel + levelsToAdd)
   };
+}
+
+// Format Countdown Timer
+function formatTimerText(seconds, cycleTime) {
+  if (cycleTime < 0.05) return '0.001s';
+  const sec = Math.max(0, seconds || 0);
+  if (sec >= 3600) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return `${h}h ${m}m ${s < 10 ? '0' : ''}${s}s`;
+  }
+  if (sec >= 60) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+  if (sec >= 10) {
+    return `${sec.toFixed(1)}s`;
+  }
+  if (sec >= 1) {
+    return `${sec.toFixed(1)}s`;
+  }
+  return `${sec.toFixed(2)}s`;
 }
 
 /* ==========================================================================
@@ -349,7 +385,7 @@ function spawnSfFloat(text, x, y, color = 'text-amber-400') {
 }
 
 /* ==========================================================================
-   NAVIGATION: 5-TAB CUSTOM BOTTOM MENU
+   NAVIGATION: 5-TAB CUSTOM BOTTOM MENU & CENTER MENU BAR
    1: Garden | 2: Water | 3: Shop | 4: Workers | 5: Converter
    ========================================================================== */
 window.navigateSunflowerPage = function(pageNum) {
@@ -370,7 +406,26 @@ window.navigateSunflowerPage = function(pageNum) {
     }
   }
 
-  // Update Bottom Menu Bar Active State
+  // 1. Update Center Menu Bar Active State
+  const centerMenuMap = {
+    1: 'sfCenterNavGarden',
+    2: 'sfCenterNavWater',
+    3: 'sfCenterNavShop',
+    4: 'sfCenterNavWorkers'
+  };
+
+  Object.values(centerMenuMap).forEach(btnId => {
+    const b = document.getElementById(btnId);
+    if (b) b.classList.remove('active');
+  });
+
+  const activeCenterBtnId = centerMenuMap[pageNum];
+  if (activeCenterBtnId) {
+    const b = document.getElementById(activeCenterBtnId);
+    if (b) b.classList.add('active');
+  }
+
+  // 2. Update Bottom Menu Bar Active State
   const menuMap = {
     1: 'sfMenuTabGarden',
     2: 'sfMenuTabWater',
@@ -436,20 +491,77 @@ window.upgradeSfPlot = function(plotId, event = null) {
     sunflowerState.coins -= info.totalCost;
     plot.level = info.targetLevel;
 
+    // Immediately update land data
+    const newCycleTime = getSfPlotCycleTime(plotIndex, plot.level);
+    plot.productionTime = newCycleTime;
+    plot.coinProduction = getSfPlotCoinsPerCycle(plotIndex, plot.level);
+    plot.upgradeCost = getSfPlotUpgradeCost(plotIndex, plot.level);
+
+    if (typeof plot.timer !== 'number' || plot.timer > newCycleTime) {
+      plot.timer = newCycleTime;
+    }
+
     sunflowerAudio.playUpgradeChime();
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level} (+${info.levelsToAdd})!`, posX, posY, 'text-yellow-400');
+    spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level} (+${info.levelsToAdd})! 🌻`, posX, posY, 'text-yellow-400');
 
-    saveSunflowerStateDebounced();
+    // Immediately update Real-Time UI
+    updateSinglePlotUI(plotId);
     updateStickyHeaderAndMiniStats();
-    renderSunflowerPlots();
+    updateLiveUpgradeButtons();
+    saveSunflowerStateDebounced();
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`Need ${formatNumber(info.totalCost)} ☀️ Coins!`, posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${formatNumber(info.totalCost)} 🌻 Coins!`, posX, posY, 'text-red-400');
   }
 };
+
+// Immediate Single-Land Real-Time UI Updater
+function updateSinglePlotUI(plotId) {
+  const plotIndex = plotId - 1;
+  const plot = sunflowerState.plots[plotIndex];
+  if (!plot || !plot.unlocked) return;
+
+  const cycleTime = getSfPlotCycleTime(plotIndex, plot.level);
+  const coinsPerCycle = getSfPlotCoinsPerCycle(plotIndex, plot.level);
+  const mult = sunflowerState.upgradeMultiplier || 1;
+  const upInfo = getSfMultiUpgradeInfo(plotIndex, plot.level, mult, sunflowerState.coins);
+  const canAfford = sunflowerState.coins >= upInfo.totalCost && plot.level < 5000;
+
+  // 1. Level badge
+  const lvEl = document.getElementById(`sfPlotLvBadge-${plotId}`);
+  if (lvEl) {
+    lvEl.innerText = `Lv. ${plot.level}/5000`;
+  }
+
+  // 2. Coin production output
+  const outEl = document.getElementById(`sfPlotOut-${plotId}`);
+  if (outEl) {
+    outEl.innerText = `+${formatNumber(coinsPerCycle)} 🌻`;
+  }
+
+  // 3. Countdown timer text
+  const timeEl = document.getElementById(`sfPlotTime-${plotId}`);
+  if (timeEl) {
+    timeEl.innerText = `⏱️ ${formatTimerText(plot.timer, cycleTime)}`;
+  }
+
+  // 4. Upgrade button and cost
+  const btnEl = document.getElementById(`sfPlotUpBtn-${plotId}`);
+  if (btnEl) {
+    if (plot.level >= 5000) {
+      btnEl.className = "sf-tile-up-btn max-level disabled";
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<span>★ MAX LEVEL (5000)</span>`;
+    } else {
+      btnEl.disabled = false;
+      btnEl.className = `sf-tile-up-btn ${!canAfford ? 'disabled' : ''}`;
+      btnEl.innerHTML = `<span>▲ Lv. ${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} 🪙)</span>`;
+    }
+  }
+}
 
 window.unlockSfPlot = function(plotId, event = null) {
   const plotIndex = plotId - 1;
@@ -651,7 +763,7 @@ function updateWorkersUI() {
 /* ==========================================================================
    SOLAR REFINERY CONVERTER: 100 ☀️ Coins -> 29 ⚡ Energy
    ========================================================================== */
-window.executeSfCoinToEnergy = function(amount = 100, event = null) {
+function executeSfCoinToEnergy(amount = 100, event = null) {
   let cost = 0;
   if (amount === 'all') {
     const batches = Math.floor(sunflowerState.coins / 100);
@@ -692,6 +804,8 @@ window.executeSfCoinToEnergy = function(amount = 100, event = null) {
 /* ==========================================================================
    RENDER 20 LANDS IN FIXED 2*10 FORMAT
    ========================================================================== */
+const _cachedTimerTexts = {};
+
 function renderSunflowerPlots() {
   const container = document.getElementById('sfPlotsContainer');
   if (!container) return;
@@ -734,10 +848,10 @@ function renderSunflowerPlots() {
       const upInfo = getSfMultiUpgradeInfo(idx, plot.level, mult, coins);
       const canAfford = coins >= upInfo.totalCost && plot.level < 5000;
 
-      // Automated check
-      const isAuto = (plot.id <= 5 && sunflowerState.workers && sunflowerState.workers.dave) ||
-                     (plot.id >= 6 && plot.id <= 10 && sunflowerState.workers && sunflowerState.workers.elena) ||
-                     (plot.id >= 11 && sunflowerState.workers && sunflowerState.workers.leo);
+      // Ensure timer is initialized
+      if (typeof plot.timer !== 'number') {
+        plot.timer = cycleTime;
+      }
 
       // Status indicator
       let spriteEmoji = '🌻';
@@ -745,8 +859,8 @@ function renderSunflowerPlots() {
       else if (plot.level > 1000) spriteEmoji = '☀️🌻';
       else if (plot.level > 2500) spriteEmoji = '✨🌻';
 
-      const timeText = cycleTime < 0.1 ? '⚡ Hyper' : `${cycleTime.toFixed(1)}s`;
-      const isHyper = cycleTime < 0.1;
+      const isHyper = cycleTime < 0.05;
+      const timerDisplay = formatTimerText(plot.timer, cycleTime);
 
       tile.innerHTML = `
         <div class="sf-tile-header">
@@ -757,17 +871,17 @@ function renderSunflowerPlots() {
         <div class="sf-tile-body" onclick="handleSfPlotClick(${plot.id}, event)">
           <span class="sf-tile-sprite">${spriteEmoji}</span>
           <div class="sf-tile-stats">
-            <span class="sf-tile-output" id="sfPlotOut-${plot.id}">+${formatNumber(coinsPerCycle)} ☀️</span>
-            <span class="sf-tile-timer" id="sfPlotTime-${plot.id}">⏱️ ${timeText}</span>
+            <span class="sf-tile-output" id="sfPlotOut-${plot.id}">+${formatNumber(coinsPerCycle)} 🌻</span>
+            <span class="sf-tile-timer" id="sfPlotTime-${plot.id}">⏱️ ${timerDisplay}</span>
           </div>
         </div>
 
         <div class="sf-tile-progress-track">
-          <div class="sf-tile-progress-fill ${isHyper ? 'speed-hyper' : ''}" id="sfPlotProg-${plot.id}" style="width: ${isHyper ? '100%' : (plot.progress * 100) + '%'}"></div>
+          <div class="sf-tile-progress-fill ${isHyper ? 'speed-hyper' : ''}" id="sfPlotProg-${plot.id}" style="width: ${isHyper ? '100%' : (Math.max(0, Math.min(1, plot.progress || 0)) * 100).toFixed(1) + '%'}"></div>
         </div>
 
-        <button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-tile-up-btn ${!canAfford ? 'disabled' : ''}">
-          <span>▲ Lv. ${plot.level < 5000 ? upInfo.targetLevel : 'MAX'} (${plot.level < 5000 ? formatNumber(upInfo.totalCost) + ' 🪙' : 'MAX'})</span>
+        <button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-tile-up-btn ${plot.level >= 5000 ? 'max-level disabled' : (!canAfford ? 'disabled' : '')}" ${plot.level >= 5000 ? 'disabled' : ''}>
+          <span>${plot.level >= 5000 ? '★ MAX LEVEL (5000)' : `▲ Lv. ${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} 🪙)`}</span>
         </button>
       `;
     }
@@ -814,6 +928,12 @@ function sunflowerMainLoop(now) {
 
     const cycleTime = getSfPlotCycleTime(idx, plot.level);
     const coinsPerCycle = getSfPlotCoinsPerCycle(idx, plot.level);
+
+    // Keep land data attributes updated
+    plot.productionTime = cycleTime;
+    plot.coinProduction = coinsPerCycle;
+    plot.upgradeCost = getSfPlotUpgradeCost(idx, plot.level);
+
     const isAuto = (plot.id <= 5 && sunflowerState.workers && sunflowerState.workers.dave) ||
                    (plot.id >= 6 && plot.id <= 10 && sunflowerState.workers && sunflowerState.workers.elena) ||
                    (plot.id >= 11 && sunflowerState.workers && sunflowerState.workers.leo) ||
@@ -824,34 +944,67 @@ function sunflowerMainLoop(now) {
       plot.lifeTimer = Math.max(0, plot.lifeTimer - dt);
       if (plot.lifeTimer === 0 && !isAuto) {
         plot.isWithered = true;
+        plot.status = 'withered';
       }
     }
 
     if (plot.isWithered) return;
 
-    if (cycleTime < 0.1) {
-      // Hyper rate-based continuous generation
+    plot.status = 'active';
+
+    if (cycleTime < 0.05) {
+      // Hyper rate-based continuous generation (<0.05s) to prevent DOM/animation freeze
       const rate = coinsPerCycle / cycleTime;
       gardenTotalCps += rate;
-      sunflowerState.coins += rate * dt;
+      const earned = rate * dt;
+      sunflowerState.coins += earned;
+      plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + earned;
+      plot.progress = 1.0;
+      plot.timer = 0.001;
+
+      const timeStr = '⏱️ 0.001s';
+      if (_cachedTimerTexts[plot.id] !== timeStr) {
+        _cachedTimerTexts[plot.id] = timeStr;
+        const timeEl = document.getElementById(`sfPlotTime-${plot.id}`);
+        if (timeEl) timeEl.innerText = timeStr;
+      }
     } else {
       gardenTotalCps += coinsPerCycle / cycleTime;
-      plot.progress += dt / cycleTime;
+      if (typeof plot.timer !== 'number') plot.timer = cycleTime;
+      plot.timer -= dt;
 
-      if (plot.progress >= 1.0) {
-        plot.progress = 0;
-        sunflowerState.coins += coinsPerCycle;
+      // When countdown reaches zero: add coins & restart production timer
+      if (plot.timer <= 0) {
+        const completedCycles = 1 + Math.floor(-plot.timer / cycleTime);
+        const earned = completedCycles * coinsPerCycle;
+        sunflowerState.coins += earned;
+        plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + earned;
+        plot.timer = cycleTime - (-plot.timer % cycleTime);
+
+        if (!sunflowerAudio.muted && cycleTime >= 0.5) {
+          sunflowerAudio.playCoin();
+        }
       }
 
-      // Update progress bar DOM directly for smooth 60fps rendering
+      plot.progress = Math.max(0, Math.min(1, 1 - (plot.timer / cycleTime)));
+
+      // Smooth progress bar update
       const barEl = document.getElementById(`sfPlotProg-${plot.id}`);
       if (barEl) {
-        barEl.style.width = `${Math.min(100, Math.floor(plot.progress * 100))}%`;
+        barEl.style.width = `${(plot.progress * 100).toFixed(1)}%`;
+      }
+
+      // Smooth countdown timer text update
+      const timeStr = `⏱️ ${formatTimerText(plot.timer, cycleTime)}`;
+      if (_cachedTimerTexts[plot.id] !== timeStr) {
+        _cachedTimerTexts[plot.id] = timeStr;
+        const timeEl = document.getElementById(`sfPlotTime-${plot.id}`);
+        if (timeEl) timeEl.innerText = timeStr;
       }
     }
   });
 
-  // 3. Update Income Rate Display
+  // 3. Update Income Rate Display & Live UI
   sfIncomeSecondAccumulator += dt;
   if (sfIncomeSecondAccumulator >= 0.5) {
     sfIncomeSecondAccumulator = 0;
@@ -873,10 +1026,21 @@ function updateLiveUpgradeButtons() {
     if (!plot.unlocked) return;
     const btn = document.getElementById(`sfPlotUpBtn-${plot.id}`);
     if (btn) {
-      const upInfo = getSfMultiUpgradeInfo(idx, plot.level, mult, coins);
-      const canAfford = coins >= upInfo.totalCost && plot.level < 5000;
-      if (canAfford) btn.classList.remove('disabled');
-      else btn.classList.add('disabled');
+      if (plot.level >= 5000) {
+        btn.className = "sf-tile-up-btn max-level disabled";
+        btn.disabled = true;
+        btn.innerHTML = `<span>★ MAX LEVEL (5000)</span>`;
+      } else {
+        const upInfo = getSfMultiUpgradeInfo(idx, plot.level, mult, coins);
+        const canAfford = coins >= upInfo.totalCost;
+        btn.disabled = false;
+        if (canAfford) {
+          btn.classList.remove('disabled');
+        } else {
+          btn.classList.add('disabled');
+        }
+        btn.innerHTML = `<span>▲ Lv. ${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} 🪙)</span>`;
+      }
     }
   });
 }
@@ -886,12 +1050,19 @@ function updateStickyHeaderAndMiniStats() {
   const sCoins = document.getElementById('sfStickyCoins');
   const sBaskets = document.getElementById('sfStickyBaskets');
   const sShovels = document.getElementById('sfStickyShovels');
-  const sDiamonds = document.getElementById('sfStickyDiamonds');
+  const sBlueCoins = document.getElementById('sfStickyBlueCoins');
 
   if (sCoins) sCoins.innerText = formatNumber(Math.floor(sunflowerState.coins));
   if (sBaskets) sBaskets.innerText = sunflowerState.baskets;
   if (sShovels) sShovels.innerText = sunflowerState.shovels;
-  if (sDiamonds) sDiamonds.innerText = sunflowerState.diamonds;
+
+  // Real-time Blue Coins Balance
+  if (sBlueCoins) {
+    const blueVal = (typeof gameState !== 'undefined' && gameState.player && typeof gameState.player.blueCoins === 'number')
+      ? gameState.player.blueCoins
+      : (sunflowerState.blueCoins || 0);
+    sBlueCoins.innerText = formatNumber(blueVal);
+  }
 
   // Energy Page Hub Card Balances
   const eCoins = document.getElementById('sfEntryCoins');
@@ -1017,14 +1188,20 @@ function initSunflowerTycoonGame() {
   requestAnimationFrame(sunflowerMainLoop);
 }
 
-// Number Formatter Helper (e.g. 1.2K, 3.4M, 5.6B)
+// Large Number Formatter Helper (e.g. 1.20K, 3.40M, 5.60B ... up to 10^63 Vg)
+const SF_NUM_SUFFIXES = [
+  '', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No',
+  'Dc', 'Ud', 'Dd', 'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Ocd', 'Nod', 'Vg'
+];
+
 function formatNumber(num) {
-  if (typeof num !== 'number' || isNaN(num)) return '0';
-  if (num < 1000) return num.toLocaleString();
-  if (num < 1000000) return (num / 1000).toFixed(1) + 'K';
-  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B';
-  return (num / 1000000000000).toFixed(1) + 'T';
+  if (typeof num !== 'number' || isNaN(num) || !isFinite(num)) return '0';
+  if (Math.abs(num) < 1000) return Math.floor(num).toLocaleString();
+  const tier = Math.min(SF_NUM_SUFFIXES.length - 1, Math.floor(Math.log10(Math.abs(num)) / 3));
+  if (tier <= 0) return Math.floor(num).toLocaleString();
+  const scale = Math.pow(10, tier * 3);
+  const scaled = num / scale;
+  return scaled.toFixed(scaled < 10 ? 2 : 1) + SF_NUM_SUFFIXES[tier];
 }
 
 function capitalize(s) {

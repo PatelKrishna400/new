@@ -7,29 +7,64 @@
       </button>
       <div class="sf-sticky-title-wrap">
         <span class="sf-sticky-title-icon">🌻</span>
-        <span class="sf-sticky-title-text font-black">Sunflower Grow</span>
+        <span class="sf-sticky-title-text font-black">Sunflower</span>
       </div>
     </div>
 
-    <!-- Sticky Live Resource Balances: Coin, Shovel, Water Bucket -->
+    <!-- Sticky Live Resource Balances: Sunflower Coin, Bucket, Shovel, Blue Coin -->
     <div class="sf-sticky-resources">
-      <!-- 1. Coin Balance -->
+      <!-- 1. 🌻 Sunflower Coin Balance -->
       <div class="sf-hdr-pill pill-amber" title="Sunflower Coins">
-        <span class="sf-hdr-ico">☀️</span>
+        <span class="sf-hdr-ico">🌻</span>
         <span id="sfStickyCoins" class="sf-hdr-val font-mono font-black">150</span>
       </div>
-      <!-- 2. Shovel Balance -->
-      <div class="sf-hdr-pill pill-stone" title="Garden Shovels">
-        <span class="sf-hdr-ico">🪏</span>
-        <span id="sfStickyShovels" class="sf-hdr-val font-mono font-black">1</span>
-      </div>
-      <!-- 3. Water Bucket Balance -->
+      <!-- 2. 🪣 Bucket Balance -->
       <div class="sf-hdr-pill pill-blue" title="Water Buckets">
         <span class="sf-hdr-ico">🪣</span>
         <span id="sfStickyBaskets" class="sf-hdr-val font-mono font-black">2</span>
       </div>
+      <!-- 3. 🛠️ Shovel Balance -->
+      <div class="sf-hdr-pill pill-stone" title="Garden Shovels">
+        <span class="sf-hdr-ico">🛠️</span>
+        <span id="sfStickyShovels" class="sf-hdr-val font-mono font-black">1</span>
+      </div>
+      <!-- 4. 🔵 Blue Coin Balance -->
+      <div class="sf-hdr-pill pill-cyan" title="Blue Coins">
+        <span class="sf-hdr-ico">🔵</span>
+        <span id="sfStickyBlueCoins" class="sf-hdr-val font-mono font-black">0</span>
+      </div>
     </div>
   </header>
+
+  <!-- Centered Menu Bar below Main Header -->
+  <nav class="sf-center-menu-bar" id="sfCenterMenuBar" aria-label="Sunflower Game Navigation">
+    <!-- 1. Garden -->
+    <button class="sf-center-menu-btn active" id="sfCenterNavGarden" onclick="navigateSunflowerPage(1)" title="Garden (20 Lands)">
+      <span class="sf-center-menu-ico">🌻</span>
+      <span class="sf-center-menu-label">Garden</span>
+    </button>
+    <!-- 2. Water -->
+    <button class="sf-center-menu-btn" id="sfCenterNavWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
+      <span class="sf-center-menu-ico">💧</span>
+      <span class="sf-center-menu-label">Water</span>
+    </button>
+    <!-- 3. Manager & Worker (Half-Person / Man Logo) -->
+    <button class="sf-center-menu-btn" id="sfCenterNavWorkers" onclick="navigateSunflowerPage(4)" title="Manager & Worker Automation">
+      <span class="sf-center-menu-ico sf-half-person-ico">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="7" r="4"/>
+          <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
+          <line x1="12" y1="11" x2="12" y2="21" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/>
+        </svg>
+      </span>
+      <span class="sf-center-menu-label">Manager &amp; Worker</span>
+    </button>
+    <!-- 4. Shop -->
+    <button class="sf-center-menu-btn" id="sfCenterNavShop" onclick="navigateSunflowerPage(3)" title="Store & Shop">
+      <span class="sf-center-menu-ico">🏪</span>
+      <span class="sf-center-menu-label">Shop</span>
+    </button>
+  </nav>
 
   <div class="sunflower-tycoon-container flex flex-col text-stone-800 pb-20">
 
