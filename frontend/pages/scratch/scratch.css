@@ -20,21 +20,23 @@
   overscroll-behavior-y: contain !important;
   padding: 6px 12px 85px 12px !important;
   box-sizing: border-box !important;
-  scrollbar-width: thin !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   scrollbar-color: transparent transparent !important;
 }
 
 #pageScratch::-webkit-scrollbar {
-  width: 4px !important;
-  height: 4px !important;
+  width: 0px !important;
+  height: 0px !important;
   background: transparent !important;
+  display: none !important;
 }
 
 #pageScratch::-webkit-scrollbar-track,
 #pageScratch::-webkit-scrollbar-thumb {
   background: transparent !important;
-  border-radius: 4px !important;
   border: none !important;
+  display: none !important;
 }
 
 /* Header Title Pill */

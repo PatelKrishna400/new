@@ -1,96 +1,171 @@
 /**
- * Coin Catcher Mini-Game
- * Coins fall from top. Player taps/catches them. Avoid bomb hazards.
+ * Coin Fall Catcher Mini-Game (pages/coin-catcher/coin-catcher.js)
+ * 
+ * Rules & Mechanics:
+ * - 100 Diamonds Entry Cost paid to play.
+ * - Coins (🪙) and Booms (💣) fall from top to bottom.
+ * - Tapping a coin collects it into the run's bank.
+ * - Falling speed is randomized and progressively accelerates as playing time increases.
+ * - Tapping a 💣 Boom detonates: shows "Try Again / Resume" modal offering a Rewarded Ad to resume and keep coins, OR exit and forfeit coins.
+ * - Prominent "COLLECT & EXIT" button below the stage allows the player to safely cash out their coin bank at any time.
+ * - Option on collection to watch a rewarded ad to 2X Double the collected coins.
  */
 
 (function() {
+  'use strict';
+
   let isGameActive = false;
+  let isBoomPaused = false;
   let animFrameId = null;
   let timerInterval = null;
-  let timeRemaining = 30;
-  let scoreCoins = 0;
-  let scoreDiamonds = 0;
-  let combo = 1.0;
-  let peakCombo = 1.0;
-  let lives = 3;
-  let lastCalculatedReward = null;
+  let lastFrameTime = 0;
 
-  // Active falling items array
+  // Gameplay Run State
+  let elapsedSeconds = 0;
+  let bankedCoins = 0;
+  let speedMultiplier = 1.0;
   let activeItems = [];
   let nextSpawnTime = 0;
 
-  // DOM Elements cache
+  // DOM Elements Cache
   let elStage = null;
   let elTime = null;
   let elScore = null;
-  let elCombo = null;
-  let elLives = null;
+  let elSpeed = null;
+  let elDiamondPillVal = null;
+  let elIntroDiaBal = null;
+  let elCollectBtn = null;
+  let elCollectBtnText = null;
   let elOverlay = null;
+  let elBoomModal = null;
   let elStartOverlay = null;
 
   function initDOMElements() {
     elStage = document.getElementById('catcherStage');
     elTime = document.getElementById('catcherTimeVal');
     elScore = document.getElementById('catcherScoreVal');
-    elCombo = document.getElementById('catcherComboVal');
-    elLives = document.getElementById('catcherLivesVal');
+    elSpeed = document.getElementById('catcherSpeedVal');
+    elDiamondPillVal = document.getElementById('catcherPlayerDiamondsVal');
+    elIntroDiaBal = document.getElementById('catcherIntroDiaBal');
+    elCollectBtn = document.getElementById('btnCatcherCollectBank');
+    elCollectBtnText = document.getElementById('catcherCollectBtnText');
     elOverlay = document.getElementById('catcherModalOverlay');
+    elBoomModal = document.getElementById('catcherBoomModal');
     elStartOverlay = document.getElementById('catcherStartOverlay');
+
+    updateDiamondBalances();
   }
 
+  function updateDiamondBalances() {
+    const diamonds = (typeof gameState !== 'undefined' && gameState.player && gameState.player.diamonds !== undefined)
+      ? Number(gameState.player.diamonds)
+      : 0;
+
+    if (elDiamondPillVal) elDiamondPillVal.textContent = diamonds.toLocaleString();
+    if (elIntroDiaBal) elIntroDiaBal.textContent = diamonds.toLocaleString();
+  }
+
+  function updateHUD() {
+    if (elTime) elTime.textContent = `${elapsedSeconds}s`;
+    if (elScore) elScore.textContent = bankedCoins.toLocaleString();
+    if (elSpeed) elSpeed.textContent = `${speedMultiplier.toFixed(1)}x`;
+
+    if (elCollectBtn) {
+      if (bankedCoins > 0 && (isGameActive || isBoomPaused)) {
+        elCollectBtn.disabled = false;
+        elCollectBtn.classList.add('has-bounty');
+        if (elCollectBtnText) {
+          elCollectBtnText.textContent = `COLLECT ${bankedCoins.toLocaleString()} COINS & EXIT`;
+        }
+      } else {
+        elCollectBtn.disabled = true;
+        elCollectBtn.classList.remove('has-bounty');
+        if (elCollectBtnText) {
+          elCollectBtnText.textContent = 'COLLECT & EXIT (0 🪙)';
+        }
+      }
+    }
+  }
+
+  /**
+   * Start a New Coin Fall Round (Costs 100 Diamonds)
+   */
   function startCoinCatcherGame() {
     initDOMElements();
-    if (!elStage) return;
 
-    // Reset game state
+    const currentDiamonds = (typeof gameState !== 'undefined' && gameState.player && gameState.player.diamonds !== undefined)
+      ? Number(gameState.player.diamonds)
+      : 0;
+
+    // Check if player has 100 Diamonds
+    if (currentDiamonds < 100) {
+      if (typeof sfx !== 'undefined' && sfx.playErrorSound) sfx.playErrorSound();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚠️ Insufficient Diamonds! 100 💎 required to play.');
+      } else {
+        alert('Insufficient Diamonds! You need 100 Diamonds to play Coin Fall.');
+      }
+      return;
+    }
+
+    // Deduct 100 Diamonds
+    gameState.player.diamonds -= 100;
+    if (gameState.player.blueCoins !== undefined) {
+      gameState.player.blueCoins = gameState.player.diamonds;
+    }
+    if (typeof saveGame === 'function') saveGame(true);
+    if (typeof updateUI === 'function') updateUI();
+    updateDiamondBalances();
+
+    if (typeof sfx !== 'undefined' && sfx.playBuySound) sfx.playBuySound();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('💎 -100 Diamonds paid! Round Started!');
+    }
+
+    // Clean up any ongoing session
     cancelAnimationFrame(animFrameId);
     clearInterval(timerInterval);
 
-    // Clear falling elements from stage
-    const oldItems = elStage.querySelectorAll('.falling-item, .catcher-score-pop');
-    oldItems.forEach(el => el.remove());
+    if (elStage) {
+      const oldItems = elStage.querySelectorAll('.falling-item, .catcher-score-pop');
+      oldItems.forEach(el => el.remove());
+    }
 
+    // Reset Run State
     isGameActive = true;
-    timeRemaining = 30;
-    scoreCoins = 0;
-    scoreDiamonds = 0;
-    combo = 1.0;
-    peakCombo = 1.0;
-    lives = 3;
+    isBoomPaused = false;
+    elapsedSeconds = 0;
+    bankedCoins = 0;
+    speedMultiplier = 1.0;
     activeItems = [];
-    nextSpawnTime = Date.now() + 300;
-    lastCalculatedReward = null;
+    nextSpawnTime = Date.now() + 250;
 
     if (elStartOverlay) elStartOverlay.style.display = 'none';
     if (elOverlay) elOverlay.classList.remove('open');
+    if (elBoomModal) elBoomModal.classList.remove('open');
+
     updateHUD();
 
-    // Start 30s countdown
+    // Start Elapsed Playing Time Loop (increases fall speed dynamically)
     timerInterval = setInterval(() => {
-      if (!isGameActive) return;
-      timeRemaining--;
+      if (!isGameActive || isBoomPaused) return;
+      elapsedSeconds++;
+      // Fall speed increases smoothly over time (+4% per second)
+      speedMultiplier = Number((1.0 + (elapsedSeconds * 0.04)).toFixed(2));
       updateHUD();
-
-      if (timeRemaining <= 0) {
-        endGame(true);
-      }
     }, 1000);
 
     // Start Animation Loop
     lastFrameTime = performance.now();
     animFrameId = requestAnimationFrame(gameLoop);
-
-    if (typeof sfx !== 'undefined' && sfx.playTapSound) {
-      sfx.playTapSound(2);
-    }
   }
 
-  let lastFrameTime = 0;
-
+  /**
+   * Main Physics & Animation Loop
+   */
   function gameLoop(now) {
-    if (!isGameActive) return;
+    if (!isGameActive || isBoomPaused) return;
 
-    // Stop loop if stage is disconnected or hidden
     if (!elStage || !elStage.isConnected || elStage.offsetParent === null) {
       cancelAnimationFrame(animFrameId);
       isGameActive = false;
@@ -100,169 +175,315 @@
     const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
     lastFrameTime = now;
 
-    // Spawn new items
+    // Spawn new falling items
     if (Date.now() >= nextSpawnTime) {
       spawnFallingItem();
-      // Spawn interval between 350ms and 700ms
-      nextSpawnTime = Date.now() + Math.floor(350 + Math.random() * 350);
+      // Spawn interval accelerates slightly as time increases (between 250ms and 500ms)
+      const baseDelay = Math.max(260, 480 - (elapsedSeconds * 5));
+      nextSpawnTime = Date.now() + Math.floor(baseDelay + Math.random() * 200);
     }
 
-    // Update active items
+    // Update active falling items
     const stageHeight = elStage.clientHeight || 440;
     for (let i = activeItems.length - 1; i >= 0; i--) {
       const item = activeItems[i];
       item.y += item.speed * (dt * 60);
       item.el.style.top = `${item.y}px`;
 
-      // Fell off the bottom
-      if (item.y > stageHeight + 40) {
+      // Item passed below the stage
+      if (item.y > stageHeight + 45) {
         if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
         activeItems.splice(i, 1);
-
-        // Reset combo if coin fell without being caught
-        if (item.type !== 'bomb') {
-          combo = Math.max(1.0, Number((combo - 0.2).toFixed(1)));
-          updateHUD();
-        }
       }
     }
 
     animFrameId = requestAnimationFrame(gameLoop);
   }
 
+  /**
+   * Spawn a Falling Item: Only Coin (🪙) and Boom/Bomb (💣)
+   */
   function spawnFallingItem() {
     if (!elStage) return;
 
     const stageWidth = elStage.clientWidth || 320;
-    // 65% Gold Coin, 18% Blue Coin, 7% Star, 10% Bomb
-    const rand = Math.random();
-    let type = 'gold';
+    const isBomb = Math.random() < 0.32; // ~68% Coins, ~32% Booms
+
+    let type = 'coin';
     let icon = '🪙';
     let className = 'coin-gold';
-    let speed = 2.2 + Math.random() * 1.5;
 
-    if (rand < 0.60) {
-      type = 'gold';
-      icon = '🪙';
-      className = 'coin-gold';
-    } else if (rand < 0.80) {
-      type = 'blue';
-      icon = '🔷';
-      className = 'coin-blue';
-      speed += 0.5;
-    } else if (rand < 0.88) {
-      type = 'star';
-      icon = '⭐';
-      className = 'star-item';
-      speed += 0.8;
-    } else {
+    // Base speed is randomized, then multiplied by elapsed time speed multiplier
+    const baseRandomSpeed = 1.9 + Math.random() * 1.6;
+    let speed = baseRandomSpeed * speedMultiplier;
+
+    if (isBomb) {
       type = 'bomb';
       icon = '💣';
       className = 'bomb-hazard';
-      speed += 0.4;
+      speed += 0.3;
     }
 
-    const x = 30 + Math.random() * (stageWidth - 60);
+    const x = 32 + Math.random() * Math.max(120, stageWidth - 64);
     const itemEl = document.createElement('div');
     itemEl.className = `falling-item ${className}`;
     itemEl.textContent = icon;
     itemEl.style.left = `${x}px`;
-    itemEl.style.top = `-30px`;
+    itemEl.style.top = `-35px`;
 
     const itemObj = {
       el: itemEl,
       type: type,
       x: x,
-      y: -30,
+      y: -35,
       speed: speed
     };
 
-    // Tap/Catch handler
-    const catchHandler = (e) => {
+    // Tap / Click Handler
+    const tapHandler = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      handleItemCatch(itemObj);
+      handleItemTap(itemObj);
     };
 
-    itemEl.addEventListener('touchstart', catchHandler, { passive: false });
-    itemEl.addEventListener('mousedown', catchHandler);
+    itemEl.addEventListener('touchstart', tapHandler, { passive: false });
+    itemEl.addEventListener('mousedown', tapHandler);
 
     elStage.appendChild(itemEl);
     activeItems.push(itemObj);
   }
 
-  function handleItemCatch(item) {
-    if (!isGameActive) return;
+  /**
+   * Handle Player Tap on a Falling Item
+   */
+  function handleItemTap(item) {
+    if (!isGameActive || isBoomPaused) return;
 
-    // Remove from active array
+    // Remove tapped item from active pool
     const idx = activeItems.indexOf(item);
     if (idx !== -1) activeItems.splice(idx, 1);
+    if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
 
     if (item.type === 'bomb') {
-      // BOMB HIT!
-      lives--;
-      combo = 1.0;
-      spawnScorePopup(item.x, item.y, '-1 LIFE 💣', 'bomb');
-
-      // Screen shake
-      if (elStage) {
-        elStage.classList.remove('shake');
-        void elStage.offsetWidth; // trigger reflow
-        elStage.classList.add('shake');
-      }
-
-      if (typeof sfx !== 'undefined' && sfx.playBombSound) {
-        sfx.playBombSound();
-      }
-
-      updateHUD();
-
-      if (lives <= 0) {
-        endGame(false); // Detonated!
-      }
+      // 💣 BOOM DETONATED!
+      handleBoomDetonated(item.x, item.y);
     } else {
-      // COIN / STAR CATCH!
-      combo = Math.min(3.0, Number((combo + 0.1).toFixed(1)));
-      if (combo > peakCombo) peakCombo = combo;
+      // 🪙 COIN COLLECTED!
+      const earned = Math.round(10 * Math.min(2.5, 1.0 + (elapsedSeconds * 0.015)));
+      bankedCoins += earned;
 
-      let gainCoins = 0;
-      let gainDiamonds = 0;
-      let text = '';
-      let colorClass = 'gold';
-
-      if (item.type === 'gold') {
-        gainCoins = Math.round(10 * combo);
-        text = `+${gainCoins}`;
-        colorClass = 'gold';
-      } else if (item.type === 'blue') {
-        gainCoins = Math.round(25 * combo);
-        gainDiamonds = 2;
-        text = `+${gainCoins} 🪙 +2 💎`;
-        colorClass = 'blue';
-      } else if (item.type === 'star') {
-        gainCoins = Math.round(50 * combo);
-        gainDiamonds = 5;
-        combo = Math.min(3.0, Number((combo + 0.3).toFixed(1)));
-        text = `+${gainCoins} 🔥`;
-        colorClass = 'blue';
-      }
-
-      scoreCoins += gainCoins;
-      scoreDiamonds += gainDiamonds;
-      spawnScorePopup(item.x, item.y, text, colorClass);
-
-      if (typeof sfx !== 'undefined' && sfx.playTapSound) {
-        sfx.playTapSound(1);
-      }
+      spawnScorePopup(item.x, item.y, `+${earned} 🪙`, 'gold');
+      if (typeof sfx !== 'undefined' && sfx.playTapSound) sfx.playTapSound(1);
 
       updateHUD();
-    }
-
-    if (item.el.parentNode) {
-      item.el.parentNode.removeChild(item.el);
     }
   }
 
+  /**
+   * Boom Hazard Hit: Pause Game & Show Try Again Modal
+   */
+  function handleBoomDetonated(x, y) {
+    isBoomPaused = true;
+    isGameActive = false;
+    cancelAnimationFrame(animFrameId);
+    clearInterval(timerInterval);
+
+    // Screen Shake & Bomb Audio
+    if (elStage) {
+      elStage.classList.remove('shake');
+      void elStage.offsetWidth; // trigger reflow
+      elStage.classList.add('shake');
+    }
+    if (typeof sfx !== 'undefined' && sfx.playBombSound) sfx.playBombSound();
+
+    spawnScorePopup(x, y, 'BOOM! 💥', 'bomb');
+
+    // Populate and open Boom Modal
+    const bankedTextEl = document.getElementById('catcherBoomBankedText');
+    const resumeCoinsEl = document.getElementById('catcherBoomResumeCoins');
+    if (bankedTextEl) bankedTextEl.textContent = `${bankedCoins.toLocaleString()} 🪙`;
+    if (resumeCoinsEl) resumeCoinsEl.textContent = bankedCoins.toLocaleString();
+
+    if (elBoomModal) {
+      elBoomModal.classList.add('open');
+    }
+  }
+
+  /**
+   * Boom Modal Option 1: Watch Ad to Resume Game & Keep Banked Coins
+   */
+  function resumeAfterBombAd() {
+    const handleAdSuccess = () => {
+      if (elBoomModal) elBoomModal.classList.remove('open');
+
+      // Clear all existing bombs from stage to give player a clean resume
+      for (let i = activeItems.length - 1; i >= 0; i--) {
+        if (activeItems[i].type === 'bomb') {
+          if (activeItems[i].el.parentNode) activeItems[i].el.parentNode.removeChild(activeItems[i].el);
+          activeItems.splice(i, 1);
+        }
+      }
+
+      isBoomPaused = false;
+      isGameActive = true;
+
+      // Resume timer
+      timerInterval = setInterval(() => {
+        if (!isGameActive || isBoomPaused) return;
+        elapsedSeconds++;
+        speedMultiplier = Number((1.0 + (elapsedSeconds * 0.04)).toFixed(2));
+        updateHUD();
+      }, 1000);
+
+      // Resume animation loop
+      lastFrameTime = performance.now();
+      animFrameId = requestAnimationFrame(gameLoop);
+
+      if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`✨ Revived! Game resumed with ${bankedCoins.toLocaleString()} 🪙!`);
+      }
+    };
+
+    if (typeof window.showRewardedAd === 'function') {
+      window.showRewardedAd(handleAdSuccess, {
+        adTitle: 'REVIVE COIN FALL RUN',
+        adDesc: 'Watching sponsored video to resume game and protect your coins...'
+      });
+    } else {
+      handleAdSuccess();
+    }
+  }
+
+  /**
+   * Boom Modal Option 2: Exit & Forfeit Coins (Coins are NOT collected)
+   */
+  function exitAndForfeitCoins() {
+    if (elBoomModal) elBoomModal.classList.remove('open');
+
+    // Coins are not collected
+    bankedCoins = 0;
+    isGameActive = false;
+    isBoomPaused = false;
+    cancelAnimationFrame(animFrameId);
+    clearInterval(timerInterval);
+
+    // Clear falling items
+    if (elStage) {
+      const oldItems = elStage.querySelectorAll('.falling-item, .catcher-score-pop');
+      oldItems.forEach(el => el.remove());
+    }
+    activeItems = [];
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('💥 Bomb Detonated! Coins were forfeited.');
+    }
+
+    updateHUD();
+    updateDiamondBalances();
+
+    // Show Start Overlay for next run
+    if (elStartOverlay) elStartOverlay.style.display = 'flex';
+  }
+
+  /**
+   * Prominent Below-the-Page "COLLECT & EXIT" Button Handler
+   */
+  function collectAndExitCoinCatcher() {
+    if (bankedCoins <= 0) {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚠️ No coins in bank yet! Tap coins to bank them.');
+      }
+      return;
+    }
+
+    // Stop active gameplay safely
+    isGameActive = false;
+    isBoomPaused = false;
+    cancelAnimationFrame(animFrameId);
+    clearInterval(timerInterval);
+
+    // Clear active items
+    if (elStage) {
+      const oldItems = elStage.querySelectorAll('.falling-item, .catcher-score-pop');
+      oldItems.forEach(el => el.remove());
+    }
+    activeItems = [];
+
+    // Populate Victory / Bounty Modal
+    const statCoinsEl = document.getElementById('catcherStatCoins');
+    const statTimeEl = document.getElementById('catcherStatTime');
+    const statSpeedEl = document.getElementById('catcherStatSpeed');
+    const statRewardEl = document.getElementById('catcherStatReward');
+
+    if (statCoinsEl) statCoinsEl.textContent = `${bankedCoins.toLocaleString()} 🪙`;
+    if (statTimeEl) statTimeEl.textContent = `${elapsedSeconds}s`;
+    if (statSpeedEl) statSpeedEl.textContent = `${speedMultiplier.toFixed(1)}x`;
+    if (statRewardEl) statRewardEl.textContent = `+${bankedCoins.toLocaleString()} Coins 🪙`;
+
+    if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
+    if (elOverlay) elOverlay.classList.add('open');
+  }
+
+  /**
+   * Claim Banked Coins (Optionally 2X Double with Rewarded Ad)
+   */
+  async function claimCoinCatcherReward(watchDoubleAd = false) {
+    if (bankedCoins <= 0) {
+      if (elOverlay) elOverlay.classList.remove('open');
+      if (elStartOverlay) elStartOverlay.style.display = 'flex';
+      return;
+    }
+
+    const processRewardPayout = (multiplier = 1) => {
+      const finalCoins = Math.round(bankedCoins * multiplier);
+
+      if (typeof gameState !== 'undefined') {
+        gameState.player.coins = (gameState.player.coins || 0) + finalCoins;
+        if (!gameState.player.miniGamesPlayed) gameState.player.miniGamesPlayed = 0;
+        gameState.player.miniGamesPlayed++;
+
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame(true);
+      }
+
+      if (typeof sfx !== 'undefined' && sfx.playBuySound) sfx.playBuySound();
+
+      if (typeof showFloatingToast === 'function') {
+        if (multiplier > 1) {
+          showFloatingToast(`🔥 2X BONUS! +${finalCoins.toLocaleString()} Coins added to your bank!`);
+        } else {
+          showFloatingToast(`🎉 +${finalCoins.toLocaleString()} Coins safely deposited to your vault!`);
+        }
+      }
+
+      if (elOverlay) elOverlay.classList.remove('open');
+      bankedCoins = 0;
+      updateHUD();
+      updateDiamondBalances();
+
+      if (elStartOverlay) elStartOverlay.style.display = 'flex';
+    };
+
+    if (watchDoubleAd) {
+      if (typeof window.showRewardedAd === 'function') {
+        window.showRewardedAd(() => {
+          processRewardPayout(2);
+        }, {
+          adTitle: '2X COIN MULTIPLIER',
+          adDesc: 'Watching sponsored video to double your earned coin bounty...'
+        });
+      } else {
+        processRewardPayout(2);
+      }
+    } else {
+      processRewardPayout(1);
+    }
+  }
+
+  /**
+   * Floating Score Text on Tap (+10 🪙 or BOOM!)
+   */
   function spawnScorePopup(x, y, text, colorClass) {
     if (!elStage) return;
     const pop = document.createElement('div');
@@ -277,142 +498,19 @@
     }, 600);
   }
 
-  function updateHUD() {
-    if (elTime) elTime.textContent = `${Math.max(0, timeRemaining)}s`;
-    if (elScore) elScore.textContent = scoreCoins.toLocaleString();
-    if (elCombo) elCombo.textContent = `${combo.toFixed(1)}x`;
-    if (elLives) {
-      let hearts = '';
-      for (let i = 0; i < 3; i++) {
-        hearts += i < lives ? '❤️' : '🖤';
-      }
-      elLives.textContent = hearts;
-    }
-  }
-
-  function endGame(isTimeComplete) {
-    isGameActive = false;
-    cancelAnimationFrame(animFrameId);
-    clearInterval(timerInterval);
-
-    initDOMElements();
-    if (!elOverlay) return;
-
-    const elIcon = document.getElementById('catcherResultIcon');
-    const elTitle = document.getElementById('catcherResultTitle');
-    const elDesc = document.getElementById('catcherResultDesc');
-    const elStatCoins = document.getElementById('catcherStatCoins');
-    const elStatCombo = document.getElementById('catcherStatCombo');
-    const elStatLives = document.getElementById('catcherStatLives');
-    const elStatReward = document.getElementById('catcherStatReward');
-    const elClaimBtn = document.getElementById('catcherClaimBtn');
-
-    // Calculate lives bonus (+30 coins per remaining life)
-    const lifeBonus = Math.max(0, lives) * 30;
-    const finalCoins = scoreCoins + lifeBonus;
-
-    lastCalculatedReward = {
-      coins: finalCoins,
-      diamonds: scoreDiamonds,
-      livesRemaining: lives,
-      peakCombo: peakCombo,
-      isSuccess: isTimeComplete && scoreCoins > 0
-    };
-
-    if (isTimeComplete && scoreCoins > 0) {
-      if (elIcon) elIcon.textContent = '🪙';
-      if (elTitle) elTitle.textContent = 'ROUND COMPLETE!';
-      if (elDesc) elDesc.textContent = `Time expired! Bonus awarded for ${lives} remaining lives.`;
-      if (elClaimBtn) {
-        elClaimBtn.style.display = 'flex';
-        elClaimBtn.disabled = false;
-        elClaimBtn.textContent = '🎁 Claim Reward';
-      }
-    } else {
-      if (elIcon) elIcon.textContent = '💥';
-      if (elTitle) elTitle.textContent = 'BOMB DETONATED!';
-      if (elDesc) elDesc.textContent = 'Too many bombs hit! Be careful and tap only coins!';
-      if (elClaimBtn) {
-        // Still allow claiming whatever coins were caught before detonation
-        elClaimBtn.style.display = finalCoins > 0 ? 'flex' : 'none';
-        elClaimBtn.disabled = false;
-        elClaimBtn.textContent = '🎁 Claim Earned Bounty';
-      }
-    }
-
-    if (elStatCoins) elStatCoins.textContent = `${scoreCoins.toLocaleString()} (+${lifeBonus} Life Bonus)`;
-    if (elStatCombo) elStatCombo.textContent = `${peakCombo.toFixed(1)}x`;
-    if (elStatLives) {
-      let hearts = '';
-      for (let i = 0; i < 3; i++) hearts += i < lives ? '❤️' : '🖤';
-      elStatLives.textContent = hearts;
-    }
-    if (elStatReward) elStatReward.textContent = `+${finalCoins.toLocaleString()} Coins 🪙, +${scoreDiamonds} 💎`;
-
-    elOverlay.classList.add('open');
-
-    if (typeof sfx !== 'undefined' && sfx.playLevelUpSound && isTimeComplete) {
-      sfx.playLevelUpSound();
-    }
-  }
-
-  async function claimCoinCatcherReward() {
-    if (!lastCalculatedReward) return;
-
-    const elClaimBtn = document.getElementById('catcherClaimBtn');
-    if (elClaimBtn) {
-      elClaimBtn.disabled = true;
-      elClaimBtn.textContent = '⏳ Verifying with Server...';
-    }
-
-    const payload = {
-      action: 'mini_game_catcher',
-      coinsEarned: lastCalculatedReward.coins,
-      diamondsEarned: lastCalculatedReward.diamonds,
-      livesRemaining: lastCalculatedReward.livesRemaining,
-      peakCombo: lastCalculatedReward.peakCombo
-    };
-
-    // Server authoritative claim validation
-    if (typeof window.claimServerAuthoritativeReward === 'function') {
-      try {
-        const res = await window.claimServerAuthoritativeReward('mini_game_catcher', payload);
-        if (res && res.success) {
-          if (typeof showFloatingToast === 'function') {
-            showFloatingToast(`✅ Server Verified: +${lastCalculatedReward.coins} Coins & +${lastCalculatedReward.diamonds} Diamonds!`);
-          }
-        }
-      } catch (e) {
-        console.warn('Fallback local claim:', e);
-      }
-    } else {
-      // Local fallback
-      if (typeof gameState !== 'undefined') {
-        gameState.player.coins = (gameState.player.coins || 0) + lastCalculatedReward.coins;
-        gameState.bank.diamonds = (gameState.bank.diamonds || 0) + lastCalculatedReward.diamonds;
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame(true);
-      }
-    }
-
-    // Increment mini-game counter on profile stats
-    if (typeof gameState !== 'undefined') {
-      if (!gameState.player.miniGamesPlayed) gameState.player.miniGamesPlayed = 0;
-      gameState.player.miniGamesPlayed++;
-    }
-
-    if (elOverlay) elOverlay.classList.remove('open');
-    lastCalculatedReward = null;
-    startCoinCatcherGame();
-  }
-
-  // Global window bindings
+  // Global Window Exports
   window.startCoinCatcherGame = startCoinCatcherGame;
+  window.collectAndExitCoinCatcher = collectAndExitCoinCatcher;
   window.claimCoinCatcherReward = claimCoinCatcherReward;
+  window.resumeAfterBombAd = resumeAfterBombAd;
+  window.exitAndForfeitCoins = exitAndForfeitCoins;
+
   window.initCoinCatcherPage = function() {
     initDOMElements();
     if (!isGameActive && elStartOverlay) {
       elStartOverlay.style.display = 'flex';
     }
+    updateDiamondBalances();
+    updateHUD();
   };
 })();

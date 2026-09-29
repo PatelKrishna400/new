@@ -7,7 +7,7 @@
   padding-bottom: 96px;
   background-color: #ffffff !important;
   background: #ffffff !important;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
 }
 
@@ -326,15 +326,17 @@
 .sf-sticky-header-bar {
   position: sticky;
   top: 0;
-  z-index: 90;
-  display: flex;
+  z-index: 150;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 10px 12px;
-  background: #ffffff;
+  background: #ffffff !important;
   border-bottom: 2px solid #f59e0b;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
   margin: 0 -10px 10px -10px;
 }
 
@@ -454,6 +456,38 @@
   background: linear-gradient(135deg, #0c4a6e 0%, #082f49 100%);
   border-color: #38bdf8;
   color: #bae6fd;
+}
+
+.sf-hdr-pill.pill-emerald {
+  background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+  border-color: #10b981;
+  color: #a7f3d0;
+}
+
+.sf-hdr-pill.pill-firebase {
+  background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+
+.sf-cloud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 2px;
+}
+.sf-cloud-dot.online {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+.sf-cloud-dot.syncing {
+  background: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+  animation: pulseGlow 1s infinite;
+}
+.sf-cloud-dot.offline {
+  background: #ef4444;
 }
 
 /* ==========================================================================
@@ -594,44 +628,75 @@
   gap: 10px;
 }
 
-.sf-upgrade-mult-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.sf-mult-lbl {
-  font-size: 9px;
-  font-weight: 800;
-  color: #b45309;
-  letter-spacing: 0.5px;
-}
-
-.sf-mult-btns-group {
-  display: flex;
-  align-items: center;
-  background: #fef3c7;
-  border-radius: 8px;
-  padding: 2px;
-  border: 1px solid #fcd34d;
-}
-
-.sf-mult-btn {
-  background: transparent;
-  border: none;
-  color: #78350f;
-  font-size: 9.5px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.sf-mult-btn.active {
-  background: #f59e0b;
+/* Circular Multiplier Toggle Switch Button */
+.sf-mult-circle-toggle-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbbf24 0%, #f59e0b 60%, #d97706 100%);
+  border: 2px solid #fde047;
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease, background 0.3s ease;
+  user-select: none;
+  flex-shrink: 0;
+  padding: 0;
+  position: relative;
+  outline: none;
+}
+
+.sf-mult-circle-toggle-btn:hover {
+  transform: scale(1.1);
+  border-color: #ffffff;
+  box-shadow: 0 5px 12px rgba(217, 119, 6, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.sf-mult-circle-toggle-btn:active,
+.sf-mult-circle-toggle-btn.sf-mult-bump {
+  transform: scale(0.9);
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.4);
+}
+
+.sf-mult-circle-toggle-btn[data-mult="10"] {
+  background: radial-gradient(circle at 35% 30%, #f97316 0%, #ea580c 70%, #c2410c 100%);
+  border-color: #fdba74;
+}
+
+.sf-mult-circle-toggle-btn[data-mult="100"] {
+  background: radial-gradient(circle at 35% 30%, #ef4444 0%, #dc2626 70%, #b91c1c 100%);
+  border-color: #fca5a5;
+}
+
+.sf-mult-circle-toggle-btn[data-mult="max"] {
+  background: radial-gradient(circle at 35% 30%, #a855f7 0%, #7e22ce 70%, #581c87 100%);
+  border-color: #e9d5ff;
+  box-shadow: 0 3px 10px rgba(126, 34, 206, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.sf-mult-circle-badge {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  color: #fffbeb;
+  text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);
+  text-transform: uppercase;
+}
+
+.sf-mult-circle-val {
+  font-size: 11px;
+  font-weight: 900;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(120, 53, 15, 0.8);
 }
 
 .sf-garden-cps-badge {
@@ -645,7 +710,6 @@
   padding: 2px 7px;
   border-radius: 8px;
   font-weight: 800;
-}
 }
 
 .sf-tools-right {
@@ -692,161 +756,307 @@
 }
 
 /* ==========================================================================
-   FIXED 2*10 FORMAT LANDS GRID (SUNNY WHITE THEME)
+/* ==========================================================================
+   RECTANGULAR CARDS LANDS GRID (SUNNY MODERN THEME)
+   Changed from square tiles to sleek, wide rectangular cards!
    ========================================================================== */
+.sf-plots-1x20-grid,
 .sf-plots-2x10-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 9px !important;
-  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
 }
 
-.sf-plot-tile {
+@media (min-width: 640px) {
+  .sf-plots-1x20-grid,
+  .sf-plots-2x10-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+}
+
+/* Base Rectangular Plot Card */
+.sf-rect-card {
   position: relative;
-  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
+  background: #ffffff !important;
   border: 1.5px solid #fde047 !important;
-  border-top: 3.5px solid #f59e0b !important;
-  border-radius: 14px;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 6px;
-  min-height: 125px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
-  overflow: hidden;
-  user-select: none;
+  border-left: 5px solid #f59e0b !important;
+  border-radius: 16px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  min-height: 140px !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden !important;
+  user-select: none !important;
 }
 
-.sf-plot-tile:hover {
-  border-color: #fbbf24 !important;
-  border-top-color: #d97706 !important;
+.sf-rect-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.16) !important;
+  border-color: #f59e0b !important;
 }
 
-.sf-plot-tile.locked {
+/* Card States Border Colors */
+.sf-rect-card.empty {
+  border-left-color: #d97706 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%) !important;
+}
+
+.sf-rect-card.growing {
+  border-left-color: #10b981 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%) !important;
+  border-color: #86efac !important;
+}
+
+.sf-rect-card.alive {
+  border-left-color: #f59e0b !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%) !important;
+  border-color: #fde047 !important;
+}
+
+.sf-rect-card.dead {
+  border-left-color: #f43f5e !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%) !important;
+  border-color: #fda4af !important;
+}
+
+.sf-rect-card.locked {
+  border-left-color: #94a3b8 !important;
   background: #f8fafc !important;
   border-color: #cbd5e1 !important;
-  border-top-color: #94a3b8 !important;
-  opacity: 0.9 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  opacity: 0.92;
 }
 
-/* Plot Tile Header */
-.sf-tile-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.sf-tile-num {
-  font-size: 11px;
-  font-weight: 800;
-  color: #78350f !important;
-}
-
-.sf-plot-tile.locked .sf-tile-num {
-  color: #64748b !important;
-}
-
-.sf-tile-level-badge {
-  font-size: 9px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #ffffff;
-  padding: 1px 6px;
-  border-radius: 9999px;
-  font-family: monospace;
-}
-
-/* Plot Tile Body: Sprite & Output */
-.sf-tile-body {
+/* Card Header */
+.sf-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  cursor: pointer;
-  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 5px;
 }
 
-.sf-tile-sprite {
-  font-size: 26px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
-  /* Static logo with no rotation animation */
-  animation: none !important;
-  transform: none !important;
-}
-
-.sf-tile-stats {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-}
-
-.sf-tile-output {
+.sf-card-title {
   font-size: 12px;
   font-weight: 900;
-  color: #b45309 !important;
-  font-family: monospace;
+  color: #78350f;
+  letter-spacing: -0.2px;
 }
 
-.sf-tile-timer {
+.sf-rect-card.locked .sf-card-title {
+  color: #64748b;
+}
+
+.sf-card-level-tag {
   font-size: 9.5px;
-  font-weight: 700;
-  color: #0284c7 !important;
-  font-family: monospace;
+  font-weight: 800;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde047;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
-/* Real-Time Progress Bar */
-.sf-tile-progress-track {
+/* Status Pills */
+.sf-status-pill {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.sf-status-pill.pill-empty {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.sf-status-pill.pill-growing {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.sf-status-pill.pill-alive {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #facc15;
+}
+
+.sf-status-pill.pill-dead {
+  background: #ffe4e6;
+  color: #9f1239;
+  border: 1px solid #f43f5e;
+}
+
+.sf-status-pill.pill-locked {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Card Body & Avatars */
+.sf-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.empty-avatar { background: #fef3c7; border: 1.5px solid #fde047; }
+.growing-avatar { background: #dcfce7; border: 1.5px solid #86efac; }
+.alive-avatar { background: #fef9c3; border: 1.5px solid #facc15; }
+.dead-avatar { background: #ffe4e6; border: 1.5px solid #f43f5e; }
+.locked-avatar { background: #f1f5f9; border: 1.5px solid #cbd5e1; }
+
+/* Progress Meter Bars */
+.sf-progress-bar-track {
   width: 100%;
-  height: 6px;
+  height: 7px;
   background: #e2e8f0;
   border-radius: 9999px;
   overflow: hidden;
   border: 1px solid #cbd5e1;
 }
 
-.sf-tile-progress-fill {
+.sf-progress-bar-fill {
   height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
   border-radius: 9999px;
-  transition: width 0.08s linear;
+  transition: width 0.1s linear;
 }
 
-.sf-tile-progress-fill.speed-hyper {
-  width: 100% !important;
-  background: linear-gradient(90deg, #f59e0b, #38bdf8, #fde047);
-  animation: hyperPulse 0.4s infinite alternate;
+.sf-progress-bar-fill.emerald {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
 }
 
-@keyframes hyperPulse {
-  from { opacity: 0.75; }
-  to { opacity: 1; filter: drop-shadow(0 0 4px #38bdf8); }
+.sf-progress-bar-fill.amber {
+  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
 }
 
-/* Upgrade Button */
-.sf-tile-up-btn {
+/* Rectangular Card Action Buttons */
+.sf-card-btn {
   width: 100%;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #ffffff;
-  border: 1px solid rgba(254, 240, 138, 0.4);
-  border-radius: 9px;
-  padding: 5px 6px;
-  font-size: 10px;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  gap: 4px;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sf-card-btn:active {
+  transform: scale(0.97);
+}
+
+.sf-btn-plant {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
+}
+.sf-btn-plant:hover { background: #059669; }
+
+.sf-btn-buy-plant {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid #fde047;
+}
+
+.sf-btn-water {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid #38bdf8;
+}
+.sf-btn-water:hover { background: #0369a1; }
+
+.sf-btn-upgrade {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid #fde047;
+}
+.sf-btn-upgrade:hover { background: #d97706; }
+.sf-btn-upgrade.disabled {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.sf-btn-shovel {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+  border: 1px solid #fb7185;
+}
+.sf-btn-shovel:hover { background: #be123c; }
+
+.sf-btn-unlock {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  color: #ffffff;
+  border: 1px solid #22d3ee;
+}
+
+.sf-btn-disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* Worker Page Subtabs */
+.sf-worker-tabs-nav {
+  display: flex;
+  gap: 6px;
+  background: #fffbeb !important;
+  border: 1.5px solid #fde047 !important;
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.sf-worker-tab-btn {
+  background: transparent;
+  border: none;
+  color: #78350f;
+  font-size: 11.5px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sf-worker-tab-btn.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.35);
+}
+
+.sf-quick-tool-btn.emerald {
+  background: #10b981;
+  color: #ffffff;
 }
 
 .sf-tile-up-btn:hover {
@@ -1014,8 +1224,8 @@ body.page-sunflower-active .bottom-nav {
   margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
   width: calc(100% - 24px);
   max-width: 420px;
-  background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%);
-  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  background: #ffffff !important;
+  border: 2px solid #f59e0b !important;
   border-radius: 32px;
   align-items: center;
   justify-content: space-around;
@@ -1023,11 +1233,9 @@ body.page-sunflower-active .bottom-nav {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 
-    inset 0 1.5px 0 rgba(255, 230, 160, 0.35),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.6),
-    0 6px 0 rgba(10, 5, 22, 0.9),
-    0 16px 36px rgba(0, 0, 0, 0.8),
-    0 0 24px rgba(245, 158, 11, 0.35);
+    0 8px 24px rgba(245, 158, 11, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 #ffffff;
   z-index: 120;
   flex-shrink: 0;
 }
@@ -1039,7 +1247,7 @@ body.page-sunflower-active #sfBottomMenuBar {
   display: flex !important;
 }
 
-/* Festive mirror-work top studs along Sunflower bottom navigation */
+/* Festive yellow studs along Sunflower bottom navigation */
 .sf-bottom-menu-bar::before {
   content: '';
   position: absolute;
@@ -1047,9 +1255,9 @@ body.page-sunflower-active #sfBottomMenuBar {
   left: 24px;
   right: 24px;
   height: 5px;
-  background: radial-gradient(circle, #fde047 35%, #b45309 80%, transparent 85%);
+  background: radial-gradient(circle, #fde047 35%, #f59e0b 80%, transparent 85%);
   background-size: 20px 5px;
-  opacity: 0.85;
+  opacity: 0.95;
   pointer-events: none;
 }
 
@@ -1061,11 +1269,11 @@ body.page-sunflower-active #sfBottomMenuBar {
   justify-content: center;
   gap: 2px;
   background: transparent;
-  border: none;
-  color: #94a3b8;
+  border: 1.5px solid transparent;
+  color: #78350f;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 4px 2px;
+  padding: 5px 3px;
   font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
   border-radius: 16px;
   position: relative;
@@ -1073,16 +1281,20 @@ body.page-sunflower-active #sfBottomMenuBar {
 }
 
 .sf-menu-tab-btn:hover {
-  color: #fde047;
+  background: #fef9c3;
+  color: #b45309;
 }
 
 .sf-menu-tab-btn.active {
-  color: #f59e0b;
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%) !important;
+  color: #78350f !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
 .sf-menu-tab-btn.active .sf-menu-ico {
-  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.85));
-  transform: translateY(-1px);
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.85));
+  transform: translateY(-1px) scale(1.08);
 }
 
 .sf-menu-tab-btn .sf-menu-ico {
@@ -1092,7 +1304,16 @@ body.page-sunflower-active #sfBottomMenuBar {
   align-items: center;
   justify-content: center;
   height: 22px;
+  color: #78350f;
   transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.sf-menu-tab-btn .sf-menu-ico svg {
+  stroke: #78350f;
+}
+
+.sf-menu-tab-btn.active .sf-menu-ico svg {
+  stroke: #78350f;
 }
 
 .sf-menu-tab-btn .sf-menu-txt {
@@ -1101,6 +1322,12 @@ body.page-sunflower-active #sfBottomMenuBar {
   letter-spacing: 0.2px;
   line-height: 1;
   white-space: nowrap;
+  color: #78350f;
+}
+
+.sf-menu-tab-btn.active .sf-menu-txt {
+  font-weight: 900;
+  color: #78350f;
 }
 
 /* Center Elevated Play Button */
@@ -1108,24 +1335,27 @@ body.page-sunflower-active #sfBottomMenuBar {
   position: relative;
   top: -14px;
   flex: 1.15;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .center-play-circle {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fde047 0%, #f59e0b 60%, #b45309 100%);
+  background: radial-gradient(circle, #fde047 0%, #f59e0b 70%, #d97706 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6), 0 0 14px rgba(245, 158, 11, 0.45);
-  border: 2.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.55), 0 0 14px rgba(253, 224, 71, 0.4);
+  border: 2.5px solid #ffffff;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
 }
 
 .sf-menu-tab-btn.center-play-btn:hover .center-play-circle {
   transform: scale(1.08);
-  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.8), 0 0 18px rgba(245, 158, 11, 0.65);
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.75), 0 0 18px rgba(253, 224, 71, 0.6);
 }
 
 .sf-menu-tab-btn.center-play-btn:active .center-play-circle {
@@ -1133,8 +1363,8 @@ body.page-sunflower-active #sfBottomMenuBar {
 }
 
 .sf-menu-tab-btn.center-play-btn.active .center-play-circle {
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.9), 0 0 35px rgba(253, 224, 71, 0.6);
-  border-color: #fff;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.9), 0 0 32px rgba(253, 224, 71, 0.65);
+  border-color: #ffffff;
 }
 
 .sf-menu-play-icon {
@@ -1154,4 +1384,192 @@ body.page-sunflower-active #sfBottomMenuBar {
   transform: translateY(-2px);
   border-color: #fbbf24;
 }
+
+/* ==========================================================================
+   20 WELLS AQUIFER GRID & RECTANGULAR CARDS (SUNNY MODERN CYAN/BLUE THEME)
+   ========================================================================== */
+.sf-wells-1x20-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+@media (min-width: 640px) {
+  .sf-wells-1x20-grid {
+    gap: 12px !important;
+  }
+}
+
+/* Base Rectangular Well Card (Matching Land Rectangular Cards) */
+.sf-well-card {
+  position: relative !important;
+  background: #ffffff !important;
+  border: 1.5px solid #7dd3fc !important;
+  border-left: 5px solid #0284c7 !important;
+  border-radius: 16px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  min-height: 140px !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden !important;
+  user-select: none !important;
+}
+
+.sf-well-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.16) !important;
+  border-color: #38bdf8 !important;
+}
+
+.sf-well-card.locked {
+  border-left-color: #94a3b8 !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  opacity: 0.92;
+}
+
+.sf-well-card.active {
+  border-left-color: #0284c7 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+}
+
+.sf-well-card.automated {
+  border-left-color: #10b981 !important;
+  border-color: #6ee7b7 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%) !important;
+}
+
+.sf-well-card.ready {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Status Pills for Wells */
+.sf-status-pill.pill-well-automated {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.sf-status-pill.pill-well-ready {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+  animation: pulseGlow 1.5s infinite;
+}
+
+.sf-status-pill.pill-well-filling {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Well Action Buttons */
+.sf-card-btn.sf-btn-well-collect {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid #38bdf8;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+.sf-card-btn.sf-btn-well-collect:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-1px);
+}
+
+.sf-card-btn.sf-btn-well-assign {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+.sf-card-btn.sf-btn-well-assign:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.sf-card-btn.sf-btn-well-automated {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1.5px solid #86efac;
+  font-weight: 800;
+  cursor: pointer;
+}
+.sf-card-btn.sf-btn-well-automated:hover {
+  background: #dcfce7;
+}
+
+.sf-progress-bar-fill.cyan {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%) !important;
+}
+
+/* Water Tools Strip */
+.sf-water-tools-strip {
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+}
+
+.sf-quick-tool-btn.amber {
+  background: #d97706;
+  color: #ffffff;
+}
+.sf-quick-tool-btn.amber:hover {
+  background: #b45309;
+}
+
+.sf-quick-tool-btn.emerald {
+  background: #059669;
+  color: #ffffff;
+}
+.sf-quick-tool-btn.emerald:hover {
+  background: #047857;
+}
+
+/* 20 Wells Quick Assign Mini Grid */
+.sf-well-mini-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.sf-well-mini-chip.locked {
+  background: #1e293b;
+  color: #64748b;
+  border-color: #334155;
+  cursor: not-allowed;
+}
+
+.sf-well-mini-chip.assigned {
+  background: #064e3b;
+  color: #6ee7b7;
+  border-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+}
+
+.sf-well-mini-chip.unassigned {
+  background: #0c4a6e;
+  color: #7dd3fc;
+  border-color: #0284c7;
+}
+
+.sf-well-mini-chip.unassigned:hover {
+  background: #0369a1;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
 

@@ -14,7 +14,9 @@ const PAGE_KEYS = [
   'energy',
   'tasks',
   'profile',
+  'xp',
   'reward',
+  'goal',
   'streak',
   'mega-reward',
   'gift-card',
@@ -31,14 +33,7 @@ const PAGE_KEYS = [
   'spin',
   'chest',
   'scratch',
-  'egg',
-  'leaderboard',
-  'memory-match',
-  'coin-catcher',
-  'sunflower',
-  'bee-farm',
-  'mining',
-  'diamond-generator'
+  'egg'
 ];
 
 console.log('--- Verifying Modular Page Structure ---');
@@ -86,83 +81,13 @@ const headerContent = `<!DOCTYPE html>
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS (Scoped without preflight reset) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      corePlugins: { preflight: false },
-      theme: {
-        extend: {
-          fontFamily: {
-            sci: ['Orbitron', 'monospace'],
-            tech: ['Rajdhani', 'sans-serif'],
-            fredoka: ['Fredoka', 'sans-serif']
-          },
-          colors: {
-            sunamber: '#f59e0b',
-            sunyellow: '#fde047',
-            leafgreen: '#22c55e',
-            earthbrown: '#78350f',
-            stonegray: '#334155',
-            honeygold: '#f59e0b',
-            honeyamber: '#d97706',
-            combcream: '#fef3c7',
-            hivebrown: '#78350f',
-            nectarrose: '#fb7185',
-            abyss: '#040711',
-            cavern: '#090f1e',
-            cybercyan: '#00f0ff',
-            neonviolet: '#bd00ff',
-            plasmaamber: '#ffaa00',
-            cryoice: '#38bdf8',
-            volcanicslag: '#ff3344',
-            coremetal: '#141e33'
-          },
-          animation: {
-            'bounce-gentle': 'bounceGentle 2s infinite ease-in-out',
-            'spin-very-slow': 'spin 25s linear infinite',
-            'worker-hammer': 'workerPump 1.8s infinite ease-in-out',
-            'float-slow': 'floatSlow 3s ease-in-out infinite',
-            'buzz-float': 'buzzDance 0.8s infinite ease-in-out',
-            'float-gentle': 'floatGentle 2.5s ease-in-out infinite',
-            'pulse-glow': 'pulseGlow 2s infinite'
-          },
-          keyframes: {
-            bounceGentle: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-6px)' }
-            },
-            floatSlow: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' }
-            },
-            workerPump: {
-              '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
-              '50%': { transform: 'rotate(-12deg) translateY(4px) scale(0.96)' }
-            },
-            buzzDance: {
-              '0%, 100%': { transform: 'translate(0px, 0px) rotate(0deg)' },
-              '25%': { transform: 'translate(2px, -3px) rotate(3deg)' },
-              '50%': { transform: 'translate(-2px, 1px) rotate(-3deg)' },
-              '75%': { transform: 'translate(2px, 2px) rotate(2deg)' }
-            },
-            floatGentle: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-6px)' }
-            },
-            pulseGlow: {
-              '0%, 100%': { filter: 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.4))' },
-              '50%': { filter: 'drop-shadow(0 0 16px rgba(245, 158, 11, 0.85))' }
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-  <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
-  <link rel="stylesheet" href="style.css">
+  <!-- Shared Global Styles -->
+  <link rel="stylesheet" href="shared/common.css">
+
+  <!-- Modular Page-Wise Styles -->
+${PAGE_KEYS.map(k => `  <link rel="stylesheet" href="pages/${k}/${k}.css">`).join('\n')}
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -251,7 +176,7 @@ const headerContent = `<!DOCTYPE html>
                 </defs>
                 <rect width="100" height="100" fill="#0f172a" />
                 <circle cx="50" cy="50" r="46" fill="url(#avatarGrad)" opacity="0.3"/>
-                <!-- Stylized Player Portrait Avatar -->
+                <!-- Stylized Alex Vance Head & Torso -->
                 <circle cx="50" cy="40" r="22" fill="url(#skinGrad)"/>
                 <!-- Hair -->
                 <path d="M 28 36 C 28 20, 72 20, 72 36 C 68 28, 60 25, 50 25 C 40 25, 32 28, 28 36 Z" fill="#1e293b"/>
@@ -271,7 +196,7 @@ const headerContent = `<!DOCTYPE html>
           </div>
           <div class="user-meta">
             <div class="user-name-row">
-              <h1 class="user-name" id="playerUsername">Player</h1>
+              <h1 class="user-name" id="playerUsername">Alex Vance</h1>
               <span class="tg-verified-badge" id="tgVerifiedBadge" title="Telegram Mini App Verified">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="#24A1DE"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
               </span>
@@ -297,29 +222,14 @@ const headerContent = `<!DOCTYPE html>
 
           <!-- Blue Gem Coin Badge -->
           <div class="metric-pill blue-coin-pill" id="blueCoinPill" title="Blue Gem Coins">
-            <div class="coin-icon blue-coin-icon">
+            <div class="coin-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
                 <polygon points="12 2 21 8.5 17.5 21 6.5 21 3 8.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
                 <polygon points="12 5 18 9.5 15.5 18 8.5 18 6 9.5" fill="#38bdf8" stroke="#bae6fd" stroke-width="1"/>
                 <circle cx="12" cy="12" r="2.5" fill="#f0f9ff"/>
               </svg>
             </div>
-            <span class="pill-value blue-pill-val" id="headerBlueBalance">0</span>
-          </div>
-
-          <!-- Diamond Badge -->
-          <div class="metric-pill diamond-pill" id="diamondPill" title="Diamonds (Mega Rewards)">
-            <div class="coin-icon diamond-icon">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-                <polygon points="6 3 18 3 22 9 12 22 2 9" fill="#0891b2" stroke="#22d3ee" stroke-width="1.5"/>
-                <polygon points="6 3 12 9 18 3" fill="#67e8f9" opacity="0.8"/>
-                <polygon points="2 9 12 9 6 3" fill="#a5f3fc" opacity="0.6"/>
-                <polygon points="18 3 12 9 22 9" fill="#06b6d4" opacity="0.7"/>
-                <polygon points="12 22 12 9 2 9" fill="#0e7490" opacity="0.5"/>
-                <polygon points="12 22 22 9 12 9" fill="#164e63" opacity="0.7"/>
-              </svg>
-            </div>
-            <span class="pill-value diamond-pill-val" id="headerDiamondBalance">0</span>
+            <span class="pill-value" id="headerBlueBalance">0</span>
           </div>
 
           <!-- Streak / Fire Button -->
@@ -327,15 +237,6 @@ const headerContent = `<!DOCTYPE html>
             <span class="btn-dot-indicator"></span>
             <svg class="fire-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.66 2.4-7.4 5.5-9.5 0 0 .5-.34.7-.22.2.12.23.4.16.62-.48 1.48-.48 3.1.2 4.35.1.18.33.25.5.15.17-.1.25-.3.2-.49-.4-1.63.1-3.37 1.3-4.57 1.4-1.4 2.2-3.1 2.3-4.84 0-.25.22-.45.47-.45.18 0 .34.1.42.27 2.1 4.3 4.1 6.5 4.1 9.68 0 4.69-4.03 8.5-6.85 8.5z"/>
-            </svg>
-          </button>
-
-          <!-- Notification Inbox Bell Button -->
-          <button class="icon-action-btn inbox-btn" id="headerInboxBtn" onclick="toggleNotificationInbox()" title="Notification Inbox">
-            <span class="btn-dot-indicator unread-bell-dot" id="inboxUnreadDot" style="display: none;"></span>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
         </div>
@@ -574,54 +475,6 @@ const footerContent = `
         </button>
       </nav>
 
-      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Hidden unless active) -->
-      <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar" style="display: none;">
-        <!-- Tab 1: Water (💧 Water) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
-          <div class="sf-menu-ico">💧</div>
-          <span class="sf-menu-txt">Water</span>
-        </button>
-
-        <!-- Tab 2: Managers & Workers (👷 Workers - Half-Man Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWorkers" onclick="navigateSunflowerPage(4)" title="Managers & Workers">
-          <div class="sf-menu-ico">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="7" r="4"/>
-              <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
-              <line x1="12" y1="11" x2="12" y2="21" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/>
-            </svg>
-          </div>
-          <span class="sf-menu-txt">Workers</span>
-        </button>
-
-        <!-- Center Primary Button: Play / Garden (🌻 Play) -->
-        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Play Garden & Lands">
-          <div class="center-play-circle">
-            <span class="sf-menu-play-icon">🌻</span>
-          </div>
-          <span class="sf-menu-txt font-black">Garden</span>
-        </button>
-
-        <!-- Tab 4: Shop / Store (🏪 Store Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabShop" onclick="navigateSunflowerPage(3)" title="Store & Boosters">
-          <div class="sf-menu-ico">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l2-5h14l2 5"/>
-              <path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/>
-              <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
-              <path d="M9 21V13h6v8"/>
-            </svg>
-          </div>
-          <span class="sf-menu-txt">Shop</span>
-        </button>
-
-        <!-- Tab 5: Solar Converter / 29⚡ (⚡ 29⚡ Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
-          <div class="sf-menu-ico">⚡</div>
-          <span class="sf-menu-txt">29⚡ Exch</span>
-        </button>
-      </nav>
-
     </main>
 
     <!-- Modal Sheets -->
@@ -633,40 +486,6 @@ const footerContent = `
           <button class="sheet-close-btn" id="sheetCloseBtn">&times;</button>
         </div>
         <div class="sheet-content" id="sheetContent"></div>
-      </div>
-    </div>
-
-    <!-- Notification Center Modal / In-Game Inbox -->
-    <div class="notification-modal-overlay" id="notificationModalOverlay">
-      <div class="notification-modal-sheet">
-        <div class="notification-sheet-handle"></div>
-        
-        <div class="notification-modal-header">
-          <div class="notif-header-title-wrap">
-            <span class="notif-bell-icon">🔔</span>
-            <h3 class="notif-title">Command Center Inbox</h3>
-            <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
-          </div>
-          <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
-        </div>
-
-        <!-- Filter Tabs: All, Rewards, System -->
-        <div class="notif-filter-tabs">
-          <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
-          <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
-          <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
-        </div>
-
-        <!-- Notification Messages List -->
-        <div class="notification-list" id="notificationItemsList">
-          <!-- Rendered dynamically -->
-        </div>
-
-        <div class="notif-sheet-footer">
-          <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
-            <span>✓</span> Mark All as Read
-          </button>
-        </div>
       </div>
     </div>
 
@@ -685,29 +504,24 @@ const footerContent = `
   <!-- Shared Core State -->
   <script src="shared/state.js"></script>
 
-  <!-- Critical Initial Modules (Home & Energy Reactor) -->
-  <script src="pages/home/home.js"></script>
-  <script src="pages/energy/energy.js"></script>
+  <!-- Modular Page-Wise Scripts -->
+${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
 
-  <!-- App Shell, Dynamic On-Demand Loader & Router -->
+  <!-- App Shell & Router -->
   <script src="shared/app.js"></script>
 </body>
 </html>
 `;
 
-const fullHtml = headerContent + pagesContent + footerContent;
-fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), fullHtml, 'utf8');
-console.log('Successfully assembled modular index.html in frontend/!');
+fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), headerContent + pagesContent + footerContent, 'utf8');
+console.log('Successfully assembled modular index.html!');
 
-// Compile consolidated CSS into style.css directly
-const commonCss = fs.readFileSync(path.join(SHARED_DIR, 'common.css'), 'utf8');
-const pageCssBundles = PAGE_KEYS.map(k => {
-  const p = path.join(PAGES_DIR, k, `${k}.css`);
-  return fs.existsSync(p) ? `/* --- PAGE: ${k.toUpperCase()} --- */\n` + fs.readFileSync(p, 'utf8') : '';
-}).join('\n\n');
-const fullCss = `/* Energy Tap Reactor - Consolidated Unified Stylesheet */\n${commonCss}\n\n${pageCssBundles}\n`;
-fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), fullCss, 'utf8');
-console.log('Successfully compiled consolidated style.css in frontend/!');
-
-
+// Also write CSS aggregator to style.css for backwards compatibility
+const styleImports = [
+  '/* CSS Aggregator for modular pages */',
+  '@import url("shared/common.css");',
+  ...PAGE_KEYS.map(k => `@import url("pages/${k}/${k}.css");`)
+].join('\n');
+fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), styleImports + '\n', 'utf8');
+console.log('Successfully updated style.css with modular imports!');
 

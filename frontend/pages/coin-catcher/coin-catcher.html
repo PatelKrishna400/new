@@ -10,31 +10,36 @@
 
     <div class="spin-header-title-pill">
       <span class="spin-sparkle-icon">🪙</span>
-      <span>COIN CATCHER</span>
+      <span>COIN FALL</span>
     </div>
 
-    <div class="spin-ticket-header-pill" onclick="startCoinCatcherGame()">
-      <span class="ticket-pill-icon">🔄</span>
-      <span class="ticket-pill-val">Restart</span>
+    <div class="spin-ticket-header-pill" id="catcherDiamondPill" onclick="startCoinCatcherGame()" title="Play for 100 Diamonds">
+      <span class="ticket-pill-icon">💎</span>
+      <span class="ticket-pill-val" id="catcherPlayerDiamondsVal">0</span>
     </div>
   </div>
 
   <!-- Quick Info Strip -->
   <div class="mini-game-info-strip">
     <div class="info-strip-chip">
+      <span class="chip-dot cyan"></span>
+      <span class="chip-label">COST:</span>
+      <span class="chip-val">100 💎</span>
+    </div>
+    <div class="info-strip-chip">
       <span class="chip-dot gold"></span>
       <span class="chip-label">TARGET:</span>
-      <span class="chip-val">Tap Falling Coins</span>
+      <span class="chip-val">Tap 🪙 Coins</span>
     </div>
     <div class="info-strip-chip">
       <span class="chip-dot amber"></span>
       <span class="chip-label">HAZARD:</span>
-      <span class="chip-val">Avoid 💣 Bombs</span>
+      <span class="chip-val">Avoid 💣 Boom</span>
     </div>
     <div class="info-strip-chip">
-      <span class="chip-dot cyan"></span>
-      <span class="chip-label">TIME:</span>
-      <span class="chip-val">30s Round</span>
+      <span class="chip-dot violet"></span>
+      <span class="chip-label">SPEED:</span>
+      <span class="chip-val">⚡ Increases</span>
     </div>
   </div>
 
@@ -47,29 +52,29 @@
       <div class="catcher-hud-pill">
         <span class="hud-icon">⏱️</span>
         <div class="hud-data">
-          <span class="hud-label">TIME</span>
-          <span class="hud-val" id="catcherTimeVal">30s</span>
+          <span class="hud-label">SURVIVED</span>
+          <span class="hud-val" id="catcherTimeVal">0s</span>
         </div>
       </div>
       <div class="catcher-hud-pill">
         <span class="hud-icon">🪙</span>
         <div class="hud-data">
-          <span class="hud-label">COINS</span>
+          <span class="hud-label">BANKED</span>
           <span class="hud-val highlight" id="catcherScoreVal">0</span>
         </div>
       </div>
       <div class="catcher-hud-pill">
-        <span class="hud-icon">🔥</span>
+        <span class="hud-icon">⚡</span>
         <div class="hud-data">
-          <span class="hud-label">COMBO</span>
-          <span class="hud-val" id="catcherComboVal">1.0x</span>
+          <span class="hud-label">FALL SPEED</span>
+          <span class="hud-val" id="catcherSpeedVal">1.0x</span>
         </div>
       </div>
       <div class="catcher-hud-pill">
-        <span class="hud-icon">❤️</span>
+        <span class="hud-icon">💎</span>
         <div class="hud-data">
-          <span class="hud-label">LIVES</span>
-          <span class="hud-val" id="catcherLivesVal">❤️❤️❤️</span>
+          <span class="hud-label">COST PAID</span>
+          <span class="hud-val" id="catcherCostDisplay">100 💎</span>
         </div>
       </div>
     </div>
@@ -77,54 +82,99 @@
     <!-- Active Falling Stage -->
     <div class="catcher-stage" id="catcherStage">
       <!-- Falling items spawn dynamically here -->
+
+      <!-- Start Overlay -->
       <div class="catcher-start-overlay" id="catcherStartOverlay">
         <div class="catcher-intro-content">
           <span class="catcher-big-icon">🪙💣</span>
-          <h4 class="catcher-intro-title">Ready to Catch?</h4>
-          <p class="catcher-intro-desc">Tap gold &amp; blue coins as they drop! Don't tap the red 💣 bombs!</p>
+          <h4 class="catcher-intro-title">Ready for Coin Fall?</h4>
+          <p class="catcher-intro-desc">
+            Tap falling coins to fill your bank! Avoid 💣 booms! Fall speed increases over time. Cash out anytime with the button below!
+          </p>
+
+          <div class="catcher-entry-badge-row">
+            <span class="catcher-entry-cost-pill">💎 Entry Cost: 100 Diamonds</span>
+            <span class="catcher-balance-pill">Your Diamonds: <strong id="catcherIntroDiaBal">0</strong> 💎</span>
+          </div>
+
           <button class="catcher-start-btn" onclick="startCoinCatcherGame()">
-            <span>⚡</span> Start Catching
+            <span>⚡</span> Pay 100 💎 &amp; Start
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Prominent Collect Button Below the Page / Stage -->
+    <div class="catcher-bottom-action-bar">
+      <button class="catcher-collect-bank-btn" id="btnCatcherCollectBank" onclick="collectAndExitCoinCatcher()" disabled>
+        <span class="collect-btn-icon">💰</span>
+        <span class="collect-btn-text" id="catcherCollectBtnText">COLLECT &amp; EXIT (0 🪙)</span>
+      </button>
+    </div>
   </section>
 
-  <!-- Victory / Game Over Modal -->
+  <!-- Boom Hit / Try Again Modal (Watch Ad to Resume OR Exit and Forfeit) -->
+  <div class="catcher-modal-overlay" id="catcherBoomModal">
+    <div class="catcher-modal-card boom-card">
+      <div class="catcher-boom-glow"></div>
+      <div class="catcher-modal-header">
+        <div class="catcher-modal-icon boom-icon">💥</div>
+        <h3 class="catcher-modal-title">BOOM DETONATED!</h3>
+        <p class="catcher-modal-desc">
+          You tapped a boom hazard! At stake: <strong id="catcherBoomBankedText" style="color: #facc15;">0 🪙</strong>
+        </p>
+      </div>
+
+      <div class="catcher-modal-actions">
+        <button class="catcher-ad-resume-btn" onclick="resumeAfterBombAd()">
+          <span class="btn-primary-text">📺 Watch Ad to Resume Game</span>
+          <span class="btn-subtext">Keep your <span id="catcherBoomResumeCoins">0</span> 🪙 Coins &amp; continue!</span>
+        </button>
+        <button class="catcher-forfeit-exit-btn" onclick="exitAndForfeitCoins()">
+          <span>🚪 Exit Game (Forfeit Coins)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory / Banked Reward Modal -->
   <div class="catcher-modal-overlay" id="catcherModalOverlay">
     <div class="catcher-modal-card">
       <div class="catcher-modal-glow"></div>
       <div class="catcher-modal-header">
-        <div class="catcher-modal-icon" id="catcherResultIcon">🪙</div>
-        <h3 class="catcher-modal-title" id="catcherResultTitle">ROUND COMPLETE!</h3>
-        <p class="catcher-modal-desc" id="catcherResultDesc">You gathered reactor bounty from the sky!</p>
+        <div class="catcher-modal-icon" id="catcherResultIcon">💰</div>
+        <h3 class="catcher-modal-title" id="catcherResultTitle">BOUNTY SECURED!</h3>
+        <p class="catcher-modal-desc" id="catcherResultDesc">You safely cashed out your coin bank!</p>
       </div>
 
       <div class="catcher-stats-breakdown">
         <div class="breakdown-row">
-          <span>Coins Caught:</span>
-          <strong id="catcherStatCoins">0</strong>
+          <span>Coins Banked:</span>
+          <strong id="catcherStatCoins">0 🪙</strong>
         </div>
         <div class="breakdown-row">
-          <span>Peak Combo:</span>
-          <strong id="catcherStatCombo">2.4x</strong>
+          <span>Time Survived:</span>
+          <strong id="catcherStatTime">0s</strong>
         </div>
         <div class="breakdown-row">
-          <span>Remaining Lives:</span>
-          <strong id="catcherStatLives">❤️❤️❤️</strong>
+          <span>Peak Speed:</span>
+          <strong id="catcherStatSpeed">1.0x</strong>
         </div>
         <div class="breakdown-row highlight">
-          <span>Reward Calculated:</span>
-          <strong id="catcherStatReward">+0 Coins 🪙, +0 💎</strong>
+          <span>Coins Claimable:</span>
+          <strong id="catcherStatReward">+0 Coins 🪙</strong>
         </div>
       </div>
 
       <div class="catcher-modal-actions">
-        <button class="catcher-claim-btn" id="catcherClaimBtn" onclick="claimCoinCatcherReward()">
-          <span>🎁</span> Claim Reward
+        <button class="catcher-claim-btn" id="catcherClaimBtn" onclick="claimCoinCatcherReward(false)">
+          <span>🎁</span> Bank Coins &amp; Exit
+        </button>
+        <button class="catcher-double-ad-btn" id="catcherDoubleAdBtn" onclick="claimCoinCatcherReward(true)">
+          <span>📺</span> 2X Double Coins (Watch Ad)
         </button>
         <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
-          <span>🔄</span> Play Again
+          <span>🔄</span> Play Again (100 💎)
         </button>
       </div>
     </div>

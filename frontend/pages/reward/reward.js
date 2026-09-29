@@ -22,12 +22,12 @@ if (!gameState.rewardState) {
   };
 }
 
-// 6 Subtabs Switcher (All, Mega, Spin, Chest, Scratch, Egg)
+// 8 Subtabs Switcher (All, Mega, Spin, Chest, Scratch, Egg, Memory, Catcher)
 function switchRewardSubtab(tabName) {
   if (!gameState.rewardState) gameState.rewardState = {};
   gameState.rewardState.activeSubtab = tabName;
 
-  const tabs = ['all', 'mega', 'spin', 'chest', 'scratch', 'egg'];
+  const tabs = ['all', 'mega', 'spin', 'chest', 'scratch', 'egg', 'memory', 'catcher'];
   tabs.forEach(t => {
     const btn = document.getElementById(`rewardSubtab${t.charAt(0).toUpperCase() + t.slice(1)}`);
     if (btn) {
@@ -36,7 +36,16 @@ function switchRewardSubtab(tabName) {
     }
   });
 
-  const allCards = ['rewardTabMega', 'rewardTabSpin', 'rewardTabChest', 'rewardTabScratch', 'rewardTabEgg'];
+  const allCards = [
+    'rewardTabMega',
+    'rewardTabSpin',
+    'rewardTabChest',
+    'rewardTabScratch',
+    'rewardTabEgg',
+    'rewardTabMemory',
+    'rewardTabCatcher'
+  ];
+
   if (tabName === 'all') {
     allCards.forEach(id => {
       const el = document.getElementById(id);
@@ -48,7 +57,9 @@ function switchRewardSubtab(tabName) {
       spin: 'rewardTabSpin',
       chest: 'rewardTabChest',
       scratch: 'rewardTabScratch',
-      egg: 'rewardTabEgg'
+      egg: 'rewardTabEgg',
+      memory: 'rewardTabMemory',
+      catcher: 'rewardTabCatcher'
     };
     const targetId = cardMap[tabName];
     allCards.forEach(id => {
@@ -166,7 +177,15 @@ function renderRewardAdminMegaShelf() {
 
 // ==========================================================================
 function updateRewardViewUI() {
-  const allCards = ['rewardTabMega', 'rewardTabSpin', 'rewardTabChest', 'rewardTabScratch', 'rewardTabEgg'];
+  const allCards = [
+    'rewardTabMega',
+    'rewardTabSpin',
+    'rewardTabChest',
+    'rewardTabScratch',
+    'rewardTabEgg',
+    'rewardTabMemory',
+    'rewardTabCatcher'
+  ];
   allCards.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'flex';

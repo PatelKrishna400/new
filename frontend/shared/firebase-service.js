@@ -211,6 +211,21 @@ class FirebaseSyncService {
         statusEl.className = 'firebase-cloud-status-badge offline';
       }
     });
+
+    const sfFbDot = document.getElementById('sfFbDot');
+    const sfFbLabel = document.getElementById('sfFbLabel');
+    if (sfFbDot && sfFbLabel) {
+      if (status === 'synced') {
+        sfFbDot.className = 'sf-cloud-dot online';
+        sfFbLabel.innerText = 'Cloud Synced';
+      } else if (status === 'saving') {
+        sfFbDot.className = 'sf-cloud-dot syncing';
+        sfFbLabel.innerText = 'Saving...';
+      } else {
+        sfFbDot.className = 'sf-cloud-dot offline';
+        sfFbLabel.innerText = 'Offline';
+      }
+    }
   }
 
   setupPresence() {
@@ -537,6 +552,10 @@ class FirebaseSyncService {
           gameState.bank.blueCoins = cloudData.bank.blueCoins || 0;
           hasChanged = true;
         }
+      }
+
+      if (cloudData.sunflower && typeof window !== 'undefined' && typeof window.syncSunflowerFromCloud === 'function') {
+        window.syncSunflowerFromCloud(cloudData.sunflower);
       }
 
       if (hasChanged) {
@@ -957,7 +976,8 @@ class FirebaseSyncService {
           crowns: 0,
           targetCrowns: 5,
           giftsClaimed: 0
-        }
+        },
+        sunflower: (typeof window !== 'undefined' && window.sunflowerState) ? window.sunflowerState : null
       };
 
       this.database.ref(`players/${this.userId}`).set(payload)

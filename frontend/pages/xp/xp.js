@@ -46,15 +46,11 @@ window.renderLevelsList = function() {
   if (gameState.currentTab !== 'xp' || (gameState.xpState && gameState.xpState.currentSubtab !== 'levels')) {
     return;
   }
-  const activeLevel = typeof getActiveLevel === 'function'
-    ? getActiveLevel()
-    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
+  const activeLevel = typeof getXpActiveLevel === 'function'
+    ? getXpActiveLevel()
+    : ((gameState.xpState && gameState.xpState.currentLevel) || 1);
 
-  const curXp = (gameState.progression && gameState.progression.levelXp !== undefined)
-    ? Number(gameState.progression.levelXp)
-    : Number(gameState.player.xp || 0);
-
-  const completed = (gameState.progression && gameState.progression.completedLevels) || {};
+  const curXp = Number(gameState.player.xp || 0);
   const claimedLevelsState = (gameState.xpState && gameState.xpState.claimedLevels) || {};
 
   let html = '';
@@ -62,10 +58,11 @@ window.renderLevelsList = function() {
     const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
     const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
     const isLockedByAdmin = !!(cfg && cfg.isLocked);
-    const isUnlocked = !isLockedByAdmin && (lvl === 1 || !!completed[lvl - 1]);
-    const isClaimed = !!completed[lvl] || !!claimedLevelsState[lvl];
+    const isUnlocked = !isLockedByAdmin && (lvl === 1 || !!claimedLevelsState[lvl - 1]);
+    const isClaimed = !!claimedLevelsState[lvl];
     const isCurrent = (lvl === activeLevel);
-    const isReached = (lvl < activeLevel) || (isCurrent && curXp >= reqXp);
+    const hasEnoughXp = (curXp >= reqXp);
+    const isReached = isClaimed || (isUnlocked && hasEnoughXp);
 
     // Reward pills: Dark Green Fuel cells only
     const fuelAmount = window.calculateLevelDarkGreenFuel(lvl);
@@ -89,14 +86,12 @@ window.renderLevelsList = function() {
       `;
     } else if (isClaimed) {
       statusHtml = `<span style="font-size: 11px; font-weight: 800; color: #10b981;">✓ Claimed</span>`;
-    } else if (isCurrent && isUnlocked) {
-      if (curXp >= reqXp) {
-        statusHtml = `<button class="level-claim-btn" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);" onclick="claimLevelReward(${lvl})"><span>🎬</span> Claim</button>`;
+    } else if (isUnlocked) {
+      if (hasEnoughXp) {
+        statusHtml = `<button class="level-claim-btn" style="background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);" onclick="claimLevelReward(${lvl})"><span>🎬</span> Claim</button>`;
       } else {
-        statusHtml = `<span style="font-size: 10px; font-weight: 700; color: #38bdf8;">${Math.floor(curXp)}/${reqXp}</span>`;
+        statusHtml = `<span style="font-size: 10px; font-weight: 700; color: #38bdf8;">${Math.floor(curXp).toLocaleString()}/${reqXp.toLocaleString()} XP</span>`;
       }
-    } else if (isReached && isUnlocked) {
-      statusHtml = `<button class="level-claim-btn" onclick="claimLevelReward(${lvl})"><span>🎬</span> Claim</button>`;
     } else {
       statusHtml = `
         <div class="level-lock-status">
@@ -109,10 +104,10 @@ window.renderLevelsList = function() {
     }
 
     let progressSnippet = '';
-    if (isCurrent && !isClaimed) {
+    if (!isClaimed && isUnlocked) {
       progressSnippet = `
-        <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
-          XP Progress: ${Math.floor(curXp)} / ${reqXp} XP ${curXp >= reqXp ? '• Ready!' : ''}
+        <div style="font-size: 10px; color: ${hasEnoughXp ? '#34d399' : '#38bdf8'}; font-weight: 700; margin-top: 2px;">
+          XP: ${Math.floor(curXp).toLocaleString()} / ${reqXp.toLocaleString()} XP ${hasEnoughXp ? '• Ready! 🎬 1 Ad' : `• Need ${(reqXp - Math.floor(curXp)).toLocaleString()} more`}
         </div>
       `;
     }
@@ -120,7 +115,7 @@ window.renderLevelsList = function() {
     html += `
       <div class="level-row-card ${isReached ? 'reached' : ''} ${isCurrent ? 'active-level-row' : ''}" id="levelRow-${lvl}">
         <div class="level-left-info">
-          <div class="level-number-badge" style="background: ${isCurrent ? '#0284c7' : 'rgba(30, 41, 59, 0.8)'};">
+          <div class="level-number-badge" style="background: ${isCurrent ? '#0284c7' : (isClaimed ? 'rgba(5, 150, 105, 0.8)' : 'rgba(30, 41, 59, 0.8)')};">
             <span class="lv-lbl">LV</span>
             <span class="lv-val">${lvl}</span>
           </div>
@@ -143,37 +138,41 @@ window.renderLevelsList = function() {
   DOM.levelsScrollList.innerHTML = html;
 };
 
-// 1 Ad Watch Compulsory for XP Level Reward
+// 1 Ad Watch Compulsory for XP Level Reward (100% Decoupled from Goal Page)
 window.claimLevelReward = function(lvl) {
-  const activeLevel = typeof getActiveLevel === 'function'
-    ? getActiveLevel()
-    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
-
   const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
   if (cfg && cfg.isLocked) {
     if (typeof showFloatingToast === 'function') showFloatingToast(`Level ${lvl} is locked by Admin.`);
     return;
   }
 
-  if (typeof isLevelUnlocked === 'function' && !isLevelUnlocked(lvl)) {
-    if (typeof showFloatingToast === 'function') showFloatingToast(`Reach and complete Level ${activeLevel} first!`);
+  const isUnlocked = typeof isXpLevelUnlocked === 'function'
+    ? isXpLevelUnlocked(lvl)
+    : (lvl === 1 || !!(gameState.xpState && gameState.xpState.claimedLevels && gameState.xpState.claimedLevels[lvl - 1]));
+
+  if (!isUnlocked) {
+    if (typeof showFloatingToast === 'function') showFloatingToast(`Claim Level ${lvl - 1} XP reward first!`);
     return;
   }
 
-  const curXp = (gameState.progression && gameState.progression.levelXp !== undefined)
-    ? Number(gameState.progression.levelXp)
-    : Number(gameState.player.xp || 0);
+  const isClaimed = typeof isXpLevelClaimed === 'function'
+    ? isXpLevelClaimed(lvl)
+    : !!(gameState.xpState && gameState.xpState.claimedLevels && gameState.xpState.claimedLevels[lvl]);
+
+  if (isClaimed) {
+    if (typeof showFloatingToast === 'function') showFloatingToast(`Level ${lvl} reward already claimed!`);
+    return;
+  }
+
+  const curXp = Number(gameState.player.xp || 0);
   const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
 
-  if (lvl === activeLevel && curXp < reqXp) {
+  if (curXp < reqXp) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`Need ${reqXp - Math.floor(curXp)} more XP to claim Level ${lvl}!`);
+      showFloatingToast(`Need ${(reqXp - Math.floor(curXp)).toLocaleString()} more XP to claim Level ${lvl}!`);
     }
     return;
   }
-
-  const isClaimed = typeof isLevelCompleted === 'function' ? isLevelCompleted(lvl) : !!gameState.xpState.claimedLevels[lvl];
-  if (isClaimed) return;
 
   sfx.playTapSound(1);
 
@@ -192,37 +191,28 @@ window.claimLevelReward = function(lvl) {
 };
 
 function executeClaimLevelReward(lvl) {
-  const activeLevel = typeof getActiveLevel === 'function'
-    ? getActiveLevel()
-    : ((gameState.progression && gameState.progression.activeLevel) || gameState.player.level || 1);
-
   const darkGreenFuel = window.calculateLevelDarkGreenFuel(lvl);
 
-  if (lvl === activeLevel && typeof completeActiveLevel === 'function') {
-    completeActiveLevel(lvl, { source: 'xp' });
-  } else {
-    // Direct claim for reached level
-    if (!gameState.energyGenerator.fuelCells) {
-      gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-    }
-    gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
-    if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
-    gameState.xpState.claimedLevels[lvl] = true;
-    if (gameState.progression && gameState.progression.completedLevels) {
-      gameState.progression.completedLevels[lvl] = true;
-    }
+  if (!gameState.energyGenerator.fuelCells) {
+    gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0, blue: 0, lightblue: 0, darkred: 0 };
   }
+  gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
+
+  if (!gameState.xpState) gameState.xpState = {};
+  if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
+  gameState.xpState.claimedLevels[lvl] = true;
+  gameState.xpState.currentLevel = Math.max((gameState.xpState.currentLevel || 1), lvl + 1);
 
   sfx.playLevelUpSound();
 
   const nextLvl = Math.min(1000, lvl + 1);
   if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
-    DOM.sheetTitle.textContent = `🎉 LEVEL ${lvl} COMPLETE!`;
+    DOM.sheetTitle.textContent = `🎉 XP LEVEL ${lvl} COMPLETE!`;
     DOM.sheetContent.innerHTML = `
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; gap: 14px; text-align: center;">
         <div style="font-size: 54px; animation: bounceGlow 1.2s infinite alternate;">🔋</div>
-        <h3 style="font-size: 20px; font-weight: 800; color: #34d399;">Level ${lvl} Claimed!</h3>
-        <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You watched 1 ad and claimed your Level ${lvl} reward:</p>
+        <h3 style="font-size: 20px; font-weight: 800; color: #34d399;">XP Level ${lvl} Claimed!</h3>
+        <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You reached ${(typeof getLevelConfig === 'function' && getLevelConfig(lvl) ? Number(getLevelConfig(lvl).xpRequired) : lvl * 1000).toLocaleString()} XP, watched 1 ad, and unlocked your reward:</p>
         <div style="background: rgba(5, 150, 105, 0.2); border: 1.5px solid #10b981; border-radius: 14px; padding: 14px 20px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
           <span style="font-size: 24px;">🔋</span>
           <span style="font-size: 18px; font-weight: 800; color: #34d399;">+${darkGreenFuel} Dark Green Fuel</span>
@@ -235,13 +225,13 @@ function executeClaimLevelReward(lvl) {
 
   renderLevelsList();
   updateUI();
-  saveGame();
+  saveGame(true);
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
   }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Level ${lvl} Claimed: +${darkGreenFuel} Dark Green Fuel!`);
+    showFloatingToast(`🎉 XP Level ${lvl} Claimed: +${darkGreenFuel} Dark Green Fuel!`);
   }
 }
 

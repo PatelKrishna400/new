@@ -1793,12 +1793,15 @@
   transform: scale(0.96);
 }
 
-/* 1 Button: Buy Website Task */
+/* 1 Button: Unlock Website Task (e.g. 1,000 🪙) */
 .task-web-btn.buy-mode {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: #ffffff;
   border: 1px solid rgba(254, 240, 138, 0.45);
   box-shadow: 0 3px 12px rgba(245, 158, 11, 0.45);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
 }
 
 .task-web-btn.buy-mode:hover {

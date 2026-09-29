@@ -249,13 +249,29 @@
 }
 
 /* ==========================================================================
-   FIXED 2*10 FORMAT MINING PLOTS GRID (LAND TABS)
+   FIXED 1*20 FORMAT MINING TERRACES LIST (LAND TABS)
    ========================================================================== */
+.mine-plots-1x20-grid,
 .mine-plots-2x10-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 9px !important;
-  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.mine-plots-1x20-grid > div,
+.mine-plots-2x10-grid > div {
+  width: 100% !important;
+}
+
+/* Terrace Matrix Cards in 1*20 Format */
+.mine-terrace-card,
+.mine-terrace-locked {
+  min-height: auto !important;
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 

@@ -4,8 +4,26 @@
 
 #pageMemoryMatch {
   padding: 12px 14px 90px 14px;
-  min-height: 100vh;
+  min-height: 100%;
   box-sizing: border-box;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+#pageMemoryMatch::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+  display: none !important;
+}
+
+#pageMemoryMatch::-webkit-scrollbar-track,
+#pageMemoryMatch::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  display: none !important;
 }
 
 .memory-arena-card {

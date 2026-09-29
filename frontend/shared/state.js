@@ -167,6 +167,35 @@ function getActiveLevel() {
   return 1;
 }
 
+// XP-Specific Level Progression Helpers (100% Decoupled from Goal Page)
+function getXpActiveLevel() {
+  if (typeof gameState !== 'undefined' && gameState.xpState && gameState.xpState.currentLevel) {
+    return Math.max(1, parseInt(gameState.xpState.currentLevel, 10) || 1);
+  }
+  if (typeof gameState !== 'undefined' && gameState.xpState && gameState.xpState.claimedLevels) {
+    for (let l = 1; l <= 1000; l++) {
+      if (!gameState.xpState.claimedLevels[l]) return l;
+    }
+    return 1000;
+  }
+  return 1;
+}
+
+function isXpLevelUnlocked(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  const cfg = getLevelConfig(l);
+  if (cfg && cfg.isLocked) return false;
+  if (l === 1) return true;
+  const claimed = (typeof gameState !== 'undefined' && gameState.xpState && gameState.xpState.claimedLevels) || {};
+  return !!claimed[l - 1];
+}
+
+function isXpLevelClaimed(lvl) {
+  const l = Math.max(1, parseInt(lvl, 10) || 1);
+  const claimed = (typeof gameState !== 'undefined' && gameState.xpState && gameState.xpState.claimedLevels) || {};
+  return !!claimed[l];
+}
+
 // Global Exports
 if (typeof window !== 'undefined') {
   window.getDeterministicGoalTargets = getDeterministicGoalTargets;
@@ -177,6 +206,9 @@ if (typeof window !== 'undefined') {
   window.isLevelUnlocked = isLevelUnlocked;
   window.isLevelCompleted = isLevelCompleted;
   window.getActiveLevel = getActiveLevel;
+  window.getXpActiveLevel = getXpActiveLevel;
+  window.isXpLevelUnlocked = isXpLevelUnlocked;
+  window.isXpLevelClaimed = isXpLevelClaimed;
 }
 
 // Combo Multiplier Calculator
@@ -246,6 +278,7 @@ const gameState = {
     chestTickets: 0,
     scratchCards: 0,
     eggs: 0,
+    passAdCooldowns: {},
     adsWatchedCount: 0,
     websiteTasksCompleted: 0,
     status: 'active'
@@ -327,8 +360,31 @@ const gameState = {
       }
     }
   },
+  diamondGenerator: {
+    diamondsPerCycle: 0.000001,
+    cycleDuration: 60.00,
+    progressSeconds: 0,
+    lastTickTime: Date.now(),
+    totalDiamondsProduced: 0,
+    productionLevel: 1,
+    productionUpgradesCount: 0,
+    productionBaseCost: 50,
+    productionCostStep: 25,
+    productionCostDiscount: 0,
+    production1000DiamondDiscountUsed: false,
+    productionAdDiscountsCount: 0,
+    timeLevel: 1,
+    timeUpgradesCount: 0,
+    timeBaseCost: 10,
+    timeCostStep: 50,
+    timeCostDiscount: 0,
+    timeAdFirstDiscountUsed: false,
+    timeAdCooldownEndTime: 0,
+    timeSubsequentAdDiscountsCount: 0
+  },
   xpState: {
     currentSubtab: 'mega', // 'mega' | 'levels'
+    currentLevel: 1,
     watchedAds: 0,
     claimedLevels: {},
     megaRewardClaimed: false,
@@ -336,7 +392,7 @@ const gameState = {
   },
   goalState: {
     currentSubtab: 'mega', // 'mega' | 'goals'
-    currentLevel: 0,
+    currentLevel: 1,
     levelProgress: {
       cards: 0,
       keys: 0,
@@ -412,6 +468,10 @@ function loadSavedGame() {
       if (parsed.bank) gameState.bank = Object.assign(gameState.bank, parsed.bank);
       if (parsed.levelsConfig) gameState.levelsConfig = Object.assign(gameState.levelsConfig, parsed.levelsConfig);
       if (parsed.energyGenerator) Object.assign(gameState.energyGenerator, parsed.energyGenerator);
+      if (parsed.diamondGenerator) {
+        if (!gameState.diamondGenerator) gameState.diamondGenerator = {};
+        Object.assign(gameState.diamondGenerator, parsed.diamondGenerator);
+      }
       if (parsed.tasksState) Object.assign(gameState.tasksState, parsed.tasksState);
       if (parsed.xpState) Object.assign(gameState.xpState, parsed.xpState);
       if (parsed.goalState) Object.assign(gameState.goalState, parsed.goalState);
@@ -489,6 +549,9 @@ function loadSavedGame() {
       }
       if (gameState.player.scratchCards === undefined) {
         gameState.player.scratchCards = 0;
+      }
+      if (!gameState.player.passAdCooldowns) {
+        gameState.player.passAdCooldowns = {};
       }
       if (gameState.reactor.currentEnergy === undefined) {
         gameState.reactor.currentEnergy = 0;
@@ -649,6 +712,30 @@ function resetAllDataToZero() {
   gameState.energyGenerator.boosts = {
     pink: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 2 },
     purple: { activeRemainingSeconds: 0, cooldownRemainingSeconds: 0, adsWatched: 0, multiplier: 5 }
+  };
+
+  // Reset Diamond Generator to base Level 1 stats
+  gameState.diamondGenerator = {
+    diamondsPerCycle: 0.000001,
+    cycleDuration: 60.00,
+    progressSeconds: 0,
+    lastTickTime: now,
+    totalDiamondsProduced: 0,
+    productionLevel: 1,
+    productionUpgradesCount: 0,
+    productionBaseCost: 50,
+    productionCostStep: 25,
+    productionCostDiscount: 0,
+    production1000DiamondDiscountUsed: false,
+    productionAdDiscountsCount: 0,
+    timeLevel: 1,
+    timeUpgradesCount: 0,
+    timeBaseCost: 10,
+    timeCostStep: 50,
+    timeCostDiscount: 0,
+    timeAdFirstDiscountUsed: false,
+    timeAdCooldownEndTime: 0,
+    timeSubsequentAdDiscountsCount: 0
   };
 
   // 4. Reset Tasks & XP Level rewards to start 0
@@ -913,6 +1000,28 @@ function _performActualSave() {
         consumed: gameState.energyGenerator.consumed,
         boosts: gameState.energyGenerator.boosts
       },
+      diamondGenerator: {
+        diamondsPerCycle: gameState.diamondGenerator ? gameState.diamondGenerator.diamondsPerCycle : 0.000001,
+        cycleDuration: gameState.diamondGenerator ? gameState.diamondGenerator.cycleDuration : 60.00,
+        progressSeconds: gameState.diamondGenerator ? gameState.diamondGenerator.progressSeconds : 0,
+        lastTickTime: (gameState.diamondGenerator && gameState.diamondGenerator.lastTickTime) || Date.now(),
+        totalDiamondsProduced: gameState.diamondGenerator ? gameState.diamondGenerator.totalDiamondsProduced : 0,
+        productionLevel: gameState.diamondGenerator ? gameState.diamondGenerator.productionLevel : 1,
+        productionUpgradesCount: gameState.diamondGenerator ? gameState.diamondGenerator.productionUpgradesCount : 0,
+        productionBaseCost: 50,
+        productionCostStep: 25,
+        productionCostDiscount: gameState.diamondGenerator ? gameState.diamondGenerator.productionCostDiscount : 0,
+        production1000DiamondDiscountUsed: gameState.diamondGenerator ? !!gameState.diamondGenerator.production1000DiamondDiscountUsed : false,
+        productionAdDiscountsCount: gameState.diamondGenerator ? (gameState.diamondGenerator.productionAdDiscountsCount || 0) : 0,
+        timeLevel: gameState.diamondGenerator ? gameState.diamondGenerator.timeLevel : 1,
+        timeUpgradesCount: gameState.diamondGenerator ? gameState.diamondGenerator.timeUpgradesCount : 0,
+        timeBaseCost: 10,
+        timeCostStep: 50,
+        timeCostDiscount: gameState.diamondGenerator ? gameState.diamondGenerator.timeCostDiscount : 0,
+        timeAdFirstDiscountUsed: gameState.diamondGenerator ? !!gameState.diamondGenerator.timeAdFirstDiscountUsed : false,
+        timeAdCooldownEndTime: gameState.diamondGenerator ? (gameState.diamondGenerator.timeAdCooldownEndTime || 0) : 0,
+        timeSubsequentAdDiscountsCount: gameState.diamondGenerator ? (gameState.diamondGenerator.timeSubsequentAdDiscountsCount || 0) : 0
+      },
       tasksState: gameState.tasksState,
       xpState: gameState.xpState,
       goalState: gameState.goalState,
@@ -964,7 +1073,29 @@ function completeActiveLevel(targetLvl, options = {}) {
   const lvlToComplete = targetLvl || activeLvl;
   const cfg = getLevelConfig(lvlToComplete);
 
-  // Mark current level as completed
+  // If source is XP, handle ONLY XP page level reward claiming (Dark Green Fuel)
+  if (options.source === 'xp') {
+    if (!gameState.xpState) gameState.xpState = {};
+    if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
+    gameState.xpState.claimedLevels[lvlToComplete] = true;
+    gameState.xpState.currentLevel = Math.max((gameState.xpState.currentLevel || 1), lvlToComplete + 1);
+
+    const darkGreenFuel = typeof calculateLevelDarkGreenFuel === 'function'
+      ? calculateLevelDarkGreenFuel(lvlToComplete)
+      : Math.max(1, Math.min(20, Math.ceil(lvlToComplete / 5)));
+    if (!gameState.energyGenerator.fuelCells) {
+      gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0, blue: 0, lightblue: 0, darkred: 0 };
+    }
+    gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
+
+    saveGame(true);
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+    return { success: true, xpLevel: gameState.xpState.currentLevel, rewards: { darkGreenFuel } };
+  }
+
+  // GOAL LEVEL COMPLETION (Completely decoupled from XP page rewards)
   if (!gameState.progression) {
     gameState.progression = { activeLevel: 1, completedLevels: {}, levelProgress: { cards: 0, keys: 0, tickets: 0 }, levelXp: 0 };
   }
@@ -973,53 +1104,31 @@ function completeActiveLevel(targetLvl, options = {}) {
   }
   gameState.progression.completedLevels[lvlToComplete] = true;
 
-  // Sync to legacy claimed maps
-  if (!gameState.xpState.claimedLevels) gameState.xpState.claimedLevels = {};
-  gameState.xpState.claimedLevels[lvlToComplete] = true;
+  // Mark in Goal State ONLY (DO NOT touch gameState.xpState.claimedLevels!)
+  if (!gameState.goalState) gameState.goalState = {};
   if (!gameState.goalState.claimedGoals) gameState.goalState.claimedGoals = {};
   gameState.goalState.claimedGoals[lvlToComplete] = true;
 
-  // Award level rewards
-  let awardedRewards = {};
-  if (options.source === 'xp') {
-    // XP PAGE: Reward is Dark Green Fuel ONLY!
-    const darkGreenFuel = typeof calculateLevelDarkGreenFuel === 'function'
-      ? calculateLevelDarkGreenFuel(lvlToComplete)
-      : Math.max(1, Math.min(20, Math.ceil(lvlToComplete / 5)));
-    if (!gameState.energyGenerator.fuelCells) {
-      gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, pink: 0, purple: 0 };
-    }
-    gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + darkGreenFuel;
-    awardedRewards = { fuel: darkGreenFuel };
-  } else {
-    // GOAL / HOME: Standard emoji milestone rewards
-    const rewards = cfg.rewards || {};
-    gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || 0);
-    gameState.player.xp = (gameState.player.xp || 0) + (rewards.xpBonus || 0);
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 0);
-    gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 0);
-    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + (rewards.cards || 0);
-    awardedRewards = rewards;
-  }
+  // Award goal milestone rewards
+  const rewards = cfg.rewards || {};
+  gameState.player.coins = (gameState.player.coins || 0) + (rewards.coins || 0);
+  gameState.player.xp = (gameState.player.xp || 0) + (rewards.xpBonus || 0);
+  gameState.player.chestTickets = (gameState.player.chestTickets || 0) + (rewards.tickets || 0);
+  gameState.player.chestKeys = (gameState.player.chestKeys || 0) + (rewards.keys || 0);
+  gameState.player.scratchCards = (gameState.player.scratchCards || 0) + (rewards.cards || 0);
 
-  // Advance to next level if available and not locked by admin
+  // Advance Goal level to next level if available
   const nextLvl = lvlToComplete + 1;
-  const nextCfg = getLevelConfig(nextLvl);
-
   if (nextLvl <= 1000) {
     gameState.progression.activeLevel = nextLvl;
     gameState.progression.levelProgress = { cards: 0, keys: 0, tickets: 0 };
     gameState.progression.levelXp = 0;
 
-    // Sync legacy pointers
-    gameState.player.level = nextLvl;
-    gameState.goal.level = nextLvl;
     if (gameState.goalState) {
       gameState.goalState.currentLevel = nextLvl;
       gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
       gameState.goalState.levelAdsWatched = 0;
     }
-    gameState.player.xpToNextLevel = nextCfg.xpRequired;
   }
 
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
@@ -1040,7 +1149,7 @@ function completeActiveLevel(targetLvl, options = {}) {
     window.firebaseSync.saveToCloudImmediate();
   }
 
-  return { success: true, activeLevel: gameState.progression.activeLevel, rewards: awardedRewards };
+  return { success: true, activeLevel: gameState.progression.activeLevel, rewards: rewards };
 }
 
 window.canClaimActiveLevel = canClaimActiveLevel;
@@ -1113,10 +1222,21 @@ const sfx = new SoundFX();
 
 // Number & Timer Formatting Helpers
 function formatNumber(num) {
+  if (num === undefined || num === null || isNaN(num)) return '0';
   if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
   if (num >= 10000) return (num / 1000).toFixed(1) + 'k';
-  return num.toString();
+  if (Number.isInteger(num)) return num.toString();
+  const fixed = Number(num).toFixed(6);
+  return fixed.replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
 }
+
+function formatDiamondDisplay(num) {
+  if (num === undefined || num === null || isNaN(num)) return '0.000000';
+  if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+  if (num >= 10000) return (num / 1000).toFixed(1) + 'k';
+  return Number(num).toFixed(6);
+}
+window.formatDiamondDisplay = formatDiamondDisplay;
 
 function formatTimerDisplay() {
   const drSecs = (gameState.energyGenerator && gameState.energyGenerator.darkRedRemainingSeconds) || 0;

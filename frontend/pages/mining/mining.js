@@ -376,45 +376,24 @@ window.handleMineTerraceAction = function(terraceId, event) {
   if (!terrace) return;
 
   if (!terrace.unlocked) {
-    unlockMineTerrace(terraceId, event);
-  } else if (terrace.stage === 0) {
-    const buyBtn = document.getElementById('mineBuyGeodeDiamondBtn');
-    if (buyBtn) buyBtn.click();
-  } else if (terrace.stage === 1) {
-    coolMineTerrace(terraceId, event);
-  } else if (terrace.stage === 2) {
-    triggerMineCrystalClick(terraceId, event);
-  } else if (terrace.stage === 3) {
-    shatterMineSlag(terraceId, event);
-  }
-};
-
-function renderMineTerraces() {
-  const container = document.getElementById('mineTerracesContainer');
-  if (!container) return;
-  container.innerHTML = '';
-
-  mineState.terraces.forEach(terrace => {
-    const card = document.createElement('div');
-    card.id = `mine-terrace-card-${terrace.id}`;
-
-    if (!terrace.unlocked) {
-      card.className = "mine-terrace-locked rounded-xl p-2.5 flex flex-col items-center justify-between min-h-[160px] relative text-slate-300 border border-slate-700/60 shadow-md";
+      card.className = "mine-terrace-locked rounded-xl p-3 flex items-center justify-between gap-3 relative text-slate-300 border border-slate-700/60 shadow-md";
       card.innerHTML = `
-        <div class="w-full flex items-center justify-between text-[9px] font-sci">
-          <span class="text-slate-400">Terrace #${terrace.id}</span>
-          <span class="bg-red-950/80 text-red-300 px-1.5 py-0.2 rounded border border-red-700/60">LOCKED 🔒</span>
+        <div class="flex items-center gap-3">
+          <div class="text-3xl filter grayscale opacity-60">🪨</div>
+          <div>
+            <div class="flex items-center gap-2 text-xs font-sci">
+              <span class="text-slate-200 font-bold">Terrace #${terrace.id}</span>
+              <span class="bg-red-950/80 text-red-300 px-2 py-0.5 rounded border border-red-700/60 text-[9px]">LOCKED 🔒</span>
+            </div>
+            <div class="text-[11px] font-sci text-cyan-300 mt-1">Excavation fee: <strong>${terrace.cost} 💎</strong></div>
+          </div>
         </div>
-        <div class="my-1 text-center">
-          <div class="text-2xl sm:text-3xl filter grayscale opacity-60">🪨</div>
-          <div class="text-[10px] font-sci font-bold text-cyan-300 mt-1">${terrace.cost} 💎</div>
-        </div>
-        <button onclick="unlockMineTerrace(${terrace.id}, event)" class="sci-btn w-full bg-cyan-600 hover:bg-cyan-500 text-black font-sci font-bold text-[9.5px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+        <button onclick="unlockMineTerrace(${terrace.id}, event)" class="sci-btn bg-cyan-600 hover:bg-cyan-500 text-black font-sci font-bold text-xs px-4 py-2 rounded-xl transition flex items-center justify-center gap-1.5 whitespace-nowrap">
           <span>EXCAVATE 🔓</span>
         </button>
       `;
     } else {
-      card.className = "mine-terrace-card rounded-xl p-2.5 flex flex-col items-center justify-between min-h-[160px] relative text-slate-100";
+      card.className = "mine-terrace-card rounded-xl p-3 flex flex-col gap-2 relative text-slate-100";
 
       let graphic = '';
       let statusBadge = '';
@@ -422,41 +401,41 @@ function renderMineTerraces() {
       let barMarkup = '';
 
       if (terrace.stage === 0) {
-        graphic = '<span class="text-2xl sm:text-3xl opacity-30 select-none">🔮</span>';
-        statusBadge = '<span class="text-[8.5px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-sci">BED READY</span>';
+        graphic = '<span class="text-3xl opacity-35 select-none">🔮</span>';
+        statusBadge = '<span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-sci">BED READY</span>';
         actionControls = `
-          <button onclick="document.getElementById('mineBuyGeodeDiamondBtn').click()" class="sci-btn bg-cyan-500 hover:bg-cyan-400 text-black font-sci font-bold text-[9.5px] px-2.5 py-1 rounded-lg transition">
+          <button onclick="document.getElementById('mineBuyGeodeDiamondBtn').click()" class="sci-btn bg-cyan-500 hover:bg-cyan-400 text-black font-sci font-bold text-xs px-3.5 py-1.5 rounded-lg transition whitespace-nowrap">
             INFUSE GEODE ✨
           </button>
         `;
-        barMarkup = '<div class="h-2"></div>';
+        barMarkup = '<div class="text-[11px] text-slate-400 font-sci">Infuse a seed geode to begin crystallization</div>';
       } else if (terrace.stage === 1) {
         graphic = '<span class="text-3xl animate-pulse filter drop-shadow select-none">✨🥚</span>';
-        statusBadge = '<span class="text-[8.5px] bg-purple-950 text-purple-300 px-1.5 py-0.2 rounded font-sci border border-purple-500/40">INFUSING</span>';
+        statusBadge = '<span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-sci border border-purple-500/40">INFUSING</span>';
         actionControls = `
-          <button onclick="coolMineTerrace(${terrace.id}, event)" class="sci-btn bg-sky-600 hover:bg-sky-500 text-white font-sci text-[9px] px-2 py-1 rounded-lg">
+          <button onclick="coolMineTerrace(${terrace.id}, event)" class="sci-btn bg-sky-600 hover:bg-sky-500 text-white font-sci text-[10px] px-3 py-1.5 rounded-lg whitespace-nowrap">
             🧪 INFUSE CRYO
           </button>
         `;
         barMarkup = `
           <div class="w-full">
-            <div class="flex justify-between text-[8.5px] font-sci text-cyan-300 mb-0.5">
+            <div class="flex justify-between text-[9px] font-sci text-cyan-300 mb-0.5">
               <span id="mine-timer-${terrace.id}">✨ Infusing ${Math.floor(terrace.growthProgress)}%</span>
             </div>
-            <div class="w-full bg-abyss rounded-full h-1.5 overflow-hidden border border-slate-700">
+            <div class="w-full bg-abyss rounded-full h-2 overflow-hidden border border-slate-700">
               <div id="mine-bar-${terrace.id}" class="bg-gradient-to-r from-purple-500 to-cyan-400 h-full transition-all" style="width: ${terrace.growthProgress}%"></div>
             </div>
           </div>
         `;
       } else if (terrace.stage === 2) {
-        graphic = '<span class="text-3xl sm:text-4xl filter drop-shadow hover:scale-105 transition-transform animate-pulse cursor-pointer select-none">🔮💎</span>';
-        statusBadge = '<span class="text-[8.5px] bg-cyan-950 text-cyan-300 font-sci font-bold px-1.5 py-0.2 rounded border border-cyan-400 shadow-glow-cyan">+2🔮/s</span>';
+        graphic = '<span class="text-3xl filter drop-shadow hover:scale-105 transition-transform animate-pulse cursor-pointer select-none">🔮💎</span>';
+        statusBadge = '<span class="text-[9px] bg-cyan-950 text-cyan-300 font-sci font-bold px-2 py-0.5 rounded border border-cyan-400 shadow-glow-cyan">+2🔮/s</span>';
         actionControls = `
-          <div class="flex items-center gap-1">
-            <button onclick="coolMineTerrace(${terrace.id}, event)" class="sci-btn bg-sky-600 hover:bg-sky-500 text-white font-sci text-[8.5px] px-2 py-1 rounded-lg" title="Add +35s life">
+          <div class="flex items-center gap-1.5">
+            <button onclick="coolMineTerrace(${terrace.id}, event)" class="sci-btn bg-sky-600 hover:bg-sky-500 text-white font-sci text-[10px] px-3 py-1.5 rounded-lg whitespace-nowrap" title="Add +35s life">
               🧪 +35s
             </button>
-            <button onclick="navigateMiningTab(3)" class="sci-btn bg-amber-500 hover:bg-amber-400 text-black font-sci text-[8.5px] px-2 py-1 rounded-lg" title="Forge">
+            <button onclick="navigateMiningTab(3)" class="sci-btn bg-amber-500 hover:bg-amber-400 text-black font-sci text-[10px] px-3 py-1.5 rounded-lg whitespace-nowrap" title="Forge">
               ⚡ FORGE
             </button>
           </div>
@@ -464,40 +443,46 @@ function renderMineTerraces() {
         const rem = Math.max(0, Math.ceil(terrace.thermalTimer));
         barMarkup = `
           <div class="w-full">
-            <div class="flex justify-between text-[8.5px] font-sci text-cyan-300 mb-0.5">
+            <div class="flex justify-between text-[9px] font-sci text-cyan-300 mb-0.5">
               <span id="mine-timer-${terrace.id}">⏳ ${rem}s stability (+2🔮/s)</span>
             </div>
-            <div class="w-full bg-abyss rounded-full h-1.5 overflow-hidden border border-slate-700">
+            <div class="w-full bg-abyss rounded-full h-2 overflow-hidden border border-slate-700">
               <div id="mine-bar-${terrace.id}" class="bg-gradient-to-r from-sky-400 to-cyan-300 h-full transition-all shadow-glow-cyan" style="width: ${(terrace.thermalTimer / terrace.maxThermalTimer) * 100}%"></div>
             </div>
           </div>
         `;
       } else if (terrace.stage === 3) {
         graphic = '<span class="text-3xl filter contrast-125 select-none">🌋🪨</span>';
-        statusBadge = '<span class="text-[8.5px] bg-rose-950 text-rose-300 font-sci px-1.5 py-0.2 rounded border border-rose-500/50">OVERHEATED</span>';
+        statusBadge = '<span class="text-[9px] bg-rose-950 text-rose-300 font-sci px-2 py-0.5 rounded border border-rose-500/50">OVERHEATED</span>';
         actionControls = `
-          <button onclick="shatterMineSlag(${terrace.id}, event)" class="sci-btn bg-rose-700 hover:bg-rose-600 text-white font-sci text-[9px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+          <button onclick="shatterMineSlag(${terrace.id}, event)" class="sci-btn bg-rose-700 hover:bg-rose-600 text-white font-sci text-[10px] px-3 py-1.5 rounded-lg flex items-center gap-1 whitespace-nowrap">
             <span>🔨 SHATTER</span>
           </button>
         `;
         barMarkup = `
-          <div class="text-[8.5px] text-rose-400 font-mono text-center">
-            Coolant expired! Slag locked.
+          <div class="text-[10px] text-rose-400 font-mono">
+            Coolant expired! Shatter slag to restart.
           </div>
         `;
       }
 
       card.innerHTML = `
-        <div class="w-full flex items-center justify-between text-[9px] font-sci">
-          <span class="text-slate-400">Terrace #${terrace.id}</span>
+        <div class="w-full flex items-center justify-between text-[10px] font-sci pb-1 border-b border-slate-700/60">
+          <span class="text-cyan-300 font-bold">Terrace #${terrace.id}</span>
           ${statusBadge}
         </div>
-        <div class="my-1 cursor-pointer" onclick="handleMineTerraceAction(${terrace.id}, event)">
-          ${graphic}
-        </div>
-        <div class="w-full flex flex-col gap-1 items-center">
-          ${barMarkup}
-          <div class="mt-0.5">${actionControls}</div>
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="cursor-pointer shrink-0" onclick="handleMineTerraceAction(${terrace.id}, event)">
+              ${graphic}
+            </div>
+            <div class="flex-1 sm:w-64">
+              ${barMarkup}
+            </div>
+          </div>
+          <div class="shrink-0 w-full sm:w-auto flex justify-end">
+            ${actionControls}
+          </div>
         </div>
       `;
     }

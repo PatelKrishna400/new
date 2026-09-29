@@ -643,10 +643,617 @@ function updateHomeUI() {
   if (typeof updateHomeEnergyBoosterVisibility === 'function') {
     updateHomeEnergyBoosterVisibility();
   }
+
+  // Update Quantum Diamond Generator & Upgrades UI
+  if (typeof updateDiamondGeneratorUI === 'function') {
+    updateDiamondGeneratorUI();
+  }
 }
 
-// Initialize Combo Decay Engine automatically on load
+// ==========================================================================
+// QUANTUM DIAMOND GENERATOR ENGINE
+// - Base: 0.000001 Diamond every 60.00s
+// - Output Upgrade: +0.000001 Diamond / cycle (Starts 50 Coins, +25 Coins each)
+// - Output Cost Reduction (after 10 upgrades):
+//     - 1,000 Diamonds = -100 Coins (One-time)
+//     - 1 Ad = -50 Coins (Repeatable for more uses)
+// - Time Reduce Upgrade: -0.01s cycle time (Starts 10 Diamonds, +50 Diamonds each)
+// - Time Cost Reduction:
+//     - 1st Ad = -10 Diamonds cost reduction
+//     - 10 min cooldown timer
+//     - Subsequent Ads = -1 Diamond cost reduction per ad (with 10m cooldown between)
+// ==========================================================================
+
+let _diamondGenInterval = null;
+
+function getDiamondsPerCycle() {
+  if (!gameState || !gameState.diamondGenerator) return 0.000001;
+  const base = 0.000001;
+  const level = gameState.diamondGenerator.productionLevel || 1;
+  return Number((base + (level - 1) * 0.000001).toFixed(6));
+}
+
+function getDiamondCycleDuration() {
+  if (!gameState || !gameState.diamondGenerator) return 60.00;
+  const level = gameState.diamondGenerator.timeLevel || 1;
+  const duration = 60.00 - (level - 1) * 0.01;
+  return Math.max(1.00, Number(duration.toFixed(2)));
+}
+
+function getDiamondOutputCost() {
+  if (!gameState || !gameState.diamondGenerator) return 50;
+  const upgradesCount = gameState.diamondGenerator.productionUpgradesCount || 0;
+  const baseCost = 50 + upgradesCount * 25;
+  const discount = gameState.diamondGenerator.productionCostDiscount || 0;
+  return Math.max(25, baseCost - discount);
+}
+
+function getDiamondSpeedCost() {
+  if (!gameState || !gameState.diamondGenerator) return 10;
+  const upgradesCount = gameState.diamondGenerator.timeUpgradesCount || 0;
+  const baseCost = 10 + upgradesCount * 50;
+  const discount = gameState.diamondGenerator.timeCostDiscount || 0;
+  return Math.max(1, baseCost - discount);
+}
+
+function initDiamondGeneratorEngine() {
+  if (!gameState.diamondGenerator) {
+    gameState.diamondGenerator = {
+      diamondsPerCycle: 0.000001,
+      cycleDuration: 60.00,
+      progressSeconds: 0,
+      lastTickTime: Date.now(),
+      totalDiamondsProduced: 0,
+      productionLevel: 1,
+      productionUpgradesCount: 0,
+      productionBaseCost: 50,
+      productionCostStep: 25,
+      productionCostDiscount: 0,
+      production1000DiamondDiscountUsed: false,
+      productionAdDiscountsCount: 0,
+      timeLevel: 1,
+      timeUpgradesCount: 0,
+      timeBaseCost: 10,
+      timeCostStep: 50,
+      timeCostDiscount: 0,
+      timeAdFirstDiscountUsed: false,
+      timeAdCooldownEndTime: 0,
+      timeSubsequentAdDiscountsCount: 0
+    };
+  }
+
+  // Catchup offline time
+  catchupDiamondGenerator();
+
+  if (_diamondGenInterval) {
+    clearInterval(_diamondGenInterval);
+  }
+
+  _diamondGenInterval = setInterval(() => {
+    tickDiamondGenerator();
+  }, 100);
+
+  updateDiamondGeneratorUI();
+}
+
+function catchupDiamondGenerator() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const now = Date.now();
+  const lastTick = gameState.diamondGenerator.lastTickTime || now;
+  const elapsed = Math.max(0, (now - lastTick) / 1000);
+  const cycleDur = getDiamondCycleDuration();
+  const rate = getDiamondsPerCycle();
+
+  if (elapsed > 0) {
+    const totalProg = (gameState.diamondGenerator.progressSeconds || 0) + elapsed;
+    const completed = Math.floor(totalProg / cycleDur);
+    if (completed > 0) {
+      const generated = Number((completed * rate).toFixed(6));
+      gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + generated).toFixed(6));
+      gameState.diamondGenerator.totalDiamondsProduced = Number(((gameState.diamondGenerator.totalDiamondsProduced || 0) + generated).toFixed(6));
+      gameState.diamondGenerator.progressSeconds = totalProg % cycleDur;
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`💎 Generator produced +${formatDiamondDisplay(generated)} Diamonds while away!`);
+      }
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof saveGame === 'function') saveGame();
+    } else {
+      gameState.diamondGenerator.progressSeconds = totalProg;
+    }
+  }
+  gameState.diamondGenerator.lastTickTime = now;
+}
+window.catchupDiamondGenerator = catchupDiamondGenerator;
+
+function tickDiamondGenerator() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const now = Date.now();
+  const lastTick = gameState.diamondGenerator.lastTickTime || now;
+  const dt = Math.max(0, (now - lastTick) / 1000);
+  gameState.diamondGenerator.lastTickTime = now;
+
+  const cycleDur = getDiamondCycleDuration();
+  const rate = getDiamondsPerCycle();
+
+  gameState.diamondGenerator.progressSeconds = (gameState.diamondGenerator.progressSeconds || 0) + dt;
+
+  if (gameState.diamondGenerator.progressSeconds >= cycleDur) {
+    const completedCycles = Math.floor(gameState.diamondGenerator.progressSeconds / cycleDur);
+    gameState.diamondGenerator.progressSeconds = gameState.diamondGenerator.progressSeconds % cycleDur;
+
+    const awardedDiamonds = Number((completedCycles * rate).toFixed(6));
+    gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + awardedDiamonds).toFixed(6));
+    gameState.diamondGenerator.totalDiamondsProduced = Number(((gameState.diamondGenerator.totalDiamondsProduced || 0) + awardedDiamonds).toFixed(6));
+
+    // Audio & Visual celebratory burst
+    triggerDiamondGlintEffect();
+    if (typeof sfx !== 'undefined' && typeof sfx.playCoinSound === 'function') {
+      sfx.playCoinSound();
+    }
+
+    if (completedCycles === 1) {
+      const coreEl = document.getElementById('diamondCrystalNode');
+      if (coreEl) {
+        const rect = coreEl.getBoundingClientRect();
+        if (typeof createFloatingNumber === 'function') {
+          createFloatingNumber(rect.left + rect.width / 2, rect.top + 20, `+${formatDiamondDisplay(awardedDiamonds)} 💎`, '#00f0ff');
+        }
+      }
+    }
+
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame();
+  }
+
+  // Update live progress and countdown elements directly for ultra-smooth 60fps feel
+  updateDiamondLiveIndicators(cycleDur, rate);
+}
+
+function updateDiamondLiveIndicators(cycleDur, rate) {
+  const progSecs = gameState.diamondGenerator.progressSeconds || 0;
+  const remaining = Math.max(0, cycleDur - progSecs);
+  const percent = Math.min(100, Math.max(0, (progSecs / cycleDur) * 100));
+
+  // 1. Core Countdown Text
+  const countEl = document.getElementById('diamondCountdownText');
+  if (countEl) {
+    countEl.textContent = `${remaining.toFixed(1)}s`;
+  }
+
+  // 2. Core Rate Label
+  const rateEl = document.getElementById('diamondCoreRateLabel');
+  if (rateEl) {
+    rateEl.textContent = `+${formatDiamondDisplay(rate)} 💎`;
+  }
+
+  // 3. SVG Circular Progress Ring (circumference = 2 * PI * 70 = 439.82)
+  const ringEl = document.getElementById('diamondProgressRing');
+  if (ringEl) {
+    const circumference = 439.82;
+    const offset = circumference - (percent / 100) * circumference;
+    ringEl.style.strokeDashoffset = offset.toFixed(2);
+  }
+
+  // 4. Linear Progress Fill & Meta
+  const fillEl = document.getElementById('diamondLinearProgressFill');
+  if (fillEl) {
+    fillEl.style.width = `${percent.toFixed(1)}%`;
+  }
+  const pctEl = document.getElementById('diamondCyclePercent');
+  if (pctEl) {
+    pctEl.textContent = `${Math.floor(percent)}%`;
+  }
+
+  // 5. Speed Ad Cooldown Real-time Countdown
+  updateSpeedAdCooldownRealtime();
+}
+
+function updateDiamondGeneratorUI() {
+  if (!gameState || !gameState.diamondGenerator) return;
+
+  const cycleDur = getDiamondCycleDuration();
+  const rate = getDiamondsPerCycle();
+  const outputCost = getDiamondOutputCost();
+  const speedCost = getDiamondSpeedCost();
+  const pLevel = gameState.diamondGenerator.productionLevel || 1;
+  const sLevel = gameState.diamondGenerator.timeLevel || 1;
+  const upCount = gameState.diamondGenerator.productionUpgradesCount || 0;
+
+  // Header Rate Pill
+  const headerPill = document.getElementById('genRateHeaderBadge');
+  if (headerPill) {
+    headerPill.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
+  }
+
+  // Linear meta left
+  const metaLeft = document.getElementById('diamondCycleRateMeta');
+  if (metaLeft) {
+    metaLeft.textContent = `💎 +${formatDiamondDisplay(rate)} every ${cycleDur.toFixed(2)}s`;
+  }
+
+  // 1. Output Upgrade Card
+  const outSub = document.getElementById('ducOutputSub');
+  if (outSub) {
+    outSub.textContent = `Rate: +${formatDiamondDisplay(rate)} 💎/cycle`;
+  }
+  const outBadge = document.getElementById('ducOutputLevelBadge');
+  if (outBadge) {
+    outBadge.textContent = `Lv. ${pLevel}`;
+  }
+  const btnOutCost = document.getElementById('btnUpgradeOutputCostText');
+  if (btnOutCost) {
+    btnOutCost.textContent = `Cost: 🪙 ${outputCost} Coins`;
+  }
+  const btnOut = document.getElementById('btnUpgradeOutput');
+  if (btnOut) {
+    const canAffordCoins = (gameState.player.coins || 0) >= outputCost;
+    btnOut.disabled = !canAffordCoins;
+  }
+
+  // Cost Reducer Box for Output
+  const milestoneText = document.getElementById('outputReducerMilestoneText');
+  const reducerActions = document.getElementById('outputReducerActions');
+  const isReducerUnlocked = upCount >= 10;
+
+  if (milestoneText) {
+    if (isReducerUnlocked) {
+      milestoneText.textContent = `✨ UNLOCKED (${upCount} Upgrades)`;
+      milestoneText.style.color = '#10b981';
+    } else {
+      milestoneText.textContent = `Unlocks after 10 Upgrades (${upCount}/10)`;
+      milestoneText.style.color = '#f59e0b';
+    }
+  }
+  if (reducerActions) {
+    reducerActions.style.display = isReducerUnlocked ? 'flex' : 'none';
+  }
+
+  // 1,000 Diamond discount button state
+  const btn1000 = document.getElementById('btnDiscount1000Diamond');
+  const btn1000Title = document.getElementById('btnDiscount1000Title');
+  if (btn1000) {
+    const alreadyUsed = !!gameState.diamondGenerator.production1000DiamondDiscountUsed;
+    if (alreadyUsed) {
+      btn1000.disabled = true;
+      if (btn1000Title) btn1000Title.textContent = '✓ Claimed (-100 Coins)';
+    } else {
+      const has1000Diamonds = (gameState.player.diamonds || 0) >= 1000;
+      btn1000.disabled = !has1000Diamonds;
+      if (btn1000Title) btn1000Title.textContent = 'Use 1,000 Diamonds';
+    }
+  }
+
+  // Output discount note
+  const outDiscount = gameState.diamondGenerator.productionCostDiscount || 0;
+  const outDiscountNote = document.getElementById('outputDiscountAppliedNote');
+  if (outDiscountNote) {
+    if (outDiscount > 0) {
+      outDiscountNote.style.display = 'block';
+      outDiscountNote.textContent = `Total Discount: -${outDiscount} Coins (Min: 25 Coins)`;
+    } else {
+      outDiscountNote.style.display = 'none';
+    }
+  }
+
+  // 2. Speed Upgrade Card
+  const speedSub = document.getElementById('ducSpeedSub');
+  if (speedSub) {
+    speedSub.textContent = `Cycle: ${cycleDur.toFixed(2)}s`;
+  }
+  const speedBadge = document.getElementById('ducSpeedLevelBadge');
+  if (speedBadge) {
+    speedBadge.textContent = `Lv. ${sLevel}`;
+  }
+  const btnSpeedCost = document.getElementById('btnUpgradeSpeedCostText');
+  if (btnSpeedCost) {
+    btnSpeedCost.textContent = `Cost: 💎 ${speedCost} Diamonds`;
+  }
+  const btnSpeed = document.getElementById('btnUpgradeSpeed');
+  if (btnSpeed) {
+    const canAffordDiamonds = (gameState.player.diamonds || 0) >= speedCost;
+    btnSpeed.disabled = !canAffordDiamonds;
+  }
+
+  // Speed Ad Discount Button text & state
+  updateSpeedAdDiscountButtonState();
+
+  // Speed discount note
+  const speedDiscount = gameState.diamondGenerator.timeCostDiscount || 0;
+  const speedDiscountNote = document.getElementById('speedDiscountAppliedNote');
+  if (speedDiscountNote) {
+    if (speedDiscount > 0) {
+      speedDiscountNote.style.display = 'block';
+      speedDiscountNote.textContent = `Total Discount: -${speedDiscount} Diamonds (Min: 1 💎)`;
+    } else {
+      speedDiscountNote.style.display = 'none';
+    }
+  }
+
+  // Footer Total Produced
+  const totalVal = document.getElementById('genTotalProducedVal');
+  if (totalVal) {
+    totalVal.textContent = formatDiamondDisplay(gameState.diamondGenerator.totalDiamondsProduced || 0);
+  }
+
+  // Sync Entry Card Badges on Home and Energy Pages
+  const dgeRate = document.getElementById('dgeHomeRateVal');
+  if (dgeRate) dgeRate.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
+
+  const dgeCycle = document.getElementById('dgeHomeCycleText');
+  if (dgeCycle) dgeCycle.textContent = `Cycle: ${cycleDur.toFixed(2)}s`;
+
+  const dgEnergyRate = document.getElementById('dgEnergyEntryRate');
+  if (dgEnergyRate) dgEnergyRate.textContent = `+${formatDiamondDisplay(rate)}`;
+
+  const dgEnergyCycle = document.getElementById('dgEnergyEntryCycle');
+  if (dgEnergyCycle) dgEnergyCycle.textContent = `${cycleDur.toFixed(2)}s`;
+}
+
+function updateSpeedAdDiscountButtonState() {
+  const btn = document.getElementById('btnDiscountSpeedAd');
+  const title = document.getElementById('speedAdDiscountBtnTitle');
+  const sub = document.getElementById('speedAdDiscountBtnSub');
+  const statusBadge = document.getElementById('speedReducerStatusBadge');
+  if (!btn || !gameState.diamondGenerator) return;
+
+  const now = Date.now();
+  const cooldownEnd = gameState.diamondGenerator.timeAdCooldownEndTime || 0;
+  const isCooldown = cooldownEnd > now;
+  const isFirstAd = !gameState.diamondGenerator.timeAdFirstDiscountUsed;
+
+  if (isCooldown) {
+    btn.disabled = true;
+    const rem = Math.ceil((cooldownEnd - now) / 1000);
+    const m = Math.floor(rem / 60);
+    const s = rem % 60;
+    if (title) title.textContent = `⏳ Cooldown (${m}:${String(s).padStart(2, '0')})`;
+    if (sub) sub.textContent = 'Next ad reduces 1 💎 in cost';
+    if (statusBadge) {
+      statusBadge.textContent = `Cooldown: ${m}:${String(s).padStart(2, '0')}`;
+      statusBadge.style.color = '#94a3b8';
+    }
+  } else {
+    btn.disabled = false;
+    if (isFirstAd) {
+      if (title) title.textContent = 'Watch Ad (-10 💎 Cost)';
+      if (sub) sub.textContent = 'First Ad Bonus • 10m Cooldown';
+      if (statusBadge) {
+        statusBadge.textContent = 'First Ad: -10 💎!';
+        statusBadge.style.color = '#34d399';
+      }
+    } else {
+      if (title) title.textContent = 'Watch Ad (-1 💎 Cost)';
+      if (sub) sub.textContent = 'Per Ad: -1 💎 • 10m Cooldown';
+      if (statusBadge) {
+        statusBadge.textContent = 'Ad Ready: -1 💎';
+        statusBadge.style.color = '#38bdf8';
+      }
+    }
+  }
+}
+
+function updateSpeedAdCooldownRealtime() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const now = Date.now();
+  const cooldownEnd = gameState.diamondGenerator.timeAdCooldownEndTime || 0;
+  if (cooldownEnd > 0) {
+    updateSpeedAdDiscountButtonState();
+  }
+}
+
+function triggerDiamondGlintEffect() {
+  const node = document.getElementById('diamondCrystalNode');
+  if (node) {
+    node.classList.add('diamond-glint-burst');
+    setTimeout(() => {
+      node.classList.remove('diamond-glint-burst');
+    }, 600);
+  }
+}
+
+// --------------------------------------------------------------------------
+// UPGRADE ACTIONS
+// --------------------------------------------------------------------------
+
+function purchaseDiamondOutputUpgrade() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const cost = getDiamondOutputCost();
+
+  if ((gameState.player.coins || 0) < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(1);
+    const btn = document.getElementById('btnUpgradeOutput');
+    if (btn) {
+      btn.classList.add('orb-error-shake');
+      setTimeout(() => btn.classList.remove('orb-error-shake'), 400);
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🪙 Need ${cost} Coins to upgrade output!`);
+    }
+    return;
+  }
+
+  // Deduct coins & upgrade output
+  gameState.player.coins -= cost;
+  gameState.diamondGenerator.productionLevel = (gameState.diamondGenerator.productionLevel || 1) + 1;
+  gameState.diamondGenerator.productionUpgradesCount = (gameState.diamondGenerator.productionUpgradesCount || 0) + 1;
+  gameState.diamondGenerator.diamondsPerCycle = Number(((gameState.diamondGenerator.diamondsPerCycle || 0.000001) + 0.000001).toFixed(6));
+
+  if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('success');
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
+
+  if (gameState.diamondGenerator.productionUpgradesCount === 10) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎉 Milestone Reached! Cost Reducer is now UNLOCKED for Output Upgrades!');
+    }
+  } else {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`✨ Output Upgraded! Now generating +${formatDiamondDisplay(getDiamondsPerCycle())} 💎 per cycle!`);
+    }
+  }
+
+  triggerDiamondGlintEffect();
+  updateHomeUI();
+  if (typeof updateUI === 'function') updateUI();
+  saveGame(true);
+}
+window.purchaseDiamondOutputUpgrade = purchaseDiamondOutputUpgrade;
+
+function applyDiamondDiscount1000() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  if ((gameState.diamondGenerator.productionUpgradesCount || 0) < 10) {
+    if (typeof showFloatingToast === 'function') showFloatingToast('🔒 Unlocks after 10 Output Upgrades!');
+    return;
+  }
+  if (gameState.diamondGenerator.production1000DiamondDiscountUsed) {
+    if (typeof showFloatingToast === 'function') showFloatingToast('✓ 1,000 Diamond discount already claimed!');
+    return;
+  }
+  if ((gameState.player.diamonds || 0) < 1000) {
+    if (typeof showFloatingToast === 'function') showFloatingToast(`💎 Need 1,000 Diamonds! (Current: ${formatNumber(gameState.player.diamonds || 0)})`);
+    return;
+  }
+
+  gameState.player.diamonds = Number(((gameState.player.diamonds || 0) - 1000).toFixed(6));
+  gameState.diamondGenerator.production1000DiamondDiscountUsed = true;
+  gameState.diamondGenerator.productionCostDiscount = (gameState.diamondGenerator.productionCostDiscount || 0) + 100;
+
+  if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('success');
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('🎉 Spent 1,000 Diamonds! Output upgrade cost reduced by 100 Coins!');
+  }
+
+  updateHomeUI();
+  if (typeof updateUI === 'function') updateUI();
+  saveGame(true);
+}
+window.applyDiamondDiscount1000 = applyDiamondDiscount1000;
+
+function applyOutputAdDiscount() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  if ((gameState.diamondGenerator.productionUpgradesCount || 0) < 10) {
+    if (typeof showFloatingToast === 'function') showFloatingToast('🔒 Unlocks after 10 Output Upgrades!');
+    return;
+  }
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(() => {
+      gameState.diamondGenerator.productionCostDiscount = (gameState.diamondGenerator.productionCostDiscount || 0) + 50;
+      gameState.diamondGenerator.productionAdDiscountsCount = (gameState.diamondGenerator.productionAdDiscountsCount || 0) + 1;
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎬 Ad watched! Output upgrade cost reduced by 50 Coins!');
+      }
+      updateHomeUI();
+      if (typeof updateUI === 'function') updateUI();
+      saveGame(true);
+    }, {
+      adTitle: 'Output Upgrade Discount',
+      adDesc: 'Watch ad to reduce coin cost by 50 coins!'
+    });
+  } else {
+    gameState.diamondGenerator.productionCostDiscount = (gameState.diamondGenerator.productionCostDiscount || 0) + 50;
+    gameState.diamondGenerator.productionAdDiscountsCount = (gameState.diamondGenerator.productionAdDiscountsCount || 0) + 1;
+    updateHomeUI();
+    if (typeof updateUI === 'function') updateUI();
+    saveGame(true);
+  }
+}
+window.applyOutputAdDiscount = applyOutputAdDiscount;
+
+function purchaseDiamondSpeedUpgrade() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const cost = getDiamondSpeedCost();
+
+  if ((gameState.player.diamonds || 0) < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(1);
+    const btn = document.getElementById('btnUpgradeSpeed');
+    if (btn) {
+      btn.classList.add('orb-error-shake');
+      setTimeout(() => btn.classList.remove('orb-error-shake'), 400);
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`💎 Need ${cost} Diamonds to overclock speed!`);
+    }
+    return;
+  }
+
+  // Deduct diamonds & upgrade speed
+  gameState.player.diamonds = Number(((gameState.player.diamonds || 0) - cost).toFixed(6));
+  gameState.diamondGenerator.timeLevel = (gameState.diamondGenerator.timeLevel || 1) + 1;
+  gameState.diamondGenerator.timeUpgradesCount = (gameState.diamondGenerator.timeUpgradesCount || 0) + 1;
+  gameState.diamondGenerator.cycleDuration = Math.max(1.00, Number(((gameState.diamondGenerator.cycleDuration || 60.00) - 0.01).toFixed(2)));
+
+  if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('success');
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`⚡ Overclocked! Cycle time reduced to ${getDiamondCycleDuration().toFixed(2)}s (-0.01s)!`);
+  }
+
+  triggerDiamondGlintEffect();
+  updateHomeUI();
+  if (typeof updateUI === 'function') updateUI();
+  saveGame(true);
+}
+window.purchaseDiamondSpeedUpgrade = purchaseDiamondSpeedUpgrade;
+
+function applySpeedAdDiscount() {
+  if (!gameState || !gameState.diamondGenerator) return;
+  const now = Date.now();
+  const cooldownEnd = gameState.diamondGenerator.timeAdCooldownEndTime || 0;
+
+  if (cooldownEnd > now) {
+    const rem = Math.ceil((cooldownEnd - now) / 1000);
+    const m = Math.floor(rem / 60);
+    const s = rem % 60;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⏳ Cooldown active! Next ad available in ${m}m ${s}s`);
+    }
+    return;
+  }
+
+  const isFirstAd = !gameState.diamondGenerator.timeAdFirstDiscountUsed;
+  const discountAmount = isFirstAd ? 10 : 1;
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(() => {
+      if (isFirstAd) {
+        gameState.diamondGenerator.timeAdFirstDiscountUsed = true;
+      } else {
+        gameState.diamondGenerator.timeSubsequentAdDiscountsCount = (gameState.diamondGenerator.timeSubsequentAdDiscountsCount || 0) + 1;
+      }
+      gameState.diamondGenerator.timeCostDiscount = (gameState.diamondGenerator.timeCostDiscount || 0) + discountAmount;
+      // Start 10 minute cooldown (10 * 60 * 1000 ms)
+      gameState.diamondGenerator.timeAdCooldownEndTime = Date.now() + 10 * 60 * 1000;
+
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎬 Ad watched! Speed upgrade cost reduced by ${discountAmount} Diamond${discountAmount > 1 ? 's' : ''}! 10m cooldown started.`);
+      }
+
+      updateHomeUI();
+      if (typeof updateUI === 'function') updateUI();
+      saveGame(true);
+    }, {
+      adTitle: 'Speed Upgrade Discount',
+      adDesc: `Watch ad to reduce speed diamond cost by ${discountAmount} 💎!`
+    });
+  } else {
+    if (isFirstAd) {
+      gameState.diamondGenerator.timeAdFirstDiscountUsed = true;
+    } else {
+      gameState.diamondGenerator.timeSubsequentAdDiscountsCount = (gameState.diamondGenerator.timeSubsequentAdDiscountsCount || 0) + 1;
+    }
+    gameState.diamondGenerator.timeCostDiscount = (gameState.diamondGenerator.timeCostDiscount || 0) + discountAmount;
+    gameState.diamondGenerator.timeAdCooldownEndTime = Date.now() + 10 * 60 * 1000;
+    updateHomeUI();
+    if (typeof updateUI === 'function') updateUI();
+    saveGame(true);
+  }
+}
+window.applySpeedAdDiscount = applySpeedAdDiscount;
+
+// Initialize Engines automatically on load
 initComboDecayEngine();
+initDiamondGeneratorEngine();
 
 // ==========================================================================
 // HOME ACTION CIRCLES & POP-UP MODAL ENGINE
@@ -859,19 +1466,14 @@ function checkEnergyAdCooldownBackground() {
     wasEnergyAdOnCooldown = true;
     energyPopupShownForCycle = false;
   } else {
-    // If it was on cooldown and now finished: "after a timer finish than show a popup in home page"
+    // If it was on cooldown and now finished:
     if (wasEnergyAdOnCooldown) {
       wasEnergyAdOnCooldown = false;
-      energyPopupShownForCycle = true;
+      energyPopupShownForCycle = false;
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('HOME_ENERGY_POPUP_LOAD_SHOWN');
       }
-      const homePage = document.getElementById('pageHome');
-      const backdrop = document.getElementById('homePopupBackdrop');
-      const isModalOpen = backdrop && backdrop.classList.contains('open');
-      if (homePage && homePage.classList.contains('active') && !isModalOpen) {
-        openHomeActionPopup('booster_energy');
-      }
+      // Note: Automatic popups removed per user request ("side in many popup are remove..")
     }
   }
 }
@@ -881,23 +1483,9 @@ if (typeof window !== 'undefined') {
   setInterval(checkEnergyAdCooldownBackground, 1000);
 }
 
-// Automatic Fixed Popup on Initial Game Load
+// Automatic Fixed Popup on Initial Game Load - Suppressed per user request
 function checkAndShowHomeFixedPopupOnLoad() {
-  setTimeout(() => {
-    const homePage = document.getElementById('pageHome');
-    if (homePage && homePage.classList.contains('active')) {
-      if (!isEnergyAdCooldownActive()) {
-        const alreadyShown = (typeof sessionStorage !== 'undefined') ? sessionStorage.getItem('HOME_ENERGY_POPUP_LOAD_SHOWN') : null;
-        if (!alreadyShown) {
-          if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('HOME_ENERGY_POPUP_LOAD_SHOWN', 'true');
-          }
-          energyPopupShownForCycle = true;
-          openHomeActionPopup('booster_energy');
-        }
-      }
-    }
-  }, 900);
+  // Suppressed automatic popup on load ("side in many popup are remove..")
 }
 
 // Run check on initial load
@@ -1876,6 +2464,9 @@ window.addEventListener('levelsConfigUpdated', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderHomeAnnouncement();
+  if (typeof initDiamondGeneratorEngine === 'function') {
+    initDiamondGeneratorEngine();
+  }
   if (typeof updateMultiTapOptions === 'function') {
     updateMultiTapOptions();
   }

@@ -422,7 +422,7 @@ const DEFAULT_WEB_TASKS = [
     iconClass: 'task-icon-cyan',
     accentClass: 'task-tab-accent-cyan',
     liquidTheme: 'liquid-cyan',
-    btnText: 'Buy Website Task (1,000 🪙)',
+    btnText: '1,000 🪙',
     disabled: false
   }
 ];
@@ -476,7 +476,7 @@ function getWebsiteTasksList() {
         iconClass: ct.iconClass || 'task-icon-cyan',
         accentClass: ct.accentClass || 'task-tab-accent-cyan',
         liquidTheme: ct.liquidTheme || 'liquid-cyan',
-        btnText: ct.btnText || `Buy Website Task (${cost.toLocaleString()} 🪙)`
+        btnText: ct.btnText || `${cost.toLocaleString()} 🪙`
       };
     });
   _websiteTaskMap = new Map(_cachedWebsiteList.map(t => [t.id, t]));
@@ -912,11 +912,11 @@ function renderTasksList() {
             </div>
           </div>
 
-          <!-- Right Action Col: If not bought, show 1 button: Buy Website Task (1,000 Coins). If bought, show Open (link hidden) and Verification ON -->
+          <!-- Right Action Col: If not bought, show 1 button: 1,000 🪙. If bought, show Open (link hidden) and Verification ON -->
           <div class="task-tab-right-col">
             ${!isAlreadyOpened
-              ? `<button class="task-web-btn buy-mode" onclick="buyWebsiteTask('${task.id}', event)" title="Buy Website Task for ${cost.toLocaleString()} Coins">
-                   <span>🪙 Buy Website Task (${cost.toLocaleString()} Coins)</span>
+              ? `<button class="task-web-btn buy-mode" onclick="buyWebsiteTask('${task.id}', event)" title="Unlock for ${cost.toLocaleString()} Coins">
+                   <span>${cost.toLocaleString()} 🪙</span>
                  </button>`
               : `<div class="task-web-actions-row">
                    <button class="task-web-btn open-mode" onclick="openWebsiteTaskHiddenUrl('${task.id}', event)" title="Open Website (URL hidden)">
@@ -1092,7 +1092,7 @@ function openTaskNotesPopup(taskId, subtabType = 'daily') {
       } else {
         actionsWrap.innerHTML = `
           <button class="notes-nav-btn" onclick="closeTaskNotesPopup(); buyWebsiteTask('${task.id}')" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-            <span>🪙 Buy Website Task (${cost.toLocaleString()} Coins)</span>
+            <span>${cost.toLocaleString()} 🪙</span>
           </button>
           <button class="notes-close-action-btn" onclick="closeTaskNotesPopup()">Close</button>
         `;

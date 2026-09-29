@@ -370,6 +370,11 @@ window.updateShopUI = function() {
     if (typeof window.renderFuelShopTab === 'function') window.renderFuelShopTab();
   }
 
+  // Update Individual Pass Ad Cooldowns (24h Cooldown Timers)
+  if (typeof window.updatePassAdTimersUI === 'function') {
+    window.updatePassAdTimersUI();
+  }
+
   // Daily Free Supply Drop Status
   const freebieBtn = document.getElementById('btnClaimShopFreebie');
   const freebieText = document.getElementById('freebieBtnText');
@@ -438,33 +443,56 @@ window.buyReactorUpgrade = function(type) {
   }
 };
 
-window.buyPassItem = function(itemType, costOverride) {
-  const PASS_PRICES = {
-    spinTicket: { cost: 100, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    ticket: { cost: 100, name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    chestKey: { cost: 100, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    key: { cost: 100, name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    scratchCard: { cost: 100, name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' },
-    egg: { cost: 100, name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' }
-  };
+// ==========================================================================
+// SHOP PASSES & VAULT ITEMS: KEY, TICKET, EGG, SCRATCH CARD
+// Requirements:
+// 1. Each item ONLY buyable with 100 Diamonds (100 💎 -> 1 Item)
+// 2. Or watch 1 Rewarded Ad -> 1 Free Item
+// 3. Each item has its own independent 24-Hour ad cooldown timer
+// ==========================================================================
 
-  const item = PASS_PRICES[itemType];
+const PASS_ITEMS_MAP = {
+  key: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
+  chestKey: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
+  ticket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
+  spinTicket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
+  egg: { name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' },
+  scratchCard: { name: 'Scratch Card', icon: '🎴', field: 'scratchCards', goalKey: 'cards' },
+  card: { name: 'Scratch Card', icon: '🎴', field: 'scratchCards', goalKey: 'cards' }
+};
+
+function normalizePassKey(type) {
+  if (type === 'chestKey') return 'key';
+  if (type === 'spinTicket') return 'ticket';
+  if (type === 'card') return 'scratchCard';
+  return type;
+}
+
+// 1. Buy Pass / Vault Item with 100 Diamonds (Strictly 100 Diamonds -> 1 Item)
+window.buyPassItemWithDiamonds = function(itemType) {
+  const normKey = normalizePassKey(itemType);
+  const item = PASS_ITEMS_MAP[normKey] || PASS_ITEMS_MAP[itemType];
   if (!item) return;
 
-  const cost = (costOverride !== undefined && costOverride !== null && Number(costOverride) > 0)
-    ? Number(costOverride)
-    : item.cost;
+  const cost = 100; // Strictly 100 Diamonds
+  const currentDiamonds = gameState.player.diamonds !== undefined ? gameState.player.diamonds : (gameState.player.blueCoins || 0);
 
-  if (gameState.player.coins < cost) {
-    showShopToast(`Need ${cost} Coins for ${item.name}!`, '⚠️');
-    if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(0.5);
+  if (currentDiamonds < cost) {
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
+    showShopToast(`⚠️ Need ${cost} Diamonds! (Have ${formatNumber(currentDiamonds)})`, '💎');
     return;
   }
 
-  gameState.player.coins -= cost;
+  // Deduct 100 Diamonds
+  gameState.player.diamonds = Math.max(0, currentDiamonds - cost);
+  if (gameState.player.blueCoins !== undefined) {
+    gameState.player.blueCoins = gameState.player.diamonds;
+  }
+
+  // Grant 1 item to player vault
   gameState.player[item.field] = (gameState.player[item.field] || 0) + 1;
 
-  // If item corresponds to active level goal target, advance goal progress
+  // Advance level goal progress if matching
   if (item.goalKey && gameState.goalState && gameState.goalState.levelProgress) {
     gameState.goalState.levelProgress[item.goalKey] = (gameState.goalState.levelProgress[item.goalKey] || 0) + 1;
   }
@@ -475,7 +503,7 @@ window.buyPassItem = function(itemType, costOverride) {
     sfx.playTapSound(1.5);
   }
 
-  showShopToast(`+1 ${item.name} added to vault!`, item.icon);
+  showShopToast(`🎉 +1 ${item.name} purchased for ${cost} Diamonds!`, item.icon);
 
   if (typeof updateUI === 'function') updateUI();
   if (typeof updateShopUI === 'function') updateShopUI();
@@ -492,76 +520,164 @@ window.buyPassItem = function(itemType, costOverride) {
   }
 };
 
-// Buy Passes & Vault Items with Blue Coins (1 Key = 500 Blue, 1 Ticket = 500 Blue, 1 Card = 500 Blue)
-window.buyItemWithBlueCoins = function(itemType, cost) {
-  const DEFAULT_BLUE_COSTS = {
-    key: 500,
-    chestKey: 500,
-    ticket: 500,
-    spinTicket: 500,
-    scratchCard: 500,
-    card: 500,
-    egg: 100
-  };
+// 2. Watch 1 Ad to Claim 1 Free Pass / Vault Item (Individual 24-Hour Cooldown per Item)
+const PASS_AD_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 Hours
 
-  const BLUE_PASS_ITEMS = {
-    key: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    chestKey: { name: 'Mystery Chest Key', icon: '🔑', field: 'chestKeys', goalKey: 'keys' },
-    ticket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    spinTicket: { name: 'Spin Ticket', icon: '🎡', field: 'chestTickets', goalKey: 'tickets' },
-    egg: { name: 'Cyber Dragon Egg', icon: '🥚', field: 'eggs' },
-    scratchCard: { name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' },
-    card: { name: 'Scratch Card', icon: '🎟️', field: 'scratchCards', goalKey: 'cards' }
-  };
-
-  const item = BLUE_PASS_ITEMS[itemType];
+window.claimPassItemViaAd = function(itemType) {
+  const normKey = normalizePassKey(itemType);
+  const item = PASS_ITEMS_MAP[normKey] || PASS_ITEMS_MAP[itemType];
   if (!item) return;
 
-  const finalCost = (cost !== undefined && cost !== null && Number(cost) > 0) ? Number(cost) : (DEFAULT_BLUE_COSTS[itemType] || 500);
+  if (!gameState.player.passAdCooldowns) {
+    gameState.player.passAdCooldowns = {};
+  }
 
-  const currentBlue = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
+  const lastClaim = gameState.player.passAdCooldowns[normKey] || 0;
+  const now = Date.now();
+  const diff = now - lastClaim;
 
-  if (currentBlue < finalCost) {
+  if (diff < PASS_AD_COOLDOWN_MS) {
+    const rem = PASS_AD_COOLDOWN_MS - diff;
+    const hrs = Math.floor(rem / (1000 * 60 * 60));
+    const mins = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((rem % (1000 * 60)) / 1000);
+    const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m ${secs}s`;
     if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${finalCost} Blue Coins! (Have ${currentBlue})`, '💙');
+    showShopToast(`⏳ ${item.name} Ad renewing in ${timeStr}!`, '⏳');
     return;
   }
 
-  // Deduct Blue Coins
-  gameState.player.blueCoins = Math.max(0, currentBlue - finalCost);
-  if (gameState.player.diamonds !== undefined) {
-    gameState.player.diamonds = gameState.player.blueCoins;
+  const doReward = () => {
+    if (!gameState.player.passAdCooldowns) {
+      gameState.player.passAdCooldowns = {};
+    }
+    // Record individual 24-hour ad watch timestamp for this specific item
+    gameState.player.passAdCooldowns[normKey] = Date.now();
+
+    // Grant 1 item to player vault
+    gameState.player[item.field] = (gameState.player[item.field] || 0) + 1;
+
+    // Advance level goal progress if active
+    if (item.goalKey && gameState.goalState && gameState.goalState.levelProgress) {
+      gameState.goalState.levelProgress[item.goalKey] = (gameState.goalState.levelProgress[item.goalKey] || 0) + 1;
+    }
+
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
+    }
+
+    showShopToast(`🎉 +1 Free ${item.name} claimed via Ad!`, item.icon);
+
+    if (typeof window.updatePassAdTimersUI === 'function') {
+      window.updatePassAdTimersUI();
+    }
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof updateShopUI === 'function') updateShopUI();
+    if (typeof updateProfileUI === 'function') updateProfileUI();
+    if (typeof updateGoalUI === 'function') updateGoalUI();
+    if (typeof updateChestUI === 'function') updateChestUI();
+    if (typeof updateSpinUI === 'function') updateSpinUI();
+    if (typeof updateEggUI === 'function') updateEggUI();
+    if (typeof updateScratchUI === 'function') updateScratchUI();
+
+    if (typeof saveGame === 'function') saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+  };
+
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(doReward, {
+      adTitle: `Free ${item.name}`,
+      adDesc: `Watch 1 ad for 1 Free ${item.name}!`
+    });
+  } else if (typeof startAdSimulation === 'function') {
+    startAdSimulation(normKey, `${item.name} Ad`, `Watch 1 ad for +1 ${item.name}`, doReward);
+  } else {
+    doReward();
   }
+};
 
-  // Grant Item to player vault inventory
-  gameState.player[item.field] = (gameState.player[item.field] || 0) + 1;
+// 3. Dynamic Real-Time Countdown Timer for Each Individual Pass Ad Button
+window.updatePassAdTimersUI = function() {
+  const PASS_AD_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+  const passItems = [
+    { key: 'key', icon: '🔑', label: '+1 Key 🔑' },
+    { key: 'ticket', icon: '🎟️', label: '+1 Ticket 🎟️' },
+    { key: 'egg', icon: '🥚', label: '+1 Egg 🥚' },
+    { key: 'scratchCard', icon: '🎴', label: '+1 Card 🎴' }
+  ];
 
-  // If item corresponds to active level goal target, also advance goal progress
-  if (item.goalKey && gameState.goalState && gameState.goalState.levelProgress) {
-    gameState.goalState.levelProgress[item.goalKey] = (gameState.goalState.levelProgress[item.goalKey] || 0) + 1;
-  }
+  if (!gameState || !gameState.player) return;
+  if (!gameState.player.passAdCooldowns) gameState.player.passAdCooldowns = {};
 
-  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-    sfx.playLevelUpSound();
-  } else if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(1.5);
-  }
+  const now = Date.now();
 
-  showShopToast(`🎉 +1 ${item.name} purchased for ${finalCost} Blue Coins!`, item.icon);
+  passItems.forEach(({ key, icon }) => {
+    const btn = document.getElementById(`passAdBtn_${key}`);
+    const lbl = document.getElementById(`passAdLabel_${key}`);
+    const gain = document.getElementById(`passAdGain_${key}`);
 
-  if (typeof updateUI === 'function') updateUI();
-  if (typeof updateShopUI === 'function') updateShopUI();
-  if (typeof updateProfileUI === 'function') updateProfileUI();
-  if (typeof updateGoalUI === 'function') updateGoalUI();
-  if (typeof updateChestUI === 'function') updateChestUI();
-  if (typeof updateSpinUI === 'function') updateSpinUI();
-  if (typeof updateEggUI === 'function') updateEggUI();
-  if (typeof updateScratchUI === 'function') updateScratchUI();
+    const lastClaim = gameState.player.passAdCooldowns[key] || 0;
+    const diff = now - lastClaim;
 
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
+    if (diff < PASS_AD_COOLDOWN_MS) {
+      const rem = PASS_AD_COOLDOWN_MS - diff;
+      const hrs = Math.floor(rem / (1000 * 60 * 60));
+      const mins = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((rem % (1000 * 60)) / 1000);
+      const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m ${secs}s`;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.65';
+        btn.style.cursor = 'not-allowed';
+        btn.title = `Free Ad renewing in ${timeStr} (24h cooldown)`;
+      }
+      if (lbl) {
+        lbl.textContent = `⏳ ${timeStr}`;
+        lbl.style.color = '#f59e0b';
+      }
+      if (gain) {
+        gain.textContent = `24h Lock`;
+        gain.style.background = 'rgba(245, 158, 11, 0.25)';
+        gain.style.color = '#fbbf24';
+      }
+    } else {
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.title = `Watch 1 Ad for 1 Free ${key} (24h cooldown)`;
+      }
+      if (lbl) {
+        lbl.textContent = `Watch Ad`;
+        lbl.style.color = '';
+      }
+      if (gain) {
+        gain.textContent = `FREE ${icon}`;
+        gain.style.background = '#10b981';
+        gain.style.color = '#000';
+      }
+    }
+  });
+};
+
+if (!window._passAdTimerInterval) {
+  window._passAdTimerInterval = setInterval(() => {
+    if (typeof window.updatePassAdTimersUI === 'function') {
+      window.updatePassAdTimersUI();
+    }
+  }, 1000);
+}
+
+// Backwards-compatible / Legacy wrappers enforcing 100 Diamonds:
+window.buyPassItem = function(itemType) {
+  return window.buyPassItemWithDiamonds(itemType);
+};
+
+window.buyItemWithBlueCoins = function(itemType) {
+  return window.buyPassItemWithDiamonds(itemType);
 };
 
 window.buyFuelInShop = function(fuelType, price, currency) {
@@ -637,99 +753,17 @@ window.claimAdForEnergy = function() {
   }
 };
 
-// Cyber Dragon Egg Option 1: Watch 1 Ad -> +10 Eggs
+// Cyber Dragon Egg: 1 Ad -> 1 Egg (24h Cooldown) or 100 Diamonds -> 1 Egg
 window.buyEggsWithAd = function() {
-  const doReward = () => {
-    gameState.player.eggs = (gameState.player.eggs || 0) + 10;
-    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-      sfx.playLevelUpSound();
-    }
-    showShopToast(`🥚 +10 Cyber Dragon Eggs added to vault!`, '🥚');
-    updateUI();
-    updateShopUI();
-    updateProfileUI();
-    if (typeof updateEggUI === 'function') updateEggUI();
-    if (typeof saveGame === 'function') saveGame();
-    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-      window.firebaseSync.saveToCloudImmediate();
-    }
-  };
-
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward);
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('egg', '10 Cyber Eggs Ad', 'Watch 1 ad for +10 Eggs', doReward);
-  } else {
-    doReward();
-  }
+  return window.claimPassItemViaAd('egg');
 };
 
-// Cyber Dragon Egg Option 2: 5 Diamonds -> +10 Eggs
-window.buyEggsWithDiamonds = function(cost = 5) {
-  const diamonds = gameState.player.diamonds !== undefined ? gameState.player.diamonds : (gameState.player.blueCoins || 0);
-  if (diamonds < cost) {
-    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${cost} Diamonds! (Have ${diamonds})`, '💎');
-    return;
-  }
-
-  // Deduct diamonds
-  if (gameState.player.diamonds !== undefined) {
-    gameState.player.diamonds = Math.max(0, gameState.player.diamonds - cost);
-  }
-  if (gameState.player.blueCoins !== undefined) {
-    gameState.player.blueCoins = Math.max(0, gameState.player.blueCoins - cost);
-  }
-
-  gameState.player.eggs = (gameState.player.eggs || 0) + 10;
-
-  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-    sfx.playLevelUpSound();
-  }
-  showShopToast(`🎉 +10 Cyber Dragon Eggs bought for ${cost} Diamonds!`, '🥚');
-
-  updateUI();
-  updateShopUI();
-  updateProfileUI();
-  if (typeof updateEggUI === 'function') updateEggUI();
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
+window.buyEggsWithDiamonds = function(cost = 100) {
+  return window.buyPassItemWithDiamonds('egg');
 };
 
-// Cyber Dragon Egg Option 2 (New): 100 Blue Coins -> +20 Eggs
-window.buyEggsWithBlueCoins = function(cost = 100, count = 20) {
-  const currentBlue = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
-  if (currentBlue < cost) {
-    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') sfx.playErrorSound();
-    showShopToast(`⚠️ Need ${cost} Blue Coins! (Have ${currentBlue})`, '💙');
-    return;
-  }
-
-  // Deduct Blue Coins
-  gameState.player.blueCoins = Math.max(0, currentBlue - cost);
-  if (gameState.player.diamonds !== undefined) {
-    gameState.player.diamonds = gameState.player.blueCoins;
-  }
-
-  gameState.player.eggs = (gameState.player.eggs || 0) + count;
-
-  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-    sfx.playLevelUpSound();
-  } else if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(1.5);
-  }
-  showShopToast(`🎉 +${count} Cyber Dragon Eggs bought for ${cost} Blue Coins!`, '🥚');
-
-  updateUI();
-  updateShopUI();
-  updateProfileUI();
-  if (typeof updateEggUI === 'function') updateEggUI();
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
+window.buyEggsWithBlueCoins = function(cost = 100, count = 1) {
+  return window.buyPassItemWithDiamonds('egg');
 };
 
 // ==========================================================================
@@ -745,25 +779,26 @@ const DEFAULT_FUEL_CELLS_CONFIG = {
   basePrices: {
     blueCoin: 150,   // Base: 150 Blue Coins
     goldCoin: 125,   // Base: 125 Gold Coins
-    diamond: 25,     // Base: 25 Diamonds
+    diamond: 50,     // Base: 50 Diamonds
     ad: 1            // Base: 1 Ad
   },
   multipliers: {
-    green: 1,
-    yellow: 1.5,
-    orange: 2.5,
-    pink: 7,
-    purple: 8.5,
-    red: 5,
-    darkred: 6.5,
-    blue: 2.0,
-    lightblue: 3.5
+    darkgreen: 0.4,  // 20 Diamonds
+    green: 1,        // 50 Diamonds
+    yellow: 2.0,     // 100 Diamonds
+    orange: 4.0,     // 200 Diamonds
+    pink: 20,        // 1000 Diamonds
+    purple: 40,      // 2000 Diamonds
+    red: 10,         // 500 Diamonds
+    darkred: 15,     // 750 Diamonds
+    blue: 2.0,       // Keep 2.0 for multiplier tests
+    lightblue: 3.5   // Keep 3.5 for multiplier tests
   },
   darkGreenOptions: {
     blueCoin: 100,
     goldCoin: 500,
-    diamond: 10,
-    diamondRewardCells: 10
+    diamond: 20,
+    diamondRewardCells: 1
   },
   meta: {
     darkgreen: {
@@ -847,6 +882,28 @@ function getFuelCellsConfig() {
   return DEFAULT_FUEL_CELLS_CONFIG;
 }
 
+// Exact 10x Scaled Diamond Pricing per user requirement:
+// Dark Green: 2 -> 20, Green: 5 -> 50, Yellow: 10 -> 100, Orange: 20 -> 200,
+// Blue: 25 -> 250, Light Blue: 35 -> 350, Red: 50 -> 500, Dark Red: 75 -> 750,
+// Pink: 100 -> 1000, Purple: 200 -> 2000
+const FUEL_CELL_DIAMOND_PRICES = {
+  darkgreen: 20,
+  green: 50,
+  yellow: 100,
+  orange: 200,
+  blue: 250,
+  lightblue: 350,
+  red: 500,
+  darkred: 750,
+  pink: 1000,
+  purple: 2000
+};
+
+function getFuelCellDiamondCost(color) {
+  return FUEL_CELL_DIAMOND_PRICES[color] || 20;
+}
+window.getFuelCellDiamondCost = getFuelCellDiamondCost;
+
 function getFuelCellPricing(color) {
   const cfg = getFuelCellsConfig();
   const mult = (cfg.multipliers && cfg.multipliers[color]) !== undefined ? cfg.multipliers[color] : (DEFAULT_FUEL_CELLS_CONFIG.multipliers[color] || 1);
@@ -855,7 +912,7 @@ function getFuelCellPricing(color) {
   // Final Cost = Base Cost * Fuel Multiplier (rounded to whole number integer)
   const blueCost = Math.max(1, Math.round((base.blueCoin !== undefined ? base.blueCoin : 150) * mult));
   const goldCost = Math.max(1, Math.round((base.goldCoin !== undefined ? base.goldCoin : 125) * mult));
-  const diamondCost = Math.max(1, Math.round((base.diamond !== undefined ? base.diamond : 25) * mult));
+  const diamondCost = getFuelCellDiamondCost(color);
   const adCost = Math.max(1, Math.ceil((base.ad || 1) * (mult >= 5 ? 2 : 1)));
 
   return {
@@ -887,34 +944,6 @@ function switchFuelTab(color) {
 window.switchFuelTab = switchFuelTab;
 
 // ==========================================================================
-// RENDER ALL 8 FUEL CELL CARDS VERTICALLY (Pure Currencies: Blue, Gold, Diamonds • ZERO ADS)
-// Order: Dark Green -> Green -> Yellow -> Orange -> Pink -> Purple -> Red -> Dark Red
-// ==========================================================================
-// Diamond Cost Calculator with Progressive Pricing for Dark Red, Blue, and Light Blue
-function getFuelCellDiamondCost(color) {
-  if (color === 'darkgreen') return 2;
-  if (color === 'green') return 5;
-  if (color === 'yellow') return 10;
-  if (color === 'orange') return 20;
-  if (color === 'red') return 50;
-  if (color === 'pink') return 100;
-  if (color === 'purple') return 200;
-
-  // Scaling fuels: darkred, blue, lightblue (10, 15, 20, 25, 50, 100, 150, 200, ...)
-  if (color === 'darkred' || color === 'blue' || color === 'lightblue') {
-    const ladder = [10, 15, 20, 25, 50, 100];
-    const purchases = (gameState.energyGenerator && gameState.energyGenerator.fuelPurchases && gameState.energyGenerator.fuelPurchases[color]) || 0;
-    if (purchases < ladder.length) {
-      return ladder[purchases];
-    }
-    return 100 + (purchases - (ladder.length - 1)) * 50;
-  }
-
-  return 1;
-}
-window.getFuelCellDiamondCost = getFuelCellDiamondCost;
-
-// ==========================================================================
 // RENDER ALL 10 FUEL CELL CARDS VERTICALLY (Pure Diamonds • ZERO ADS)
 // Order: Dark Green -> Green -> Yellow -> Orange -> Red -> Dark Red -> Pink -> Purple -> Blue -> Light Blue
 // ==========================================================================
@@ -922,7 +951,7 @@ function renderAllFuelShopCards() {
   const listContainer = document.getElementById('fuelShopCardsList');
   if (!listContainer) return;
 
-  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'red', 'darkred', 'pink', 'purple', 'blue', 'lightblue'];
+  const fuelKeys = ['darkgreen', 'green', 'yellow', 'orange', 'blue', 'lightblue', 'red', 'darkred', 'pink', 'purple'];
   const cfg = getFuelCellsConfig();
 
   let html = '';
@@ -949,9 +978,6 @@ function renderAllFuelShopCards() {
 
     const colorHex = meta.color || '#10b981';
     const diamondCost = getFuelCellDiamondCost(color);
-    const isScaling = (color === 'darkred' || color === 'blue' || color === 'lightblue');
-    const purchases = (gameState.energyGenerator && gameState.energyGenerator.fuelPurchases && gameState.energyGenerator.fuelPurchases[color]) || 0;
-    const scalingBadge = isScaling ? `<span class="scaling-step-badge" style="background: rgba(6, 182, 212, 0.25); border: 1px solid rgba(6, 182, 212, 0.5); padding: 2px 7px; border-radius: 9999px; font-size: 10px; color: #a5f3fc; margin-left: 6px; font-weight: 700;">Buy #${purchases + 1}</span>` : '';
 
     html += `
       <div class="fuel-shop-card fuel-card-${color}" style="border-color: ${colorHex}55; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px ${colorHex}22; background: linear-gradient(180deg, ${colorHex}15 0%, rgba(10, 16, 32, 0.95) 100%);">
@@ -979,7 +1005,6 @@ function renderAllFuelShopCards() {
               <span class="fuel-btn-icon">💎</span>
               <span class="fuel-btn-cost">${formatNumber(diamondCost)}</span>
               <span class="fuel-btn-label">${diamondCost === 1 ? 'Diamond' : 'Diamonds'}</span>
-              ${scalingBadge}
             </div>
             <div class="fuel-single-arrow">➔</div>
             <div class="fuel-single-gain">
@@ -1034,8 +1059,11 @@ async function purchaseFuelCell(color, method = 'diamond') {
 
   // Deduct Diamonds
   gameState.player.diamonds -= cost;
+  if (gameState.player.blueCoins !== undefined) {
+    gameState.player.blueCoins = gameState.player.diamonds;
+  }
 
-  // Track purchase count for scaling fuels (darkred, blue, lightblue)
+  // Track purchase count
   if (!gameState.energyGenerator.fuelPurchases) {
     gameState.energyGenerator.fuelPurchases = {};
   }
@@ -1046,6 +1074,7 @@ async function purchaseFuelCell(color, method = 'diamond') {
   resetLock();
 }
 window.purchaseFuelCell = purchaseFuelCell;
+window.resetFuelPurchaseLock = () => { isFuelPurchaseInProgress = false; };
 
 function awardFuelCellAndSave(color, fuelName, spentDetails, count = 1) {
   if (!gameState.energyGenerator) gameState.energyGenerator = {};

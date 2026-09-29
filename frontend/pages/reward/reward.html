@@ -18,6 +18,42 @@
           </div>
         </div>
 
+        <!-- Interactive Subtab Filter Strip (8 Modes) -->
+        <div class="rewards-subtab-header">
+          <button class="reward-subtab-btn active" id="rewardSubtabAll" onclick="switchRewardSubtab('all')">
+            <span class="tab-btn-icon">🌟</span>
+            <span>All Games</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabMega" onclick="switchRewardSubtab('mega')">
+            <span class="tab-btn-icon">👑</span>
+            <span>Mega Prizes</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabSpin" onclick="switchRewardSubtab('spin')">
+            <span class="tab-btn-icon">🎡</span>
+            <span>Spin Wheel</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabChest" onclick="switchRewardSubtab('chest')">
+            <span class="tab-btn-icon">🔑</span>
+            <span>Chest Loot</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabScratch" onclick="switchRewardSubtab('scratch')">
+            <span class="tab-btn-icon">🎟️</span>
+            <span>Scratch Card</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabEgg" onclick="switchRewardSubtab('egg')">
+            <span class="tab-btn-icon">🥚</span>
+            <span>Egg Hatch</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabMemory" onclick="switchRewardSubtab('memory')">
+            <span class="tab-btn-icon">🧠</span>
+            <span>Memory Match</span>
+          </button>
+          <button class="reward-subtab-btn" id="rewardSubtabCatcher" onclick="switchRewardSubtab('catcher')">
+            <span class="tab-btn-icon">🪙</span>
+            <span>Coin Catcher</span>
+          </button>
+        </div>
+
         <!-- ==================== 1. FIRST: ADMIN MEGA REWARDS ==================== -->
         <section class="rewards-grand-rectangle-card mega-grand-card" id="rewardTabMega" onclick="switchPage('megaReward')">
           <div class="grand-vault-aura mega-aura"></div>
@@ -407,15 +443,57 @@
         <section class="rewards-grand-rectangle-card" id="rewardTabMemory" onclick="switchPage('memoryMatch')">
           <div class="grand-vault-aura spin-aura"></div>
           
-          <div class="grand-vault-circle spin-circle">
-            <span style="font-size: 38px; filter: drop-shadow(0 4px 10px rgba(0, 240, 255, 0.6));">🧠</span>
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle spin-circle">
+              <!-- 3D Luxury Quantum Memory Match Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="memoryCyan3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e0f2fe"/>
+                    <stop offset="30%" stop-color="#38bdf8"/>
+                    <stop offset="70%" stop-color="#0284c7"/>
+                    <stop offset="100%" stop-color="#1e1b4b"/>
+                  </linearGradient>
+                  <linearGradient id="memoryPurple3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f5d0fe"/>
+                    <stop offset="40%" stop-color="#c084fc"/>
+                    <stop offset="80%" stop-color="#7e22ce"/>
+                    <stop offset="100%" stop-color="#3b0764"/>
+                  </linearGradient>
+                  <radialGradient id="memoryGlowRadial" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="60%" stop-color="#818cf8"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                  </radialGradient>
+                </defs>
+                <circle cx="50" cy="50" r="44" fill="url(#memoryGlowRadial)" opacity="0.35"/>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#memoryCyan3d)" stroke-width="2" opacity="0.8"/>
+                <circle cx="50" cy="50" r="41" fill="#090f26" stroke="#1e293b" stroke-width="1.5"/>
+                <!-- Left Matching Card -->
+                <g transform="rotate(-12 38 48)">
+                  <rect x="24" y="24" width="28" height="40" rx="4" fill="url(#memoryPurple3d)" stroke="#d8b4fe" stroke-width="1.2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.6))"/>
+                  <rect x="27" y="27" width="22" height="34" rx="2.5" fill="#1e1035" stroke="#a855f7" stroke-width="0.8"/>
+                  <circle cx="38" cy="44" r="6" fill="#c084fc" opacity="0.8"/>
+                  <polygon points="38,39 40,43 44,44 41,47 42,51 38,49 34,51 35,47 32,44 36,43" fill="#ffffff"/>
+                </g>
+                <!-- Right Matched Pair Card -->
+                <g transform="rotate(10 60 48)">
+                  <rect x="46" y="24" width="28" height="40" rx="4" fill="url(#memoryCyan3d)" stroke="#7dd3fc" stroke-width="1.5" filter="drop-shadow(0 6px 10px rgba(0,0,0,0.7))"/>
+                  <rect x="49" y="27" width="22" height="34" rx="2.5" fill="#082f49" stroke="#38bdf8" stroke-width="0.8"/>
+                  <circle cx="60" cy="44" r="6" fill="#38bdf8" opacity="0.9"/>
+                  <polygon points="60,39 62,43 66,44 63,47 64,51 60,49 56,51 57,47 54,44 58,43" fill="#ffffff"/>
+                </g>
+                <!-- Holographic Synapse Connection -->
+                <path d="M42 42 Q50 32 58 42" fill="none" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" filter="drop-shadow(0 0 6px #fde047)"/>
+                <circle cx="50" cy="35" r="3" fill="#ffffff" filter="drop-shadow(0 0 5px #38bdf8)"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag spin-tag">🧠 QUANTUM PAIRS 🧠</div>
           </div>
 
-          <div class="grand-vault-pill-tag spin-tag">🧠 MEMORY MATCH 🧠</div>
-
           <div class="rewards-rect-badge spin-badge">
-            <span class="badge-dot"></span>
-            <span>4 × 4 CARDS</span>
+            <span class="sparkle-icon">✨</span>
+            <span>4 × 4 PAIR FINDER</span>
           </div>
 
           <h3 class="rewards-rect-title">Quantum Memory Pair Match</h3>
@@ -432,13 +510,13 @@
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
-              <span class="stat-item-label">PRIZE</span>
+              <span class="stat-item-label">REWARD</span>
               <span class="stat-item-val green">Coins + 💎</span>
             </div>
           </div>
 
           <button class="rewards-master-action-btn spin-btn" onclick="switchPage('memoryMatch'); event.stopPropagation();">
-            <span>🧠 PLAY 4x4 MEMORY MATCH</span>
+            <span>🧠 PLAY 4x4 MEMORY PAIRS</span>
           </button>
         </section>
 
@@ -446,38 +524,67 @@
         <section class="rewards-grand-rectangle-card" id="rewardTabCatcher" onclick="switchPage('coinCatcher')">
           <div class="grand-vault-aura chest-aura"></div>
           
-          <div class="grand-vault-circle chest-circle">
-            <span style="font-size: 38px; filter: drop-shadow(0 4px 10px rgba(234, 179, 8, 0.6));">🪙</span>
+          <div class="grand-vault-emblem-wrap">
+            <div class="grand-vault-circle chest-circle">
+              <!-- 3D Luxury Cyber Coin Catcher Emblem -->
+              <svg viewBox="0 0 100 100" class="grand-vault-svg">
+                <defs>
+                  <linearGradient id="coinGold3d" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="65%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#78350f"/>
+                  </linearGradient>
+                  <radialGradient id="portalCyanGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="45%" stop-color="#0284c7"/>
+                    <stop offset="85%" stop-color="#0f172a"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                  </radialGradient>
+                </defs>
+                <ellipse cx="50" cy="28" rx="38" ry="14" fill="url(#portalCyanGlow)" stroke="#38bdf8" stroke-width="1.5" opacity="0.85"/>
+                <ellipse cx="50" cy="28" rx="26" ry="8" fill="#0369a1" stroke="#bae6fd" stroke-width="1"/>
+                <line x1="32" y1="36" x2="28" y2="56" stroke="#fde047" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+                <line x1="68" y1="36" x2="72" y2="56" stroke="#fde047" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+                <!-- Falling 3D Cyber Gold Coin -->
+                <circle cx="50" cy="62" r="23" fill="url(#coinGold3d)" stroke="#fffbeb" stroke-width="2" filter="drop-shadow(0 8px 12px rgba(0,0,0,0.75))"/>
+                <circle cx="50" cy="62" r="18" fill="#78350f" stroke="#fde047" stroke-width="1.5"/>
+                <circle cx="50" cy="62" r="15" fill="url(#coinGold3d)"/>
+                <polygon points="52,50 43,62 49,62 48,74 57,62 51,62" fill="#ffffff" stroke="#78350f" stroke-width="1" filter="drop-shadow(0 0 3px #fde047)"/>
+                <!-- Companion Coins -->
+                <circle cx="23" cy="67" r="7.5" fill="url(#coinGold3d)" stroke="#fde047" stroke-width="1" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.6))"/>
+                <circle cx="77" cy="67" r="7.5" fill="url(#coinGold3d)" stroke="#fde047" stroke-width="1" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.6))"/>
+              </svg>
+            </div>
+            <div class="grand-vault-pill-tag chest-tag">🪙 SKY CATCHER 🪙</div>
           </div>
-
-          <div class="grand-vault-pill-tag chest-tag">🪙 COIN CATCHER 🪙</div>
 
           <div class="rewards-rect-badge chest-badge">
-            <span class="badge-dot"></span>
-            <span>ARCADE ACTION</span>
+            <span class="sparkle-icon">💎</span>
+            <span>ENTRY: 100 DIAMONDS</span>
           </div>
 
-          <h3 class="rewards-rect-title">Cyber Coin Sky Catcher</h3>
+          <h3 class="rewards-rect-title">Cyber Coin Fall Catcher</h3>
 
           <div class="rewards-stats-strip">
             <div class="rewards-stat-item">
-              <span class="stat-item-label">ACTION</span>
-              <span class="stat-item-val gold">Tap Coins</span>
+              <span class="stat-item-label">TARGET</span>
+              <span class="stat-item-val gold">Tap 🪙 Coins</span>
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
               <span class="stat-item-label">HAZARD</span>
-              <span class="stat-item-val amber">Avoid 💣</span>
+              <span class="stat-item-val amber">Avoid 💣 Boom</span>
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
-              <span class="stat-item-label">ROUND</span>
-              <span class="stat-item-val cyan">30s Timer</span>
+              <span class="stat-item-label">CASHOUT</span>
+              <span class="stat-item-val cyan">Bank &amp; Exit</span>
             </div>
           </div>
 
           <button class="rewards-master-action-btn chest-btn" onclick="switchPage('coinCatcher'); event.stopPropagation();">
-            <span>🪙 PLAY COIN CATCHER</span>
+            <span>🪙 PLAY COIN FALL (100 💎)</span>
           </button>
         </section>
 

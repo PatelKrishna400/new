@@ -272,11 +272,10 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin: auto 0;
+  justify-content: center;
+  margin: 12px auto;
   min-height: 230px;
   padding: 8px 2px;
-  gap: 6px;
 }
 
 .orb-center-wrapper {
@@ -284,18 +283,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
+  width: 100%;
+  max-width: 320px;
   min-width: 0;
 }
 
 .orb-side-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  z-index: 10;
-  flex-shrink: 0;
-  padding: 4px 0;
+  display: none !important;
 }
 
 /* 3D Tactile Orb Push-Button */
@@ -1805,5 +1799,716 @@
   }
 }
 
+/* ==========================================================================
+   QUANTUM DIAMOND GENERATOR & UPGRADE CONSOLE STYLES
+   ========================================================================== */
 
+.diamond-generator-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  min-height: 200px;
+}
 
+.diamond-gen-aura {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(28px);
+}
+.aura-cyan {
+  width: 170px;
+  height: 170px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, rgba(6, 182, 212, 0.1) 70%, transparent 100%);
+  animation: auraPulseCyan 4s ease-in-out infinite alternate;
+}
+.aura-violet {
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(147, 51, 234, 0.08) 70%, transparent 100%);
+  animation: auraPulseViolet 5s ease-in-out infinite alternate;
+}
+
+@keyframes auraPulseCyan {
+  0% { transform: scale(0.9) rotate(0deg); opacity: 0.6; }
+  100% { transform: scale(1.15) rotate(180deg); opacity: 0.95; }
+}
+@keyframes auraPulseViolet {
+  0% { transform: scale(1.1) rotate(0deg); opacity: 0.7; }
+  100% { transform: scale(0.85) rotate(-180deg); opacity: 0.4; }
+}
+
+/* Outer Rotating Quantum Tech Rings */
+.diamond-quantum-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.diamond-quantum-ring.ring-outer {
+  width: 176px;
+  height: 176px;
+  border: 1.5px dashed rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.25), inset 0 0 14px rgba(0, 240, 255, 0.15);
+  animation: quantumSpinOuter 22s linear infinite;
+}
+.diamond-quantum-ring.ring-inner {
+  width: 158px;
+  height: 158px;
+  border: 1px dotted rgba(192, 132, 252, 0.5);
+  animation: quantumSpinInner 16s linear infinite reverse;
+}
+
+@keyframes quantumSpinOuter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes quantumSpinInner {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 360 Progress SVG Ring */
+.diamond-progress-svg {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  transform: rotate(-90deg);
+  pointer-events: none;
+  z-index: 4;
+}
+.diamond-ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 6;
+}
+.diamond-ring-fill {
+  fill: none;
+  stroke: url(#diamondRingGrad);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.12s linear;
+  filter: drop-shadow(0 0 6px #00f0ff);
+}
+
+/* Central 3D Diamond Hologram Node */
+.diamond-crystal-node {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, rgba(15, 23, 42, 0.95) 0%, rgba(6, 12, 28, 0.98) 75%, #020617 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 240, 255, 0.2),
+    inset 0 -4px 10px rgba(0, 0, 0, 0.8),
+    0 4px 18px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(6, 182, 212, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+}
+.diamond-crystal-node:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    inset 0 2px 10px rgba(0, 240, 255, 0.35),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.8),
+    0 6px 24px rgba(0, 0, 0, 0.8),
+    0 0 32px rgba(0, 240, 255, 0.5);
+}
+.diamond-crystal-node:active {
+  transform: scale(0.97);
+}
+
+.diamond-core-art {
+  width: 58px;
+  height: 58px;
+  animation: diamondFloat 3.2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes diamondFloat {
+  0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7)); }
+  100% { transform: translateY(-4px) scale(1.03); filter: drop-shadow(0 8px 16px rgba(0, 240, 255, 0.4)); }
+}
+
+.diamond-core-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -4px;
+}
+
+.diamond-countdown-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+  letter-spacing: 0.5px;
+}
+
+.diamond-rate-label {
+  font-family: var(--font-primary);
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #a5f3fc;
+  letter-spacing: 0.2px;
+  opacity: 0.9;
+}
+
+/* Linear Progress Bar Strip (Removed per user request) */
+.diamond-linear-progress-strip {
+  display: none !important;
+}
+.diamond-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 99px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+.diamond-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff 0%, #38bdf8 50%, #c084fc 100%);
+  border-radius: 99px;
+  box-shadow: 0 0 10px #00f0ff;
+  transition: width 0.12s linear;
+}
+.diamond-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: #94a3b8;
+}
+.diamond-meta-left {
+  color: #7dd3fc;
+  font-weight: 700;
+}
+.diamond-meta-right {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+/* Upgrades Console */
+.diamond-upgrades-console {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+@media (min-width: 380px) {
+  .diamond-upgrades-console {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+.diamond-upgrade-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(8, 14, 32, 0.96) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.diamond-upgrade-card.card-output {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.diamond-upgrade-card.card-output:hover {
+  border-color: rgba(251, 191, 36, 0.7);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+}
+
+.diamond-upgrade-card.card-speed {
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.diamond-upgrade-card.card-speed:hover {
+  border-color: rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.25);
+}
+
+.duc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.duc-title-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.duc-icon {
+  font-size: 18px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+.duc-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #f1f5f9;
+}
+.duc-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: #94a3b8;
+}
+.duc-level-badge {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  padding: 1.5px 6px;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+.duc-badge-speed {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #38bdf8;
+}
+
+/* Action Buttons */
+.duc-action-btn {
+  width: 100%;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-upgrade-output {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(254, 240, 138, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 3px 0 #78350f,
+    0 6px 12px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+.btn-upgrade-output:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.btn-upgrade-output:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 
+    inset 0 1px 0 rgba(254, 240, 138, 0.4),
+    0 1px 0 #78350f;
+}
+
+.btn-upgrade-speed {
+  background: linear-gradient(180deg, #06b6d4 0%, #0284c7 50%, #0369a1 100%);
+  box-shadow: 
+    inset 0 1.5px 0 rgba(186, 230, 253, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 3px 0 #075985,
+    0 6px 12px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+.btn-upgrade-speed:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.btn-upgrade-speed:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 
+    inset 0 1px 0 rgba(186, 230, 253, 0.4),
+    0 1px 0 #075985;
+}
+
+.duc-action-btn:disabled {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-text-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.btn-main-txt {
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.btn-cost-txt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #fef08a;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+.btn-upgrade-speed .btn-cost-txt {
+  color: #cffafe;
+}
+
+/* Cost Reducer Sub-Panel */
+.duc-cost-reducer-box {
+  background: rgba(4, 9, 24, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.duc-reducer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8.5px;
+}
+.duc-reducer-title {
+  color: #94a3b8;
+  font-weight: 700;
+}
+.duc-reducer-status {
+  font-family: 'JetBrains Mono', monospace;
+  color: #f59e0b;
+  font-weight: 700;
+  font-size: 8px;
+}
+.duc-reducer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Discount Buttons */
+.duc-discount-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 7px;
+  padding: 5px 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.duc-discount-btn:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+.duc-discount-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.duc-discount-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-diamond-discount {
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.btn-ad-discount, .btn-speed-ad-discount {
+  border-color: rgba(244, 63, 94, 0.4);
+}
+
+.dd-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.dd-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.dd-title {
+  font-family: var(--font-primary);
+  font-size: 9px;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+.dd-benefit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  color: #34d399;
+}
+.duc-applied-discount-note {
+  font-size: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #22d3ee;
+  text-align: center;
+}
+
+/* Total Generated Pill in Reactor Footer */
+.gen-total-produced-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, rgba(8, 20, 48, 0.9) 0%, rgba(3, 7, 20, 0.95) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.gtp-icon {
+  font-size: 13px;
+  filter: drop-shadow(0 0 4px #00f0ff);
+}
+.gtp-label {
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 600;
+}
+.gtp-value {
+  color: #38bdf8;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+/* Sparkle Burst Animation */
+@keyframes diamondGlintBurst {
+  0% { transform: scale(1); filter: drop-shadow(0 0 4px #00f0ff); }
+  50% { transform: scale(1.18); filter: drop-shadow(0 0 24px #00f0ff) brightness(1.5); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 4px #00f0ff); }
+}
+.diamond-glint-burst {
+  animation: diamondGlintBurst 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ==========================================================================
+   QUANTUM DIAMOND GENERATOR HOME ENTRY CARD
+   ========================================================================== */
+.diamond-gen-entry-card {
+  position: relative;
+  width: 100%;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(8, 25, 48, 0.95) 0%, rgba(4, 12, 26, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.38);
+  padding: 13px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease, box-shadow 0.15s ease;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.diamond-gen-entry-card:hover {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 12px 30px rgba(0, 240, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.diamond-gen-entry-card:active {
+  transform: scale(0.98);
+}
+
+.dge-ambient-glow {
+  position: absolute;
+  top: -30px;
+  left: 30%;
+  width: 180px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+.dge-shimmer-sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transform: skewX(-20deg);
+  animation: dgeShimmer 6s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes dgeShimmer {
+  0% { left: -100%; }
+  30%, 100% { left: 160%; }
+}
+
+.dge-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dge-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dge-badge-box {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: radial-gradient(circle at 35% 30%, #1e293b 0%, #0369a1 100%);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.35);
+}
+
+.dge-diamond-symbol {
+  font-size: 20px;
+  filter: drop-shadow(0 0 4px #00f0ff);
+}
+
+.dge-sparkle-dot {
+  position: absolute;
+  font-size: 9px;
+  color: #fef08a;
+}
+.dge-sparkle-dot.s1 { top: -3px; right: -3px; }
+.dge-sparkle-dot.s2 { bottom: -2px; left: -3px; }
+
+.dge-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dge-top-meta-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dge-season-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  font-family: 'Orbitron', monospace;
+}
+
+.dge-live-pill {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px;
+  border-radius: 99px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  font-size: 7.5px;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.dge-pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 5px #10b981;
+}
+
+.dge-main-heading {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f0f9ff;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+.dge-open-cta-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #38bdf8;
+  color: #ffffff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.dge-spotlight-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.dge-rate-preview {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dge-rate-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.dge-rate-val {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #a5f3fc;
+}
+
+.dge-status-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: #cbd5e1;
+}

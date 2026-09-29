@@ -69,7 +69,9 @@ function getPageMap() {
       beeFarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
       'bee-farm': document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
       beefarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
-      mining: document.getElementById('pageMining') || DOM.pageMining
+      mining: document.getElementById('pageMining') || DOM.pageMining,
+      diamondGenerator: document.getElementById('pageDiamondGenerator'),
+      'diamond-generator': document.getElementById('pageDiamondGenerator')
     };
   }
   return _cachedPageMap;
@@ -81,11 +83,9 @@ const PAGE_FILE_MAP = {
   'energy': 'energy',
   'tasks': 'tasks',
   'profile': 'profile',
-  'xp': 'xp',
   'reward': 'reward',
   'rewards': 'reward',
   'wallet': 'reward',
-  'goal': 'goal',
   'streak': 'streak',
   'megaReward': 'mega-reward',
   'mega-reward': 'mega-reward',
@@ -117,7 +117,9 @@ const PAGE_FILE_MAP = {
   'sunflower': 'sunflower',
   'bee-farm': 'bee-farm',
   'beefarm': 'bee-farm',
-  'mining': 'mining'
+  'mining': 'mining',
+  'diamond-generator': 'diamond-generator',
+  'diamondGenerator': 'diamond-generator'
 };
 
 const _loadedPageScripts = new Set(['home', 'energy']);
@@ -159,13 +161,13 @@ window.ensurePageLoaded = ensurePageLoaded;
 
 function preloadNonCriticalPages() {
   const allKeys = [
-    'tasks', 'profile', 'xp', 'reward', 'goal', 'streak',
+    'tasks', 'profile', 'reward', 'streak',
     'spin', 'chest', 'scratch', 'egg', 'leaderboard',
     'memory-match', 'coin-catcher', 'mega-reward',
     'gift-card', 'gadgets', 'accessories', 'gaming-tool',
     'kitchen', 'stationery', 'fitness', 'home-decorate',
     'custom', 'suggest-box', 'ad-rewards',
-    'sunflower', 'bee-farm', 'mining'
+    'sunflower', 'bee-farm', 'mining', 'diamond-generator'
   ];
 
   let idx = 0;
@@ -221,18 +223,29 @@ function switchPage(pageName) {
     }
   });
 
-  // Dedicated Bottom Nav visibility sync (Sunflower Tycoon replaces global bottom nav with its own below menu bar)
+  // Dedicated Bottom Nav visibility sync (Sunflower Tycoon & Honeybee Farm replace global bottom nav with their own menu bar)
   const bottomNavEl = document.querySelector('.bottom-nav') || (typeof DOM !== 'undefined' ? DOM.bottomNav : null);
   const sfBottomMenuBar = document.getElementById('sfBottomMenuBar');
+  const beeBottomMenuBar = document.getElementById('beeBottomMenuBar');
   if (bottomNavEl) {
     if (pageName === 'sunflower') {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'flex';
+      if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
       document.body.classList.add('page-sunflower-active');
+      document.body.classList.remove('page-beefarm-active');
+    } else if (pageName === 'bee-farm' || pageName === 'beefarm') {
+      bottomNavEl.style.display = 'none';
+      if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
+      if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'flex';
+      document.body.classList.add('page-beefarm-active');
+      document.body.classList.remove('page-sunflower-active');
     } else {
       bottomNavEl.style.display = '';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
+      if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
       document.body.classList.remove('page-sunflower-active');
+      document.body.classList.remove('page-beefarm-active');
     }
   }
 
@@ -540,24 +553,30 @@ window.triggerTelegramHaptic = triggerTelegramHaptic;
 
 // Master Event Initializer
 function initEvents() {
-  DOM.reactorOrb.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    triggerTelegramHaptic('medium');
-    handleOrbTap(e);
-  });
+  if (DOM.reactorOrb) {
+    DOM.reactorOrb.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      triggerTelegramHaptic('medium');
+      handleOrbTap(e);
+    });
+  }
 
   DOM.streakBtn.addEventListener('click', () => {
     triggerTelegramHaptic('selection');
     switchPage('streak');
   });
-  DOM.xpCard.addEventListener('click', () => {
-    triggerTelegramHaptic('selection');
-    switchPage('xp');
-  });
-  DOM.goalCard.addEventListener('click', () => {
-    triggerTelegramHaptic('selection');
-    switchPage('goal');
-  });
+  if (DOM.xpCard) {
+    DOM.xpCard.addEventListener('click', () => {
+      triggerTelegramHaptic('selection');
+      switchPage('xp');
+    });
+  }
+  if (DOM.goalCard) {
+    DOM.goalCard.addEventListener('click', () => {
+      triggerTelegramHaptic('selection');
+      switchPage('goal');
+    });
+  }
 
   DOM.navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -583,6 +602,9 @@ function initEvents() {
       if (gameState.energyGenerator) {
         gameState.energyGenerator.lastTickTime = Date.now();
       }
+      if (gameState.diamondGenerator) {
+        gameState.diamondGenerator.lastTickTime = Date.now();
+      }
       saveGame();
       if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
         window.firebaseSync.saveToCloudImmediate();
@@ -591,11 +613,15 @@ function initEvents() {
       if (typeof processEnergyGeneratorOfflineCatchup === 'function' && gameState.energyGenerator) {
         processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'visibilityChange');
       }
+      if (typeof catchupDiamondGenerator === 'function') {
+        catchupDiamondGenerator();
+      }
     }
   });
 
   window.addEventListener('pagehide', () => {
     if (gameState.energyGenerator) gameState.energyGenerator.lastTickTime = Date.now();
+    if (gameState.diamondGenerator) gameState.diamondGenerator.lastTickTime = Date.now();
     saveGame();
     if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
       window.firebaseSync.saveToCloudImmediate();
