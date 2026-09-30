@@ -121,14 +121,16 @@
           </div>
         </div>
 
-        <!-- Flanking Ambient Tech Coils -->
-        <div class="orb-diya-lamp orb-diya-left" title="Quantum Coil">
-          <div class="diya-flame"></div>
-          <div class="diya-base"></div>
-        </div>
-        <div class="orb-diya-lamp orb-diya-right" title="Quantum Coil">
-          <div class="diya-flame"></div>
-          <div class="diya-base"></div>
+      </div>
+
+      <!-- Generation Activation Console (Uses Energy) -->
+      <div class="dg-activation-row">
+        <button type="button" class="btn-start-diamond-gen" id="btnStartDiamondGen" onclick="startDiamondGeneration()">
+          <span class="btn-shine"></span>
+          <span>⚡ Start Generation (10 Energy)</span>
+        </button>
+        <div class="dg-energy-req-hint">
+          <span>⚡ Required Energy: <strong id="dgRequiredEnergyVal">10 ⚡</strong> (Starts at 10 ⚡, +5 ⚡ per upgrade)</span>
         </div>
       </div>
 
@@ -145,6 +147,10 @@
         <div class="dg-metric-card">
           <span class="dg-metric-lbl">Output / Cycle</span>
           <span class="dg-metric-val font-mono text-emerald-300" id="dgOutputRateMetric">+0.000001 💎</span>
+        </div>
+        <div class="dg-metric-card">
+          <span class="dg-metric-lbl">Energy to Start</span>
+          <span class="dg-metric-val font-mono text-sky-300 dg-energy-cost-val">10 ⚡</span>
         </div>
       </div>
     </section>

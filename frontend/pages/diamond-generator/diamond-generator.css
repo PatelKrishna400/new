@@ -343,40 +343,73 @@
   opacity: 0.9;
 }
 
-/* Coils */
-.orb-diya-lamp {
-  position: absolute;
-  width: 18px;
-  height: 26px;
+/* Activation Console */
+.dg-activation-row {
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: none;
+  gap: 8px;
+  width: 100%;
+  max-width: 380px;
+  margin: 14px auto 8px auto;
+  padding: 0 10px;
 }
 
-.orb-diya-left { left: -14px; top: 50%; transform: translateY(-50%); }
-.orb-diya-right { right: -14px; top: 50%; transform: translateY(-50%); }
-
-.diya-flame {
-  width: 8px;
-  height: 12px;
-  background: radial-gradient(circle, #00f0ff 0%, #0284c7 60%, transparent 100%);
-  border-radius: 50% 50% 35% 35%;
-  box-shadow: 0 0 8px #00f0ff;
-  animation: coilGlow 1.2s infinite alternate ease-in-out;
+.btn-start-diamond-gen {
+  position: relative;
+  width: 100%;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 50%, #3b82f6 100%);
+  border: 1.5px solid #38bdf8;
+  border-radius: 14px;
+  color: #ffffff;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45), 0 0 15px rgba(0, 240, 255, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
-.diya-base {
-  width: 14px;
-  height: 6px;
-  background: #334155;
-  border-radius: 3px;
-  margin-top: 1px;
+.btn-start-diamond-gen:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.6), 0 0 20px rgba(0, 240, 255, 0.5);
+  border-color: #67e8f9;
 }
 
-@keyframes coilGlow {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  100% { transform: scale(1.15); opacity: 1; }
+.btn-start-diamond-gen:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-start-diamond-gen.generating-active {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.6) 0%, rgba(139, 92, 246, 0.6) 100%);
+  border-color: #c084fc;
+  box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+  animation: genActivePulse 1.5s infinite alternate ease-in-out;
+  cursor: not-allowed;
+}
+
+@keyframes genActivePulse {
+  0% { filter: brightness(0.95); box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+  100% { filter: brightness(1.2); box-shadow: 0 0 25px rgba(192, 132, 252, 0.6); }
+}
+
+.dg-energy-req-hint {
+  font-size: 10.5px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dg-energy-req-hint strong {
+  color: #38bdf8;
 }
 
 /* Quick Metrics Strip */

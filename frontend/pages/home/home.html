@@ -1,251 +1,7 @@
 <div class="page-view active" id="pageHome">
   <div class="home-reactor-container">
 
-    <!-- Energy Tap Reactor Container (Restored Clean Sacred Dandiya Reactor) -->
-    <section class="reactor-card" id="reactorSection">
-      <div class="reactor-header">
-        <div class="reactor-pill-cyan">
-          <span class="diya-icon-spin" style="margin-right: 2px;">🪔</span>
-          <span>ROYAL DANDIYA REACTOR</span>
-        </div>
-
-        <div class="reactor-pill-dark" id="comboPill">
-          <span class="combo-flame">🔥</span>
-          <span id="comboMultiplierText">1x Boost</span>
-        </div>
-      </div>
-
-      <div class="orb-stage" id="orbStage">
-        <!-- Central Sacred Navratri Garbi Orb Wrapper -->
-        <div class="orb-center-wrapper">
-          <!-- Rotating Rangoli Mandala Rings -->
-          <div class="orb-mandala-ring"></div>
-          <div class="orb-mandala-ring-inner"></div>
-
-          <div class="orb-aura aura-1"></div>
-          <div class="orb-aura aura-2"></div>
-          <div class="orb-particle-layer" id="orbParticleLayer"></div>
-
-          <button class="reactor-orb" id="reactorOrb" aria-label="Tap Dandiya to generate energy">
-            <div class="orb-inner-gloss"></div>
-            <div class="orb-electric-ring"></div>
-            <div class="orb-core">
-              <!-- Royal Navratri Crossed Dandiya Sticks 3D Artwork -->
-              <svg class="orb-dandiya-art" viewBox="0 0 140 140" fill="none">
-                <defs>
-                  <!-- 3D Cylindrical Shading for Dandiya Sticks -->
-                  <linearGradient id="dandiya3dGold" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#92400e"/>
-                    <stop offset="18%" stop-color="#d97706"/>
-                    <stop offset="42%" stop-color="#fffbeb"/>
-                    <stop offset="55%" stop-color="#fde047"/>
-                    <stop offset="82%" stop-color="#d97706"/>
-                    <stop offset="100%" stop-color="#78350f"/>
-                  </linearGradient>
-                  <linearGradient id="dandiya3dRed" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#881337"/>
-                    <stop offset="20%" stop-color="#be123c"/>
-                    <stop offset="44%" stop-color="#ffe4e6"/>
-                    <stop offset="58%" stop-color="#f43f5e"/>
-                    <stop offset="82%" stop-color="#9f1239"/>
-                    <stop offset="100%" stop-color="#4c0519"/>
-                  </linearGradient>
-                  <linearGradient id="dandiya3dGreen" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#064e3b"/>
-                    <stop offset="20%" stop-color="#059669"/>
-                    <stop offset="44%" stop-color="#d1fae5"/>
-                    <stop offset="58%" stop-color="#10b981"/>
-                    <stop offset="82%" stop-color="#047857"/>
-                    <stop offset="100%" stop-color="#022c22"/>
-                  </linearGradient>
-                  <linearGradient id="dandiya3dBlue" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#0c4a6e"/>
-                    <stop offset="20%" stop-color="#0284c7"/>
-                    <stop offset="44%" stop-color="#e0f2fe"/>
-                    <stop offset="58%" stop-color="#38bdf8"/>
-                    <stop offset="82%" stop-color="#0369a1"/>
-                    <stop offset="100%" stop-color="#082f49"/>
-                  </linearGradient>
-                  <radialGradient id="dandiya3dCap" cx="40%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="35%" stop-color="#fde047"/>
-                    <stop offset="70%" stop-color="#d97706"/>
-                    <stop offset="100%" stop-color="#78350f"/>
-                  </radialGradient>
-                  <radialGradient id="dandiyaBell3d" cx="35%" cy="30%" r="70%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="30%" stop-color="#fef08a"/>
-                    <stop offset="65%" stop-color="#f59e0b"/>
-                    <stop offset="100%" stop-color="#92400e"/>
-                  </radialGradient>
-                  <radialGradient id="dandiyaClashBurst" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="25%" stop-color="#fef08a"/>
-                    <stop offset="50%" stop-color="#f59e0b"/>
-                    <stop offset="75%" stop-color="#e11d48"/>
-                    <stop offset="100%" stop-color="transparent"/>
-                  </radialGradient>
-                  <filter id="dandiyaGlow3d" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.85"/>
-                  </filter>
-                  <filter id="starFlareGlow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#fde047" flood-opacity="0.95"/>
-                    <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#f59e0b" flood-opacity="0.7"/>
-                  </filter>
-                </defs>
-
-                <!-- 3D Radiating Clash Flare Aura -->
-                <circle cx="70" cy="70" r="38" fill="url(#dandiyaClashBurst)" opacity="0.9" />
-
-                <!-- Radiating Golden Energy Clash Sparks -->
-                <g stroke="#fde047" stroke-width="2" stroke-linecap="round" opacity="0.95">
-                  <line x1="70" y1="44" x2="70" y2="28" />
-                  <line x1="70" y1="96" x2="70" y2="112" />
-                  <line x1="44" y1="70" x2="28" y2="70" />
-                  <line x1="96" y1="70" x2="112" y2="70" />
-                  <line x1="52" y1="52" x2="38" y2="38" stroke="#ffffff" stroke-width="2.5" />
-                  <line x1="88" y1="52" x2="102" y2="38" stroke="#ffffff" stroke-width="2.5" />
-                  <line x1="52" y1="88" x2="38" y2="102" stroke="#ffffff" stroke-width="2.5" />
-                  <line x1="88" y1="88" x2="102" y2="102" stroke="#ffffff" stroke-width="2.5" />
-                </g>
-
-                <!-- DANDIYA STICK 1: 3D Lathe-Turned Rod (Diagonal Top-Left to Bottom-Right, 42deg) -->
-                <g transform="rotate(42 70 70)" filter="url(#dandiyaGlow3d)">
-                  <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
-                  <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
-                  <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dRed)"/>
-                  <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dGreen)"/>
-                  <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
-                  <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dBlue)"/>
-                  <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
-                  <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dRed)"/>
-                  <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
-                  <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
-                  <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
-                  <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
-                  <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
-                  <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#e11d48"/>
-                </g>
-
-                <!-- DANDIYA STICK 2: 3D Lathe-Turned Rod (Diagonal Top-Right to Bottom-Left, -42deg) -->
-                <g transform="rotate(-42 70 70)" filter="url(#dandiyaGlow3d)">
-                  <ellipse cx="70" cy="14" rx="6.5" ry="4" fill="url(#dandiya3dCap)"/>
-                  <path d="M 63.5 14 C 63.5 9, 76.5 9, 76.5 14 Z" fill="url(#dandiya3dCap)"/>
-                  <rect x="63" y="14" width="14" height="6" rx="1.5" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="20" width="12" height="17" fill="url(#dandiya3dGreen)"/>
-                  <rect x="63" y="37" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="41.5" width="12" height="18" fill="url(#dandiya3dRed)"/>
-                  <polygon points="70,45.5 73.5,50.5 70,55.5 66.5,50.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
-                  <rect x="63" y="59.5" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="64" width="12" height="16" fill="url(#dandiya3dRed)"/>
-                  <circle cx="70" cy="72" r="2.8" fill="url(#dandiyaBell3d)"/>
-                  <rect x="63" y="80" width="14" height="4.5" rx="1" fill="url(#dandiya3dGold)"/>
-                  <rect x="64" y="84.5" width="12" height="17" fill="url(#dandiya3dBlue)"/>
-                  <polygon points="70,88.5 73.5,93.5 70,98.5 66.5,93.5" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"/>
-                  <rect x="63" y="101.5" width="14" height="13" rx="2" fill="url(#dandiya3dGold)"/>
-                  <circle cx="70" cy="116" r="5.5" fill="url(#dandiya3dCap)"/>
-                  <circle cx="66" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
-                  <circle cx="74" cy="123" r="2.5" fill="url(#dandiyaBell3d)"/>
-                  <path d="M 70 120 Q 65 129 70 136 Q 75 129 70 120 Z" fill="#10b981"/>
-                </g>
-
-                <!-- Central 3D Clash Star Flare (Explosive Dandiya Impact Center) -->
-                <g filter="url(#starFlareGlow)">
-                  <polygon points="70,55 73,66 84,70 73,74 70,85 67,74 56,70 67,66" fill="#ffffff"/>
-                  <polygon points="70,61 72,67 78,70 72,73 70,79 68,73 62,70 68,67" fill="#fde047"/>
-                  <circle cx="70" cy="70" r="4" fill="#ffffff"/>
-                </g>
-              </svg>
-            </div>
-          </button>
-
-          <!-- Flanking Auspicious Glowing Diyas -->
-          <div class="orb-diya-lamp orb-diya-left" title="Auspicious Diya">
-            <div class="diya-flame"></div>
-            <div class="diya-base"></div>
-          </div>
-          <div class="orb-diya-lamp orb-diya-right" title="Auspicious Diya">
-            <div class="diya-flame"></div>
-            <div class="diya-base"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="reactor-footer">
-        <div class="energy-counter-pill" id="energyCounterPill" onclick="switchPage('energy')" style="cursor: pointer;" title="Energy Balance - Tap to Mine Energy">
-          <svg class="energy-icon icon-left" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-          <span class="energy-value" id="energyTapCount">0</span>
-          <svg class="energy-icon icon-right" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-        </div>
-
-        <!-- Beside Energy Tab: Circle Format Multi-Tap Selector (*1, *2, *3, *5, *10, *50, *100) -->
-        <div class="multi-tap-strip" id="multiTapStrip" role="group" aria-label="Multi-Tap Power Multiplier">
-          <button type="button" class="multi-tap-circle active" id="btnMultiTap1" onclick="setMultiTapMultiplier(1)" title="*1 Multi-Tap (1 Energy/click)">*1</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap2" onclick="setMultiTapMultiplier(2)" title="*2 Multi-Tap (2 Energy/click, unlocks at 100+ Energy)" style="display: none;">*2</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap3" onclick="setMultiTapMultiplier(3)" title="*3 Multi-Tap (3 Energy/click, unlocks at 250+ Energy)" style="display: none;">*3</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap5" onclick="setMultiTapMultiplier(5)" title="*5 Multi-Tap (5 Energy/click, unlocks at 500+ Energy)" style="display: none;">*5</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap10" onclick="setMultiTapMultiplier(10)" title="*10 Multi-Tap (10 Energy/click, unlocks at 1000+ Energy)" style="display: none;">*10</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap50" onclick="setMultiTapMultiplier(50)" title="*50 Multi-Tap (50 Energy/click, unlocks at 5000+ Energy)" style="display: none;">*50</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap100" onclick="setMultiTapMultiplier(100)" title="*100 Multi-Tap (100 Energy/click, unlocks at 10000+ Energy)" style="display: none;">*100</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quantum Diamond Generator Entry Card (Tap to open dedicated Page View) -->
-    <section class="diamond-gen-entry-card" id="diamondGenEntryCard" onclick="switchPage('diamond-generator')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('diamond-generator');}" role="button" tabindex="0" title="Open Quantum Diamond Generator Page">
-      <div class="dge-ambient-glow"></div>
-      <div class="dge-shimmer-sweep"></div>
-      
-      <div class="dge-header-row">
-        <div class="dge-header-left">
-          <div class="dge-badge-box">
-            <div class="dge-diamond-symbol">💎</div>
-            <div class="dge-sparkle-dot s1">✦</div>
-            <div class="dge-sparkle-dot s2">✨</div>
-          </div>
-          <div class="dge-heading-group">
-            <div class="dge-top-meta-pills">
-              <span class="dge-season-pill">⚡ 24/7 AUTO MINER</span>
-              <span class="dge-live-pill">
-                <span class="dge-pulse-dot"></span>
-                <span>ACTIVE</span>
-              </span>
-            </div>
-            <h3 class="dge-main-heading">QUANTUM DIAMOND GENERATOR</h3>
-          </div>
-        </div>
-
-        <div class="dge-header-right">
-          <div class="dge-open-cta-pill">
-            <span>OPEN</span>
-            <svg class="dge-chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="dge-spotlight-row">
-        <div class="dge-rate-preview">
-          <span class="dge-rate-label">⚡ PRODUCTION:</span>
-          <span class="dge-rate-val font-mono" id="dgeHomeRateVal">+0.000001 💎 / 60.00s</span>
-        </div>
-        <div class="dge-status-tag">
-          <span class="dge-status-emoji">⏱️</span>
-          <span class="dge-status-text" id="dgeHomeCycleText">Cycle: 60.00s</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Home Page Upgraded Leaderboard Tab Entry Card -->
+    <!-- 1. TOP: Global Leaderboard Feature Card & Category Tabs -->
     <section class="home-leaderboard-tab-card" id="homeLeaderboardSection" onclick="switchPage('leaderboard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('leaderboard');}" role="button" tabindex="0" title="Tap to open Global Leaderboard">
       <!-- Ambient Shimmer & Atmospheric Glow -->
       <div class="hlb-card-glow"></div>
@@ -315,6 +71,254 @@
           <span class="hlb-cat-icon">⚡</span>
           <span class="hlb-cat-text">Energy Taps</span>
         </button>
+      </div>
+    </section>
+
+    <!-- 2. MIDDLE: Quantum Energy Reactor (Tap to generate energy) -->
+    <section class="reactor-card" id="reactorSection">
+      <div class="reactor-header">
+        <div class="reactor-pill-cyan">
+          <svg class="pill-lightning" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span>QUANTUM ENERGY REACTOR</span>
+        </div>
+
+        <div class="reactor-pill-dark" id="comboPill">
+          <span class="combo-flame">🔥</span>
+          <span id="comboMultiplierText">1.0x COMBO</span>
+        </div>
+      </div>
+
+      <div class="orb-stage" id="orbStage">
+        <!-- Central Quantum Plasma Orb Wrapper -->
+        <div class="orb-center-wrapper">
+          <div class="orb-aura aura-1"></div>
+          <div class="orb-aura aura-2"></div>
+          <div class="orb-particle-layer" id="orbParticleLayer"></div>
+
+          <button class="reactor-orb" id="reactorOrb" aria-label="Tap to generate energy">
+            <div class="orb-inner-gloss"></div>
+            <div class="orb-electric-ring"></div>
+            <div class="orb-core">
+              <!-- High-Voltage Quantum Core Lightning Bolt -->
+              <svg class="orb-lightning-bolt" viewBox="0 0 24 24" width="76" height="76" fill="currentColor">
+                <path d="M13 2L3 14h9l-1.5 8 10.5-12h-9l1.5-8z"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="reactor-footer">
+        <div class="energy-counter-pill" id="energyCounterPill" onclick="switchPage('energy')" style="cursor: pointer;" title="Energy Balance - Tap to Mine Energy">
+          <svg class="energy-icon icon-left" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span class="energy-value" id="energyTapCount">0</span>
+          <svg class="energy-icon icon-right" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+
+        <!-- Multi-Tap Power Selector (*1, *2, *3, *5, *10, *50, *100) -->
+        <div class="multi-tap-strip" id="multiTapStrip" role="group" aria-label="Multi-Tap Power Multiplier">
+          <button type="button" class="multi-tap-circle active" id="btnMultiTap1" onclick="setMultiTapMultiplier(1)" title="*1 Multi-Tap (1 Energy/click)">*1</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap2" onclick="setMultiTapMultiplier(2)" title="*2 Multi-Tap (2 Energy/click, unlocks at 100+ Energy)" style="display: none;">*2</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap3" onclick="setMultiTapMultiplier(3)" title="*3 Multi-Tap (3 Energy/click, unlocks at 250+ Energy)" style="display: none;">*3</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap5" onclick="setMultiTapMultiplier(5)" title="*5 Multi-Tap (5 Energy/click, unlocks at 500+ Energy)" style="display: none;">*5</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap10" onclick="setMultiTapMultiplier(10)" title="*10 Multi-Tap (10 Energy/click, unlocks at 1000+ Energy)" style="display: none;">*10</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap50" onclick="setMultiTapMultiplier(50)" title="*50 Multi-Tap (50 Energy/click, unlocks at 5000+ Energy)" style="display: none;">*50</button>
+          <button type="button" class="multi-tap-circle" id="btnMultiTap100" onclick="setMultiTapMultiplier(100)" title="*100 Multi-Tap (100 Energy/click, unlocks at 10000+ Energy)" style="display: none;">*100</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BOTTOM: QUANTUM DIAMOND GENERATOR (Direct In-Home Interactive Console) -->
+    <section class="diamond-generator-home-section" id="diamondGenHomeSection">
+      <!-- Section Header -->
+      <div class="dgh-header-row">
+        <div class="dgh-header-left">
+          <div class="dgh-badge-status">
+            <span class="dgh-pulse-dot"></span>
+            <span id="dgStatusText">Ready (10 ⚡)</span>
+          </div>
+          <h2 class="dgh-main-title font-sci">QUANTUM DIAMOND GENERATOR</h2>
+        </div>
+        <div class="dgh-rate-pill" id="dgRateHeaderPillHome">
+          <span id="dgRateHeaderBadgeHome">+0.000001 💎 / 60.00s</span>
+        </div>
+      </div>
+
+      <!-- Central Quantum Diamond Generator Stage -->
+      <div class="diamond-generator-wrapper dgh-center-wrapper">
+        <div class="diamond-gen-aura aura-cyan"></div>
+        <div class="diamond-gen-aura aura-violet"></div>
+        <div class="diamond-gen-sparkles-layer" id="diamondSparklesLayerHome"></div>
+
+        <!-- Outer Rotating Tech Rings -->
+        <div class="diamond-quantum-ring ring-outer"></div>
+        <div class="diamond-quantum-ring ring-inner"></div>
+
+        <!-- 360-Degree Circular Progress SVG Ring -->
+        <svg class="diamond-progress-svg" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="diamondRingGradHome" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f0ff"/>
+              <stop offset="50%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </linearGradient>
+            <filter id="diamondRingGlowHome" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
+            </filter>
+          </defs>
+          <circle cx="80" cy="80" r="70" class="diamond-ring-track"/>
+          <circle cx="80" cy="80" r="70" class="diamond-ring-fill" id="diamondProgressRingHome" stroke-dasharray="439.82" stroke-dashoffset="439.82"/>
+        </svg>
+
+        <!-- Central 3D Diamond Hologram Node -->
+        <div class="diamond-crystal-node" id="diamondCrystalNodeHome" title="Quantum Diamond Generator">
+          <svg class="diamond-core-art" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="dFacetTopH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f0f9ff"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+              <linearGradient id="dFacetLeftH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#a5f3fc"/>
+                <stop offset="100%" stop-color="#0891b2"/>
+              </linearGradient>
+              <linearGradient id="dFacetCenterH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#67e8f9"/>
+                <stop offset="100%" stop-color="#0284c7"/>
+              </linearGradient>
+              <linearGradient id="dFacetRightH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="100%" stop-color="#0c4a6e"/>
+              </linearGradient>
+              <filter id="diamondCoreShineH" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#00f0ff" flood-opacity="0.9"/>
+                <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#38bdf8" flood-opacity="0.6"/>
+              </filter>
+            </defs>
+            <!-- 3D Crystalline Diamond Geometry -->
+            <g filter="url(#diamondCoreShineH)">
+              <polygon points="30,22 70,22 84,38 16,38" fill="url(#dFacetTopH)"/>
+              <polygon points="16,38 30,22 40,38" fill="url(#dFacetLeftH)" opacity="0.95"/>
+              <polygon points="84,38 70,22 60,38" fill="url(#dFacetRightH)" opacity="0.95"/>
+              <polygon points="30,22 50,38 70,22" fill="#e0f2fe" opacity="0.9"/>
+              <polygon points="40,38 50,22 60,38 50,38" fill="#ffffff"/>
+              <polygon points="16,38 50,38 50,86" fill="url(#dFacetLeftH)"/>
+              <polygon points="84,38 50,38 50,86" fill="url(#dFacetRightH)"/>
+              <polygon points="35,46 50,86 65,46 50,52" fill="url(#dFacetCenterH)" opacity="0.95"/>
+              <polygon points="50,33 52,38 58,40 52,42 50,47 48,42 42,40 48,38" fill="#ffffff"/>
+              <circle cx="50" cy="40" r="2.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)"/>
+            </g>
+          </svg>
+
+          <!-- Core Live Countdown & Output Info -->
+          <div class="diamond-core-info">
+            <span class="diamond-countdown-text" id="diamondCountdownTextHome">60.0s</span>
+            <span class="diamond-rate-label" id="diamondCoreRateLabelHome">+0.000001 💎</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generation Activation Console (Uses Energy to Start) -->
+      <div class="dg-activation-row">
+        <button type="button" class="btn-start-diamond-gen" id="btnStartDiamondGenHome" onclick="startDiamondGeneration()">
+          <span class="btn-shine"></span>
+          <span>⚡ Start Generation (10 Energy)</span>
+        </button>
+        <div class="dg-energy-req-hint">
+          <span>⚡ Requires <strong id="dgRequiredEnergyValHome">10 ⚡</strong> to start (Starts at 10 ⚡, +5 ⚡ per upgrade)</span>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="dg-metrics-strip dgh-metrics-strip">
+        <div class="dg-metric-card">
+          <span class="dg-metric-lbl">Total Generated</span>
+          <span class="dg-metric-val font-mono text-cyan-300" id="genTotalProducedValHome">0.000000 💎</span>
+        </div>
+        <div class="dg-metric-card">
+          <span class="dg-metric-lbl">Cycle Speed</span>
+          <span class="dg-metric-val font-mono text-amber-300" id="dgCycleDurationMetricHome">60.00s</span>
+        </div>
+        <div class="dg-metric-card">
+          <span class="dg-metric-lbl">Output / Cycle</span>
+          <span class="dg-metric-val font-mono text-emerald-300" id="dgOutputRateMetricHome">+0.000001 💎</span>
+        </div>
+        <div class="dg-metric-card">
+          <span class="dg-metric-lbl">Energy to Start</span>
+          <span class="dg-metric-val font-mono text-sky-300 dg-energy-cost-val">10 ⚡</span>
+        </div>
+      </div>
+
+      <!-- Upgrades & Overclocking Console directly in Home -->
+      <div class="diamond-upgrades-console dgh-upgrades-console">
+        <div class="dg-section-header">
+          <h3 class="text-xs font-black text-cyan-300 flex items-center gap-1.5 font-sci">
+            <span>⚡ Quantum Upgrades</span>
+          </h3>
+          <span class="text-[10px] text-slate-400">Scale output, reduce cycle time (+25 💎 cost each)</span>
+        </div>
+
+        <div class="dgh-upgrades-grid">
+          <!-- 1. Output Boost Upgrade Card -->
+          <div class="diamond-upgrade-card card-output" id="cardOutputUpgradeHome">
+            <div class="duc-header">
+              <div class="duc-title-group">
+                <span class="duc-icon">💎</span>
+                <div>
+                  <div class="duc-title">OUTPUT POWER</div>
+                  <div class="duc-sub" id="ducOutputSubHome">Rate: +0.000001 💎/cycle</div>
+                </div>
+              </div>
+              <span class="duc-level-badge" id="ducOutputLevelBadgeHome">Lv. 1</span>
+            </div>
+
+            <button type="button" class="duc-action-btn btn-upgrade-output" id="btnUpgradeOutputHome" onclick="purchaseDiamondOutputUpgrade()">
+              <span class="btn-shine"></span>
+              <div class="btn-text-col">
+                <span class="btn-main-txt">Upgrade Output (+0.000001 💎)</span>
+                <span class="btn-cost-txt" id="btnUpgradeOutputCostTextHome">Cost: 🪙 50 Coins</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- 2. Cycle Speed Upgrade (-0.01s Time) -->
+          <div class="diamond-upgrade-card card-speed" id="cardSpeedUpgradeHome">
+            <div class="duc-header">
+              <div class="duc-title-group">
+                <span class="duc-icon">⚡</span>
+                <div>
+                  <div class="duc-title">CYCLE SPEED</div>
+                  <div class="duc-sub" id="ducSpeedSubHome">Cycle: 60.00s (-0.01s/lvl)</div>
+                </div>
+              </div>
+              <span class="duc-level-badge duc-badge-speed" id="ducSpeedLevelBadgeHome">Lv. 1</span>
+            </div>
+
+            <button type="button" class="duc-action-btn btn-upgrade-speed" id="btnUpgradeSpeedHome" onclick="purchaseDiamondSpeedUpgrade()">
+              <span class="btn-shine"></span>
+              <div class="btn-text-col">
+                <span class="btn-main-txt">Overclock Speed (-0.01s)</span>
+                <span class="btn-cost-txt" id="btnUpgradeSpeedCostTextHome">Cost: 💎 10 Diamonds (+25 💎 each)</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dedicated Page Shortcut if user wants full console -->
+        <div class="dgh-footer-action">
+          <button type="button" class="dgh-full-view-btn" onclick="switchPage('diamond-generator')">
+            <span>🔍 Open Advanced Console &amp; Cost Reducers</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </section>
 
