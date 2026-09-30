@@ -314,11 +314,11 @@ function handleOrbTap(e) {
     } else if (itemRoll < 0.70) {
       gameState.progression.levelProgress.keys = Math.min(req.keys, (gameState.progression.levelProgress.keys || 0) + activeMult);
       gameState.goalState.levelProgress.keys = gameState.progression.levelProgress.keys;
-      droppedItem = { text: `🥢 +${activeMult} Dandiya`, color: '#fbbf24' };
+      droppedItem = { text: `🔑 +${activeMult} Key${activeMult > 1 ? 's' : ''}`, color: '#fbbf24' };
     } else {
       gameState.progression.levelProgress.tickets = Math.min(req.tickets, (gameState.progression.levelProgress.tickets || 0) + activeMult);
       gameState.goalState.levelProgress.tickets = gameState.progression.levelProgress.tickets;
-      droppedItem = { text: `🌸 +${activeMult} Flower${activeMult > 1 ? 's' : ''}`, color: '#ec4899' };
+      droppedItem = { text: `🎟️ +${activeMult} Ticket${activeMult > 1 ? 's' : ''}`, color: '#ec4899' };
     }
   }
 
@@ -450,21 +450,6 @@ function createSparks(x, y) {
     }, 600);
   }
 
-  // Navratri Festive Celebration: Spawn occasional floating marigold / festive spark emoji
-  if (Math.random() < 0.4) {
-    const festiveEmojis = ['✨', '🌸', '🪔', '🌼', '🥢'];
-    const festEl = document.createElement('div');
-    festEl.className = 'floating-number';
-    festEl.textContent = festiveEmojis[Math.floor(Math.random() * festiveEmojis.length)];
-    festEl.style.fontSize = '20px';
-    festEl.style.left = `${relX + (Math.random() - 0.5) * 40}px`;
-    festEl.style.top = `${relY - 25}px`;
-    festEl.style.filter = 'drop-shadow(0 0 6px #ffbe0b)';
-    DOM.orbStage.appendChild(festEl);
-    setTimeout(() => {
-      if (festEl.parentNode) festEl.parentNode.removeChild(festEl);
-    }, 850);
-  }
 }
 
 function triggerLevelUpAnimation() {
@@ -1960,21 +1945,20 @@ function renderHome2xPopup(header, body) {
   const secs = rem % 60;
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 NAVRATRI FESTIVE UTSAV ✨</div>
-    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, rgba(180, 83, 9, 0.1) 100%); border: 2px solid #f59e0b; color: #fbbf24; font-size: 26px; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);">⚡</div>
-    <h3 class="home-popup-title" style="letter-spacing: 0.5px;">GARBA 2X TAP MULTIPLIER</h3>
-    <p class="home-popup-subtitle">Supercharge your sacred taps with Turbo Burst! Doubles all energy output, tap combo gains, and XP for a full 30-minute duration.</p>
+    <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, rgba(14, 165, 233, 0.1) 100%); border: 2px solid #00f0ff; color: #38bdf8; font-size: 26px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);">⚡</div>
+    <h3 class="home-popup-title" style="letter-spacing: 0.5px;">QUANTUM 2X MULTIPLIER</h3>
+    <p class="home-popup-subtitle">Supercharge your reactor output! Doubles all energy output, tap combo gains, and XP for a full 30-minute duration.</p>
   `;
 
   let timerBanner = '';
   if (isActive) {
     timerBanner = `
-      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(180, 83, 9, 0.3) 100%); border: 1.5px solid #f59e0b; border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 4px; box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);">
-        <div style="font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ 2X TURBO BURST ACTIVE (30 MIN TIMER)</div>
-        <div id="garbaActiveTimerDigits" style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 900; color: #ffffff; text-shadow: 0 0 14px rgba(251, 191, 36, 0.9);">
+      <div style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(14, 165, 233, 0.25) 100%); border: 1.5px solid #00f0ff; border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 4px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);">
+        <div style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ 2X TURBO BURST ACTIVE (30 MIN TIMER)</div>
+        <div id="garbaActiveTimerDigits" style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 900; color: #ffffff; text-shadow: 0 0 14px rgba(0, 240, 255, 0.9);">
           ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}
         </div>
-        <div style="font-size: 11px; color: #fde68a; margin-top: 2px;">Active Multiplier Remaining</div>
+        <div style="font-size: 11px; color: #a5f3fc; margin-top: 2px;">Active Multiplier Remaining</div>
       </div>
     `;
   } else {
@@ -1993,19 +1977,19 @@ function renderHome2xPopup(header, body) {
 
     <div class="popup-stat-banner">
       <span class="popup-stat-label">Output Multiplier</span>
-      <span class="popup-stat-value" style="color: #f59e0b; font-weight: 800;">*2.0X SACRED TAP POWER</span>
+      <span class="popup-stat-value" style="color: #00f0ff; font-weight: 800;">*2.0X QUANTUM TAP POWER</span>
     </div>
 
     <!-- Buy with 10 Diamonds or Turbo Burst -->
-    <button class="popup-action-btn btn-gold-glow" onclick="buyGarba2xWithDiamonds()" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, #d97706, #b45309); color: #ffffff; border: 1.5px solid #fbbf24; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);">
+    <button class="popup-action-btn btn-cyan-glow" onclick="buyGarba2xWithDiamonds()" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: 1.5px solid #38bdf8; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);">
       <span style="font-size: 18px;">💎</span>
-      <span>${isLocked ? '⚡ Turbo Burst Currently Running' : 'Buy with 10 Diamonds (Turbo Burst)'}</span>
+      <span>${isLocked ? '⚡ Turbo Burst Currently Running' : 'Activate 2X (10 Diamonds)'}</span>
     </button>
 
-    <!-- Festive Bonus (Watch Ad) -->
-    <button class="popup-action-btn btn-cyan-glow" onclick="buyGarba2xWithAds()" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: 1.5px solid #38bdf8; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);">
+    <!-- Ad Bonus -->
+    <button class="popup-action-btn btn-emerald-glow" onclick="buyGarba2xWithAds()" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, #059669, #047857); color: #ffffff; border: 1.5px solid #34d399; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.35);">
       <span style="font-size: 18px;">🎬</span>
-      <span>${isLocked ? '🪔 Festive Bonus Active' : 'Festive Bonus (Watch Ad for 30 Min 2X)'}</span>
+      <span>${isLocked ? '⚡ 2X Active' : 'Watch Ad for 30 Min 2X Boost'}</span>
     </button>
   `;
 }
@@ -2019,10 +2003,9 @@ function renderHomeAutoClickPopup(header, body) {
   const isRunning = !!(gameState.settings && gameState.settings.autoBotEnabled);
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
     <div class="home-popup-icon-wrap" style="background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; color: #34d399;">🤖</div>
-    <h3 class="home-popup-title">DANDIYA AUTO-BOT REWARD</h3>
-    <p class="home-popup-subtitle">Deploy AI robotic automation to tap the reactor orb continuously with sacred dandiya rhythm!</p>
+    <h3 class="home-popup-title">QUANTUM AUTO-BOT</h3>
+    <p class="home-popup-subtitle">Deploy AI robotic automation to tap the reactor orb continuously at high precision frequency!</p>
   `;
 
   body.innerHTML = `
@@ -2039,7 +2022,7 @@ function renderHomeAutoClickPopup(header, body) {
     </div>
 
     <button class="popup-action-btn ${isRunning ? 'btn-ghost-dark' : 'btn-emerald-glow'}" onclick="toggleHomeAutoBot()">
-      <span>${isRunning ? '⏹️' : '▶️'}</span> ${isRunning ? 'Stop Dandiya Auto-Bot' : 'Start Dandiya Auto-Bot'}
+      <span>${isRunning ? '⏹️' : '▶️'}</span> ${isRunning ? 'Stop Auto-Bot' : 'Start Auto-Bot'}
     </button>
 
     <button class="popup-action-btn btn-cyan-glow" onclick="triggerHomeAutoTurbo()">
@@ -2083,10 +2066,9 @@ function renderHomeProfilePopup(header, body) {
   const blueCoins = gameState.player.diamonds || gameState.player.blueCoins || 0;
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
-    <div class="home-popup-icon-wrap" style="background: rgba(168, 85, 247, 0.2); border: 2px solid #a855f7; color: #c084fc;">🪔</div>
-    <h3 class="home-popup-title">MAA SHAKTI PLAYER PROFILE</h3>
-    <p class="home-popup-subtitle">Commander: ${gameState.player.handle || 'player'} • Status: Online & Blessed</p>
+    <div class="home-popup-icon-wrap" style="background: rgba(168, 85, 247, 0.2); border: 2px solid #a855f7; color: #c084fc;">⚡</div>
+    <h3 class="home-popup-title">COMMANDER PROFILE</h3>
+    <p class="home-popup-subtitle">Commander: ${gameState.player.handle || 'player'} • Status: Online</p>
   `;
 
   body.innerHTML = `
@@ -2119,9 +2101,9 @@ function renderHomeProfilePopup(header, body) {
 
     <div class="popup-feature-card" style="background: linear-gradient(135deg, rgba(88, 28, 135, 0.5) 0%, rgba(15, 23, 42, 0.9) 100%); border-color: rgba(192, 132, 252, 0.4);">
       <div class="popup-feature-left">
-        <span class="popup-feature-icon">🪔</span>
+        <span class="popup-feature-icon">💎</span>
         <div class="popup-feature-info">
-          <span class="popup-feature-title">Shakti Festive Blessing</span>
+          <span class="popup-feature-title">Commander Supply Drop</span>
           <span class="popup-feature-sub">+2,000 Coins & +10 Blue Gems</span>
         </div>
       </div>
@@ -2141,7 +2123,7 @@ function claimHomeProfileBlessing() {
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast('🪔 Maa Shakti Blessing Claimed: +2,000 Coins & +10 Blue Gems!');
+    showFloatingToast('💎 Supply Drop Claimed: +2,000 Coins & +10 Blue Gems!');
   }
   if (typeof sfx !== 'undefined' && sfx.playCardRewardSound) sfx.playCardRewardSound();
   refreshHomePopupIfOpen('profile');
@@ -2152,10 +2134,9 @@ function renderHomeCoinPopup(header, body) {
   const goldCoins = gameState.player.coins || 0;
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
     <div class="home-popup-icon-wrap" style="background: rgba(251, 191, 36, 0.2); border: 2px solid #fbbf24; color: #fde047;">🪙</div>
-    <h3 class="home-popup-title">LAKSHMI COIN REWARD VAULT</h3>
-    <p class="home-popup-subtitle">Auspicious festival prosperity! Claim golden coin rewards to upgrade skills and fuel cells.</p>
+    <h3 class="home-popup-title">GOLD COIN VAULT</h3>
+    <p class="home-popup-subtitle">Manage your gold reserves to upgrade generators, reactors, and purchase game boosters.</p>
   `;
 
   body.innerHTML = `
@@ -2168,7 +2149,7 @@ function renderHomeCoinPopup(header, body) {
       <div class="popup-feature-left">
         <span class="popup-feature-icon">🎁</span>
         <div class="popup-feature-info">
-          <span class="popup-feature-title">Daily Lakshmi Drop</span>
+          <span class="popup-feature-title">Daily Coin Supply</span>
           <span class="popup-feature-sub">+2,500 Gold Coins</span>
         </div>
       </div>
@@ -2179,7 +2160,7 @@ function renderHomeCoinPopup(header, body) {
       <div class="popup-feature-left">
         <span class="popup-feature-icon">⚡</span>
         <div class="popup-feature-info">
-          <span class="popup-feature-title">Shakti Energy Converter</span>
+          <span class="popup-feature-title">Energy Converter</span>
           <span class="popup-feature-sub">50 Energy ➔ 1,000 Coins</span>
         </div>
       </div>
@@ -2188,9 +2169,9 @@ function renderHomeCoinPopup(header, body) {
 
     <div class="popup-feature-card">
       <div class="popup-feature-left">
-        <span class="popup-feature-icon">🪔</span>
+        <span class="popup-feature-icon">👑</span>
         <div class="popup-feature-info">
-          <span class="popup-feature-title">Navratri Festival Bounty</span>
+          <span class="popup-feature-title">Quantum Bounty</span>
           <span class="popup-feature-sub">+10,000 Gold Coins</span>
         </div>
       </div>
@@ -2234,10 +2215,9 @@ function renderHomeBlueCoinPopup(header, body) {
   const blueCoins = gameState.player.blueCoins || 0;
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 NAVRATRI UTSAV REWARD ✨</div>
     <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">💙</div>
-    <h3 class="home-popup-title">SHAKTI BLUE GEM VAULT</h3>
-    <p class="home-popup-subtitle">Divine quantum blue crystals used for high-tier upgrades, multipliers, and exclusive shop items.</p>
+    <h3 class="home-popup-title">BLUE GEM VAULT</h3>
+    <p class="home-popup-subtitle">Quantum blue crystals used for high-tier upgrades, multipliers, and exclusive shop items.</p>
   `;
 
   body.innerHTML = `
@@ -2281,9 +2261,9 @@ function renderHomeBlueCoinPopup(header, body) {
 
     <div class="popup-feature-card">
       <div class="popup-feature-left">
-        <span class="popup-feature-icon">🪔</span>
+        <span class="popup-feature-icon">💎</span>
         <div class="popup-feature-info">
-          <span class="popup-feature-title">Navratri Amrit Gem Gift</span>
+          <span class="popup-feature-title">Quantum Crystal Gift</span>
           <span class="popup-feature-sub">+50 Blue Coins</span>
         </div>
       </div>
@@ -2322,13 +2302,12 @@ function exchangeGoldToBlueCoins() {
   refreshHomePopupIfOpen('blue');
 }
 
-// 6. Grand Mystery Mahotsav Reward Capsule Popup
+// 6. Grand Mystery Reward Capsule Popup
 function renderHomeBonusPopup(header, body) {
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🪔 GRAND FESTIVE REWARD ✨</div>
     <div class="home-popup-icon-wrap" style="background: rgba(244, 63, 94, 0.2); border: 2px solid #f43f5e; color: #fb7185;">🎁</div>
-    <h3 class="home-popup-title">NAVRATRI MAHOTSAV CAPSULE</h3>
-    <p class="home-popup-subtitle">Unlock the sacred festival reward capsule for instant Gold Coins, Blue Gems, Spin Tickets, and Mystery Keys!</p>
+    <h3 class="home-popup-title">QUANTUM REWARD CAPSULE</h3>
+    <p class="home-popup-subtitle">Unlock the quantum reward capsule for instant Gold Coins, Blue Gems, Spin Tickets, and Mystery Keys!</p>
   `;
 
   body.innerHTML = `
@@ -2360,7 +2339,7 @@ function renderHomeBonusPopup(header, body) {
     </div>
 
     <button class="popup-action-btn" style="background: linear-gradient(90deg, #f43f5e, #fb7185); color: #ffffff; box-shadow: 0 0 20px rgba(244, 63, 94, 0.6);" onclick="openHomeMysteryCapsule()">
-      <span>🎁</span> OPEN & CLAIM MAHOTSAV REWARD
+      <span>🎁</span> OPEN & CLAIM REWARD CAPSULE
     </button>
   `;
 }
@@ -2378,7 +2357,7 @@ function openHomeMysteryCapsule() {
   updateHomeUI();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Mahotsav Gift: +${formatNumber(goldBonus)} Gold, +${blueBonus} 💙 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
+    showFloatingToast(`🎉 Capsule Reward: +${formatNumber(goldBonus)} Gold, +${blueBonus} 💙 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCardRewardSound) {
     sfx.playCardRewardSound();

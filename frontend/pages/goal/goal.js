@@ -2,15 +2,15 @@
    GOAL & 1-1000 LEVEL MILESTONES CONTROLLER (pages/goal/goal.js)
    - Goals 1 to 1000 with 3 collectible emoji requirements:
      * 🃏 Cards
-     * 🥢 Dandiyas (Keys)
-     * 🌸 Flowers (Tickets)
+     * 🔑 Keys
+     * 🎟️ Tickets
    - Level 1 Requirements: Cards = 20, Keys = 50, Tickets = 35
    - Level 1000 Requirements: Cards = 200,000, Keys = 500,000, Tickets = 350,000 (Level 1 * 10,000)
    - In-between levels (2 to 999): Deterministic pseudo-random fixed targets
    - Goal Level 1000 Mega Reward:
      * Unlocks when Goal Level 1000 is completed
      * 1,000 Ads Watcher
-     * Mega Prize: 100 Dandiyas, 75 Cards, 150 Flowers, 1,000 Coins
+     * Mega Prize: 100 Keys, 75 Cards, 150 Tickets, 1,000 Coins
    - Subtabs: Goals 1-1000 List vs Mega Reward
    ========================================================================== */
 
@@ -78,7 +78,7 @@ function getGoalLevelRewardQty(lvl) {
 // Helper: Get Tier Label
 function getGoalTierLabel(lvl) {
   const r = getGoalLevelRewards(lvl);
-  return `⭐ LEVEL ${lvl} REWARD: +${r.cards || 1} CARDS • +${r.keys || 1} DANDIYAS • +${r.tickets || 1} FLOWERS`;
+  return `⭐ LEVEL ${lvl} REWARD: +${r.cards || 1} CARDS • +${r.keys || 1} KEYS • +${r.tickets || 1} TICKETS`;
 }
 
 // Subtab Switcher (Goals 1-1000 vs Mega Reward)
@@ -252,7 +252,7 @@ window.handleGoalLevelAction = function(lvl) {
     if (typeof showFloatingToast === 'function') {
       showFloatingToast(`Tap the Energy Reactor to collect all 3 items first!`);
     } else {
-      alert(`Collect all 3 items (Cards: ${prog.cards || 0}/${req.cards}, Dandiyas: ${prog.keys || 0}/${req.keys}, Flowers: ${prog.tickets || 0}/${req.tickets}) by tapping the reactor!`);
+      alert(`Collect all 3 items (Cards: ${prog.cards || 0}/${req.cards}, Keys: ${prog.keys || 0}/${req.keys}, Tickets: ${prog.tickets || 0}/${req.tickets}) by tapping the reactor!`);
     }
     return;
   }
@@ -303,7 +303,7 @@ function executeClaimGoalLevel(targetLvl) {
         <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Goal Level ${targetLvl} Claimed!</h3>
         <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You collected all items, watched 1 ad, and unlocked your loot:</p>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 12px 18px; width: 100%; display: flex; flex-direction: column; gap: 6px;">
-          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewards.cards || 1} 🃏 Cards • +${rewards.keys || 1} 🥢 Dandiyas • +${rewards.tickets || 1} 🌸 Flowers</div>
+          <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">+${rewards.cards || 1} 🃏 Cards • +${rewards.keys || 1} 🔑 Keys • +${rewards.tickets || 1} 🎟️ Tickets</div>
           <div style="font-size: 12px; color: #94a3b8;">+${rewards.coins || targetLvl * 25} Coins • +${rewards.xp || targetLvl * 10} XP</div>
         </div>
         <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">Advance to Level ${nextLvl} ✨</button>
@@ -395,9 +395,9 @@ window.handleGoalMegaRewardAction = function() {
           <h3 style="font-size: 20px; font-weight: 800; color: #38bdf8;">Grand Goal Jackpot!</h3>
           <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">You reached Level 1000, completed 1,000 ads, and claimed the ultimate reward bundle:</p>
           <div style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4; border-radius: 14px; padding: 14px 18px; width: 100%; display: flex; flex-direction: column; gap: 8px;">
-            <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">🥢 +100 Dandiyas</div>
+            <div style="font-size: 15px; font-weight: 800; color: #38bdf8;">🔑 +100 Keys</div>
             <div style="font-size: 15px; font-weight: 800; color: #ec4899;">🃏 +75 Cards</div>
-            <div style="font-size: 15px; font-weight: 800; color: #06b6d4;">🌸 +150 Flowers</div>
+            <div style="font-size: 15px; font-weight: 800; color: #06b6d4;">🎟️ +150 Tickets</div>
             <div style="font-size: 15px; font-weight: 800; color: #fbbf24;">🪙 +1,000 Bonus Coins</div>
           </div>
           <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px;">AWESOME! ✨</button>
@@ -585,11 +585,11 @@ function updateGoalViewUI() {
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     } else if (!isClaimed) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn claim-ready';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `🎉 CLAIM MEGA REWARD (100 DANDIYAS, 75 CARDS, 150 FLOWERS, 1000 COINS) 👑`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `🎉 CLAIM MEGA REWARD (100 KEYS, 75 CARDS, 150 TICKETS, 1000 COINS) 👑`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     } else {
       DOM.goalMegaActionBtn.className = 'mega-action-btn claimed';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `✓ MEGA REWARD CLAIMED (100 DANDIYAS, 75 CARDS, 150 FLOWERS, 1000 COINS)`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `✓ MEGA REWARD CLAIMED (100 KEYS, 75 CARDS, 150 TICKETS, 1000 COINS)`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     }
   }

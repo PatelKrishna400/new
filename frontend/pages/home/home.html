@@ -134,191 +134,29 @@
       </div>
     </section>
 
-    <!-- 3. BOTTOM: QUANTUM DIAMOND GENERATOR (Direct In-Home Interactive Console) -->
+    <!-- 3. BOTTOM: QUANTUM DIAMOND GENERATOR SHOWCASE -->
     <section class="diamond-generator-home-section" id="diamondGenHomeSection">
-      <!-- Section Header -->
+      <div class="dgh-card-glow"></div>
+      
       <div class="dgh-header-row">
         <div class="dgh-header-left">
-          <div class="dgh-badge-status">
-            <span class="dgh-pulse-dot"></span>
-            <span id="dgStatusText">Ready (10 ⚡)</span>
-          </div>
-          <h2 class="dgh-main-title font-sci">QUANTUM DIAMOND GENERATOR</h2>
-        </div>
-        <div class="dgh-rate-pill" id="dgRateHeaderPillHome">
-          <span id="dgRateHeaderBadgeHome">+0.000001 💎 / 60.00s</span>
-        </div>
-      </div>
-
-      <!-- Central Quantum Diamond Generator Stage -->
-      <div class="diamond-generator-wrapper dgh-center-wrapper">
-        <div class="diamond-gen-aura aura-cyan"></div>
-        <div class="diamond-gen-aura aura-violet"></div>
-        <div class="diamond-gen-sparkles-layer" id="diamondSparklesLayerHome"></div>
-
-        <!-- Outer Rotating Tech Rings -->
-        <div class="diamond-quantum-ring ring-outer"></div>
-        <div class="diamond-quantum-ring ring-inner"></div>
-
-        <!-- 360-Degree Circular Progress SVG Ring -->
-        <svg class="diamond-progress-svg" viewBox="0 0 160 160">
-          <defs>
-            <linearGradient id="diamondRingGradHome" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00f0ff"/>
-              <stop offset="50%" stop-color="#38bdf8"/>
-              <stop offset="100%" stop-color="#c084fc"/>
-            </linearGradient>
-            <filter id="diamondRingGlowHome" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
-            </filter>
-          </defs>
-          <circle cx="80" cy="80" r="70" class="diamond-ring-track"/>
-          <circle cx="80" cy="80" r="70" class="diamond-ring-fill" id="diamondProgressRingHome" stroke-dasharray="439.82" stroke-dashoffset="439.82"/>
-        </svg>
-
-        <!-- Central 3D Diamond Hologram Node -->
-        <div class="diamond-crystal-node" id="diamondCrystalNodeHome" title="Quantum Diamond Generator">
-          <svg class="diamond-core-art" viewBox="0 0 100 100" fill="none">
-            <defs>
-              <linearGradient id="dFacetTopH" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#f0f9ff"/>
-                <stop offset="100%" stop-color="#38bdf8"/>
-              </linearGradient>
-              <linearGradient id="dFacetLeftH" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#a5f3fc"/>
-                <stop offset="100%" stop-color="#0891b2"/>
-              </linearGradient>
-              <linearGradient id="dFacetCenterH" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#67e8f9"/>
-                <stop offset="100%" stop-color="#0284c7"/>
-              </linearGradient>
-              <linearGradient id="dFacetRightH" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#38bdf8"/>
-                <stop offset="100%" stop-color="#0c4a6e"/>
-              </linearGradient>
-              <filter id="diamondCoreShineH" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#00f0ff" flood-opacity="0.9"/>
-                <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#38bdf8" flood-opacity="0.6"/>
-              </filter>
-            </defs>
-            <!-- 3D Crystalline Diamond Geometry -->
-            <g filter="url(#diamondCoreShineH)">
-              <polygon points="30,22 70,22 84,38 16,38" fill="url(#dFacetTopH)"/>
-              <polygon points="16,38 30,22 40,38" fill="url(#dFacetLeftH)" opacity="0.95"/>
-              <polygon points="84,38 70,22 60,38" fill="url(#dFacetRightH)" opacity="0.95"/>
-              <polygon points="30,22 50,38 70,22" fill="#e0f2fe" opacity="0.9"/>
-              <polygon points="40,38 50,22 60,38 50,38" fill="#ffffff"/>
-              <polygon points="16,38 50,38 50,86" fill="url(#dFacetLeftH)"/>
-              <polygon points="84,38 50,38 50,86" fill="url(#dFacetRightH)"/>
-              <polygon points="35,46 50,86 65,46 50,52" fill="url(#dFacetCenterH)" opacity="0.95"/>
-              <polygon points="50,33 52,38 58,40 52,42 50,47 48,42 42,40 48,38" fill="#ffffff"/>
-              <circle cx="50" cy="40" r="2.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)"/>
-            </g>
-          </svg>
-
-          <!-- Core Live Countdown & Output Info -->
-          <div class="diamond-core-info">
-            <span class="diamond-countdown-text" id="diamondCountdownTextHome">60.0s</span>
-            <span class="diamond-rate-label" id="diamondCoreRateLabelHome">+0.000001 💎</span>
+          <span class="dgh-gem-icon">💎</span>
+          <div class="dgh-title-group">
+            <h2 class="dgh-main-title font-sci">DIAMOND GENERATOR</h2>
+            <div class="dgh-rate-text font-mono" id="dgeHomeRateVal">+0.000001 💎 / 60.00s</div>
           </div>
         </div>
+        <div class="dgh-status-badge font-sci" id="dgStatusText">READY (100 ⚡)</div>
       </div>
 
-      <!-- Generation Activation Console (Uses Energy to Start) -->
-      <div class="dg-activation-row">
-        <button type="button" class="btn-start-diamond-gen" id="btnStartDiamondGenHome" onclick="startDiamondGeneration()">
-          <span class="btn-shine"></span>
-          <span>⚡ Start Generation (10 Energy)</span>
+      <div class="dgh-actions-row">
+        <button type="button" class="btn-start-diamond-gen dgh-start-btn font-sci" id="btnStartDiamondGenHome" onclick="startDiamondGeneration()">
+          <span>⚡ START (100 ⚡)</span>
         </button>
-        <div class="dg-energy-req-hint">
-          <span>⚡ Requires <strong id="dgRequiredEnergyValHome">10 ⚡</strong> to start (Starts at 10 ⚡, +5 ⚡ per upgrade)</span>
-        </div>
-      </div>
 
-      <!-- Quick Metrics Strip -->
-      <div class="dg-metrics-strip dgh-metrics-strip">
-        <div class="dg-metric-card">
-          <span class="dg-metric-lbl">Total Generated</span>
-          <span class="dg-metric-val font-mono text-cyan-300" id="genTotalProducedValHome">0.000000 💎</span>
-        </div>
-        <div class="dg-metric-card">
-          <span class="dg-metric-lbl">Cycle Speed</span>
-          <span class="dg-metric-val font-mono text-amber-300" id="dgCycleDurationMetricHome">60.00s</span>
-        </div>
-        <div class="dg-metric-card">
-          <span class="dg-metric-lbl">Output / Cycle</span>
-          <span class="dg-metric-val font-mono text-emerald-300" id="dgOutputRateMetricHome">+0.000001 💎</span>
-        </div>
-        <div class="dg-metric-card">
-          <span class="dg-metric-lbl">Energy to Start</span>
-          <span class="dg-metric-val font-mono text-sky-300 dg-energy-cost-val">10 ⚡</span>
-        </div>
-      </div>
-
-      <!-- Upgrades & Overclocking Console directly in Home -->
-      <div class="diamond-upgrades-console dgh-upgrades-console">
-        <div class="dg-section-header">
-          <h3 class="text-xs font-black text-cyan-300 flex items-center gap-1.5 font-sci">
-            <span>⚡ Quantum Upgrades</span>
-          </h3>
-          <span class="text-[10px] text-slate-400">Scale output, reduce cycle time (+25 💎 cost each)</span>
-        </div>
-
-        <div class="dgh-upgrades-grid">
-          <!-- 1. Output Boost Upgrade Card -->
-          <div class="diamond-upgrade-card card-output" id="cardOutputUpgradeHome">
-            <div class="duc-header">
-              <div class="duc-title-group">
-                <span class="duc-icon">💎</span>
-                <div>
-                  <div class="duc-title">OUTPUT POWER</div>
-                  <div class="duc-sub" id="ducOutputSubHome">Rate: +0.000001 💎/cycle</div>
-                </div>
-              </div>
-              <span class="duc-level-badge" id="ducOutputLevelBadgeHome">Lv. 1</span>
-            </div>
-
-            <button type="button" class="duc-action-btn btn-upgrade-output" id="btnUpgradeOutputHome" onclick="purchaseDiamondOutputUpgrade()">
-              <span class="btn-shine"></span>
-              <div class="btn-text-col">
-                <span class="btn-main-txt">Upgrade Output (+0.000001 💎)</span>
-                <span class="btn-cost-txt" id="btnUpgradeOutputCostTextHome">Cost: 🪙 50 Coins</span>
-              </div>
-            </button>
-          </div>
-
-          <!-- 2. Cycle Speed Upgrade (-0.01s Time) -->
-          <div class="diamond-upgrade-card card-speed" id="cardSpeedUpgradeHome">
-            <div class="duc-header">
-              <div class="duc-title-group">
-                <span class="duc-icon">⚡</span>
-                <div>
-                  <div class="duc-title">CYCLE SPEED</div>
-                  <div class="duc-sub" id="ducSpeedSubHome">Cycle: 60.00s (-0.01s/lvl)</div>
-                </div>
-              </div>
-              <span class="duc-level-badge duc-badge-speed" id="ducSpeedLevelBadgeHome">Lv. 1</span>
-            </div>
-
-            <button type="button" class="duc-action-btn btn-upgrade-speed" id="btnUpgradeSpeedHome" onclick="purchaseDiamondSpeedUpgrade()">
-              <span class="btn-shine"></span>
-              <div class="btn-text-col">
-                <span class="btn-main-txt">Overclock Speed (-0.01s)</span>
-                <span class="btn-cost-txt" id="btnUpgradeSpeedCostTextHome">Cost: 💎 10 Diamonds (+25 💎 each)</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Dedicated Page Shortcut if user wants full console -->
-        <div class="dgh-footer-action">
-          <button type="button" class="dgh-full-view-btn" onclick="switchPage('diamond-generator')">
-            <span>🔍 Open Advanced Console &amp; Cost Reducers</span>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </button>
-        </div>
+        <button type="button" class="dgh-open-console-btn font-sci" onclick="switchPage('diamond-generator')">
+          <span>UPGRADE &amp; DISCOUNTS ▶</span>
+        </button>
       </div>
     </section>
 

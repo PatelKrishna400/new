@@ -1,32 +1,27 @@
 /* ==========================================================================
    QUANTUM DIAMOND GENERATOR ENGINE (pages/diamond-generator/diamond-generator.js)
-   - Energy required to start generation (10 Base Energy + 5 Energy per upgrade)
-   - Continuous timer countdown when active with accurate timestamp delta
-   - Output Upgrade (+0.000001 💎): 50 Coins base, +25 Coins each
-   - Speed Upgrade (-0.01s cycle): 10 💎 base, +25 💎 each
-   - Output Cost Reducer (Unlocks after 10 upgrades):
-       * 1,000 💎 -> -100 Coins Cost (1-Time)
-       * 1 Ad -> -50 Coins Cost
-   - Speed Cost Reducer:
-       * 1st Ad -> -10 💎 Cost Reduction (10-minute cooldown)
-       * Subsequent Ads -> -1 💎 Cost Reduction per ad (with 10-minute cooldown)
+   - Uses Energy to Start Generation (Base 100 ⚡ + 5 ⚡ per upgrade level)
+   - 60.00s Timer -> Rewards 0.000001 💎 * Power Level upon completion
+   - Power Upgrade: +0.000001 💎 rate (Costs 50 Coins for Lv 2, 100 for Lv 3, 150 for Lv 4...)
+   - Speed Upgrade: -0.01s cycle (Costs 10 Diamonds for Lv 2, 15 for Lv 3, 20 for Lv 4...)
+   - Cost Reducer Tabs [ POWER ] and [ SPEED ]:
+       * Power Tab: Watch Ad reduces coin cost by 10 coins (30s cooldown timer between ads)
+       * Speed Tab: Watch Ad reduces diamond cost by 1 diamond (30s cooldown timer between ads)
+       * Milestone Rule: Every 10 levels (10->11, 20->21...), 3 ads watch is compulsory with 30s timer between ads!
+   - Firebase Realtime Database Sync on all actions
    ========================================================================== */
 
 let _dgProductionInterval = null;
 let _dgLastTickTime = Date.now();
 
-// Base Configuration Constants
+// Configuration Constants
 const DG_BASE_CYCLE_SEC = 60.00;
 const DG_BASE_OUTPUT_RATE = 0.000001;
-const DG_OUTPUT_BASE_COST = 50;
-const DG_OUTPUT_COST_STEP = 25;
-const DG_SPEED_BASE_COST = 10;
-const DG_SPEED_COST_STEP = 25; // Speed upgrade cost add 25 per upgrade
-const DG_BASE_START_ENERGY = 10; // 10 Base Energy to start generation
-const DG_ENERGY_STEP_PER_UPGRADE = 5; // +5 Energy to start per output/speed upgrade
-const DG_SPEED_AD_COOLDOWN_MS = 10 * 60 * 1000; // 10 Minutes
+const DG_BASE_START_ENERGY = 100; // 100 Energy to start generation
+const DG_ENERGY_STEP_PER_UPGRADE = 5; // +5 Energy per upgrade
+const DG_AD_COOLDOWN_MS = 30 * 1000; // 30 Seconds timer between ads
 
-// Helper: Format Diamond display with up to 6 decimals
+// Format Diamond display (up to 6 decimals)
 function formatDiamondDisplay(num) {
   if (num === undefined || num === null || isNaN(num)) return '0.000000';
   return Number(num).toFixed(6);
@@ -36,102 +31,102 @@ function formatDiamondDisplay(num) {
 function ensureDiamondGenState() {
   if (!window.gameState) return null;
   if (!window.gameState.diamondGenerator) {
-    window.gameState.diamondGenerator = {
-      productionLevel: 1,
-      timeLevel: 1,
-      productionUpgradesCount: 0,
-      timeUpgradesCount: 0,
-      productionCostDiscount: 0,
-      timeCostDiscount: 0,
-      diamond1000DiscountUsed: false,
-      cycleProgress: 0,
-      totalProduced: 0,
-      isRunning: false,
-      generationStartTime: 0,
-      generationDuration: 60.00,
-      lastSpeedAdTime: 0,
-      hasUsedFirstSpeedAd: false
-    };
+    window.gameState.diamondGenerator = {};
   }
   const dg = window.gameState.diamondGenerator;
-  if (dg.productionLevel === undefined) dg.productionLevel = 1;
-  if (dg.timeLevel === undefined) dg.timeLevel = 1;
-  if (dg.productionUpgradesCount === undefined) dg.productionUpgradesCount = 0;
-  if (dg.timeUpgradesCount === undefined) dg.timeUpgradesCount = 0;
-  if (dg.productionCostDiscount === undefined) dg.productionCostDiscount = 0;
-  if (dg.timeCostDiscount === undefined) dg.timeCostDiscount = 0;
-  if (dg.diamond1000DiscountUsed === undefined) dg.diamond1000DiscountUsed = false;
-  if (dg.cycleProgress === undefined) dg.cycleProgress = 0;
-  if (dg.totalProduced === undefined) dg.totalProduced = 0;
+
+  // Support migration from old keys if any
+  if (dg.powerLevel === undefined) dg.powerLevel = dg.productionLevel || 1;
+  if (dg.speedLevel === undefined) dg.speedLevel = dg.timeLevel || 1;
   if (dg.isRunning === undefined) dg.isRunning = false;
+  if (dg.cycleProgress === undefined || isNaN(dg.cycleProgress)) dg.cycleProgress = 0;
   if (dg.generationStartTime === undefined) dg.generationStartTime = 0;
-  if (dg.generationDuration === undefined) dg.generationDuration = getDiamondCycleDuration();
+  if (dg.totalProduced === undefined) dg.totalProduced = 0;
+
+  // Discounts & Ad Timers
+  if (dg.powerDiscount === undefined) dg.powerDiscount = 0;
+  if (dg.speedDiscount === undefined) dg.speedDiscount = 0;
+  if (dg.lastPowerAdTime === undefined) dg.lastPowerAdTime = 0;
   if (dg.lastSpeedAdTime === undefined) dg.lastSpeedAdTime = 0;
-  if (dg.hasUsedFirstSpeedAd === undefined) dg.hasUsedFirstSpeedAd = false;
+
+  // Milestone Compulsory Ads (0 to 3)
+  if (dg.powerMilestoneAds === undefined) dg.powerMilestoneAds = 0;
+  if (dg.speedMilestoneAds === undefined) dg.speedMilestoneAds = 0;
+
   return dg;
 }
 
-// Energy Cost to Start Generation:
-// Base: 10 Energy. Each upgrade (output or speed) adds +5 Energy.
+// Energy Cost: Base 100 + 5 per each upgrade beyond level 1
 function getDiamondGenEnergyCost() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_START_ENERGY;
-  const totalUpgrades = Math.max(0, ((dg.productionLevel || 1) - 1) + ((dg.timeLevel || 1) - 1));
+  const totalUpgrades = Math.max(0, ((dg.powerLevel || 1) - 1) + ((dg.speedLevel || 1) - 1));
   return DG_BASE_START_ENERGY + (totalUpgrades * DG_ENERGY_STEP_PER_UPGRADE);
 }
 
-// Formula Calculations
+// Diamond Output Rate: 0.000001 * powerLevel
 function getDiamondsPerCycle() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_OUTPUT_RATE;
-  return Number((DG_BASE_OUTPUT_RATE + (dg.productionLevel - 1) * 0.000001).toFixed(6));
+  const pLvl = Math.max(1, parseInt(dg.powerLevel, 10) || 1);
+  return Number((pLvl * DG_BASE_OUTPUT_RATE).toFixed(6));
 }
 
+// Cycle Duration: 60.00s - 0.01s * (speedLevel - 1)
 function getDiamondCycleDuration() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_CYCLE_SEC;
-  const dur = DG_BASE_CYCLE_SEC - (dg.timeLevel - 1) * 0.01;
+  const sLvl = Math.max(1, parseInt(dg.speedLevel, 10) || 1);
+  const dur = DG_BASE_CYCLE_SEC - (sLvl - 1) * 0.01;
   return Math.max(1.00, Number(dur.toFixed(2)));
 }
 
-function getDiamondOutputCost() {
+// Power Upgrade Cost: Lv 1->2 is 50, Lv 2->3 is 100, Lv 3->4 is 150...
+function getDiamondPowerUpgradeCost() {
   const dg = ensureDiamondGenState();
-  if (!dg) return DG_OUTPUT_BASE_COST;
-  const baseCost = DG_OUTPUT_BASE_COST + dg.productionUpgradesCount * DG_OUTPUT_COST_STEP;
-  return Math.max(25, baseCost - (dg.productionCostDiscount || 0));
+  if (!dg) return 50;
+  const curLvl = Math.max(1, parseInt(dg.powerLevel, 10) || 1);
+  const baseCost = curLvl * 50;
+  const discount = Math.max(0, parseInt(dg.powerDiscount, 10) || 0);
+  return Math.max(10, baseCost - discount);
 }
 
-function getDiamondSpeedCost() {
+// Speed Upgrade Cost: Lv 1->2 is 10, Lv 2->3 is 15, Lv 3->4 is 20... (+5 each)
+function getDiamondSpeedUpgradeCost() {
   const dg = ensureDiamondGenState();
-  if (!dg) return DG_SPEED_BASE_COST;
-  const baseCost = DG_SPEED_BASE_COST + dg.timeUpgradesCount * DG_SPEED_COST_STEP;
-  return Math.max(1, baseCost - (dg.timeCostDiscount || 0));
+  if (!dg) return 10;
+  const curLvl = Math.max(1, parseInt(dg.speedLevel, 10) || 1);
+  const baseCost = 10 + (curLvl - 1) * 5;
+  const discount = Math.max(0, parseInt(dg.speedDiscount, 10) || 0);
+  return Math.max(1, baseCost - discount);
 }
 
-function isSpeedAdOnCooldown() {
+// Check if player is at a 10-level milestone requiring compulsory ads
+function isPowerMilestoneLocked() {
   const dg = ensureDiamondGenState();
-  if (!dg || !dg.lastSpeedAdTime) return false;
-  return (Date.now() - dg.lastSpeedAdTime) < DG_SPEED_AD_COOLDOWN_MS;
+  if (!dg) return false;
+  const curLvl = Math.max(1, parseInt(dg.powerLevel, 10) || 1);
+  return (curLvl % 10 === 0) && ((dg.powerMilestoneAds || 0) < 3);
 }
 
-function getSpeedAdCooldownRemainingSec() {
+function isSpeedMilestoneLocked() {
   const dg = ensureDiamondGenState();
-  if (!dg || !dg.lastSpeedAdTime) return 0;
-  const rem = DG_SPEED_AD_COOLDOWN_MS - (Date.now() - dg.lastSpeedAdTime);
-  return Math.max(0, Math.ceil(rem / 1000));
+  if (!dg) return false;
+  const curLvl = Math.max(1, parseInt(dg.speedLevel, 10) || 1);
+  return (curLvl % 10 === 0) && ((dg.speedMilestoneAds || 0) < 3);
 }
 
-// Action: Start Diamond Generation (Uses Energy)
+// Action: Start Diamond Generation
 function startDiamondGeneration() {
   if (!window.gameState) return;
   const dg = ensureDiamondGenState();
   if (!dg) return;
 
   if (dg.isRunning) {
-    const dur = dg.generationDuration || getDiamondCycleDuration();
+    const dur = getDiamondCycleDuration();
     const rem = Math.max(0, dur - (dg.cycleProgress || 0));
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⚡ Generation in progress! ${rem.toFixed(1)}s remaining.`);
+      showFloatingToast(`⚡ In progress: ${rem.toFixed(1)}s remaining`);
     }
     return;
   }
@@ -141,224 +136,250 @@ function startDiamondGeneration() {
 
   if (currentEnergy < energyCost) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⚡ Need ${energyCost} Energy to start generation! (Have: ${currentEnergy}). Tap reactor!`);
+      showFloatingToast(`Need ${energyCost} ⚡ Energy! (Have: ${currentEnergy}). Tap reactor!`);
     }
     return;
   }
 
-  // Deduct energy & start generation
+  // Deduct energy & start timer
   window.gameState.reactor.currentEnergy -= energyCost;
   dg.isRunning = true;
   dg.cycleProgress = 0;
-  dg.generationDuration = getDiamondCycleDuration();
   dg.generationStartTime = Date.now();
 
-  if (typeof saveGame === 'function') saveGame();
-  if (typeof updateUI === 'function') updateUI();
-  if (typeof updateEnergyUI === 'function') updateEnergyUI();
-  if (typeof updateHomeUI === 'function') updateHomeUI();
+  saveAllState();
   updateDiamondGeneratorUI();
+  updateDiamondGeneratorRealtime();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`⚡ Consumed ${energyCost} Energy! Quantum Diamond Generation started.`);
-  }
-
-  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
-    sfx.playTapSound(3);
+    showFloatingToast(`⚡ Generation Started (-${energyCost} ⚡)`);
   }
 }
 
-// Purchase: Output Power Upgrade (+0.000001 💎)
+// Action: Purchase Power Upgrade
 function purchaseDiamondOutputUpgrade() {
   const dg = ensureDiamondGenState();
   if (!dg || !window.gameState) return;
 
-  const cost = getDiamondOutputCost();
+  if (isPowerMilestoneLocked()) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔒 Watch 3 Ads to unlock Level ${dg.powerLevel + 1}! (${dg.powerMilestoneAds || 0}/3)`);
+    }
+    return;
+  }
+
+  const cost = getDiamondPowerUpgradeCost();
   const playerCoins = window.gameState.player.coins || 0;
 
   if (playerCoins < cost) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🪙 Need ${cost} coins! (Have: ${playerCoins})`);
+      showFloatingToast(`Need ${cost} Coins! (Have: ${playerCoins})`);
     }
     return;
   }
 
-  // Deduct coins & advance output level
   window.gameState.player.coins -= cost;
-  dg.productionLevel = (dg.productionLevel || 1) + 1;
-  dg.productionUpgradesCount = (dg.productionUpgradesCount || 0) + 1;
+  dg.powerLevel = (dg.powerLevel || 1) + 1;
+  dg.powerDiscount = 0; // Reset discount for next level
+  dg.powerMilestoneAds = 0; // Reset milestone for next level
 
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
-
+  saveAllState();
   updateDiamondGeneratorUI();
-  if (typeof updateHomeUI === 'function') updateHomeUI();
-  if (typeof updateUI === 'function') updateUI();
 
-  const newEnergyCost = getDiamondGenEnergyCost();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`💎 Output upgraded to +${formatDiamondDisplay(getDiamondsPerCycle())} 💎! (Energy to start: ${newEnergyCost} ⚡)`);
+    showFloatingToast(`💎 Power Lv. ${dg.powerLevel} (+${formatDiamondDisplay(getDiamondsPerCycle())} 💎)`);
   }
 }
 
-// Purchase: Speed Upgrade (-0.01s cycle)
+// Action: Purchase Speed Upgrade
 function purchaseDiamondSpeedUpgrade() {
   const dg = ensureDiamondGenState();
   if (!dg || !window.gameState) return;
 
-  const cost = getDiamondSpeedCost();
+  if (isSpeedMilestoneLocked()) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔒 Watch 3 Ads to unlock Level ${dg.speedLevel + 1}! (${dg.speedMilestoneAds || 0}/3)`);
+    }
+    return;
+  }
+
+  const cost = getDiamondSpeedUpgradeCost();
   const playerDiamonds = window.gameState.player.diamonds || 0;
 
   if (playerDiamonds < cost) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`💎 Need ${cost} diamonds! (Have: ${formatDiamondDisplay(playerDiamonds)})`);
+      showFloatingToast(`Need ${cost} Diamonds! (Have: ${formatDiamondDisplay(playerDiamonds)})`);
     }
     return;
   }
 
-  // Deduct diamonds & advance speed level
   window.gameState.player.diamonds = Number((playerDiamonds - cost).toFixed(6));
-  dg.timeLevel = (dg.timeLevel || 1) + 1;
-  dg.timeUpgradesCount = (dg.timeUpgradesCount || 0) + 1;
+  dg.speedLevel = (dg.speedLevel || 1) + 1;
+  dg.speedDiscount = 0; // Reset discount for next level
+  dg.speedMilestoneAds = 0; // Reset milestone for next level
 
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
-
+  saveAllState();
   updateDiamondGeneratorUI();
-  if (typeof updateHomeUI === 'function') updateHomeUI();
-  if (typeof updateUI === 'function') updateUI();
 
-  const newEnergyCost = getDiamondGenEnergyCost();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`⚡ Cycle speed overclocked to ${getDiamondCycleDuration().toFixed(2)}s! (Energy to start: ${newEnergyCost} ⚡)`);
+    showFloatingToast(`⚡ Speed Lv. ${dg.speedLevel} (${getDiamondCycleDuration().toFixed(2)}s)`);
   }
 }
 
-// Discount: 1,000 Diamonds for -100 Coins (1-time use)
-function applyDiamondDiscount1000() {
+// Ad Action: Watch Power Ad Discount (-10 Coins) with 30s Cooldown
+function watchPowerAdDiscount() {
   const dg = ensureDiamondGenState();
-  if (!dg || !window.gameState) return;
+  if (!dg) return;
 
-  if (dg.productionUpgradesCount < 10) {
+  const now = Date.now();
+  if (now - (dg.lastPowerAdTime || 0) < DG_AD_COOLDOWN_MS) {
+    const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastPowerAdTime)) / 1000);
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🔒 Unlocks after 10 Output Upgrades! (${dg.productionUpgradesCount}/10)`);
-    }
-    return;
-  }
-
-  if (dg.diamond1000DiscountUsed) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`ℹ️ 1,000 Diamond discount has already been redeemed!`);
-    }
-    return;
-  }
-
-  const playerDiamonds = window.gameState.player.diamonds || 0;
-  if (playerDiamonds < 1000) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`💎 Need 1,000 Diamonds! (Have: ${formatDiamondDisplay(playerDiamonds)})`);
-    }
-    return;
-  }
-
-  window.gameState.player.diamonds = Number((playerDiamonds - 1000).toFixed(6));
-  dg.diamond1000DiscountUsed = true;
-  dg.productionCostDiscount = (dg.productionCostDiscount || 0) + 100;
-
-  if (typeof saveGame === 'function') saveGame();
-  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
-
-  updateDiamondGeneratorUI();
-  if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Redeemed! Output upgrade cost permanently reduced by 100 Coins!`);
-  }
-}
-
-// Discount: Watch 1 Ad for -50 Coins
-function applyOutputAdDiscount() {
-  const dg = ensureDiamondGenState();
-  if (!dg || !window.gameState) return;
-
-  if (dg.productionUpgradesCount < 10) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🔒 Unlocks after 10 Output Upgrades! (${dg.productionUpgradesCount}/10)`);
+      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
     }
     return;
   }
 
   const triggerReward = () => {
-    dg.productionCostDiscount = (dg.productionCostDiscount || 0) + 50;
-    if (typeof saveGame === 'function') saveGame();
-    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-      window.firebaseSync.saveToCloudImmediate();
-    }
+    dg.powerDiscount = (dg.powerDiscount || 0) + 10;
+    dg.lastPowerAdTime = Date.now();
+    saveAllState();
     updateDiamondGeneratorUI();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎬 Ad watched! Output upgrade cost reduced by 50 Coins!`);
+      showFloatingToast('🏷️ -10 Coins Cost Reduced!');
     }
   };
 
   if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({
-      onRewarded: triggerReward,
-      onError: triggerReward
-    });
+    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
   } else {
     triggerReward();
   }
 }
 
-// Discount: Watch Ad for Speed Upgrade Cost
-function applySpeedAdDiscount() {
+// Ad Action: Watch Speed Ad Discount (-1 Diamond) with 30s Cooldown
+function watchSpeedAdDiscount() {
   const dg = ensureDiamondGenState();
-  if (!dg || !window.gameState) return;
+  if (!dg) return;
 
-  if (isSpeedAdOnCooldown()) {
-    const rem = getSpeedAdCooldownRemainingSec();
-    const m = Math.floor(rem / 60);
-    const s = rem % 60;
+  const now = Date.now();
+  if (now - (dg.lastSpeedAdTime || 0) < DG_AD_COOLDOWN_MS) {
+    const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastSpeedAdTime)) / 1000);
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Ad bonus recharging! Next ad in ${m}m ${s}s.`);
+      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
     }
     return;
   }
 
-  const isFirst = !dg.hasUsedFirstSpeedAd;
-  const reductionAmount = isFirst ? 10 : 1;
-
   const triggerReward = () => {
-    dg.timeCostDiscount = (dg.timeCostDiscount || 0) + reductionAmount;
+    dg.speedDiscount = (dg.speedDiscount || 0) + 1;
     dg.lastSpeedAdTime = Date.now();
-    dg.hasUsedFirstSpeedAd = true;
-
-    if (typeof saveGame === 'function') saveGame();
-    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-      window.firebaseSync.saveToCloudImmediate();
-    }
-
+    saveAllState();
     updateDiamondGeneratorUI();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎬 Ad watched! Speed upgrade cost reduced by ${reductionAmount} 💎! (10m cooldown active)`);
+      showFloatingToast('🏷️ -1 Diamond Cost Reduced!');
     }
   };
 
   if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({
-      onRewarded: triggerReward,
-      onError: triggerReward
-    });
+    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
   } else {
     triggerReward();
   }
 }
 
-// Background Production Loop (Only increments when isRunning is true)
+// Milestone Ad Actions (Compulsory 3 Ads on every 10 levels with 30s Cooldown)
+function watchPowerMilestoneAd() {
+  const dg = ensureDiamondGenState();
+  if (!dg) return;
+
+  const now = Date.now();
+  if (now - (dg.lastPowerAdTime || 0) < DG_AD_COOLDOWN_MS) {
+    const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastPowerAdTime)) / 1000);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
+    }
+    return;
+  }
+
+  const triggerReward = () => {
+    dg.powerMilestoneAds = Math.min(3, (dg.powerMilestoneAds || 0) + 1);
+    dg.lastPowerAdTime = Date.now();
+    saveAllState();
+    updateDiamondGeneratorUI();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎬 Milestone Ad ${dg.powerMilestoneAds}/3 Watched!`);
+    }
+  };
+
+  if (typeof showMonetagRewardedAd === 'function') {
+    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  } else {
+    triggerReward();
+  }
+}
+
+function watchSpeedMilestoneAd() {
+  const dg = ensureDiamondGenState();
+  if (!dg) return;
+
+  const now = Date.now();
+  if (now - (dg.lastSpeedAdTime || 0) < DG_AD_COOLDOWN_MS) {
+    const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastSpeedAdTime)) / 1000);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
+    }
+    return;
+  }
+
+  const triggerReward = () => {
+    dg.speedMilestoneAds = Math.min(3, (dg.speedMilestoneAds || 0) + 1);
+    dg.lastSpeedAdTime = Date.now();
+    saveAllState();
+    updateDiamondGeneratorUI();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎬 Milestone Ad ${dg.speedMilestoneAds}/3 Watched!`);
+    }
+  };
+
+  if (typeof showMonetagRewardedAd === 'function') {
+    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  } else {
+    triggerReward();
+  }
+}
+
+// Tab Switch Function for Cost Reducers: [ POWER ] and [ SPEED ]
+function switchDgCostTab(tab) {
+  const tabPower = document.getElementById('tabPowerCost');
+  const tabSpeed = document.getElementById('tabSpeedCost');
+  const panelPower = document.getElementById('panelPowerCost');
+  const panelSpeed = document.getElementById('panelSpeedCost');
+
+  if (tab === 'power') {
+    if (tabPower) tabPower.classList.add('active');
+    if (tabSpeed) tabSpeed.classList.remove('active');
+    if (panelPower) panelPower.classList.add('active');
+    if (panelSpeed) panelSpeed.classList.remove('active');
+  } else {
+    if (tabPower) tabPower.classList.remove('active');
+    if (tabSpeed) tabSpeed.classList.add('active');
+    if (panelPower) panelPower.classList.remove('active');
+    if (panelSpeed) panelSpeed.classList.add('active');
+  }
+}
+
+// Save All Game State & Sync to Firebase
+function saveAllState() {
+  if (typeof saveGame === 'function') saveGame();
+  if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+    window.firebaseSync.saveToCloudImmediate();
+  }
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof updateHomeUI === 'function') updateHomeUI();
+}
+
+// Main 100ms Generator Loop
 function startDiamondGeneratorLoop() {
   if (_dgProductionInterval) clearInterval(_dgProductionInterval);
   _dgLastTickTime = Date.now();
@@ -373,7 +394,7 @@ function startDiamondGeneratorLoop() {
     if (!dg) return;
 
     if (dg.isRunning) {
-      const cycleDuration = dg.generationDuration || getDiamondCycleDuration();
+      const cycleDuration = getDiamondCycleDuration();
 
       if (dg.generationStartTime) {
         dg.cycleProgress = Math.min(cycleDuration, (now - dg.generationStartTime) / 1000);
@@ -382,7 +403,7 @@ function startDiamondGeneratorLoop() {
       }
 
       if (dg.cycleProgress >= cycleDuration) {
-        // Complete cycle
+        // Complete Cycle!
         dg.isRunning = false;
         dg.cycleProgress = 0;
         dg.generationStartTime = 0;
@@ -391,21 +412,18 @@ function startDiamondGeneratorLoop() {
         window.gameState.player.diamonds = Number(((window.gameState.player.diamonds || 0) + outputPerCycle).toFixed(6));
         dg.totalProduced = Number(((dg.totalProduced || 0) + outputPerCycle).toFixed(6));
 
-        if (typeof saveGame === 'function') saveGame();
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof updateHomeUI === 'function') updateHomeUI();
+        saveAllState();
         updateDiamondGeneratorUI();
 
-        // Trigger visual pulse across all crystal nodes
+        // Crystal pulse
         document.querySelectorAll('.diamond-crystal-node').forEach(node => {
           node.classList.add('cycle-complete-pulse');
           setTimeout(() => node.classList.remove('cycle-complete-pulse'), 800);
         });
 
         if (typeof showFloatingToast === 'function') {
-          showFloatingToast(`💎 Generation Complete! +${formatDiamondDisplay(outputPerCycle)} 💎 collected!`);
+          showFloatingToast(`💎 Won +${formatDiamondDisplay(outputPerCycle)} Diamond!`);
         }
-
         if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
           sfx.playLevelUpSound();
         }
@@ -416,241 +434,233 @@ function startDiamondGeneratorLoop() {
   }, 100);
 }
 
-// Real-Time Progress Visuals
+// Real-Time Smooth Progress Updates
 function updateDiamondGeneratorRealtime() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
 
-  const cycleDuration = dg.generationDuration || getDiamondCycleDuration();
+  const cycleDuration = getDiamondCycleDuration();
   const currentProgress = dg.cycleProgress || 0;
   const remainingSeconds = dg.isRunning ? Math.max(0, cycleDuration - currentProgress) : cycleDuration;
   const percent = dg.isRunning ? Math.min(100, Math.max(0, (currentProgress / cycleDuration) * 100)) : 0;
   const energyCost = getDiamondGenEnergyCost();
 
-  // 1. Central Countdown Text (both on dedicated page and home page)
-  document.querySelectorAll('.diamond-countdown-text, #diamondCountdownText, #diamondCountdownTextHome').forEach(el => {
-    if (el) {
-      el.textContent = `${remainingSeconds.toFixed(1)}s`;
-    }
+  // 1. Countdown Text
+  document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
+    if (el) el.textContent = `${remainingSeconds.toFixed(1)}s`;
   });
 
-  // 2. SVG Rings
+  // 2. Circular SVG Progress Ring
   const circumference = 439.82;
   const offset = dg.isRunning ? (circumference - (percent / 100) * circumference) : circumference;
-  document.querySelectorAll('.diamond-ring-fill, #diamondProgressRing, #diamondProgressRingHome').forEach(ringEl => {
-    if (ringEl) {
-      ringEl.style.strokeDashoffset = offset.toFixed(2);
-    }
+  document.querySelectorAll('#diamondProgressRing, .diamond-ring-fill, #diamondProgressRingHome').forEach(ring => {
+    if (ring) ring.style.strokeDashoffset = offset.toFixed(2);
   });
 
   // 3. Start Generation Buttons
-  document.querySelectorAll('.btn-start-diamond-gen, #btnStartDiamondGen, #btnStartDiamondGenHome').forEach(btn => {
-    if (btn) {
-      if (dg.isRunning) {
-        btn.innerHTML = `<span class="btn-shine"></span><span>⚡ Generating... (${remainingSeconds.toFixed(1)}s)</span>`;
-        btn.classList.add('generating-active');
-        btn.disabled = true;
-      } else {
-        btn.innerHTML = `<span class="btn-shine"></span><span>⚡ Start Generation (${energyCost} Energy)</span>`;
-        btn.classList.remove('generating-active');
-        btn.disabled = false;
-      }
+  const startBtnText = document.getElementById('btnStartDiamondGenText');
+  const startBtn = document.getElementById('btnStartDiamondGen');
+  if (startBtn) {
+    if (dg.isRunning) {
+      if (startBtnText) startBtnText.textContent = `⚡ GENERATING... (${remainingSeconds.toFixed(1)}s)`;
+      startBtn.classList.add('generating-active');
+      startBtn.disabled = true;
+    } else {
+      if (startBtnText) startBtnText.textContent = `⚡ START GENERATION (${energyCost} ⚡)`;
+      startBtn.classList.remove('generating-active');
+      startBtn.disabled = false;
+    }
+  }
+
+  // Home Start Button (if present)
+  document.querySelectorAll('#btnStartDiamondGenHome').forEach(btn => {
+    if (dg.isRunning) {
+      btn.innerHTML = `<span>⚡ GENERATING (${remainingSeconds.toFixed(1)}s)</span>`;
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = `<span>⚡ START (${energyCost} ⚡)</span>`;
+      btn.disabled = false;
     }
   });
 
-  // 4. Status Badges & Cycle Texts
-  document.querySelectorAll('.dg-status-text, #dgStatusText, #dgeHomeCycleText').forEach(st => {
-    if (st) {
-      if (dg.isRunning) {
-        st.textContent = `⚡ Active: ${remainingSeconds.toFixed(1)}s`;
-        st.style.color = '#38bdf8';
-      } else {
-        st.textContent = `Ready (${energyCost} ⚡)`;
-        st.style.color = '#10b981';
-      }
+  // 4. Status Badge
+  const statusBadge = document.getElementById('dgStatusBadge');
+  if (statusBadge) {
+    if (dg.isRunning) {
+      statusBadge.textContent = 'ACTIVE';
+      statusBadge.classList.add('active');
+    } else {
+      statusBadge.textContent = 'READY';
+      statusBadge.classList.remove('active');
     }
-  });
+  }
 
-  // 5. Speed Ad Cooldown Display
-  updateSpeedAdCooldownRealtime();
-}
+  // 5. Cooldowns on Ad Buttons (30s Timer)
+  const now = Date.now();
+  const powerCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastPowerAdTime || 0))) / 1000));
+  const speedCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastSpeedAdTime || 0))) / 1000));
 
-function updateSpeedAdCooldownRealtime() {
-  const badge = document.getElementById('speedReducerStatusBadge');
-  const btnTitle = document.getElementById('speedAdDiscountBtnTitle');
-  const btnSub = document.getElementById('speedAdDiscountBtnSub');
-  const btn = document.getElementById('btnDiscountSpeedAd');
-  const dg = ensureDiamondGenState();
-  if (!dg || !badge || !btnTitle) return;
+  const pAdBtn = document.getElementById('btnPowerAdDiscount');
+  const pAdTxt = document.getElementById('powerAdBtnText');
+  if (pAdBtn && pAdTxt) {
+    if (powerCdRem > 0) {
+      pAdTxt.textContent = `⏳ Wait ${powerCdRem}s (Ad Cooldown)`;
+      pAdBtn.classList.add('cooldown');
+    } else {
+      pAdTxt.textContent = 'Watch Ad (-10 Coins Cost)';
+      pAdBtn.classList.remove('cooldown');
+    }
+  }
 
-  const onCool = isSpeedAdOnCooldown();
-  const isFirst = !dg.hasUsedFirstSpeedAd;
+  const sAdBtn = document.getElementById('btnSpeedAdDiscount');
+  const sAdTxt = document.getElementById('speedAdBtnText');
+  if (sAdBtn && sAdTxt) {
+    if (speedCdRem > 0) {
+      sAdTxt.textContent = `⏳ Wait ${speedCdRem}s (Ad Cooldown)`;
+      sAdBtn.classList.add('cooldown');
+    } else {
+      sAdTxt.textContent = 'Watch Ad (-1 Diamond Cost)';
+      sAdBtn.classList.remove('cooldown');
+    }
+  }
 
-  if (onCool) {
-    const rem = getSpeedAdCooldownRemainingSec();
-    const m = Math.floor(rem / 60);
-    const s = rem % 60;
-    const timeStr = `${m}m ${String(s).padStart(2, '0')}s`;
-    badge.textContent = `Cooldown: ${timeStr}`;
-    badge.style.color = '#ef4444';
-    btnTitle.textContent = `Ad Recharging (${timeStr})`;
-    if (btnSub) btnSub.textContent = `Available again in ${timeStr}`;
-    if (btn) btn.style.opacity = '0.65';
-  } else {
-    badge.textContent = 'Ad Bonus Available';
-    badge.style.color = '#10b981';
-    btnTitle.textContent = isFirst ? 'Watch Ad (-10 💎 Cost)' : 'Watch Ad (-1 💎 Cost)';
-    if (btnSub) btnSub.textContent = isFirst ? 'First Ad Bonus • 10m Cooldown' : 'Repeated Ad Bonus • 10m Cooldown';
-    if (btn) btn.style.opacity = '1';
+  // Milestone ad buttons
+  const pMBtn = document.getElementById('btnPowerMilestoneAd');
+  if (pMBtn) {
+    if (powerCdRem > 0) {
+      pMBtn.innerHTML = `<span>⏳ Wait ${powerCdRem}s</span>`;
+      pMBtn.classList.add('cooldown');
+    } else {
+      pMBtn.innerHTML = '<span>🎬 Watch Required Ad (30s Timer)</span>';
+      pMBtn.classList.remove('cooldown');
+    }
+  }
+
+  const sMBtn = document.getElementById('btnSpeedMilestoneAd');
+  if (sMBtn) {
+    if (speedCdRem > 0) {
+      sMBtn.innerHTML = `<span>⏳ Wait ${speedCdRem}s</span>`;
+      sMBtn.classList.add('cooldown');
+    } else {
+      sMBtn.innerHTML = '<span>🎬 Watch Required Ad (30s Timer)</span>';
+      sMBtn.classList.remove('cooldown');
+    }
   }
 }
 
-// Full UI Update
+// Full UI Synchronizer
 function updateDiamondGeneratorUI() {
-  if (!window.gameState) return;
   const dg = ensureDiamondGenState();
-  if (!dg) return;
+  if (!dg || !window.gameState) return;
 
-  const cycleDur = getDiamondCycleDuration();
   const rate = getDiamondsPerCycle();
-  const outputCost = getDiamondOutputCost();
-  const speedCost = getDiamondSpeedCost();
-  const energyCost = getDiamondGenEnergyCost();
-  const pLevel = dg.productionLevel || 1;
-  const sLevel = dg.timeLevel || 1;
-  const upCount = dg.productionUpgradesCount || 0;
+  const cycleDur = getDiamondCycleDuration();
+  const powerCost = getDiamondPowerUpgradeCost();
+  const speedCost = getDiamondSpeedUpgradeCost();
 
-  // Header badges
-  document.querySelectorAll('#dgRateHeaderBadge, #dgRateHeaderBadgeHome').forEach(headerPill => {
-    if (headerPill) {
-      headerPill.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
-    }
-  });
+  // Resource Pills
+  const dVal = document.getElementById('dgStickyDiamonds');
+  if (dVal) dVal.textContent = formatDiamondDisplay(window.gameState.player.diamonds);
 
-  // Core rate label
-  document.querySelectorAll('#diamondCoreRateLabel, #diamondCoreRateLabelHome').forEach(coreRate => {
-    if (coreRate) {
-      coreRate.textContent = `+${formatDiamondDisplay(rate)} 💎`;
-    }
-  });
+  const cVal = document.getElementById('dgStickyCoins');
+  if (cVal) cVal.textContent = String(window.gameState.player.coins || 0);
 
-  // Energy Required Badge / Info
-  document.querySelectorAll('.dg-energy-cost-val, #dgRequiredEnergyVal, #dgRequiredEnergyValHome').forEach(el => {
-    if (el) el.textContent = `${energyCost} ⚡`;
-  });
+  const eVal = document.getElementById('dgStickyEnergy');
+  if (eVal) eVal.textContent = String(Math.floor(window.gameState.reactor?.currentEnergy || 0));
 
-  // Top Sticky Resource Balances
-  const stickyDia = document.getElementById('dgStickyDiamonds');
-  if (stickyDia) stickyDia.textContent = formatDiamondDisplay(window.gameState.player.diamonds || 0);
+  // Rate Tags
+  const rateTag = document.getElementById('dgRateHeaderBadge');
+  if (rateTag) rateTag.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
 
-  const stickyCoins = document.getElementById('dgStickyCoins');
-  if (stickyCoins && typeof formatNumber === 'function') {
-    stickyCoins.textContent = formatNumber(window.gameState.player.coins || 0);
-  }
+  const coreRate = document.getElementById('diamondCoreRateLabel');
+  if (coreRate) coreRate.textContent = `+${formatDiamondDisplay(rate)} 💎`;
 
-  const stickyEnergy = document.getElementById('dgStickyEnergy');
-  if (stickyEnergy) {
-    stickyEnergy.textContent = Math.floor(window.gameState.reactor ? window.gameState.reactor.currentEnergy || 0 : 0);
-  }
+  // Power Upgrade Card
+  const pBadge = document.getElementById('ducOutputLevelBadge');
+  if (pBadge) pBadge.textContent = `Lv. ${dg.powerLevel}`;
 
-  // Metrics Strip
-  document.querySelectorAll('#dgCycleDurationMetric, #dgCycleDurationMetricHome').forEach(el => {
-    if (el) el.textContent = `${cycleDur.toFixed(2)}s`;
-  });
+  const pSub = document.getElementById('ducOutputSub');
+  if (pSub) pSub.textContent = `Rate: +${formatDiamondDisplay(rate)} 💎/cycle`;
 
-  document.querySelectorAll('#dgOutputRateMetric, #dgOutputRateMetricHome').forEach(el => {
-    if (el) el.textContent = `+${formatDiamondDisplay(rate)} 💎`;
-  });
+  const pCostTxt = document.getElementById('btnUpgradeOutputCostText');
+  if (pCostTxt) pCostTxt.textContent = `${powerCost} 🪙`;
 
-  document.querySelectorAll('#genTotalProducedVal, #genTotalProducedValHome').forEach(el => {
-    if (el) el.textContent = `${formatDiamondDisplay(dg.totalProduced || 0)} 💎`;
-  });
-
-  // Output Power Upgrade Card
-  document.querySelectorAll('#ducOutputLevelBadge, #ducOutputLevelBadgeHome').forEach(el => {
-    if (el) el.textContent = `Lv. ${pLevel}`;
-  });
-
-  document.querySelectorAll('#ducOutputSub, #ducOutputSubHome').forEach(el => {
-    if (el) el.textContent = `Rate: +${formatDiamondDisplay(rate)} 💎/cycle`;
-  });
-
-  document.querySelectorAll('#btnUpgradeOutputCostText, #btnUpgradeOutputCostTextHome').forEach(el => {
-    if (el) el.textContent = `Cost: 🪙 ${outputCost} Coins`;
-  });
-
-  // Output Cost Reducers (Unlocked at 10 upgrades)
-  const outMilestone = document.getElementById('outputReducerMilestoneText');
-  const outActions = document.getElementById('outputReducerActions');
-  const outDiscountNote = document.getElementById('outputDiscountAppliedNote');
-
-  if (outMilestone && outActions) {
-    if (upCount >= 10) {
-      outMilestone.textContent = 'Milestone Unlocked!';
-      outMilestone.style.color = '#10b981';
-      outActions.style.display = 'grid';
+  const pUpgBtn = document.getElementById('btnUpgradeOutput');
+  const pLocked = isPowerMilestoneLocked();
+  if (pUpgBtn) {
+    if (pLocked) {
+      pUpgBtn.classList.add('locked');
+      const pUpgTxt = document.getElementById('btnUpgradeOutputText');
+      if (pUpgTxt) pUpgTxt.textContent = '🔒 Watch 3 Ads to Unlock';
     } else {
-      outMilestone.textContent = `Unlocks after 10 Upgrades (${upCount}/10)`;
-      outMilestone.style.color = '#f59e0b';
-      outActions.style.display = 'none';
+      pUpgBtn.classList.remove('locked');
+      const pUpgTxt = document.getElementById('btnUpgradeOutputText');
+      if (pUpgTxt) pUpgTxt.textContent = 'UPGRADE (+0.000001 💎)';
     }
   }
 
-  const btn1000 = document.getElementById('btnDiscount1000Diamond');
-  if (btn1000) {
-    if (dg.diamond1000DiscountUsed) {
-      btn1000.disabled = true;
-      btn1000.style.opacity = '0.5';
-      const bTitle = document.getElementById('btnDiscount1000Title');
-      if (bTitle) bTitle.textContent = '1,000 💎 (Claimed)';
+  // Power Milestone Box
+  const pMBox = document.getElementById('powerMilestoneBox');
+  const pMProg = document.getElementById('powerMilestoneProgressText');
+  if (pMBox && pMProg) {
+    if (dg.powerLevel % 10 === 0) {
+      pMBox.style.display = 'flex';
+      pMProg.textContent = `${dg.powerMilestoneAds || 0} / 3 Ads`;
     } else {
-      btn1000.disabled = false;
-      btn1000.style.opacity = '1';
+      pMBox.style.display = 'none';
     }
   }
 
-  if (outDiscountNote) {
-    const curDisc = dg.productionCostDiscount || 0;
-    if (curDisc > 0) {
-      outDiscountNote.style.display = 'block';
-      outDiscountNote.textContent = `Applied Discount: -${curDisc} Coins on every upgrade`;
-    } else {
-      outDiscountNote.style.display = 'none';
-    }
-  }
+  const pDiscBadge = document.getElementById('powerDiscountBadge');
+  if (pDiscBadge) pDiscBadge.textContent = `-${dg.powerDiscount || 0} 🪙 DISCOUNT`;
 
   // Speed Upgrade Card
-  document.querySelectorAll('#ducSpeedLevelBadge, #ducSpeedLevelBadgeHome').forEach(el => {
-    if (el) el.textContent = `Lv. ${sLevel}`;
-  });
+  const sBadge = document.getElementById('ducSpeedLevelBadge');
+  if (sBadge) sBadge.textContent = `Lv. ${dg.speedLevel}`;
 
-  document.querySelectorAll('#ducSpeedSub, #ducSpeedSubHome').forEach(el => {
-    if (el) el.textContent = `Cycle: ${cycleDur.toFixed(2)}s (-0.01s/lvl)`;
-  });
+  const sSub = document.getElementById('ducSpeedSub');
+  if (sSub) sSub.textContent = `Cycle: ${cycleDur.toFixed(2)}s (-0.01s)`;
 
-  document.querySelectorAll('#btnUpgradeSpeedCostText, #btnUpgradeSpeedCostTextHome').forEach(el => {
-    if (el) el.textContent = `Cost: 💎 ${speedCost} Diamonds`;
-  });
+  const sCostTxt = document.getElementById('btnUpgradeSpeedCostText');
+  if (sCostTxt) sCostTxt.textContent = `${speedCost} 💎`;
 
-  const spdDiscountNote = document.getElementById('speedDiscountAppliedNote');
-  if (spdDiscountNote) {
-    const curDisc = dg.timeCostDiscount || 0;
-    if (curDisc > 0) {
-      spdDiscountNote.style.display = 'block';
-      spdDiscountNote.textContent = `Applied Discount: -${curDisc} 💎 on every speed upgrade`;
+  const sUpgBtn = document.getElementById('btnUpgradeSpeed');
+  const sLocked = isSpeedMilestoneLocked();
+  if (sUpgBtn) {
+    if (sLocked) {
+      sUpgBtn.classList.add('locked');
+      const sUpgTxt = document.getElementById('btnUpgradeSpeedText');
+      if (sUpgTxt) sUpgTxt.textContent = '🔒 Watch 3 Ads to Unlock';
     } else {
-      spdDiscountNote.style.display = 'none';
+      sUpgBtn.classList.remove('locked');
+      const sUpgTxt = document.getElementById('btnUpgradeSpeedText');
+      if (sUpgTxt) sUpgTxt.textContent = 'OVERCLOCK (-0.01s)';
     }
   }
 
-  // Sync Home Page Rate Label
+  // Speed Milestone Box
+  const sMBox = document.getElementById('speedMilestoneBox');
+  const sMProg = document.getElementById('speedMilestoneProgressText');
+  if (sMBox && sMProg) {
+    if (dg.speedLevel % 10 === 0) {
+      sMBox.style.display = 'flex';
+      sMProg.textContent = `${dg.speedMilestoneAds || 0} / 3 Ads`;
+    } else {
+      sMBox.style.display = 'none';
+    }
+  }
+
+  const sDiscBadge = document.getElementById('speedDiscountBadge');
+  if (sDiscBadge) sDiscBadge.textContent = `-${dg.speedDiscount || 0} 💎 DISCOUNT`;
+
+  // Update Home Card if present
   const dgeRate = document.getElementById('dgeHomeRateVal');
   if (dgeRate) dgeRate.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
 
   updateDiamondGeneratorRealtime();
 }
 
-// Initialize on Script Load & Window Events
+// Lifecycle Hooks
 if (typeof window !== 'undefined') {
   startDiamondGeneratorLoop();
   if (typeof document !== 'undefined') {
@@ -665,13 +675,13 @@ window.startDiamondGeneration = startDiamondGeneration;
 window.getDiamondGenEnergyCost = getDiamondGenEnergyCost;
 window.purchaseDiamondOutputUpgrade = purchaseDiamondOutputUpgrade;
 window.purchaseDiamondSpeedUpgrade = purchaseDiamondSpeedUpgrade;
-window.applyDiamondDiscount1000 = applyDiamondDiscount1000;
-window.applyOutputAdDiscount = applyOutputAdDiscount;
-window.applySpeedAdDiscount = applySpeedAdDiscount;
+window.watchPowerAdDiscount = watchPowerAdDiscount;
+window.watchSpeedAdDiscount = watchSpeedAdDiscount;
+window.watchPowerMilestoneAd = watchPowerMilestoneAd;
+window.watchSpeedMilestoneAd = watchSpeedMilestoneAd;
+window.switchDgCostTab = switchDgCostTab;
 window.updateDiamondGeneratorUI = updateDiamondGeneratorUI;
 window.updateDiamondGeneratorRealtime = updateDiamondGeneratorRealtime;
 window.formatDiamondDisplay = formatDiamondDisplay;
 window.getDiamondsPerCycle = getDiamondsPerCycle;
 window.getDiamondCycleDuration = getDiamondCycleDuration;
-window.getDiamondOutputCost = getDiamondOutputCost;
-window.getDiamondSpeedCost = getDiamondSpeedCost;

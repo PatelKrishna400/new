@@ -58,12 +58,9 @@
           <span class="text-2xl">🌻</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-              <span>Sunflower Valley (20 Lands &bull; 1&times;20 Format)</span>
+              <span>Sunflower Valley (20 Lands)</span>
               <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Land 1 Free</span>
             </h2>
-            <p class="text-[10.5px] text-stone-300 font-medium">
-              Upgrade each Land from <strong class="text-amber-300">Level 1 &rarr; 5000</strong>! Speed drops to <strong class="text-amber-300">0.001s</strong> &amp; coins scale up!
-            </p>
           </div>
         </div>
 
@@ -120,12 +117,9 @@
           <span class="text-2xl">💧</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-1.5">
-              <span>Water Aquifer (20 Wells &bull; 1&times;20 Format)</span>
-              <span class="text-[9px] bg-cyan-950 text-cyan-300 font-bold px-1.5 py-0.5 rounded-full border border-cyan-700">Well 1 Free (5s)</span>
+              <span>Water Aquifer (20 Wells)</span>
+              <span class="text-[9px] bg-cyan-950 text-cyan-300 font-bold px-1.5 py-0.5 rounded-full border border-cyan-700">Well 1 Free</span>
             </h2>
-            <p class="text-[10.5px] text-stone-300 font-medium">
-              Well 1 collects <strong class="text-cyan-300">1 Basket after 5s</strong>! Hire <strong class="text-cyan-300">Well Workers</strong> in HQ to automate continuous water basket creation!
-            </p>
           </div>
         </div>
 
@@ -139,7 +133,7 @@
         </div>
       </div>
 
-      <!-- Quick Action Tool Strip for Water Page -->
+      <!-- Quick Action Tool Strip with Manual Water Collection (1 ⚡) -->
       <div class="sf-water-tools-strip flex flex-wrap items-center justify-between gap-2 bg-stone-950/80 p-2.5 rounded-xl border border-cyan-800/60 shadow-inner">
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-1.5 text-xs font-bold text-cyan-200">
@@ -147,20 +141,23 @@
             <span id="sfWaterPageBasketsCount" class="font-mono font-black text-white bg-blue-900/80 px-2 py-0.5 rounded border border-blue-500/40">2 🧺</span>
           </div>
           <div class="flex items-center gap-1.5 text-xs font-bold text-amber-200">
-            <span>👷 Idle Workers:</span>
+            <span>👷 Idle:</span>
             <span id="sfWaterPageIdleWorkers" class="font-mono font-black text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/40">0</span>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5">
+          <button id="sfStartWaterCollectionBtn" onclick="startWaterCollectionSession(event)" class="sf-start-water-btn" title="Collect water using 1 energy">
+            <span>⚡ Start Water Collection (1 ⚡)</span>
+          </button>
           <button id="sfCollectAllWellsBtn" onclick="collectAllWellsBaskets(event)" class="sf-quick-tool-btn blue" title="Collect from all ready wells">
-            <span>🧺 Collect All Wells</span>
+            <span>🧺 Collect All</span>
           </button>
           <button onclick="autoAssignAllWellWorkers(event)" class="sf-quick-tool-btn amber" title="Auto-assign available workers to wells">
             <span>⚡ Auto-Assign</span>
           </button>
           <button onclick="navigateSunflowerPage(4); switchSunflowerWorkerSubtab('water');" class="sf-quick-tool-btn emerald" title="Go to Workers HQ to hire more workers">
-            <span>👷 Hire Workers</span>
+            <span>👷 Hire</span>
           </button>
         </div>
       </div>
@@ -185,9 +182,6 @@
                 Official Supply
               </span>
             </h2>
-            <p class="text-[10px] text-stone-300">
-              Buy Sunflower Plants, Water Buckets, and Shovels with Coins (☀️) or Diamonds (💎) or watch 5s ads!
-            </p>
           </div>
         </div>
 
@@ -208,10 +202,7 @@
               <span class="text-3xl">🌱</span>
               <div>
                 <h4 class="text-xs font-black text-amber-300">Sunflower Plant / Seed</h4>
-                <p class="text-[10px] text-stone-300 leading-snug">
-                  Plant on empty land: takes <strong>30s to grow</strong>, then enters <strong>40s lifetime</strong> (+10s per water bucket up to 120s limit)!
-                </p>
-                <div class="text-[9.5px] text-emerald-400 font-mono mt-1 font-bold">
+                <div class="text-[9.5px] text-emerald-400 font-mono mt-0.5 font-bold">
                   In Inventory: <span id="sfShopPlantCount">3</span> 🌱 Owned
                 </div>
               </div>
@@ -244,11 +235,8 @@
               <span class="text-3xl">🪣</span>
               <div>
                 <h4 class="text-xs font-black text-cyan-300">Water Bucket</h4>
-                <p class="text-[10px] text-stone-300 leading-snug">
-                  Hydrates active sunflowers! <strong>Adds +10s life</strong> to mature plants (Level 1 limit: 120s, +5s added per land level upgrade).
-                </p>
-                <div class="text-[9.5px] text-cyan-400 font-mono mt-1 font-bold">
-                  In Inventory: <span id="sfShopBucketCount">2</span> 🪣 Owned
+                <div class="text-[9.5px] text-cyan-400 font-mono mt-0.5 font-bold">
+                  In Inventory: <span id="sfShopBucketCount">2</span> 🪣 Owned &bull; Adds +10s Life
                 </div>
               </div>
             </div>
@@ -280,11 +268,8 @@
               <span class="text-3xl">🪏</span>
               <div>
                 <h4 class="text-xs font-black text-stone-200">Garden Shovel</h4>
-                <p class="text-[10px] text-stone-400 leading-snug">
-                  Required to remove dead / withered sunflowers (🥀) after lifetime runs out. Clears the land plot to install a new plant at Level 1!
-                </p>
-                <div class="text-[9.5px] text-stone-300 font-mono mt-1 font-bold">
-                  In Inventory: <span id="sfShopShovelCount">1</span> 🪏 Owned
+                <div class="text-[9.5px] text-stone-300 font-mono mt-0.5 font-bold">
+                  In Inventory: <span id="sfShopShovelCount">1</span> 🪏 Owned &bull; Clears Dead Crops
                 </div>
               </div>
             </div>

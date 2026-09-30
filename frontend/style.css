@@ -1967,274 +1967,42 @@ div[id^="page"].active {
   transform: scale(0.98);
 }
 
-/* ==========================================================================
-   NAVRATRI FESTIVAL (GARBA / DANDIYA / DIYA / RANGOLI) THEME SYSTEM
-   ========================================================================== */
-
-:root {
-  /* Navratri Auspicious Spectrum */
-  --nav-marigold: #ff7700;
-  --nav-marigold-light: #ffaa00;
-  --nav-gold: #ffbe0b;
-  --nav-gold-glow: rgba(255, 190, 11, 0.6);
-  --nav-kumkum: #e63946;
-  --nav-kumkum-glow: rgba(230, 57, 70, 0.55);
-  --nav-peacock: #00b4d8;
-  --nav-emerald: #10b981;
-  --nav-saffron: #f77f00;
-  --nav-mirror-border: rgba(255, 240, 180, 0.45);
-}
-
-/* --- Hanging Navratri Temple Door Toran Garland (Bandhanwar) --- */
-.navratri-toran {
-  position: absolute;
-  bottom: -30px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 36px;
-  pointer-events: none;
-  z-index: 105;
-  overflow: visible;
-  display: block;
-}
-
-.toran-door-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 4px rgba(245, 158, 11, 0.45));
-  animation: toranDoorBreeze 4.2s ease-in-out infinite alternate;
-  transform-origin: 50% 0%;
-}
-
-@keyframes toranDoorBreeze {
-  0% { transform: rotate(-0.6deg) translateY(0); }
-  50% { transform: rotate(0.5deg) translateY(-0.5px); }
-  100% { transform: rotate(-0.4deg) translateY(0); }
-}
-
-/* --- Heading Navratri Badges & Strips (Removed on User Request) --- */
-.navratri-header-badge,
-.navratri-festive-strip,
-.shop-hot-badge {
-  display: none !important;
-}
-
-.diya-icon-spin {
-  display: inline-block;
-  animation: diyaFlameFlicker 1.8s ease-in-out infinite;
-}
-
-@keyframes diyaFlameFlicker {
-  0%, 100% { transform: scale(1) rotate(-1deg); filter: drop-shadow(0 0 4px #fbbf24); }
-  50% { transform: scale(1.18, 0.92) rotate(2deg); filter: drop-shadow(0 0 8px #f59e0b); }
-}
-
-/* --- Navratri Festive Makeover for Floating Bottom Navigation --- */
-.bottom-nav {
-  border: 1.5px solid rgba(251, 191, 36, 0.55) !important;
-  background: linear-gradient(180deg, rgba(28, 18, 54, 0.98) 0%, rgba(12, 8, 28, 0.99) 100%) !important;
-  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto !important;
-  width: calc(100% - 24px) !important;
-  max-width: 420px !important;
-  justify-content: center !important;
-  gap: 14px !important;
-  box-shadow: 
-    inset 0 1.5px 0 rgba(255, 230, 160, 0.35),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.6),
-    0 6px 0 rgba(10, 5, 22, 0.9),
-    0 16px 36px rgba(0, 0, 0, 0.8),
-    0 0 24px rgba(245, 158, 11, 0.35) !important;
-}
-
-/* Festive mirror-work top studs along bottom navigation */
-.bottom-nav::before {
-  content: '';
-  position: absolute;
-  top: -3.5px;
-  left: 24px;
-  right: 24px;
-  height: 5px;
-  background: radial-gradient(circle, #fde047 35%, #b45309 80%, transparent 85%);
-  background-size: 20px 5px;
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-/* Hide global bottom-nav when Sunflower Tycoon game page is active */
-#pageSunflower.active ~ .bottom-nav,
-body.page-sunflower-active .bottom-nav {
-  display: none !important;
-}
-
-/* Individual Bottom Nav Tab Buttons with Dandiya & Festive Accent */
-.nav-tab-btn {
-  color: #94a3b8;
-}
-
-.nav-tab-btn .tab-festive-tag {
-  display: none !important;
-}
-
-.nav-tab-btn .tab-dandiya-sub {
-  display: none !important;
-}
-
-.nav-tab-btn.active {
-  color: #fde047 !important;
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.32) 0%, rgba(225, 29, 72, 0.18) 100%) !important;
-  border: 1.5px solid rgba(251, 191, 36, 0.75) !important;
-  box-shadow: 
-    inset 0 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
-    0 3px 0 rgba(180, 83, 9, 0.7),
-    0 0 18px rgba(245, 158, 11, 0.6) !important;
-}
-
-/* Center Home Button Transformed into Radiant Navratri Sacred Garbi / Diya */
-.home-center-btn.active {
-  background: radial-gradient(circle at 35% 30%, #fef08a 0%, #f59e0b 38%, #e11d48 80%, #9f1239 100%) !important;
-  border: 2.5px solid #fde047 !important;
-  box-shadow: 
-    inset 0 3px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -3.5px 0 rgba(0, 0, 0, 0.6),
-    0 6px 0 #9f1239,
-    0 12px 28px rgba(0, 0, 0, 0.75),
-    0 0 32px rgba(245, 158, 11, 0.85),
-    0 0 16px rgba(225, 29, 72, 0.6) !important;
-}
-
-.home-center-btn.active .home-btn-glow {
-  display: block !important;
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(253, 224, 71, 0.75);
-  animation: mandalaSpinSlow 16s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes mandalaSpinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* --- Floating Navratri Marigold Petals Background Particles --- */
-.navratri-petals-container {
+/* Bottom Modal Sheet Styles (Guaranteed Default Hidden State) */
+.modal-backdrop {
   position: fixed;
   inset: 0;
+  background: rgba(4, 9, 25, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none !important;
+  align-items: flex-end;
+  opacity: 0;
   pointer-events: none;
-  z-index: 4;
-  overflow: hidden;
+  transition: opacity 0.3s ease;
 }
 
-.marigold-petal {
-  position: absolute;
-  width: 10px;
-  height: 14px;
-  background: radial-gradient(ellipse at 30% 30%, #fde047 0%, #f59e0b 60%, #ea580c 100%);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  opacity: 0.65;
-  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
-  animation: petalFall linear infinite;
+.modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
-@keyframes petalFall {
-  0% {
-    transform: translateY(-20px) rotate(0deg) translateX(0);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.75;
-  }
-  85% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(105vh) rotate(380deg) translateX(40px);
-    opacity: 0;
-  }
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #0b1329;
+  border-top: 1.5px solid rgba(0, 240, 255, 0.3);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 20px 24px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
 }
 
-/* --- Traditional Gujarati Abhla (Mirror-Work) Card Styling --- */
-.stat-card, .reactor-card, .profile-card, .shop-category-card {
-  border-color: rgba(251, 191, 36, 0.3) !important;
-}
-
-.stat-card::after, .reactor-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.8), rgba(225, 29, 72, 0.8), transparent);
-  pointer-events: none;
-}
-
-/* Rangoli Mandala Ring around Reactor Orb */
-.orb-mandala-ring {
-  position: absolute;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  border: 2px dashed rgba(251, 191, 36, 0.55);
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), inset 0 0 15px rgba(225, 29, 72, 0.25);
-  animation: mandalaSpinSlow 24s linear infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.orb-mandala-ring-inner {
-  position: absolute;
-  width: 215px;
-  height: 215px;
-  border-radius: 50%;
-  border: 1.5px dotted rgba(254, 240, 138, 0.65);
-  animation: mandalaSpinSlow 14s linear infinite reverse;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Flanking Diya Lamps around Tap Orb */
-.orb-diya-lamp {
-  position: absolute;
-  bottom: -4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 6;
-  pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.85)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
-}
-
-.orb-diya-left { left: 14px; }
-.orb-diya-right { right: 14px; }
-
-.diya-flame {
-  width: 12px;
-  height: 18px;
-  background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #fef08a 25%, #f59e0b 60%, #dc2626 85%, transparent 100%);
-  border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
-  animation: diyaFlameFlicker 1.4s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px #fde047) drop-shadow(0 0 10px #f97316);
-  transform-origin: 50% 90%;
-}
-
-.diya-base {
-  width: 26px;
-  height: 11px;
-  background: radial-gradient(ellipse at 50% 25%, #fef08a 0%, #d97706 45%, #78350f 85%, #351203 100%);
-  border-radius: 2px 2px 14px 14px;
-  border: 1.2px solid #fde047;
-  box-shadow: 
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.7),
-    0 3px 0 #451a03,
-    0 4px 8px rgba(0, 0, 0, 0.7);
-  margin-top: -3px;
+.modal-backdrop.open .modal-sheet {
+  transform: translateY(0);
 }
 
 /* ==========================================================================
@@ -3152,13 +2920,13 @@ body.page-sunflower-active .bottom-nav {
   100% { transform: scale(1.08); opacity: 1; }
 }
 
-/* 3D Hyper-Realistic Navratri Royal Dandiya Tap Orb */
+/* 3D Hyper-Realistic Quantum Energy Tap Orb */
 .reactor-orb {
   position: relative;
   width: clamp(170px, 46vw, 210px);
   height: clamp(170px, 46vw, 210px);
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 22%, #ffffff 0%, #fef08a 12%, #f59e0b 28%, #e11d48 55%, #881337 78%, #35040f 100%);
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #67e8f9 16%, #00f0ff 36%, #0284c7 62%, #0369a1 82%, #082f49 100%);
   border: none;
   cursor: pointer;
   outline: none;
@@ -3166,13 +2934,13 @@ body.page-sunflower-active .bottom-nav {
   align-items: center;
   justify-content: center;
   box-shadow: 
-    0 0 0 4px #fde047,
-    0 0 0 9px rgba(225, 29, 72, 0.65),
-    0 12px 0 #4c0519,
+    0 0 0 4px #00f0ff,
+    0 0 0 9px rgba(0, 240, 255, 0.45),
+    0 12px 0 #082f49,
     0 20px 42px rgba(0, 0, 0, 0.9),
-    0 0 55px rgba(245, 158, 11, 0.75),
-    0 0 95px rgba(225, 29, 72, 0.5),
-    inset 0 8px 20px rgba(255, 255, 255, 0.85),
+    0 0 55px rgba(0, 240, 255, 0.65),
+    0 0 95px rgba(2, 132, 199, 0.45),
+    inset 0 8px 20px rgba(255, 255, 255, 0.9),
     inset 0 -14px 30px rgba(0, 0, 0, 0.95);
   transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.1s ease;
   z-index: 5;
@@ -3182,12 +2950,12 @@ body.page-sunflower-active .bottom-nav {
 .reactor-orb:active, .reactor-orb.tapped {
   transform: scale(0.93) translateY(8px);
   box-shadow: 
-    0 0 0 5px #fef08a,
-    0 0 0 11px rgba(225, 29, 72, 0.85),
-    0 4px 0 #4c0519,
+    0 0 0 5px #a5f3fc,
+    0 0 0 11px rgba(0, 240, 255, 0.8),
+    0 4px 0 #082f49,
     0 8px 22px rgba(0, 0, 0, 0.85),
-    0 0 90px rgba(245, 158, 11, 1),
-    0 0 130px rgba(225, 29, 72, 0.9),
+    0 0 90px rgba(0, 240, 255, 0.95),
+    0 0 130px rgba(2, 132, 199, 0.8),
     inset 0 10px 32px rgba(255, 255, 255, 1);
 }
 
@@ -3195,15 +2963,10 @@ body.page-sunflower-active .bottom-nav {
   position: absolute;
   inset: -9px;
   border-radius: 50%;
-  border: 2px dashed rgba(254, 240, 138, 0.75);
+  border: 2px dashed rgba(56, 189, 248, 0.75);
   pointer-events: none;
   animation: spinElectricRing 12s linear infinite;
-  box-shadow: 0 0 22px rgba(245, 158, 11, 0.5);
-}
-
-@keyframes spinElectricRing {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.5);
 }
 
 .orb-inner-gloss {
@@ -3224,22 +2987,8 @@ body.page-sunflower-active .bottom-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 32px rgba(245, 158, 11, 0.8));
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 32px rgba(0, 240, 255, 0.85));
   pointer-events: none;
-}
-
-/* Royal Crossed Dandiya Sticks Vector Artwork */
-.orb-dandiya-art {
-  width: clamp(105px, 30vw, 138px);
-  height: clamp(105px, 30vw, 138px);
-  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  filter: drop-shadow(0 0 10px rgba(253, 224, 71, 0.7)) drop-shadow(0 0 22px rgba(225, 29, 72, 0.5));
-}
-
-.reactor-orb:active .orb-dandiya-art,
-.reactor-orb.tapped .orb-dandiya-art {
-  transform: scale(1.14) rotate(5deg);
-  filter: drop-shadow(0 0 18px rgba(253, 224, 71, 1)) drop-shadow(0 0 35px rgba(245, 158, 11, 0.9));
 }
 
 .orb-lightning-bolt {
@@ -3247,10 +2996,10 @@ body.page-sunflower-active .bottom-nav {
   width: clamp(65px, 18vw, 85px);
   height: clamp(65px, 18vw, 85px);
   transition: transform 0.1s ease;
-  filter: drop-shadow(0 0 8px #ffffff);
+  filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px #38bdf8);
 }
 
-.reactor-orb:active .orb-lightning-bolt { transform: scale(1.12); }
+.reactor-orb:active .orb-lightning-bolt { transform: scale(1.14); }
 
 /* Royal Navratri Tap Button Blue Coin Win Badge (Hidden/Removed) */
 .orb-blue-coin-win-badge {
@@ -5094,6 +4843,241 @@ body.page-sunflower-active .bottom-nav {
   font-size: 9.5px;
   color: #cbd5e1;
 }
+
+/* ==========================================================================
+   DIAMOND GENERATOR DIRECT IN-HOME MODULE
+   ========================================================================== */
+.diamond-generator-home-section {
+  position: relative;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(9, 14, 28, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.3);
+  border-radius: 24px;
+  padding: 16px 14px 20px 14px;
+  margin-top: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 24px rgba(0, 240, 255, 0.1);
+  overflow: hidden;
+}
+
+.dgh-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dgh-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dgh-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDotAnim 1.5s infinite;
+}
+
+.dgh-main-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f0fdfa;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.dgh-rate-pill {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.dgh-center-wrapper {
+  margin: 10px auto;
+}
+
+.dgh-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+.dgh-upgrades-console {
+  background: rgba(10, 16, 32, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 10px;
+}
+
+.dgh-upgrades-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (min-width: 480px) {
+  .dgh-upgrades-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dgh-footer-action {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.dgh-full-view-btn {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  color: #cbd5e1;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.dgh-full-view-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+/* Minimal Diamond Generator Home Showcase Card */
+.diamond-generator-home-section {
+  position: relative;
+  background: linear-gradient(180deg, rgba(8, 20, 42, 0.95) 0%, rgba(4, 10, 24, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.35);
+  border-radius: 20px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dgh-card-glow {
+  position: absolute;
+  top: -20px;
+  left: 20%;
+  width: 180px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  filter: blur(16px);
+  pointer-events: none;
+}
+
+.dgh-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dgh-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dgh-gem-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.8));
+}
+
+.dgh-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dgh-main-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #e0f2fe;
+  letter-spacing: 0.8px;
+}
+
+.dgh-rate-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.dgh-status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.dgh-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dgh-start-btn {
+  padding: 10px !important;
+  font-size: 11px !important;
+  border-radius: 10px !important;
+}
+
+.dgh-open-console-btn {
+  padding: 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.dgh-open-console-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.dgh-open-console-btn:active {
+  transform: scale(0.96);
+}
+
 
 
 /* --- PAGE: ENERGY --- */
@@ -20786,7 +20770,7 @@ body.page-sunflower-active .bottom-nav {
    ========================================================================== */
 
 #pageMemoryMatch {
-  padding: 12px 14px 90px 14px;
+  padding: 8px 10px 80px 10px;
   min-height: 100%;
   box-sizing: border-box;
   overflow-y: auto !important;
@@ -20813,11 +20797,11 @@ body.page-sunflower-active .bottom-nav {
   position: relative;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 14, 28, 0.98) 100%);
   border: 1px solid rgba(0, 240, 255, 0.25);
-  border-radius: 20px;
-  padding: 16px 12px;
+  border-radius: 16px;
+  padding: 10px 10px 12px 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .memory-ambient-glow {
@@ -20837,23 +20821,23 @@ body.page-sunflower-active .bottom-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .memory-hud-pill {
   flex: 1;
   background: rgba(15, 23, 42, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 6px 8px;
+  border-radius: 10px;
+  padding: 5px 6px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .memory-hud-pill .hud-icon {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .memory-hud-pill .hud-data {
@@ -20862,14 +20846,15 @@ body.page-sunflower-active .bottom-nav {
 }
 
 .memory-hud-pill .hud-label {
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 700;
   color: #94a3b8;
   letter-spacing: 0.5px;
+  font-family: 'Rajdhani', sans-serif;
 }
 
 .memory-hud-pill .hud-val {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   color: #ffffff;
   font-family: 'JetBrains Mono', monospace;
@@ -20879,14 +20864,14 @@ body.page-sunflower-active .bottom-nav {
   color: #38bdf8;
 }
 
-/* 4x4 Grid */
+/* 4x4 Grid - perfectly constrained to fit within viewport */
 .memory-grid-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  max-width: 380px;
+  max-width: min(340px, 48vh);
   margin: 0 auto;
   aspect-ratio: 1 / 1;
   perspective: 1000px;
@@ -20920,7 +20905,7 @@ body.page-sunflower-active .bottom-nav {
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20981,20 +20966,22 @@ body.page-sunflower-active .bottom-nav {
 
 /* Controls */
 .memory-controls-bar {
-  margin-top: 14px;
+  margin-top: 8px;
   display: flex;
   justify-content: center;
 }
 
 .memory-action-btn {
   width: 100%;
-  padding: 12px;
+  padding: 10px 12px;
   background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  border-radius: 12px;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -22505,6 +22492,47 @@ body.page-sunflower-active .bottom-nav {
   padding: 4px 7px;
   cursor: pointer;
   font-size: 12px;
+}
+
+/* Start Water Collection Button */
+.sf-start-water-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sf-start-water-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.6);
+}
+
+.sf-start-water-btn:active {
+  transform: scale(0.96);
+}
+
+.sf-start-water-btn.collecting {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: rgba(52, 211, 153, 0.6);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+  animation: pulseWaterCollecting 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseWaterCollecting {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.03); opacity: 0.88; }
 }
 
 /* ==========================================================================
@@ -24316,19 +24344,21 @@ body.page-beefarm-active .bee-bottom-menu-bar {
 
 /* --- PAGE: DIAMOND-GENERATOR --- */
 /* ==========================================================================
-   QUANTUM DIAMOND GENERATOR DEDICATED PAGE VIEW (pages/diamond-generator/diamond-generator.css)
+   QUANTUM DIAMOND GENERATOR - SLEEK GAME STYLES (diamond-generator.css)
    ========================================================================== */
 
 #pageDiamondGenerator {
-  background: radial-gradient(circle at 50% 15%, #081b33 0%, #030a16 65%, #01040a 100%);
-  min-height: 100vh;
+  background: radial-gradient(circle at 50% 10%, #07162c 0%, #030814 65%, #01040a 100%);
+  min-height: 100%;
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: 90px;
 }
 
-/* Sticky Top Bar */
-.dg-sticky-header-bar {
+/* Minimal Sticky Header */
+.dg-header-bar {
   position: sticky;
   top: 0;
   z-index: 50;
@@ -24336,624 +24366,538 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 12px;
-  background: rgba(3, 10, 22, 0.88);
+  padding: 10px 14px;
+  background: rgba(3, 8, 20, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
 }
 
-.dg-sticky-left {
+.dg-header-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.dg-sticky-back-btn {
+.dg-back-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  border: 1px solid rgba(0, 240, 255, 0.4);
   color: #38bdf8;
-  font-size: 16px;
-  font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.dg-sticky-back-btn:active {
+.dg-back-btn:active {
   transform: scale(0.92);
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(0, 240, 255, 0.2);
 }
 
-.dg-sticky-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.dg-sticky-title-icon {
-  font-size: 18px;
-  filter: drop-shadow(0 0 8px #00f0ff);
-}
-
-.dg-sticky-title-text {
+.dg-title {
   font-size: 13px;
   font-weight: 800;
+  letter-spacing: 0.8px;
   color: #e0f2fe;
-  letter-spacing: 0.5px;
 }
 
-.dg-sticky-resources {
+.dg-resources {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
-.dg-hdr-pill {
+.dg-pill {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
   border-radius: 99px;
-  font-size: 10.5px;
-  background: rgba(15, 23, 42, 0.8);
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(10, 18, 36, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.dg-hdr-pill.pill-cyan {
-  border-color: rgba(56, 189, 248, 0.4);
+.dg-pill.cyan {
+  border-color: rgba(0, 240, 255, 0.45);
   color: #38bdf8;
 }
 
-.dg-hdr-pill.pill-gold {
-  border-color: rgba(245, 158, 11, 0.4);
+.dg-pill.gold {
+  border-color: rgba(245, 158, 11, 0.45);
   color: #fbbf24;
 }
 
-.dg-hdr-pill.pill-blue {
-  border-color: rgba(59, 130, 246, 0.4);
-  color: #60a5fa;
+.dg-pill.sky {
+  border-color: rgba(14, 165, 233, 0.45);
+  color: #7dd3fc;
 }
 
-.dg-sound-toggle-btn {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #e2e8f0;
-  border-radius: 8px;
-  width: 28px;
-  height: 28px;
+/* Main Container */
+.dg-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-/* Page Container */
-.diamond-generator-page-container {
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px 14px;
   max-width: 480px;
   margin: 0 auto;
-  padding: 12px 14px;
-  gap: 16px;
 }
 
-/* Hero Stage */
-.dg-hero-stage {
+/* Stage Card */
+.dg-stage-card {
   position: relative;
+  background: linear-gradient(180deg, rgba(10, 20, 42, 0.95) 0%, rgba(4, 9, 24, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.35);
   border-radius: 20px;
-  padding: 16px 14px;
-  background: linear-gradient(180deg, rgba(8, 25, 48, 0.75) 0%, rgba(3, 10, 22, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  padding: 14px 12px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
-.dg-stage-backdrop-glow {
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 280px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, rgba(192, 132, 252, 0.1) 50%, transparent 75%);
-  pointer-events: none;
-  filter: blur(25px);
-}
-
-.dg-stage-header {
-  width: 100%;
+.dg-stage-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
-  z-index: 2;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
-.dg-badge-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.dg-status-tag {
   font-family: 'Orbitron', monospace;
-  font-size: 9px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  letter-spacing: 0.5px;
+}
+
+.dg-status-tag.active {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: rgba(0, 240, 255, 0.6);
+  color: #38bdf8;
+  animation: pulseStatus 1.5s infinite;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.dg-rate-tag {
+  font-size: 11px;
   font-weight: 800;
   color: #38bdf8;
-  letter-spacing: 0.8px;
+  background: rgba(2, 132, 199, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
-.dg-pulse-indicator {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #00f0ff;
-  box-shadow: 0 0 8px #00f0ff;
-  animation: dgPulse 1.6s infinite ease-in-out;
-}
-
-@keyframes dgPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.3); }
-}
-
-.dg-rate-pill {
-  padding: 3px 9px;
-  border-radius: 99px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 700;
-  color: #a5f3fc;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
-}
-
-/* Diamond Generator Core Wrapper */
-.diamond-generator-wrapper {
+/* Hologram Node */
+.dg-core-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
+  margin: 6px auto 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px auto 14px auto;
 }
 
-.diamond-gen-aura {
+.dg-aura {
   position: absolute;
-  width: 170px;
-  height: 170px;
+  inset: -10px;
   border-radius: 50%;
-  pointer-events: none;
-  filter: blur(22px);
-}
-
-.diamond-gen-aura.aura-cyan {
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, transparent 70%);
-  animation: auraPulseCyan 3s infinite alternate ease-in-out;
-}
-
-.diamond-gen-aura.aura-violet {
-  background: radial-gradient(circle, rgba(192, 132, 252, 0.25) 0%, transparent 70%);
-  animation: auraPulseViolet 4s infinite alternate-reverse ease-in-out;
-}
-
-@keyframes auraPulseCyan {
-  0% { transform: scale(0.9); opacity: 0.6; }
-  100% { transform: scale(1.15); opacity: 1; }
-}
-
-@keyframes auraPulseViolet {
-  0% { transform: scale(1.1); opacity: 0.5; }
-  100% { transform: scale(0.9); opacity: 0.85; }
-}
-
-/* Outer Rotating Quantum Tech Rings */
-.diamond-quantum-ring {
-  position: absolute;
-  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, rgba(139, 92, 246, 0.1) 50%, transparent 75%);
+  filter: blur(12px);
   pointer-events: none;
 }
 
-.diamond-quantum-ring.ring-outer {
-  width: 172px;
-  height: 172px;
-  border: 1.5px dashed rgba(56, 189, 248, 0.35);
-  animation: spinClockwise 30s linear infinite;
-}
-
-.diamond-quantum-ring.ring-inner {
-  width: 154px;
-  height: 154px;
-  border: 1px dotted rgba(192, 132, 252, 0.4);
-  animation: spinCounterClockwise 20s linear infinite;
-}
-
-@keyframes spinClockwise { to { transform: rotate(360deg); } }
-@keyframes spinCounterClockwise { to { transform: rotate(-360deg); } }
-
-/* Circular SVG Progress Ring */
-.diamond-progress-svg {
+.dg-ring-svg {
   position: absolute;
-  width: 172px;
-  height: 172px;
+  inset: 0;
+  width: 160px;
+  height: 160px;
   transform: rotate(-90deg);
   pointer-events: none;
 }
 
-.diamond-ring-track {
+.dg-ring-track {
   fill: none;
-  stroke: rgba(15, 23, 42, 0.7);
-  stroke-width: 5;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 6;
 }
 
-.diamond-ring-fill {
+.dg-ring-fill {
   fill: none;
-  stroke: url(#diamondRingGrad);
-  stroke-width: 5;
+  stroke: url(#dFacetCenter);
+  stroke: #00f0ff;
+  stroke-width: 6;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.12s linear;
-  filter: url(#diamondRingGlow);
+  transition: stroke-dashoffset 0.1s linear;
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.8));
 }
 
-/* Central 3D Crystal Node */
 .diamond-crystal-node {
   position: relative;
-  width: 122px;
-  height: 122px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #1e293b 0%, #090f1d 75%, #020617 100%);
-  border: 2px solid rgba(56, 189, 248, 0.5);
+  background: radial-gradient(circle at 50% 40%, rgba(15, 30, 60, 0.9) 0%, rgba(5, 12, 28, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    inset 0 2px 6px rgba(255, 255, 255, 0.25),
-    inset 0 -4px 10px rgba(0, 0, 0, 0.8),
-    0 0 24px rgba(0, 240, 255, 0.45);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.diamond-crystal-node:active {
-  transform: scale(0.96);
-  box-shadow: 0 0 32px rgba(0, 240, 255, 0.75);
+  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.2), 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .diamond-core-art {
-  width: 60px;
-  height: 60px;
-  filter: drop-shadow(0 2px 8px rgba(0, 240, 255, 0.5));
+  width: 68px;
+  height: 68px;
+  margin-top: -6px;
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
 }
 
 .diamond-core-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
   margin-top: -2px;
 }
 
 .diamond-countdown-text {
-  font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  font-weight: 800;
-  color: #38bdf8;
-  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
 }
 
 .diamond-rate-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  font-weight: 700;
-  color: #a5f3fc;
-  opacity: 0.9;
-}
-
-/* Coils */
-.orb-diya-lamp {
-  position: absolute;
-  width: 18px;
-  height: 26px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-}
-
-.orb-diya-left { left: -14px; top: 50%; transform: translateY(-50%); }
-.orb-diya-right { right: -14px; top: 50%; transform: translateY(-50%); }
-
-.diya-flame {
-  width: 8px;
-  height: 12px;
-  background: radial-gradient(circle, #00f0ff 0%, #0284c7 60%, transparent 100%);
-  border-radius: 50% 50% 35% 35%;
-  box-shadow: 0 0 8px #00f0ff;
-  animation: coilGlow 1.2s infinite alternate ease-in-out;
-}
-
-.diya-base {
-  width: 14px;
-  height: 6px;
-  background: #334155;
-  border-radius: 3px;
-  margin-top: 1px;
-}
-
-@keyframes coilGlow {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  100% { transform: scale(1.15); opacity: 1; }
-}
-
-/* Quick Metrics Strip */
-.dg-metrics-strip {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 6px;
-  z-index: 2;
-}
-
-.dg-metric-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 4px;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 12px;
-}
-
-.dg-metric-lbl {
-  font-size: 9px;
-  font-weight: 700;
-  color: #94a3b8;
-  margin-bottom: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.dg-metric-val {
-  font-size: 11px;
-  font-weight: 800;
-}
-
-/* Upgrades Console */
-.diamond-upgrades-console {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.dg-section-header {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 2px;
-}
-
-/* Upgrade Card */
-.diamond-upgrade-card {
-  position: relative;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 16, 31, 0.98) 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.28);
-  border-radius: 16px;
-  padding: 12px 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.diamond-upgrade-card.card-output {
-  border-color: rgba(56, 189, 248, 0.35);
-}
-
-.diamond-upgrade-card.card-speed {
-  border-color: rgba(192, 132, 252, 0.35);
-}
-
-.duc-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.duc-title-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.duc-icon {
-  font-size: 20px;
-}
-
-.duc-title {
-  font-family: 'Orbitron', monospace;
-  font-size: 11px;
-  font-weight: 800;
-  color: #f0f9ff;
-  letter-spacing: 0.5px;
-}
-
-.duc-sub {
-  font-family: 'JetBrains Mono', monospace;
   font-size: 9.5px;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
-.duc-level-badge {
-  padding: 3px 9px;
-  border-radius: 99px;
-  background: rgba(2, 132, 199, 0.3);
-  border: 1px solid #38bdf8;
+  font-weight: 700;
   color: #38bdf8;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 800;
 }
 
-.duc-level-badge.duc-badge-speed {
-  background: rgba(147, 51, 234, 0.3);
-  border-color: #c084fc;
-  color: #c084fc;
-}
-
-/* Upgrade Buttons */
-.duc-action-btn {
+/* Start Button */
+.btn-start-diamond-gen {
   position: relative;
   width: 100%;
-  padding: 10px 14px;
+  padding: 13px 16px;
   border-radius: 12px;
-  border: none;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%);
+  border: 1.5px solid #38bdf8;
+  color: #ffffff;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(2, 132, 199, 0.5);
+  transition: all 0.2s ease;
+  overflow: hidden;
 }
 
-.duc-action-btn:active {
+.btn-start-diamond-gen:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.7);
+}
+
+.btn-start-diamond-gen:active {
   transform: scale(0.98);
 }
 
-.btn-upgrade-output {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
-  border: 1px solid #38bdf8;
+.btn-start-diamond-gen.generating-active {
+  background: linear-gradient(135deg, #0369a1 0%, #1e293b 100%);
+  border-color: #00f0ff;
+  opacity: 0.9;
+  cursor: default;
 }
 
-.btn-upgrade-speed {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #4c1d95 100%);
-  border: 1px solid #c084fc;
+/* Upgrades Grid */
+.dg-upgrades-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.btn-text-col {
+.dg-upg-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(9, 14, 28, 0.96) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 16px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
 }
 
-.btn-main-txt {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.3px;
+.dg-upg-card#cardSpeedUpg {
+  border-color: rgba(168, 85, 247, 0.35);
 }
 
-.btn-cost-txt {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #fef08a;
-}
-
-/* Cost Reducer Sub-Box */
-.duc-cost-reducer-box {
-  background: rgba(10, 15, 29, 0.85);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.duc-reducer-header {
+.dg-upg-hdr {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.duc-reducer-title {
-  font-size: 10px;
-  font-weight: 700;
-  color: #cbd5e1;
-}
-
-.duc-reducer-status {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: #f59e0b;
-}
-
-.duc-reducer-actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-.duc-discount-btn {
+.dg-upg-title-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  transition: all 0.12s ease;
-  text-align: left;
+  gap: 5px;
 }
 
-.duc-discount-btn:active {
-  transform: scale(0.97);
-}
-
-.btn-diamond-discount {
-  border-color: rgba(56, 189, 248, 0.4);
-}
-
-.btn-ad-discount, .btn-speed-ad-discount {
-  border-color: rgba(245, 158, 11, 0.4);
-}
-
-.dd-icon {
+.dg-upg-icon {
   font-size: 15px;
 }
 
-.dd-info {
+.dg-upg-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #e0f2fe;
+}
+
+.dg-level-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(2, 132, 199, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.dg-level-tag.speed {
+  color: #c084fc;
+  background: rgba(147, 51, 234, 0.2);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.dg-upg-sub {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.dg-btn-upg {
+  width: 100%;
+  padding: 8px 6px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.3) 0%, rgba(3, 105, 161, 0.5) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s ease;
 }
 
-.dd-title {
+.dg-btn-upg:active {
+  transform: scale(0.96);
+}
+
+.dg-btn-upg.speed {
+  background: linear-gradient(135deg, rgba(126, 34, 206, 0.3) 0%, rgba(147, 51, 234, 0.5) 100%);
+  border-color: rgba(192, 132, 252, 0.5);
+}
+
+.dg-btn-upg span:first-child {
   font-size: 9.5px;
-  font-weight: 700;
-  color: #f8fafc;
+  font-weight: 800;
 }
 
-.dd-benefit {
-  font-size: 8px;
-  font-weight: 600;
+.dg-btn-cost {
+  font-size: 11px;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+.dg-btn-upg.speed .dg-btn-cost {
+  color: #67e8f9;
+}
+
+.dg-btn-upg.locked {
+  opacity: 0.6;
+  border-color: #ef4444;
+  cursor: not-allowed;
+}
+
+/* Cost Reducer Segmented Tab */
+.dg-cost-reducer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dg-cost-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(10, 18, 36, 0.85);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dg-tab-opt {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dg-tab-opt.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+}
+
+.dg-tab-panel {
+  display: none;
+}
+
+.dg-tab-panel.active {
+  display: block;
+}
+
+.dg-reducer-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 14, 28, 0.98) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.dg-reducer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dg-reducer-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #e0f2fe;
+}
+
+.dg-reducer-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.dg-reducer-badge.speed {
   color: #38bdf8;
+  background: rgba(2, 132, 199, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
 }
 
-.btn-speed-ad-discount {
-  grid-column: span 2;
+/* Watch Ad Button */
+.dg-ad-btn {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.35) 100%);
+  border: 1.5px solid #10b981;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
 }
 
-.duc-applied-discount-note {
-  font-size: 9px;
-  font-weight: 700;
-  color: #34d399;
-  text-align: center;
+.dg-ad-btn:active {
+  transform: scale(0.98);
+}
+
+.dg-ad-btn.speed {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.2) 0%, rgba(3, 105, 161, 0.35) 100%);
+  border-color: #38bdf8;
+}
+
+.dg-ad-btn.cooldown {
+  opacity: 0.6;
+  border-color: #64748b;
+  cursor: not-allowed;
+}
+
+/* Compulsory Milestone Box */
+.dg-milestone-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1.5px dashed #f59e0b;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dg-milestone-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.dg-milestone-btn {
+  width: 100%;
+  padding: 9px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border: 1px solid #fbbf24;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dg-milestone-btn:active {
+  transform: scale(0.97);
+}
+
+.dg-milestone-btn.cooldown {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
