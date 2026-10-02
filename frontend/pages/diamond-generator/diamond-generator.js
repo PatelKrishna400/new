@@ -29,12 +29,10 @@ function formatDiamondDisplay(num) {
 
 // Format Diamond Timer with decimals: e.g. 05:00.0, 04:59.8
 function formatDiamondTimer(seconds) {
-  const s = Math.max(0, Number(seconds) || 0);
-  const mins = Math.floor(s / 60);
-  const remainingSecs = s % 60;
-  const wholeSecs = Math.floor(remainingSecs);
-  const tenths = Math.floor((remainingSecs - wholeSecs) * 10);
-  return `${String(mins).padStart(2, '0')}:${String(wholeSecs).padStart(2, '0')}.${tenths}`;
+  const totalSecs = Math.max(0, Math.ceil(Number(seconds) || 0));
+  const mins = Math.floor(totalSecs / 60);
+  const remainingSecs = totalSecs % 60;
+  return `${String(mins).padStart(2, '0')}:${String(remainingSecs).padStart(2, '0')}`;
 }
 window.formatDiamondTimer = formatDiamondTimer;
 
@@ -546,11 +544,20 @@ function startDiamondGeneratorLoop() {
 
     // STRICT: Only progress if explicitly started with energy!
     if (dg.isRunning && dg.generationStartTime > 0) {
-      const elapsedSeconds = (now - dg.generationStartTime) / 1000;
-      dg.cycleProgress = Math.min(cycleDuration, Math.max(0, elapsedSeconds));
+      const startTime = Number(dg.generationStartTime) || 0;
+      if (startTime <= 0) {
+        dg.isRunning = false;
+        dg.cycleProgress = 0;
+        dg.status = 'ready';
+        updateDiamondGeneratorRealtime();
+        return;
+      }
 
-      if (dg.cycleProgress >= cycleDuration) {
-        // Complete Cycle authoritative & reward to Piggy Bank once
+      const elapsedSeconds = Math.max(0, (now - startTime) / 1000);
+      dg.cycleProgress = Math.min(cycleDuration, elapsedSeconds);
+
+      if (elapsedSeconds >= cycleDuration) {
+        // Complete Cycle authoritative & reward directly to player diamonds
         if (!dg.claimed) {
           dg.claimed = true;
           dg.isRunning = false;
@@ -572,14 +579,14 @@ function startDiamondGeneratorLoop() {
           saveAllState();
           updateDiamondGeneratorUI();
 
-          // Crystal pulse
+          // Crystal pulse animation
           document.querySelectorAll('.diamond-crystal-node').forEach(node => {
             node.classList.add('cycle-complete-pulse');
             setTimeout(() => node.classList.remove('cycle-complete-pulse'), 800);
           });
 
           if (typeof showFloatingToast === 'function') {
-            showFloatingToast(`💎 +${formatDiamondDisplay(outputPerCycle)} Diamond stored in Piggy Bank!`);
+            showFloatingToast(`💎 +${formatDiamondDisplay(outputPerCycle)} Diamond Generated & Stored!`);
           }
           if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
             sfx.playLevelUpSound();
@@ -588,6 +595,7 @@ function startDiamondGeneratorLoop() {
           dg.isRunning = false;
           dg.generationStartTime = 0;
           dg.cycleProgress = 0;
+          dg.status = 'ready';
         }
       }
     }
@@ -596,35 +604,51 @@ function startDiamondGeneratorLoop() {
   }, 100);
 }
 
-// Real-Time Smooth Progress Updates
+// Real-Time Smooth Progress Updates (Second-by-second clean countdown + linear progress)
 function updateDiamondGeneratorRealtime() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
 
   const cycleDuration = getDiamondCycleDuration();
-  const currentProgress = dg.cycleProgress || 0;
-  const remainingSeconds = dg.isRunning ? Math.max(0, cycleDuration - currentProgress) : cycleDuration;
-  const percent = dg.isRunning ? Math.min(100, Math.max(0, (currentProgress / cycleDuration) * 100)) : 0;
+  const startTime = Number(dg.generationStartTime) || 0;
+  
+  let remainingSeconds = cycleDuration;
+  let percent = 0;
+
+  if (dg.isRunning && startTime > 0) {
+    const elapsedSeconds = Math.max(0, (Date.now() - startTime) / 1000);
+    remainingSeconds = Math.max(0, cycleDuration - elapsedSeconds);
+    percent = Math.min(100, Math.max(0, (elapsedSeconds / cycleDuration) * 100));
+  } else {
+    remainingSeconds = cycleDuration;
+    percent = 0;
+  }
+
   const currentEnergy = Math.floor(window.gameState?.reactor?.currentEnergy || 0);
 
-  // 1. Countdown Text
+  // Sync sticky live energy badge on top
+  const stickyEnergyEl = document.getElementById('dgStickyEnergy');
+  if (stickyEnergyEl) stickyEnergyEl.textContent = String(currentEnergy);
+
+  // 1. Countdown Text: Clean second-by-second countdown
   const formattedTime = formatDiamondTimer(remainingSeconds);
   document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
     if (el) el.textContent = formattedTime;
   });
 
-  // 2. Circular SVG Progress Ring (Smooth Outer Loading Indicator)
+  // 2. Circular SVG Progress Ring
   const circumference = 439.82;
   const offset = dg.isRunning ? Math.max(0, circumference - (percent / 100) * circumference) : circumference;
   document.querySelectorAll('#diamondProgressRing, .diamond-ring-fill, #diamondProgressRingHome').forEach(ring => {
     if (ring) ring.style.strokeDashoffset = offset.toFixed(2);
   });
-  // Update linear progress bar (zero-jitter smooth loading bar)
-  document.querySelectorAll('#diamondLinearBar, .diamond-linear-fill, #diamondLinearBarHome').forEach(bar => {
+
+  // 3. Linear Loading Progress Bar
+  document.querySelectorAll('#diamondLinearBar, .diamond-linear-fill, #diamondLinearBarHome, .dg-progress-bar-fill').forEach(bar => {
     if (bar) bar.style.width = `${percent.toFixed(2)}%`;
   });
 
-  // 3. Status Badge State Display (Ready, Generating, Completed, Not Enough Energy)
+  // 4. Status Badge State Display (Ready, Generating, Completed, Not Enough Energy)
   const statusBadge = document.getElementById('dgStatusBadge');
   if (statusBadge) {
     statusBadge.className = 'dg-status-tag';
@@ -643,7 +667,7 @@ function updateDiamondGeneratorRealtime() {
     }
   }
 
-  // 4. Start Generation Button
+  // 5. Start Generation Button: Strict 100 Energy per diamond generated
   const startBtnText = document.getElementById('btnStartDiamondGenText');
   const startBtn = document.getElementById('btnStartDiamondGen');
   if (startBtn) {
@@ -676,7 +700,7 @@ function updateDiamondGeneratorRealtime() {
     }
   });
 
-  // 5. Cooldowns on Ad Buttons
+  // 6. Cooldowns on Ad Buttons
   const now = Date.now();
   const powerCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastPowerAdTime || 0))) / 1000));
   const speedCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastSpeedAdTime || 0))) / 1000));

@@ -900,7 +900,7 @@ function saveNewPlayerToFirebase(event) {
       scratchCards: cards,
       chestTickets: tickets,
       eggs: eggs,
-      currentEnergy: 1000,
+      currentEnergy: 0,
       maxEnergy: 1000,
       tapPower: 1,
       energyTaps: 0,
@@ -910,7 +910,7 @@ function saveNewPlayerToFirebase(event) {
       lastActive: new Date().toISOString()
     },
     reactor: {
-      currentEnergy: 1000,
+      currentEnergy: 0,
       maxEnergy: 1000,
       tapPower: 1,
       energyTaps: 0

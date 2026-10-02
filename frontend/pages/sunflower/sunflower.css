@@ -1264,14 +1264,15 @@ body.page-sunflower-active .bottom-nav {
 
 .sf-bottom-menu-bar {
   display: none;
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(64px + max(0px, env(safe-area-inset-bottom)));
-  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
-  width: calc(100% - 24px);
-  max-width: 420px;
+  position: fixed !important;
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  height: 64px !important;
+  margin: 0 !important;
+  width: calc(100% - 24px) !important;
+  max-width: 420px !important;
   background: #ffffff !important;
   border: 2px solid #f59e0b !important;
   border-radius: 32px;
@@ -1281,13 +1282,15 @@ body.page-sunflower-active .bottom-nav {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 
-    0 8px 24px rgba(245, 158, 11, 0.28),
-    0 2px 6px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(245, 158, 11, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 #ffffff;
-  z-index: 120;
+  z-index: 9999 !important;
   flex-shrink: 0;
 }
 
+#pageSunflower.active .sf-bottom-menu-bar,
+#pageSunflower.active #sfBottomMenuBar,
 #pageSunflower.active ~ .sf-bottom-menu-bar,
 #pageSunflower.active ~ #sfBottomMenuBar,
 body.page-sunflower-active .sf-bottom-menu-bar,
@@ -1295,7 +1298,10 @@ body.page-sunflower-active #sfBottomMenuBar {
   display: flex !important;
 }
 
-/* Festive yellow studs along Sunflower bottom navigation */
+.sunflower-tycoon-container {
+  padding-bottom: 96px !important;
+}
+
 .sf-bottom-menu-bar::before {
   content: '';
   position: absolute;
