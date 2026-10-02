@@ -4645,58 +4645,92 @@
           <!-- ============================================================== -->
           <!-- SF PAGE 5: ⚡ SOLAR CONVERTER (100 COINS = 29⚡)                -->
           <!-- ============================================================== -->
-          <section id="sfPage5" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-yellow-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
-              <div class="flex items-center gap-2.5">
-                <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
-                <div>
-                  <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
-                    <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
-                    <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
-                  </h2>
-                  <p class="text-[10px] text-stone-300">
-                    Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
-                  </p>
+          <!-- SF PAGE 5: 🔋 SUNFLOWER FUEL & ENERGY EXCHANGE                  -->
+          <!-- ============================================================== -->
+          <section id="sfPage5" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <!-- Exchange Header Switcher: Fuel Cells Shop vs Solar Converter -->
+            <div class="sf-exchange-tabs-nav flex items-center gap-2 p-1 bg-stone-950/80 rounded-xl border border-amber-500/40">
+              <button class="sf-exchange-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 active" id="sfExchTabFuel" onclick="switchSunflowerExchangeSubtab('fuel')">
+                <span>🔋</span>
+                <span>Fuel Cells Shop</span>
+              </button>
+              <button class="sf-exchange-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5" id="sfExchTabEnergy" onclick="switchSunflowerExchangeSubtab('energy')">
+                <span>⚡</span>
+                <span>Solar Refinery (29⚡)</span>
+              </button>
+            </div>
+      
+            <!-- SUBTAB 1: 🔋 ENERGY FUEL CELL SHOP (Styled exactly after screenshot) -->
+            <div class="flex flex-col gap-3" id="sfExchangeSectionFuel">
+              <!-- Top Section Header Matching Screenshot -->
+              <div class="sf-fuel-shop-header flex items-center justify-between border-b border-cyan-900/40 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🔋</span>
+                  <h3 class="text-xs sm:text-sm font-black text-cyan-300 tracking-tight">Energy Fuel Cell Shop</h3>
                 </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 border border-cyan-500/40 px-2 py-0.5 rounded">ENERGY GENERATORS</span>
+              </div>
+      
+              <!-- 10 Fuel Cells List Container -->
+              <div class="fuel-shop-vertical-list flex flex-col gap-3" id="sfFuelShopCardsList">
+                <!-- Dynamically populated by renderSunflowerFuelShopCards() in sunflower.js -->
               </div>
             </div>
       
-            <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
-              <div class="text-5xl animate-bounce">⚡☀️</div>
-              <div>
-                <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
-                <p class="text-xs text-stone-300 max-w-sm mt-1">
-                  Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
-                </p>
-              </div>
-      
-              <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
-                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                  <span class="text-stone-400 text-[10px] block">Your Coins</span>
-                  <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
-                </div>
-                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                  <span class="text-stone-400 text-[10px] block">Batch Rate</span>
-                  <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
-                </div>
-                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                  <span class="text-stone-400 text-[10px] block">Total Converted</span>
-                  <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
+            <!-- SUBTAB 2: ⚡ SOLAR REFINERY CONVERTER (100 COINS = 29⚡) -->
+            <div class="flex flex-col gap-4 hidden" id="sfExchangeSectionEnergy">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
+                  <div>
+                    <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
+                      <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
+                      <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
+                    </h2>
+                    <p class="text-[10px] text-stone-300">
+                      Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
+                    </p>
+                  </div>
                 </div>
               </div>
       
-              <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
-                <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-                  <span>Throw 100 ☀️</span>
-                  <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
-                </button>
-                <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-                  <span>Throw 1000 ☀️</span>
-                  <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
-                </button>
-                <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
-                  <span>⚡ Throw ALL Available Coins</span>
-                </button>
+              <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
+                <div class="text-5xl animate-bounce">⚡☀️</div>
+                <div>
+                  <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
+                  <p class="text-xs text-stone-300 max-w-sm mt-1">
+                    Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
+                  </p>
+                </div>
+      
+                <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                    <span class="text-stone-400 text-[10px] block">Your Coins</span>
+                    <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
+                  </div>
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                    <span class="text-stone-400 text-[10px] block">Batch Rate</span>
+                    <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
+                  </div>
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                    <span class="text-stone-400 text-[10px] block">Total Converted</span>
+                    <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
+                  </div>
+                </div>
+      
+                <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
+                  <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                    <span>Throw 100 ☀️</span>
+                    <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
+                  </button>
+                  <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                    <span>Throw 1000 ☀️</span>
+                    <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
+                  </button>
+                  <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
+                    <span>⚡ Throw ALL Available Coins</span>
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -4729,10 +4763,10 @@
               <span class="sf-menu-txt">Shop</span>
             </button>
       
-            <!-- Tab 5: Solar to Energy Converter (⚡ 29⚡ Exch) -->
-            <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
-              <div class="sf-menu-ico">⚡</div>
-              <span class="sf-menu-txt">29⚡ Exch</span>
+            <!-- Tab 5: Sunflower Coins Exchange (🔋 Exchange) -->
+            <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Exchange Sunflower Coins for Fuel Cells &amp; Energy">
+              <div class="sf-menu-ico">🔋</div>
+              <span class="sf-menu-txt font-black">Exchange</span>
             </button>
           </nav>
         </div>

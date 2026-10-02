@@ -811,6 +811,7 @@ window.navigateSunflowerPage = function(pageNum) {
   if (pageNum === 1) renderSunflowerPlots();
   if (pageNum === 2) renderSunflowerWells();
   if (pageNum === 4) updateWorkersUI();
+  if (pageNum === 5) renderSunflowerFuelShopCards();
 
   saveSunflowerStateDebounced();
 };
@@ -2709,6 +2710,265 @@ function executeSfCoinToEnergy(amount = 100, event = null) {
   saveSunflowerStateDebounced();
   updateStickyHeaderAndMiniStats();
 }
+
+
+/* ==========================================================================
+   SUNFLOWER FUEL CELL EXCHANGE ENGINE (1 DIAMOND = 1,000 SUNFLOWER COINS)
+   - Matches Energy Fuel Cell Shop Design exactly
+   - Currency: Sunflower Coins (🌻)
+   - Order: Dark Green -> Green -> Yellow -> Orange -> Blue -> Light Blue -> Red -> Dark Red -> Pink -> Purple
+   ========================================================================== */
+const SF_FUEL_EXCHANGE_DATA = [
+  {
+    key: 'darkgreen',
+    name: 'Dark Green Fuel Cell',
+    icon: '🔋',
+    badge: 'STARTER PACK',
+    effect: '+1 Minute generator timer boost',
+    colorHex: '#059669',
+    diamondRef: 20,
+    coinCost: 20000,
+    costLabel: '20,000 COINS'
+  },
+  {
+    key: 'green',
+    name: 'Green Fuel Cell',
+    icon: '🌿',
+    badge: '×1 MULTIPLIER',
+    effect: '+5 Minutes generator timer boost',
+    colorHex: '#10b981',
+    diamondRef: 50,
+    coinCost: 50000,
+    costLabel: '50,000 COINS'
+  },
+  {
+    key: 'yellow',
+    name: 'Yellow Fuel Cell',
+    icon: '⚡',
+    badge: '×1.5 MULTIPLIER',
+    effect: '+15 Minutes generator timer boost',
+    colorHex: '#f59e0b',
+    diamondRef: 100,
+    coinCost: 100000,
+    costLabel: '100,000 COINS'
+  },
+  {
+    key: 'orange',
+    name: 'Orange Fuel Cell',
+    icon: '🔥',
+    badge: '×2.5 MULTIPLIER',
+    effect: '+30 Minutes generator timer boost',
+    colorHex: '#f97316',
+    diamondRef: 200,
+    coinCost: 200000,
+    costLabel: '200,000 COINS'
+  },
+  {
+    key: 'blue',
+    name: 'Blue Fuel Cell',
+    icon: '💙',
+    badge: '30s SKIP',
+    effect: 'Instantly skips 30 seconds of generator timer',
+    colorHex: '#0284c7',
+    diamondRef: 250,
+    coinCost: 250000,
+    costLabel: '250,000 COINS'
+  },
+  {
+    key: 'lightblue',
+    name: 'Light Blue Fuel Cell',
+    icon: '❄️',
+    badge: '1m SKIP',
+    effect: 'Instantly skips 1 minute of generator timer',
+    colorHex: '#06b6d4',
+    diamondRef: 350,
+    coinCost: 350000,
+    costLabel: '350,000 COINS'
+  },
+  {
+    key: 'red',
+    name: 'Red Fuel Cell',
+    icon: '💎',
+    badge: '×5 RATE',
+    effect: '+0.001 EP/Sec rate permanent boost',
+    colorHex: '#ef4444',
+    diamondRef: 500,
+    coinCost: 500000,
+    costLabel: '500,000 COINS'
+  },
+  {
+    key: 'darkred',
+    name: 'Dark Red Fuel Cell',
+    icon: '🔴',
+    badge: '×6.5 TURBO',
+    effect: '30s generator operating at 0.01 EP/s rate',
+    colorHex: '#b91c1c',
+    diamondRef: 750,
+    coinCost: 750000,
+    costLabel: '750,000 COINS'
+  },
+  {
+    key: 'pink',
+    name: 'Pink Boost Fuel',
+    icon: '🌸',
+    badge: '2x TIMER SPEED',
+    effect: '2x generator timer speed (2x drain per sec for 10 min)',
+    colorHex: '#ec4899',
+    diamondRef: 1000,
+    coinCost: 1000000,
+    costLabel: '1.00M COINS'
+  },
+  {
+    key: 'purple',
+    name: 'Purple Boost Fuel',
+    icon: '🔮',
+    badge: '5x TIMER SPEED',
+    effect: '5x generator timer speed (5x drain per sec for 10 min)',
+    colorHex: '#a855f7',
+    diamondRef: 2000,
+    coinCost: 2000000,
+    costLabel: '2.00M COINS'
+  }
+];
+
+window.SF_FUEL_EXCHANGE_DATA = SF_FUEL_EXCHANGE_DATA;
+
+window.switchSunflowerExchangeSubtab = function(subtab) {
+  const fuelSec = document.getElementById('sfExchangeSectionFuel');
+  const energySec = document.getElementById('sfExchangeSectionEnergy');
+  const fuelBtn = document.getElementById('sfExchTabFuel');
+  const energyBtn = document.getElementById('sfExchTabEnergy');
+
+  if (subtab === 'fuel') {
+    if (fuelSec) fuelSec.classList.remove('hidden');
+    if (energySec) energySec.classList.add('hidden');
+    if (fuelBtn) fuelBtn.classList.add('active');
+    if (energyBtn) energyBtn.classList.remove('active');
+    renderSunflowerFuelShopCards();
+  } else {
+    if (fuelSec) fuelSec.classList.add('hidden');
+    if (energySec) energySec.classList.remove('hidden');
+    if (fuelBtn) fuelBtn.classList.remove('active');
+    if (energyBtn) energyBtn.classList.add('active');
+  }
+};
+
+window.renderSunflowerFuelShopCards = function() {
+  const container = document.getElementById('sfFuelShopCardsList');
+  if (!container) return;
+
+  const exchCoinDisplay = document.getElementById('sfExchangeCoinDisplay');
+  if (exchCoinDisplay && typeof sunflowerState !== 'undefined') {
+    exchCoinDisplay.innerText = typeof formatNumber === 'function' ? formatNumber(Math.floor(sunflowerState.coins || 0)) : Math.floor(sunflowerState.coins || 0).toLocaleString();
+  }
+
+  let html = '';
+
+  SF_FUEL_EXCHANGE_DATA.forEach(item => {
+    const ownedCount = (typeof gameState !== 'undefined' && gameState.energyGenerator && gameState.energyGenerator.fuelCells && gameState.energyGenerator.fuelCells[item.key]) || 0;
+    const colorHex = item.colorHex;
+
+    html += `
+      <div class="fuel-shop-card fuel-card-${item.key}" style="border-color: ${colorHex}55; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px ${colorHex}22; background: linear-gradient(180deg, ${colorHex}15 0%, rgba(10, 16, 32, 0.95) 100%);">
+        <div class="fuel-card-header">
+          <div class="fuel-header-left">
+            <div class="fuel-hero-icon" style="background: linear-gradient(135deg, ${colorHex}44, ${colorHex}18); border: 1.5px solid ${colorHex}; color: ${colorHex};">
+              <span>${item.icon}</span>
+            </div>
+            <div>
+              <div class="fuel-hero-title-row">
+                <h4 class="fuel-hero-title" style="color: ${colorHex};">${item.name}</h4>
+                <span class="fuel-hero-multiplier-badge" style="border-color: ${colorHex}66; color: #fff; background: ${colorHex}2b;">${item.badge}</span>
+              </div>
+              <p class="fuel-hero-desc">${item.effect}</p>
+            </div>
+          </div>
+          <div class="fuel-inventory-badge" id="sfFuelOwned_${item.key}" style="border-color: ${colorHex}66; color: ${colorHex};">
+            ${typeof formatNumber === 'function' ? formatNumber(ownedCount) : ownedCount} Cells Owned
+          </div>
+        </div>
+
+        <div class="fuel-pricing-single-wrap">
+          <button type="button" class="fuel-buy-btn fuel-buy-btn-single" onclick="buySunflowerFuelCell('${item.key}', ${item.coinCost})" title="Buy 1 ${item.name} for ${item.costLabel} (1 Diamond = 1,000 Sunflower Coins)">
+            <div class="fuel-single-left">
+              <span class="fuel-btn-icon">🌻</span>
+              <span class="fuel-btn-cost">${item.costLabel}</span>
+            </div>
+            <div class="fuel-single-arrow">➔</div>
+            <div class="fuel-single-gain">
+              <span>+1 Fuel Cell</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+};
+
+window.buySunflowerFuelCell = function(fuelColor, coinCost) {
+  if (typeof sunflowerState === 'undefined') return;
+
+  const currentCoins = sunflowerState.coins || 0;
+  if (currentCoins < coinCost) {
+    if (typeof sunflowerAudio !== 'undefined' && typeof sunflowerAudio.playTone === 'function') {
+      sunflowerAudio.playTone(220, 'sawtooth', 0.15, 0.08);
+    }
+    const needed = (coinCost - currentCoins).toLocaleString();
+    spawnSfFloat(`⚠️ Need ${coinCost.toLocaleString()} 🌻 Coins! (Short ${needed})`, window.innerWidth / 2, window.innerHeight / 2, 'text-red-400 font-black');
+    return;
+  }
+
+  // Deduct coins
+  sunflowerState.coins -= coinCost;
+
+  // Ensure fuelCells structure exists in gameState
+  if (typeof gameState === 'undefined') window.gameState = {};
+  if (!gameState.energyGenerator) gameState.energyGenerator = {};
+  if (!gameState.energyGenerator.fuelCells) {
+    gameState.energyGenerator.fuelCells = {
+      darkgreen: 0, green: 0, yellow: 0, orange: 0,
+      blue: 0, lightblue: 0, red: 0, darkred: 0, pink: 0, purple: 0
+    };
+  }
+
+  // Award 1 Fuel Cell
+  gameState.energyGenerator.fuelCells[fuelColor] = (gameState.energyGenerator.fuelCells[fuelColor] || 0) + 1;
+
+  // Track purchase in fuelPurchases
+  if (!gameState.energyGenerator.fuelPurchases) gameState.energyGenerator.fuelPurchases = {};
+  gameState.energyGenerator.fuelPurchases[fuelColor] = (gameState.energyGenerator.fuelPurchases[fuelColor] || 0) + 1;
+
+  // Audio feedback
+  if (typeof sunflowerAudio !== 'undefined' && typeof sunflowerAudio.playTone === 'function') {
+    sunflowerAudio.playTone(660, 'triangle', 0.12, 0.08);
+    setTimeout(() => sunflowerAudio.playTone(880, 'sine', 0.18, 0.08), 100);
+  }
+
+  // Find item meta
+  const item = SF_FUEL_EXCHANGE_DATA.find(f => f.key === fuelColor);
+  const fuelName = item ? item.name : `${fuelColor} Fuel Cell`;
+
+  // UI Floating notification
+  spawnSfFloat(`+1 ${fuelName} Purchased! 🔋`, window.innerWidth / 2, window.innerHeight / 2 - 30, 'text-emerald-300 font-black text-sm');
+
+  // Update UI stats & cards
+  if (typeof updateStickyHeaderAndMiniStats === 'function') updateStickyHeaderAndMiniStats();
+  renderSunflowerFuelShopCards();
+
+  const convDisplay = document.getElementById('sfConvCoinDisplay');
+  if (convDisplay) {
+    convDisplay.innerText = `${typeof formatNumber === 'function' ? formatNumber(Math.floor(sunflowerState.coins)) : Math.floor(sunflowerState.coins).toLocaleString()} ☀️`;
+  }
+
+  // Save states
+  saveSunflowerStateDebounced();
+  if (typeof saveGameState === 'function') saveGameState();
+  if (typeof window.firebaseSync !== 'undefined' && typeof window.firebaseSync.saveUserData === 'function') {
+    window.firebaseSync.saveUserData();
+  }
+};
 
 /* ==========================================================================
    INITIALIZATION

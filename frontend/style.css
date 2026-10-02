@@ -24177,6 +24177,229 @@ body.page-sunflower-active .sf-bottom-menu-bar {
 }
 
 
+/* ==========================================================================
+   SUNFLOWER FUEL & ENERGY EXCHANGE PAGE STYLES (MATCHING SCREENSHOT)
+   ========================================================================== */
+.sf-exchange-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(12, 18, 30, 0.9);
+  padding: 5px;
+  border-radius: 14px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.sf-exchange-tab-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sf-exchange-tab-btn.active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.2) 100%);
+  color: #fde047;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+}
+
+.sf-fuel-shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.25);
+  margin-bottom: 6px;
+}
+
+/* Fuel Shop Cards Container */
+.fuel-shop-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Fuel Shop Card matching Screenshot */
+.fuel-shop-card {
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.fuel-shop-card:hover {
+  transform: translateY(-2px);
+}
+
+.fuel-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fuel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fuel-hero-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.fuel-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fuel-hero-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  margin: 0;
+}
+
+.fuel-hero-multiplier-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1.5px 6.5px;
+  border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.fuel-hero-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.fuel-inventory-badge {
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.fuel-pricing-single-wrap {
+  width: 100%;
+}
+
+/* Glowing Buy Button Pill */
+.fuel-buy-btn-single {
+  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 11px 16px !important;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(14, 165, 233, 0.12) 100%);
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #67e8f9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.fuel-buy-btn-single:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.32) 0%, rgba(14, 165, 233, 0.22) 100%);
+  border-color: #38bdf8;
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.fuel-buy-btn-single:active {
+  transform: scale(0.985);
+}
+
+.fuel-single-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fuel-single-left .fuel-btn-icon {
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
+}
+
+.fuel-single-left .fuel-btn-cost {
+  font-size: 14.5px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: #bae6fd;
+  letter-spacing: 0.3px;
+}
+
+.fuel-single-arrow {
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 15px;
+  opacity: 0.85;
+  transition: transform 0.2s ease;
+}
+
+.fuel-buy-btn-single:hover .fuel-single-arrow {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+.fuel-single-gain {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+
 /* --- PAGE: BEE-FARM --- */
 /* ==========================================================================
    HONEY BEE FARM TYCOON PAGE STYLES (pages/bee-farm/bee-farm.css)
