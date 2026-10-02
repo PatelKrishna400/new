@@ -99,15 +99,10 @@ function renderLeaderboardRoster() {
   const myIndex = roster.findIndex(p => p.isMe);
   const myRank = myIndex >= 0 ? myIndex + 1 : 1;
 
-  // 1. Render Top 3 Step Podium with Real Data Only (No demo placeholder steps)
+  // 1. Render Top 3 Step Podium with Real Data
   const rank1 = roster[0] || null;
   const rank2 = roster[1] || null;
   const rank3 = roster[2] || null;
-
-  const podStep1 = document.getElementById('podiumRank1');
-  const podStep2 = document.getElementById('podiumRank2');
-  const podStep3 = document.getElementById('podiumRank3');
-  const podiumContainer = document.querySelector('.podium-step-container');
 
   // Step 1: Gold Champion
   const av1 = document.getElementById('podiumAvatar1');
@@ -115,13 +110,15 @@ function renderLeaderboardRoster() {
   const ev1 = document.getElementById('podiumEvent1');
   const sc1 = document.getElementById('podiumScore1');
   if (rank1) {
-    if (podStep1) podStep1.style.display = 'flex';
     if (av1) av1.innerHTML = createPlayerAvatarSvg(rank1, 1);
     if (nm1) nm1.textContent = rank1.name + (rank1.isMe ? ' (You)' : '');
-    if (ev1) ev1.textContent = `👑 Season Champion`;
+    if (ev1) ev1.textContent = `💎 Season Champion`;
     if (sc1) sc1.textContent = `💎 ${(rank1.diamondWins || 0).toLocaleString()} Wins`;
   } else {
-    if (podStep1) podStep1.style.display = 'none';
+    if (av1) av1.innerHTML = createEmptyAvatarSvg();
+    if (nm1) nm1.textContent = '---';
+    if (ev1) ev1.textContent = `💎 Champion`;
+    if (sc1) sc1.textContent = `💎 0 Wins`;
   }
 
   // Step 2: Silver
@@ -130,14 +127,15 @@ function renderLeaderboardRoster() {
   const ev2 = document.getElementById('podiumEvent2');
   const sc2 = document.getElementById('podiumScore2');
   if (rank2) {
-    if (podStep2) podStep2.style.display = 'flex';
     if (av2) av2.innerHTML = createPlayerAvatarSvg(rank2, 2);
     if (nm2) nm2.textContent = rank2.name + (rank2.isMe ? ' (You)' : '');
     if (ev2) ev2.textContent = `🥈 Diamond Master`;
     if (sc2) sc2.textContent = `💎 ${(rank2.diamondWins || 0).toLocaleString()} Wins`;
   } else {
-    // Hide rank 2 step completely if no real 2nd player exists
-    if (podStep2) podStep2.style.display = 'none';
+    if (av2) av2.innerHTML = createEmptyAvatarSvg();
+    if (nm2) nm2.textContent = '---';
+    if (ev2) ev2.textContent = `🥈 Master`;
+    if (sc2) sc2.textContent = `💎 0 Wins`;
   }
 
   // Step 3: Bronze
@@ -146,23 +144,15 @@ function renderLeaderboardRoster() {
   const ev3 = document.getElementById('podiumEvent3');
   const sc3 = document.getElementById('podiumScore3');
   if (rank3) {
-    if (podStep3) podStep3.style.display = 'flex';
     if (av3) av3.innerHTML = createPlayerAvatarSvg(rank3, 3);
     if (nm3) nm3.textContent = rank3.name + (rank3.isMe ? ' (You)' : '');
     if (ev3) ev3.textContent = `🥉 Diamond Elite`;
     if (sc3) sc3.textContent = `💎 ${(rank3.diamondWins || 0).toLocaleString()} Wins`;
   } else {
-    // Hide rank 3 step completely if no real 3rd player exists
-    if (podStep3) podStep3.style.display = 'none';
-  }
-
-  // Adjust container justification if only 1 or 2 players exist
-  if (podiumContainer) {
-    if (rank1 && !rank2 && !rank3) {
-      podiumContainer.style.justifyContent = 'center';
-    } else {
-      podiumContainer.style.justifyContent = '';
-    }
+    if (av3) av3.innerHTML = createEmptyAvatarSvg();
+    if (nm3) nm3.textContent = '---';
+    if (ev3) ev3.textContent = `🥉 Elite`;
+    if (sc3) sc3.textContent = `💎 0 Wins`;
   }
 
   // 2. Render Ranks 4+ (Real players only)
