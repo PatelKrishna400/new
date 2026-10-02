@@ -39,36 +39,213 @@ A high-performance, modular Telegram Web Mini-App game with real-time Firebase C
 
 ```
 tap-empire/
-├── admin/                     # Administrative web portal
+│
+├── admin/                              # Admin dashboard
+│   ├── index.html                      # Admin login/dashboard
+│   ├── users.html                      # User management
+│   ├── tasks.html                      # Task management
+│   ├── rewards.html                    # Reward management
+│   ├── economy.html                    # Coins, energy, XP, etc.
+│   ├── ads.html                        # Ad configuration
+│   ├── withdrawals.html                # Withdrawal management
+│   ├── referrals.html                  # Referral management
+│   ├── leaderboard.html                # Leaderboard management
+│   ├── settings.html                   # Global settings
+│   │
 │   ├── css/
-│   ├── js/
-│   ├── index.html
-│   └── users.html
-├── frontend/                  # Telegram Web Mini-App
-│   ├── pages/                 # 24 Modular page components (HTML + CSS + JS)
+│   │   ├── admin.css
+│   │   ├── dashboard.css
+│   │   └── responsive.css
+│   │
+│   └── js/
+│       ├── admin.js
+│       ├── auth.js
+│       ├── users.js
+│       ├── tasks.js
+│       ├── rewards.js
+│       ├── economy.js
+│       ├── ads.js
+│       ├── withdrawals.js
+│       ├── referrals.js
+│       ├── leaderboard.js
+│       └── settings.js
+│
+├── frontend/                           # Telegram Mini App
+│   │
+│   ├── index.html                      # Main application entry
+│   ├── style.css                       # Global/master styles
+│   │
+│   ├── pages/                          # Game pages/modules
 │   │   ├── home/
+│   │   │   ├── home.html
+│   │   │   ├── home.css
+│   │   │   └── home.js
+│   │   │
 │   │   ├── energy/
+│   │   │   ├── energy.html
+│   │   │   ├── energy.css
+│   │   │   └── energy.js
+│   │   │
 │   │   ├── tasks/
+│   │   │   ├── tasks.html
+│   │   │   ├── tasks.css
+│   │   │   └── tasks.js
+│   │   │
 │   │   ├── profile/
+│   │   │   ├── profile.html
+│   │   │   ├── profile.css
+│   │   │   └── profile.js
+│   │   │
 │   │   ├── xp/
+│   │   │   ├── xp.html
+│   │   │   ├── xp.css
+│   │   │   └── xp.js
+│   │   │
 │   │   ├── reward/
+│   │   │   ├── reward.html
+│   │   │   ├── reward.css
+│   │   │   └── reward.js
+│   │   │
 │   │   ├── goal/
+│   │   │   ├── goal.html
+│   │   │   ├── goal.css
+│   │   │   └── goal.js
+│   │   │
 │   │   ├── streak/
+│   │   │   ├── streak.html
+│   │   │   ├── streak.css
+│   │   │   └── streak.js
+│   │   │
 │   │   ├── mega-reward/
+│   │   │   ├── mega-reward.html
+│   │   │   ├── mega-reward.css
+│   │   │   └── mega-reward.js
+│   │   │
 │   │   ├── spin/
+│   │   │   ├── spin.html
+│   │   │   ├── spin.css
+│   │   │   └── spin.js
+│   │   │
 │   │   ├── chest/
+│   │   │   ├── chest.html
+│   │   │   ├── chest.css
+│   │   │   └── chest.js
+│   │   │
 │   │   ├── scratch/
+│   │   │   ├── scratch.html
+│   │   │   ├── scratch.css
+│   │   │   └── scratch.js
+│   │   │
 │   │   ├── egg/
+│   │   │   ├── egg.html
+│   │   │   ├── egg.css
+│   │   │   └── egg.js
+│   │   │
 │   │   ├── custom/
-│   │   ├── suggest-box/
-│   │   └── ...
-│   ├── shared/                # Shared stylesheets, state, audio, ads & Firebase service
-│   ├── assemble.js            # Modular page compiler & integrity validator
-│   ├── index.html             # Compiled master web app
-│   └── style.css              # Master style aggregator
-├── database.rules.json        # Firebase Realtime Database security rules
-├── FIREBASE_SETUP.md          # Cloud setup instructions
-└── package.json
+│   │   │   ├── custom.html
+│   │   │   ├── custom.css
+│   │   │   └── custom.js
+│   │   │
+│   │   └── suggest-box/
+│   │       ├── suggest-box.html
+│   │       ├── suggest-box.css
+│   │       └── suggest-box.js
+│   │
+│   ├── components/                     # Reusable UI components
+│   │   ├── header/
+│   │   ├── bottom-nav/
+│   │   ├── modal/
+│   │   ├── popup/
+│   │   ├── toast/
+│   │   ├── loader/
+│   │   ├── progress-bar/
+│   │   ├── reward-card/
+│   │   ├── coin-animation/
+│   │   └── ad-button/
+│   │
+│   ├── shared/                         # Shared application logic
+│   │   ├── firebase/
+│   │   │   ├── config.js
+│   │   │   ├── auth.js
+│   │   │   ├── database.js
+│   │   │   ├── users.js
+│   │   │   ├── tasks.js
+│   │   │   ├── rewards.js
+│   │   │   ├── leaderboard.js
+│   │   │   └── settings.js
+│   │   │
+│   │   ├── telegram/
+│   │   │   ├── telegram.js
+│   │   │   └── user.js
+│   │   │
+│   │   ├── ads/
+│   │   │   ├── ads.js
+│   │   │   └── ad-config.js
+│   │   │
+│   │   ├── state/
+│   │   │   ├── app-state.js
+│   │   │   ├── user-state.js
+│   │   │   └── game-state.js
+│   │   │
+│   │   ├── audio/
+│   │   │   └── audio.js
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── format.js
+│   │   │   ├── validation.js
+│   │   │   ├── storage.js
+│   │   │   ├── time.js
+│   │   │   └── security.js
+│   │   │
+│   │   └── constants/
+│   │       ├── economy.js
+│   │       ├── rewards.js
+│   │       └── game-config.js
+│   │
+│   ├── assets/
+│   │   ├── images/
+│   │   ├── icons/
+│   │   ├── backgrounds/
+│   │   ├── rewards/
+│   │   ├── skins/
+│   │   └── sounds/
+│   │
+│   └── animations/
+│       ├── coin.css
+│       ├── energy.css
+│       ├── reward.css
+│       ├── popup.css
+│       └── transitions.css
+│
+├── backend/                            # Server-side operations
+│   ├── api/
+│   │   ├── users.js
+│   │   ├── rewards.js
+│   │   ├── tasks.js
+│   │   ├── ads.js
+│   │   └── withdrawals.js
+│   │
+│   ├── services/
+│   │   ├── firebase.js
+│   │   ├── telegram.js
+│   │   └── validation.js
+│   │
+│   └── index.js
+│
+├── scripts/
+│   ├── assemble.js                     # Page compiler
+│   ├── validate.js                     # Integrity checker
+│   ├── optimize.js                     # Production optimization
+│   └── build.js                        # Production build
+│
+├── database.rules.json                  # Firebase security rules
+├── firebase.json                        # Firebase configuration
+├── FIREBASE_SETUP.md
+├── README.md
+├── package.json
+├── .env.example
+├── .gitignore
+└── vercel.json
 ```
 
 ---
