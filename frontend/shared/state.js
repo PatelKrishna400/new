@@ -248,6 +248,27 @@ const gameState = {
     blueCoins: 0, // Accumulated Blue Coins from taps in the Big Bank
     fullWithdrawalPassEndTime: 0 // If active (> Date.now()), full auto-withdrawal pass for 24h
   },
+  piggyBank: {
+    totalStored: 0,
+    extensionDays: 0,
+    records: []
+  },
+  diamondGenerator: {
+    powerLevel: 1,
+    speedLevel: 1,
+    isRunning: false,
+    cycleProgress: 0,
+    generationStartTime: 0,
+    status: 'ready',
+    claimed: true,
+    totalProduced: 0,
+    powerDiscount: 0,
+    speedDiscount: 0,
+    lastPowerAdTime: 0,
+    lastSpeedAdTime: 0,
+    powerMilestoneAds: 0,
+    speedMilestoneAds: 0
+  },
   tasksState: {
     claimedDaily: {},
     claimedTelegram: {},
@@ -270,6 +291,8 @@ const gameState = {
     coins: 0,
     blueCoins: 0,
     diamonds: 0,
+    diamondWins: 0,
+    diamondWinsCount: 0,
     xp: 0,
     xpToNextLevel: 1000,
     streakDays: 0,
@@ -278,6 +301,11 @@ const gameState = {
     chestTickets: 0,
     scratchCards: 0,
     eggs: 0,
+    brainCoins: 0,
+    boomCoins: 0,
+    sunflower: 0,
+    waterBuckets: 0,
+    shovels: 0,
     passAdCooldowns: {},
     adsWatchedCount: 0,
     websiteTasksCompleted: 0,
@@ -1220,15 +1248,215 @@ class SoundFX {
 
 const sfx = new SoundFX();
 
-// Number & Timer Formatting Helpers
-function formatNumber(num) {
-  if (num === undefined || num === null || isNaN(num)) return '0';
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 10000) return (num / 1000).toFixed(1) + 'k';
-  if (Number.isInteger(num)) return num.toString();
-  const fixed = Number(num).toFixed(6);
-  return fixed.replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+var BigNum = class BigNum {
+  constructor(m = 0, e = 0) {
+    if (m === 0 || isNaN(m)) {
+      this.m = 0;
+      this.e = 0;
+    } else {
+      let exp = Math.floor(e);
+      let man = m;
+      if (man <= 0) {
+        this.m = 0;
+        this.e = 0;
+        return;
+      }
+      const factor = Math.floor(Math.log10(man));
+      man = man / Math.pow(10, factor);
+      exp += factor;
+      this.m = man;
+      this.e = exp;
+    }
+  }
+
+  static from(val) {
+    if (val instanceof BigNum) return new BigNum(val.m, val.e);
+    if (typeof val === 'number') {
+      if (val <= 0 || isNaN(val) || !isFinite(val)) return new BigNum(0, 0);
+      const e = Math.floor(Math.log10(val));
+      const m = val / Math.pow(10, e);
+      return new BigNum(m, e);
+    }
+    if (typeof val === 'string') {
+      if (!val || val === '0') return new BigNum(0, 0);
+      if (val.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(val);
+          if (parsed && typeof parsed.m === 'number') return new BigNum(parsed.m, parsed.e || 0);
+        } catch(e) {}
+      }
+      if (val.includes('e') || val.includes('E')) {
+        const parts = val.toLowerCase().split('e');
+        return new BigNum(parseFloat(parts[0]), parseInt(parts[1], 10));
+      }
+      const num = parseFloat(val);
+      if (isNaN(num) || num <= 0) return new BigNum(0, 0);
+      const e = Math.floor(Math.log10(num));
+      return new BigNum(num / Math.pow(10, e), e);
+    }
+    if (val && typeof val.m === 'number' && typeof val.e === 'number') {
+      return new BigNum(val.m, val.e);
+    }
+    return new BigNum(0, 0);
+  }
+
+  add(other) {
+    const b = BigNum.from(other);
+    if (this.m === 0) return b;
+    if (b.m === 0) return new BigNum(this.m, this.e);
+    const diff = this.e - b.e;
+    if (diff > 16) return new BigNum(this.m, this.e);
+    if (diff < -16) return new BigNum(b.m, b.e);
+    if (diff >= 0) {
+      return new BigNum(this.m + b.m * Math.pow(10, -diff), this.e);
+    } else {
+      return new BigNum(this.m * Math.pow(10, diff) + b.m, b.e);
+    }
+  }
+
+  sub(other) {
+    const b = BigNum.from(other);
+    if (b.m === 0) return new BigNum(this.m, this.e);
+    if (this.m === 0) return new BigNum(0, 0);
+    const diff = this.e - b.e;
+    if (diff > 16) return new BigNum(this.m, this.e);
+    if (diff < 0) return new BigNum(0, 0);
+    const newM = this.m - b.m * Math.pow(10, -diff);
+    if (newM <= 0) return new BigNum(0, 0);
+    return new BigNum(newM, this.e);
+  }
+
+  mul(other) {
+    const b = BigNum.from(other);
+    if (this.m === 0 || b.m === 0) return new BigNum(0, 0);
+    return new BigNum(this.m * b.m, this.e + b.e);
+  }
+
+  div(other) {
+    const b = BigNum.from(other);
+    if (b.m === 0) return new BigNum(0, 0);
+    if (this.m === 0) return new BigNum(0, 0);
+    return new BigNum(this.m / b.m, this.e - b.e);
+  }
+
+  pow(power) {
+    if (power === 0) return new BigNum(1, 0);
+    if (this.m === 0) return new BigNum(0, 0);
+    const totalExp = (Math.log10(this.m) + this.e) * power;
+    const intExp = Math.floor(totalExp);
+    const fracExp = totalExp - intExp;
+    return new BigNum(Math.pow(10, fracExp), intExp);
+  }
+
+  cmp(other) {
+    const b = BigNum.from(other);
+    if (this.m === 0 && b.m === 0) return 0;
+    if (this.m === 0) return -1;
+    if (b.m === 0) return 1;
+    if (this.e > b.e) return 1;
+    if (this.e < b.e) return -1;
+    if (this.m > b.m + 1e-12) return 1;
+    if (this.m < b.m - 1e-12) return -1;
+    return 0;
+  }
+
+  gte(other) { return this.cmp(other) >= 0; }
+  lte(other) { return this.cmp(other) <= 0; }
+  gt(other) { return this.cmp(other) > 0; }
+  lt(other) { return this.cmp(other) < 0; }
+  eq(other) { return this.cmp(other) === 0; }
+
+  toNumber() {
+    if (this.m === 0) return 0;
+    if (this.e > 308) return Infinity;
+    return this.m * Math.pow(10, this.e);
+  }
+
+  toString() {
+    if (this.m === 0) return '0';
+    if (this.e < 3) return (this.m * Math.pow(10, this.e)).toFixed(2).replace(/\.00$/, '');
+    return `${this.m.toFixed(4)}e+${this.e}`;
+  }
+
+  toJSON() {
+    return { m: this.m, e: this.e };
+  }
+};
+window.BigNum = BigNum;
+
+var NUMBER_SUFFIXES = [
+  '',     // 10^0
+  'K',    // 10^3
+  'M',    // 10^6
+  'B',    // 10^9
+  'T',    // 10^12
+  'Qa',   // 10^15
+  'Qi',   // 10^18
+  'Sx',   // 10^21
+  'Sp',   // 10^24
+  'Oc',   // 10^27
+  'No',   // 10^30
+  'Dc',   // 10^33
+  'Ud',   // 10^36
+  'Dd',   // 10^39
+  'Td',   // 10^42
+  'Qad',  // 10^45
+  'Qid',  // 10^48
+  'Sxd',  // 10^51
+  'Spd',  // 10^54
+  'Ocd',  // 10^57
+  'Nod',  // 10^60
+  'Vg',   // 10^63
+  'Uv',   // 10^66
+  'Dv',   // 10^69
+  'Tv',   // 10^72
+  'Qav',  // 10^75
+  'Qiv',  // 10^78
+  'Sxv',  // 10^81
+  'Spv',  // 10^84
+  'Ocv',  // 10^87
+  'Nov',  // 10^90
+  'Tg',   // 10^93
+  'Utg',  // 10^96
+  'Dtg',  // 10^99
+  'Ttg',  // 10^102
+  'Qatg', // 10^105
+  'Qitg', // 10^108
+  'Sxtg', // 10^111
+  'Sptg', // 10^114
+  'Octg', // 10^117
+  'Notg'  // 10^120
+];
+window.NUMBER_SUFFIXES = NUMBER_SUFFIXES;
+
+var formatNumber = function(val) {
+  if (val === undefined || val === null) return '0';
+  const bn = BigNum.from(val);
+  if (bn.m === 0) return '0';
+  if (bn.e < 3) {
+    const raw = bn.m * Math.pow(10, bn.e);
+    if (Math.abs(raw - Math.round(raw)) < 1e-4) return Math.round(raw).toLocaleString();
+    return raw.toFixed(raw < 10 ? 2 : 1).replace(/\.0+$/, '');
+  }
+  const tier = Math.floor(bn.e / 3);
+  if (tier >= NUMBER_SUFFIXES.length - 1) {
+    const superTier = Math.floor((bn.e - 120) / 3);
+    if (superTier <= 0) {
+      const scaled = bn.m * Math.pow(10, bn.e - 120);
+      let str = scaled.toFixed(scaled < 10 ? 2 : (scaled < 100 ? 1 : 0));
+      str = str.replace(/\.0+$/, '').replace(/(\.[1-9])0$/, '$1');
+      return str + 'Notg';
+    }
+    return `${bn.m.toFixed(2)}e+${bn.e}`;
+  }
+  const suffix = NUMBER_SUFFIXES[tier];
+  const expInTier = bn.e % 3;
+  const scaled = bn.m * Math.pow(10, expInTier);
+  let str = scaled.toFixed(scaled < 10 ? 2 : (scaled < 100 ? 1 : 0));
+  str = str.replace(/\.0+$/, '').replace(/(\.[1-9])0$/, '$1');
+  return str + suffix;
 }
+window.formatNumber = formatNumber;
 
 function formatDiamondDisplay(num) {
   if (num === undefined || num === null || isNaN(num)) return '0.000000';

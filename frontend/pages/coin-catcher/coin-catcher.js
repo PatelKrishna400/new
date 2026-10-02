@@ -32,8 +32,8 @@
   let elTime = null;
   let elScore = null;
   let elSpeed = null;
-  let elDiamondPillVal = null;
-  let elIntroDiaBal = null;
+  let elBoomCoinPillVal = null;
+  let elIntroBoomBal = null;
   let elCollectBtn = null;
   let elCollectBtnText = null;
   let elOverlay = null;
@@ -45,24 +45,24 @@
     elTime = document.getElementById('catcherTimeVal');
     elScore = document.getElementById('catcherScoreVal');
     elSpeed = document.getElementById('catcherSpeedVal');
-    elDiamondPillVal = document.getElementById('catcherPlayerDiamondsVal');
-    elIntroDiaBal = document.getElementById('catcherIntroDiaBal');
+    elBoomCoinPillVal = document.getElementById('catcherPlayerBoomCoinsVal');
+    elIntroBoomBal = document.getElementById('catcherIntroBoomBal');
     elCollectBtn = document.getElementById('btnCatcherCollectBank');
     elCollectBtnText = document.getElementById('catcherCollectBtnText');
     elOverlay = document.getElementById('catcherModalOverlay');
     elBoomModal = document.getElementById('catcherBoomModal');
     elStartOverlay = document.getElementById('catcherStartOverlay');
 
-    updateDiamondBalances();
+    updateBoomCoinBalances();
   }
 
-  function updateDiamondBalances() {
-    const diamonds = (typeof gameState !== 'undefined' && gameState.player && gameState.player.diamonds !== undefined)
-      ? Number(gameState.player.diamonds)
+  function updateBoomCoinBalances() {
+    const boomCoins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.boomCoins !== undefined)
+      ? Number(gameState.player.boomCoins)
       : 0;
 
-    if (elDiamondPillVal) elDiamondPillVal.textContent = diamonds.toLocaleString();
-    if (elIntroDiaBal) elIntroDiaBal.textContent = diamonds.toLocaleString();
+    if (elBoomCoinPillVal) elBoomCoinPillVal.textContent = boomCoins.toLocaleString();
+    if (elIntroBoomBal) elIntroBoomBal.textContent = boomCoins.toLocaleString();
   }
 
   function updateHUD() {
@@ -88,38 +88,35 @@
   }
 
   /**
-   * Start a New Coin Fall Round (Costs 100 Diamonds)
+   * Start a New Coin Fall Round (Costs 1 Boom Coin)
    */
   function startCoinCatcherGame() {
     initDOMElements();
 
-    const currentDiamonds = (typeof gameState !== 'undefined' && gameState.player && gameState.player.diamonds !== undefined)
-      ? Number(gameState.player.diamonds)
+    const currentBoomCoins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.boomCoins !== undefined)
+      ? Number(gameState.player.boomCoins)
       : 0;
 
-    // Check if player has 100 Diamonds
-    if (currentDiamonds < 100) {
+    // Check if player has 1 Boom Coin
+    if (currentBoomCoins < 1) {
       if (typeof sfx !== 'undefined' && sfx.playErrorSound) sfx.playErrorSound();
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('⚠️ Insufficient Diamonds! 100 💎 required to play.');
-      } else {
-        alert('Insufficient Diamonds! You need 100 Diamonds to play Coin Fall.');
+      if (typeof showGameEntryRequirementModal === 'function') {
+        showGameEntryRequirementModal('1 Boom Coin', '💣', 'Coin Fall Catcher');
+      } else if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚠️ Insufficient Boom Coins! 1 💣 required to play.');
       }
       return;
     }
 
-    // Deduct 100 Diamonds
-    gameState.player.diamonds -= 100;
-    if (gameState.player.blueCoins !== undefined) {
-      gameState.player.blueCoins = gameState.player.diamonds;
-    }
+    // Deduct 1 Boom Coin
+    gameState.player.boomCoins -= 1;
     if (typeof saveGame === 'function') saveGame(true);
     if (typeof updateUI === 'function') updateUI();
-    updateDiamondBalances();
+    updateBoomCoinBalances();
 
     if (typeof sfx !== 'undefined' && sfx.playBuySound) sfx.playBuySound();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('💎 -100 Diamonds paid! Round Started!');
+      showFloatingToast('💣 -1 Boom Coin paid! Round Started!');
     }
 
     // Clean up any ongoing session
@@ -438,6 +435,11 @@
     const processRewardPayout = (multiplier = 1) => {
       const finalCoins = Math.round(bankedCoins * multiplier);
 
+      // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
+      if (typeof rollDiamondJackpot === 'function') {
+        rollDiamondJackpot('coin_catcher');
+      }
+
       if (typeof gameState !== 'undefined') {
         gameState.player.coins = (gameState.player.coins || 0) + finalCoins;
         if (!gameState.player.miniGamesPlayed) gameState.player.miniGamesPlayed = 0;
@@ -460,7 +462,7 @@
       if (elOverlay) elOverlay.classList.remove('open');
       bankedCoins = 0;
       updateHUD();
-      updateDiamondBalances();
+      updateBoomCoinBalances();
 
       if (elStartOverlay) elStartOverlay.style.display = 'flex';
     };
@@ -498,19 +500,47 @@
     }, 600);
   }
 
+  /**
+   * Free Boom Coin from Rewarded Ad
+   */
+  function claimFreeBoomCoinAd() {
+    const grantCoin = () => {
+      if (!gameState.player) return;
+      gameState.player.boomCoins = (Number(gameState.player.boomCoins) || 0) + 1;
+      if (typeof saveGame === 'function') saveGame(true);
+      if (typeof updateUI === 'function') updateUI();
+      updateBoomCoinBalances();
+      if (typeof sfx !== 'undefined' && sfx.playBuySound) sfx.playBuySound();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎉 +1 💣 Boom Coin added to your inventory!');
+      }
+    };
+
+    if (typeof window.showRewardedAd === 'function') {
+      window.showRewardedAd(grantCoin, {
+        adTitle: 'FREE 💣 BOOM COIN',
+        adDesc: 'Watch a quick message to receive 1 Free Boom Coin!'
+      });
+    } else {
+      grantCoin();
+    }
+  }
+
   // Global Window Exports
   window.startCoinCatcherGame = startCoinCatcherGame;
   window.collectAndExitCoinCatcher = collectAndExitCoinCatcher;
   window.claimCoinCatcherReward = claimCoinCatcherReward;
   window.resumeAfterBombAd = resumeAfterBombAd;
   window.exitAndForfeitCoins = exitAndForfeitCoins;
+  window.claimFreeBoomCoinAd = claimFreeBoomCoinAd;
+  window.updateBoomCoinBalances = updateBoomCoinBalances;
 
   window.initCoinCatcherPage = function() {
     initDOMElements();
     if (!isGameActive && elStartOverlay) {
       elStartOverlay.style.display = 'flex';
     }
-    updateDiamondBalances();
+    updateBoomCoinBalances();
     updateHUD();
   };
 })();

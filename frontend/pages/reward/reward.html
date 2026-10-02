@@ -1,139 +1,4 @@
 <div class="page-view" id="pageReward">
-        
-        <!-- Top Action Nav Row -->
-        <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('home')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
-
-          <div class="xp-timer-pill">
-            <span>🎁 REWARDS VAULT</span>
-          </div>
-
-          <div class="xp-level-badge-btn" style="pointer-events: none;">
-            <span>🪙 <span id="rewardCoinsBal">0</span></span>
-          </div>
-        </div>
-
-        <!-- Interactive Subtab Filter Strip (8 Modes) -->
-        <div class="rewards-subtab-header">
-          <button class="reward-subtab-btn active" id="rewardSubtabAll" onclick="switchRewardSubtab('all')">
-            <span class="tab-btn-icon">🌟</span>
-            <span>All Games</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabMega" onclick="switchRewardSubtab('mega')">
-            <span class="tab-btn-icon">👑</span>
-            <span>Mega Prizes</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabSpin" onclick="switchRewardSubtab('spin')">
-            <span class="tab-btn-icon">🎡</span>
-            <span>Spin Wheel</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabChest" onclick="switchRewardSubtab('chest')">
-            <span class="tab-btn-icon">🔑</span>
-            <span>Chest Loot</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabScratch" onclick="switchRewardSubtab('scratch')">
-            <span class="tab-btn-icon">🎟️</span>
-            <span>Scratch Card</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabEgg" onclick="switchRewardSubtab('egg')">
-            <span class="tab-btn-icon">🥚</span>
-            <span>Egg Hatch</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabMemory" onclick="switchRewardSubtab('memory')">
-            <span class="tab-btn-icon">🧠</span>
-            <span>Memory Match</span>
-          </button>
-          <button class="reward-subtab-btn" id="rewardSubtabCatcher" onclick="switchRewardSubtab('catcher')">
-            <span class="tab-btn-icon">🪙</span>
-            <span>Coin Catcher</span>
-          </button>
-        </div>
-
-        <!-- ==================== 1. FIRST: ADMIN MEGA REWARDS ==================== -->
-        <section class="rewards-grand-rectangle-card mega-grand-card" id="rewardTabMega" onclick="switchPage('megaReward')">
-          <div class="grand-vault-aura mega-aura"></div>
-          
-          <div class="grand-vault-emblem-wrap">
-            <div class="grand-vault-circle mega-circle">
-              <!-- 3D Luxury Mega Crown & Diamond Emblem -->
-              <svg viewBox="0 0 100 100" class="grand-vault-svg">
-                <defs>
-                  <linearGradient id="megaGold3d" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#fffbeb"/>
-                    <stop offset="25%" stop-color="#fde047"/>
-                    <stop offset="60%" stop-color="#f59e0b"/>
-                    <stop offset="100%" stop-color="#78350f"/>
-                  </linearGradient>
-                  <radialGradient id="megaCyanCore" cx="40%" cy="35%" r="65%">
-                    <stop offset="0%" stop-color="#e0f2fe"/>
-                    <stop offset="35%" stop-color="#38bdf8"/>
-                    <stop offset="70%" stop-color="#0284c7"/>
-                    <stop offset="100%" stop-color="#082f49"/>
-                  </radialGradient>
-                </defs>
-                <!-- Radiating Golden Ring -->
-                <circle cx="50" cy="50" r="46" fill="none" stroke="url(#megaGold3d)" stroke-width="2.5" opacity="0.75"/>
-                <circle cx="50" cy="50" r="41" fill="#070d1e" stroke="#1e293b" stroke-width="1.5"/>
-                <!-- Background Diamond Ray Star -->
-                <polygon points="50,15 54,36 75,36 58,49 64,70 50,57 36,70 42,49 25,36 46,36" fill="url(#megaCyanCore)" opacity="0.4"/>
-                <!-- 3D Imperial Mega Crown -->
-                <path d="M22 66 L28 38 L40 50 L50 28 L60 50 L72 38 L78 66 Z" fill="url(#megaGold3d)" stroke="#78350f" stroke-width="1.5" filter="drop-shadow(0 6px 8px rgba(0,0,0,0.6))"/>
-                <!-- Crown Base Cushion -->
-                <rect x="22" y="66" width="56" height="10" rx="3" fill="#0f172a" stroke="url(#megaGold3d)" stroke-width="1.5"/>
-                <circle cx="28" cy="71" r="2.2" fill="#38bdf8"/>
-                <circle cx="39" cy="71" r="2.2" fill="#f43f5e"/>
-                <circle cx="50" cy="71" r="2.5" fill="#fde047"/>
-                <circle cx="61" cy="71" r="2.2" fill="#34d399"/>
-                <circle cx="72" cy="71" r="2.2" fill="#a855f7"/>
-                <!-- Crown Jewels on Points -->
-                <circle cx="28" cy="38" r="3.2" fill="#38bdf8"/>
-                <circle cx="50" cy="28" r="4.2" fill="#ffffff"/>
-                <circle cx="72" cy="38" r="3.2" fill="#38bdf8"/>
-                <circle cx="50" cy="50" r="5" fill="#38bdf8"/>
-                <polygon points="50,45 54,50 50,55 46,50" fill="#ffffff"/>
-              </svg>
-            </div>
-            <div class="grand-vault-pill-tag mega-tag">👑 ADMIN MEGA REWARDS 👑</div>
-          </div>
-
-          <div class="rewards-rect-badge mega-badge">
-            <span class="sparkle-icon">💎</span>
-            <span>REAL PRIZES &amp; GIFT VOUCHERS</span>
-          </div>
-
-          <h3 class="rewards-rect-title">Mega Rewards Catalog</h3>
-
-          <div class="rewards-stats-strip">
-            <div class="rewards-stat-item">
-              <span class="stat-item-label">DIAMONDS</span>
-              <span class="stat-item-val cyan" id="rewardMegaDiamonds">0 💎</span>
-            </div>
-            <div class="rewards-stat-divider"></div>
-            <div class="rewards-stat-item">
-              <span class="stat-item-label">CATEGORIES</span>
-              <span class="stat-item-val gold">9 Categories</span>
-            </div>
-            <div class="rewards-stat-divider"></div>
-            <div class="rewards-stat-item">
-              <span class="stat-item-label">ADMIN ITEMS</span>
-              <span class="stat-item-val green" id="rewardAdminItemCount">0 Listed</span>
-            </div>
-          </div>
-
-          <!-- Live Shelf of Admin-Added Products from Firebase (/mega_rewards) -->
-          <div class="reward-admin-products-shelf" id="rewardAdminMegaShelf" onclick="event.stopPropagation()">
-            <!-- Rendered dynamically by reward.js from window.cloudMegaRewards -->
-          </div>
-
-          <button class="rewards-master-action-btn mega-btn" onclick="switchPage('megaReward'); event.stopPropagation();">
-            <span>👑 EXPLORE 9 MEGA CATEGORIES</span>
-          </button>
-        </section>
 
         <!-- ==================== 2. SECOND: SPIN WHEEL ==================== -->
         <section class="rewards-grand-rectangle-card" id="rewardTabSpin" onclick="switchPage('spin')">
@@ -492,16 +357,16 @@
           </div>
 
           <div class="rewards-rect-badge spin-badge">
-            <span class="sparkle-icon">✨</span>
-            <span>4 × 4 PAIR FINDER</span>
+            <span class="sparkle-icon">🧠</span>
+            <span>COST: 1 BRAIN COIN</span>
           </div>
 
           <h3 class="rewards-rect-title">Quantum Memory Pair Match</h3>
 
           <div class="rewards-stats-strip">
             <div class="rewards-stat-item">
-              <span class="stat-item-label">GRID</span>
-              <span class="stat-item-val cyan">16 Cards</span>
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val cyan">1 🧠 Coin</span>
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
@@ -516,7 +381,7 @@
           </div>
 
           <button class="rewards-master-action-btn spin-btn" onclick="switchPage('memoryMatch'); event.stopPropagation();">
-            <span>🧠 PLAY 4x4 MEMORY PAIRS</span>
+            <span>🧠 PLAY 4x4 MEMORY PAIRS (1 🧠)</span>
           </button>
         </section>
 
@@ -560,21 +425,21 @@
           </div>
 
           <div class="rewards-rect-badge chest-badge">
-            <span class="sparkle-icon">💎</span>
-            <span>ENTRY: 100 DIAMONDS</span>
+            <span class="sparkle-icon">💣</span>
+            <span>ENTRY: 1 BOOM COIN</span>
           </div>
 
           <h3 class="rewards-rect-title">Cyber Coin Fall Catcher</h3>
 
           <div class="rewards-stats-strip">
             <div class="rewards-stat-item">
-              <span class="stat-item-label">TARGET</span>
-              <span class="stat-item-val gold">Tap 🪙 Coins</span>
+              <span class="stat-item-label">COST</span>
+              <span class="stat-item-val amber">1 💣 Coin</span>
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
               <span class="stat-item-label">HAZARD</span>
-              <span class="stat-item-val amber">Avoid 💣 Boom</span>
+              <span class="stat-item-val red">Avoid 💣 Boom</span>
             </div>
             <div class="rewards-stat-divider"></div>
             <div class="rewards-stat-item">
@@ -584,7 +449,7 @@
           </div>
 
           <button class="rewards-master-action-btn chest-btn" onclick="switchPage('coinCatcher'); event.stopPropagation();">
-            <span>🪙 PLAY COIN FALL (100 💎)</span>
+            <span>🪙 PLAY COIN FALL (1 💣)</span>
           </button>
         </section>
 

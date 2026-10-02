@@ -287,6 +287,69 @@ const MONTHLY_TASKS = [
     liquidTheme: 'liquid-green',
     tagClass: 'tag-green',
     tagText: 'MONTHLY QUEST'
+  },
+  {
+    id: 'd_sunflower_win',
+    number: 15,
+    title: '15. Win 20M Sunflower Coins',
+    rewardText: '100 Diamonds 💎',
+    rewardType: 'diamond',
+    rewardVal: 100,
+    diamondReward: 100,
+    desc: 'Harvest and win 20,000,000 Sunflower Coins to earn 100 Diamonds',
+    notes: 'Cultivate your 20-Plot Solar Garden and accumulate 20,000,000 Sunflower Coins from high-tier sun crops. Connected directly to your cloud farm statistics.',
+    tip: 'Tip: Upgrade garden plots and water regularly to boost solar coin yield exponentially.',
+    type: 'sunflower_coins',
+    target: 20000000,
+    iconType: 'sunflower',
+    colorClass: 'task-yellow',
+    iconClass: 'task-icon-yellow',
+    accentClass: 'task-tab-accent-yellow',
+    liquidTheme: 'liquid-yellow',
+    tagClass: 'tag-yellow',
+    tagText: 'DIAMOND WIN'
+  },
+  {
+    id: 'd_honey_win',
+    number: 16,
+    title: '16. Win 10M Honey Coins',
+    rewardText: '100 Diamonds 💎',
+    rewardType: 'diamond',
+    rewardVal: 100,
+    diamondReward: 100,
+    desc: 'Extract and accumulate 10,000,000 Honey Drops to earn 100 Diamonds',
+    notes: 'Breed bees across 20 hives and flower meadows to gather 10,000,000 Honey Drops. Verified via your live Apiary cloud data.',
+    tip: 'Tip: Hire forager workers to collect pollen while you manage apiaries.',
+    type: 'honey_coins',
+    target: 10000000,
+    iconType: 'honey',
+    colorClass: 'task-orange',
+    iconClass: 'task-icon-orange',
+    accentClass: 'task-tab-accent-orange',
+    liquidTheme: 'liquid-orange',
+    tagClass: 'tag-orange',
+    tagText: 'DIAMOND WIN'
+  },
+  {
+    id: 'd_crystal_win',
+    number: 17,
+    title: '17. Win 5M Crystal Coins',
+    rewardText: '100 Diamonds 💎',
+    rewardType: 'diamond',
+    rewardVal: 100,
+    diamondReward: 100,
+    desc: 'Mine and synthesize 5,000,000 Crystal Shards to earn 100 Diamonds',
+    notes: 'Excavate the 20 subterranean terraces to extract 5,000,000 Crystal Shards. Backed by authoritative forge database statistics.',
+    tip: 'Tip: Keep thermal cooling towers running to prevent crystal spires from overheating.',
+    type: 'crystal_coins',
+    target: 5000000,
+    iconType: 'crystal',
+    colorClass: 'task-purple',
+    iconClass: 'task-icon-purple',
+    accentClass: 'task-tab-accent-purple',
+    liquidTheme: 'liquid-purple',
+    tagClass: 'tag-purple',
+    tagText: 'DIAMOND WIN'
   }
 ];
 
@@ -622,8 +685,14 @@ function getTaskIconSvg(iconType) {
     return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="10"/>
       <line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/>
     </svg>`;
+  } else if (iconType === 'sunflower') {
+    return `<span style="font-size: 20px; line-height: 1;">🌻</span>`;
+  } else if (iconType === 'honey') {
+    return `<span style="font-size: 20px; line-height: 1;">🍯</span>`;
+  } else if (iconType === 'crystal') {
+    return `<span style="font-size: 20px; line-height: 1;">🔮</span>`;
   } else {
     return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="11" width="18" height="10" rx="2"/>
@@ -663,6 +732,21 @@ function getTaskCurrentProgress(task) {
     return gameState.dailyStats.scratches || 0;
   } else if (task.type === 'egg') {
     return gameState.dailyStats.eggs || 0;
+  } else if (task.type === 'sunflower_coins') {
+    const fromState = (window.sunflowerState && Number(window.sunflowerState.coins || 0)) || 0;
+    const fromPlayer = (gameState.player && Number(gameState.player.sunflowerCoinsWon || gameState.player.sunflowerCoins || 0)) || 0;
+    const fromStats = (gameState.dailyStats && Number(gameState.dailyStats.sunflowerCoins || 0)) || 0;
+    return Math.max(fromState, fromPlayer, fromStats);
+  } else if (task.type === 'honey_coins') {
+    const fromState = (window.beeState && Number(window.beeState.honey || 0)) || 0;
+    const fromPlayer = (gameState.player && Number(gameState.player.honeyCoinsWon || gameState.player.honeyCoins || 0)) || 0;
+    const fromStats = (gameState.dailyStats && Number(gameState.dailyStats.honeyCoins || 0)) || 0;
+    return Math.max(fromState, fromPlayer, fromStats);
+  } else if (task.type === 'crystal_coins') {
+    const fromState = (window.mineState && Number(window.mineState.crystals || 0)) || 0;
+    const fromPlayer = (gameState.player && Number(gameState.player.crystalCoinsWon || gameState.player.crystalCoins || 0)) || 0;
+    const fromStats = (gameState.dailyStats && Number(gameState.dailyStats.crystalCoins || 0)) || 0;
+    return Math.max(fromState, fromPlayer, fromStats);
   }
   return 0;
 }
@@ -675,6 +759,9 @@ function getTaskNavTarget(task) {
   if (task.type === 'chest') return { page: 'chest', text: 'Go to Chest' };
   if (task.type === 'scratch') return { page: 'scratch', text: 'Go to Scratch' };
   if (task.type === 'egg') return { page: 'egg', text: 'Go to Hatchery' };
+  if (task.type === 'sunflower_coins') return { page: 'sunflower', text: 'Go to Solar Farm' };
+  if (task.type === 'honey_coins') return { page: 'bee-farm', text: 'Go to Bee Farm' };
+  if (task.type === 'crystal_coins') return { page: 'mining', text: 'Go to Crystal Mine' };
   return { page: 'home', text: 'Go to Task' };
 }
 
@@ -1461,7 +1548,7 @@ function spawnTaskEmojiBurst(card) {
   card.appendChild(burstWrap);
 }
 
-// Claim Daily Task: Awards Scratch Cards, triggers emoji burst, and smoothly removes task tab
+// Claim Daily Task: Awards Scratch Cards or Diamonds, triggers emoji burst, and smoothly removes task tab
 function claimDailyTaskReward(taskId, event) {
   if (event && typeof event.stopPropagation === 'function') {
     event.stopPropagation();
@@ -1469,6 +1556,17 @@ function claimDailyTaskReward(taskId, event) {
 
   const task = _monthlyTaskMap.get(taskId) || getMonthlyTasksList().find(t => t.id === taskId) || DAILY_TASKS.find(t => t.id === taskId);
   if (!task) return;
+
+  // Strict anti-duplicate and completion check
+  if (gameState.tasksState && (gameState.tasksState.claimedDaily[taskId] || (gameState.tasksState.claimedMonthly && gameState.tasksState.claimedMonthly[taskId]))) {
+    if (typeof showFloatingToast === 'function') showFloatingToast('⚠️ Task already claimed!');
+    return;
+  }
+  const currentProgress = getTaskCurrentProgress(task);
+  if (currentProgress < task.target) {
+    if (typeof showFloatingToast === 'function') showFloatingToast('⚠️ Task requirement not completed yet!');
+    return;
+  }
 
   const executeClaim = () => {
     const card = document.getElementById(`taskCard-${taskId}`);
@@ -1482,22 +1580,33 @@ function claimDailyTaskReward(taskId, event) {
       card.classList.add('task-claimed-exit');
     }
 
-    // 3. Award Scratch Cards
-    const rewardCount = Number(task.rewardCards || task.rewardVal || 1);
+    // 3. Mark claimed
     gameState.tasksState.claimedDaily[taskId] = true;
     if (!gameState.tasksState.claimedMonthly) gameState.tasksState.claimedMonthly = {};
     gameState.tasksState.claimedMonthly[taskId] = true;
-    gameState.player.scratchCards = (gameState.player.scratchCards || 0) + rewardCount;
-    gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewardCount;
-    if (gameState.goalState && gameState.goalState.levelProgress) {
-      gameState.goalState.levelProgress.cards = (gameState.goalState.levelProgress.cards || 0) + rewardCount;
+
+    // 4. Award Diamonds or Scratch Cards
+    const isDiamondReward = task.rewardType === 'diamond' || task.rewardType === 'diamonds' || (task.diamondReward && task.diamondReward > 0);
+    if (isDiamondReward) {
+      const diaCount = Number(task.diamondReward || task.rewardVal || 100);
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + diaCount;
+      gameState.player.diamondWins = (gameState.player.diamondWins || 0) + 1;
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`💎 +${diaCount} Diamonds Claimed!`);
+      }
+    } else {
+      const rewardCount = Number(task.rewardCards || task.rewardVal || 1);
+      gameState.player.scratchCards = (gameState.player.scratchCards || 0) + rewardCount;
+      gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewardCount;
+      if (gameState.goalState && gameState.goalState.levelProgress) {
+        gameState.goalState.levelProgress.cards = (gameState.goalState.levelProgress.cards || 0) + rewardCount;
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast(`🎴 +${rewardCount} Scratch Card${rewardCount > 1 ? 's' : ''} Claimed!`);
+      }
     }
 
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎴 +${rewardCount} Scratch Card${rewardCount > 1 ? 's' : ''} Claimed!`);
-    }
-
-    // 4. Remove from DOM after smooth collapse & sync to Firebase immediately
+    // 5. Remove from DOM after smooth collapse & sync to Firebase immediately
     setTimeout(() => {
       updateUI();
       renderTasksList();
@@ -1593,9 +1702,13 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
 
 // Real-Time Firebase Synchronizers for Tasks
 window.addEventListener('websiteTasksUpdated', () => {
+  _cachedWebsiteList = null;
+  _cachedWebsiteRawRef = null;
   if (typeof renderTasksList === 'function') renderTasksList();
 });
 window.addEventListener('telegramTasksUpdated', () => {
+  _cachedTelegramList = null;
+  _cachedTelegramRawRef = null;
   if (typeof renderTasksList === 'function') renderTasksList();
 });
 
@@ -1616,34 +1729,49 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// 30-Day Monthly Tasks Competition Countdown Timer (Firebase Backend Synced)
+// 30-Day Diamond Win Tasks Competition Countdown Timer (Firebase & Calendar Synced)
+function getAuthoritativeMonthlyEndTime() {
+  const now = Date.now();
+  if (gameState.monthlyCompetition && typeof gameState.monthlyCompetition.endTime === 'number' && gameState.monthlyCompetition.endTime > now) {
+    return gameState.monthlyCompetition.endTime;
+  }
+  try {
+    const stored = localStorage.getItem('ENERGY_TAP_MONTHLY_COMPETITION_END');
+    if (stored) {
+      const parsed = parseInt(stored, 10);
+      if (parsed && parsed > now) {
+        if (!gameState.monthlyCompetition) gameState.monthlyCompetition = {};
+        gameState.monthlyCompetition.endTime = parsed;
+        return parsed;
+      }
+    }
+  } catch (e) {}
+
+  const d = new Date(now);
+  const endOfMonthUTC = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1, 0, 0, 0, 0);
+
+  if (!gameState.monthlyCompetition) gameState.monthlyCompetition = {};
+  gameState.monthlyCompetition.endTime = endOfMonthUTC;
+  try {
+    localStorage.setItem('ENERGY_TAP_MONTHLY_COMPETITION_END', String(endOfMonthUTC));
+  } catch (e) {}
+
+  if (window.firebaseSync && window.firebaseSync.database) {
+    window.firebaseSync.database.ref('competition/monthly/endTime').transaction((curr) => {
+      return curr && curr > now ? curr : endOfMonthUTC;
+    });
+  }
+
+  return endOfMonthUTC;
+}
+
 function updateMonthlyCompetitionTimer() {
   const timerEl = document.getElementById('monthlyCompetitionTimer');
   if (!timerEl) return;
 
   const now = Date.now();
-  let remainingMs = 0;
-
-  // 1. Check if Firebase Cloud backend competition cycle timestamp is loaded
-  if (gameState.monthlyCompetition && gameState.monthlyCompetition.endTime) {
-    remainingMs = Math.max(0, gameState.monthlyCompetition.endTime - now);
-  } else {
-    // 2. Check cached localStorage from Firebase
-    try {
-      const cached = JSON.parse(localStorage.getItem('ENERGY_TAP_MONTHLY_COMPETITION') || 'null');
-      if (cached && cached.endTime) {
-        remainingMs = Math.max(0, cached.endTime - now);
-      }
-    } catch (e) {}
-
-    // 3. Fallback to local 30-day cycle
-    if (!remainingMs) {
-      const cycleMs = (typeof MONTHLY_RESET_CYCLE_MS !== 'undefined') ? MONTHLY_RESET_CYCLE_MS : (30 * 24 * 60 * 60 * 1000);
-      const resetTimestamp = (gameState.dailyStats && gameState.dailyStats.resetTimestamp) || now;
-      const elapsed = Math.max(0, now - resetTimestamp);
-      remainingMs = Math.max(0, cycleMs - elapsed);
-    }
-  }
+  const endTime = getAuthoritativeMonthlyEndTime();
+  const remainingMs = Math.max(0, endTime - now);
 
   const totalSecs = Math.floor(remainingMs / 1000);
   const days = Math.floor(totalSecs / 86400);
@@ -1652,6 +1780,23 @@ function updateMonthlyCompetitionTimer() {
   const secs = totalSecs % 60;
 
   timerEl.textContent = `${days}d ${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+
+  if (remainingMs <= 0) {
+    const d = new Date();
+    const nextMonthEnd = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1, 0, 0, 0, 0);
+    if (gameState.monthlyCompetition) gameState.monthlyCompetition.endTime = nextMonthEnd;
+    try {
+      localStorage.setItem('ENERGY_TAP_MONTHLY_COMPETITION_END', String(nextMonthEnd));
+    } catch (e) {}
+    if (gameState.tasksState) {
+      gameState.tasksState.claimedDaily = {};
+      gameState.tasksState.claimedMonthly = {};
+    }
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+    renderTasksList();
+  }
 }
 
 window.updateMonthlyCompetitionTimer = updateMonthlyCompetitionTimer;
@@ -1665,3 +1810,4 @@ if (typeof window !== 'undefined' && !window._dailyTasksHiddenTicker) {
     updateMonthlyCompetitionTimer();
   }, 1000);
 }
+

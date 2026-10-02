@@ -70,13 +70,33 @@ window.switchProfileSubtab = function(tabName) {
   }
 };
 
-window.openBlueTab = function() {
-  if (typeof switchPage === 'function') {
-    switchPage('profile');
+window.filterShopCategories = function(category) {
+  const btnAll = document.getElementById('shopCatBtnAll');
+  const btnPasses = document.getElementById('shopCatBtnPasses');
+  const btnFuel = document.getElementById('shopCatBtnFuel');
+
+  [btnAll, btnPasses, btnFuel].forEach(btn => {
+    if (btn) btn.classList.remove('active');
+  });
+
+  const secPasses = document.getElementById('shopPassesSection');
+  const secFuel = document.getElementById('shopFuelSection');
+
+  if (category === 'passes') {
+    if (btnPasses) btnPasses.classList.add('active');
+    if (secPasses) secPasses.style.display = 'block';
+    if (secFuel) secFuel.style.display = 'none';
+  } else if (category === 'fuel') {
+    if (btnFuel) btnFuel.classList.add('active');
+    if (secPasses) secPasses.style.display = 'none';
+    if (secFuel) secFuel.style.display = 'block';
+  } else {
+    if (btnAll) btnAll.classList.add('active');
+    if (secPasses) secPasses.style.display = 'block';
+    if (secFuel) secFuel.style.display = 'block';
   }
-  setTimeout(() => {
-    switchProfileSubtab('shop');
-  }, 50);
+
+  if (typeof sfx !== 'undefined' && sfx.playTapSound) sfx.playTapSound(1);
 };
 
 // ==========================================================================

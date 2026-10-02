@@ -362,6 +362,22 @@
       </div>
     </section>
 
+    <!-- Shop Category Filter Tabs (Full Tab Design - Req 8) -->
+    <div class="shop-filter-tabs-row" role="tablist" aria-label="Shop Categories">
+      <button type="button" class="shop-category-tab-btn active" id="shopCatBtnAll" onclick="filterShopCategories('all')">
+        <span class="shop-tab-emoji">🌟</span>
+        <span>All Items</span>
+      </button>
+      <button type="button" class="shop-category-tab-btn" id="shopCatBtnPasses" onclick="filterShopCategories('passes')">
+        <span class="shop-tab-emoji">🔑</span>
+        <span>Passes &amp; Keys</span>
+      </button>
+      <button type="button" class="shop-category-tab-btn" id="shopCatBtnFuel" onclick="filterShopCategories('fuel')">
+        <span class="shop-tab-emoji">🔋</span>
+        <span>Fuel Cells</span>
+      </button>
+    </div>
+
     <!-- ==================== SECTION: ENERGY BOOSTER & VAULT PASSES ==================== -->
     <section class="shop-section" id="shopPassesSection">
       <div class="shop-section-header">

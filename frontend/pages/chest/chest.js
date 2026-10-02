@@ -103,8 +103,10 @@ function handleChestActionButtonClick() {
   if (keys > 0) {
     unlockMysteryChest();
   } else {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔑 You need 1 Mystery Key! Tap the reactor orb or complete goals to find keys!');
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Mystery Key', '🔑', 'Mystery Chest Vault');
+    } else if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Mystery Key to unlock a chest!');
     }
     if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
       sfx.playTapSound(1);
@@ -114,6 +116,11 @@ function handleChestActionButtonClick() {
 
 function awardChestPrize(reward) {
   if (!reward || typeof gameState === 'undefined') return;
+
+  // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
+  if (typeof rollDiamondJackpot === 'function') {
+    rollDiamondJackpot('mystery_chest');
+  }
 
   if (reward.type === 'coins') {
     gameState.player.coins = (gameState.player.coins || 0) + reward.amount;
@@ -178,10 +185,11 @@ function unlockMysteryChestBox(boxNum) {
 
   const keys = (gameState.player && gameState.player.chestKeys) || 0;
   if (keys <= 0) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔑 You need 1 Winning Key! Watch an ad to get one for free.');
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Mystery Key', '🔑', 'Mystery Chest Vault');
+    } else if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Winning Key to open a chest!');
     }
-    buyChestKeyWithAd();
     return;
   }
 

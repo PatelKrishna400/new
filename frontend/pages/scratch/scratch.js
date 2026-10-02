@@ -10,7 +10,7 @@ const SCRATCH_CARD_TIERS = [
   { type: 'keys', min: 1, max: 2, weight: 20, icon: '🔑', tier: 'KEY REWARD 🔑', tierColor: '#f59e0b', desc: 'Keys to unlock mystery chests!' },
   { type: 'egg', min: 10, max: 20, weight: 50, icon: '🥚', tier: 'EGG REWARD 🥚', tierColor: '#10b981', desc: 'Egg coins to hatch 12-Egg cyber prizes!' },
   { type: 'tickets', min: 1, max: 2, weight: 20, icon: '🎟️', tier: 'TICKET REWARD 🎟️', tierColor: '#ec4899', desc: 'Tickets to spin the lucky wheel!' },
-  { type: 'coins', min: 1, max: 1, weight: 2, icon: '🪙', tier: 'RARE COIN 🪙', tierColor: '#fbbf24', desc: 'Coin deposited into your vault balance!' },
+  { type: 'diamonds', min: 25, max: 50, weight: 2, icon: '💎', tier: 'RARE DIAMONDS 💎', tierColor: '#38bdf8', desc: 'Diamonds deposited into your vault balance!' },
   { type: 'blue_coins', min: 50, max: 50, weight: 8, icon: '💙', tier: 'BLUE COINS 💙', tierColor: '#38bdf8', desc: 'Premium blue coins deposited to your balance!' }
 ];
 
@@ -94,12 +94,14 @@ function dealNewSingleCard(consumeCard = true) {
     if (cards <= 0) {
       singleCardState.hasActiveTicket = false;
       renderLockedCardPlaceholder();
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎴 You need 1 Scratch Card! Tap the reactor orb or complete goals to earn cards!');
+      if (typeof showGameEntryRequirementModal === 'function') {
+        showGameEntryRequirementModal('1 Scratch Card', '🎴', 'Scratch Card Fortune');
+      } else if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎴 You need 1 Scratch Card to play!');
       }
       const statusEl = document.getElementById('singleScratchStatusText');
       if (statusEl) {
-        statusEl.innerHTML = '⚠️ <strong>No Scratch Cards!</strong> Tap the reactor orb or complete goals to earn cards.';
+        statusEl.innerHTML = '⚠️ <strong>No Scratch Cards!</strong> Buy cards in the Shop to play.';
       }
       if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('error');
       updateScratchUI();
@@ -709,15 +711,19 @@ function completeSingleCardReveal() {
       if (typeof showFloatingToast === 'function') {
         showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} 🎟️!`);
       }
-    } else if (reward.type === 'coins') {
-      gameState.player.coins = (gameState.player.coins || 0) + reward.amount;
+    } else if (reward.type === 'diamonds' || reward.type === 'coins') {
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
+      // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
+      if (typeof rollDiamondJackpot === 'function') {
+        rollDiamondJackpot('scratch_card');
+      }
       sfx.playLevelUpSound();
       const statusEl = document.getElementById('singleScratchStatusText');
       if (statusEl) {
-        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Coins 🪙</strong>!`;
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Diamonds 💎</strong>!`;
       }
       if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Coins 🪙!`);
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Diamonds 💎!`);
       }
     } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
       gameState.player.blueCoins = (gameState.player.blueCoins || 0) + reward.amount;

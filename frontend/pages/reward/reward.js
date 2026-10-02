@@ -27,7 +27,7 @@ function switchRewardSubtab(tabName) {
   if (!gameState.rewardState) gameState.rewardState = {};
   gameState.rewardState.activeSubtab = tabName;
 
-  const tabs = ['all', 'mega', 'spin', 'chest', 'scratch', 'egg', 'memory', 'catcher'];
+  const tabs = ['all', 'spin', 'chest', 'scratch', 'egg', 'memory', 'catcher'];
   tabs.forEach(t => {
     const btn = document.getElementById(`rewardSubtab${t.charAt(0).toUpperCase() + t.slice(1)}`);
     if (btn) {
@@ -37,7 +37,6 @@ function switchRewardSubtab(tabName) {
   });
 
   const allCards = [
-    'rewardTabMega',
     'rewardTabSpin',
     'rewardTabChest',
     'rewardTabScratch',
@@ -53,7 +52,6 @@ function switchRewardSubtab(tabName) {
     });
   } else {
     const cardMap = {
-      mega: 'rewardTabMega',
       spin: 'rewardTabSpin',
       chest: 'rewardTabChest',
       scratch: 'rewardTabScratch',
@@ -178,7 +176,6 @@ function renderRewardAdminMegaShelf() {
 // ==========================================================================
 function updateRewardViewUI() {
   const allCards = [
-    'rewardTabMega',
     'rewardTabSpin',
     'rewardTabChest',
     'rewardTabScratch',

@@ -388,50 +388,19 @@ const footerContent = `
       </nav>
 
       <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Hidden unless active) -->
-      <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar" style="display: none;">
-        <!-- Tab 1: Water (💧 Water) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Cistern & Pump">
-          <div class="sf-menu-ico">💧</div>
-          <span class="sf-menu-txt">Water</span>
-        </button>
-
-        <!-- Tab 2: Managers & Workers (👷 Workers - Half-Man Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWorkers" onclick="navigateSunflowerPage(4)" title="Managers & Workers">
-          <div class="sf-menu-ico">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="7" r="4"/>
-              <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/>
-              <line x1="12" y1="11" x2="12" y2="21" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2 2"/>
-            </svg>
-          </div>
-          <span class="sf-menu-txt">Workers</span>
-        </button>
-
-        <!-- Center Primary Button: Play / Garden (🌻 Play) -->
-        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Play Garden & Lands">
+      <nav class="sf-bottom-menu-bar sf-two-tabs" id="sfBottomMenuBar" style="display: none;">
+        <!-- Tab 1: Sunflower Lands (🌻 Land) -->
+        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Sunflower Lands">
           <div class="center-play-circle">
             <span class="sf-menu-play-icon">🌻</span>
           </div>
-          <span class="sf-menu-txt font-black">Garden</span>
+          <span class="sf-menu-txt font-black">Land</span>
         </button>
 
-        <!-- Tab 4: Shop / Store (🏪 Store Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabShop" onclick="navigateSunflowerPage(3)" title="Store & Boosters">
-          <div class="sf-menu-ico">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l2-5h14l2 5"/>
-              <path d="M21 9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/>
-              <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
-              <path d="M9 21V13h6v8"/>
-            </svg>
-          </div>
-          <span class="sf-menu-txt">Shop</span>
-        </button>
-
-        <!-- Tab 5: Solar Converter / 29⚡ (⚡ 29⚡ Logo) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
-          <div class="sf-menu-ico">⚡</div>
-          <span class="sf-menu-txt">29⚡ Exch</span>
+        <!-- Tab 2: Water Wells (💧 Water) -->
+        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Wells & Collection">
+          <div class="sf-menu-ico">💧</div>
+          <span class="sf-menu-txt font-black">Water</span>
         </button>
       </nav>
 

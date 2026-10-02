@@ -23,7 +23,7 @@ const SPIN_PRIZES = [
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
   { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
-  { label: '1 Gold Coin', type: 'coins', amount: 1, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
+  { label: '1,000 Diamonds', type: 'diamonds', amount: 1000, icon: '💎', isJackpot: true, rarity: 'jackpot' },
   { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' }
 ];
 
@@ -195,8 +195,10 @@ function handleSpinButtonClick() {
   if (tickets > 0) {
     spinLuckyWheel();
   } else {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎟️ You need 1 Spin Ticket! Complete goals or tap the reactor orb to earn tickets!');
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Spin Ticket', '🎟️', 'Lucky Spin Wheel');
+    } else if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎟️ You need 1 Spin Ticket to play!');
     }
     if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
       sfx.playTapSound(1);
@@ -334,10 +336,15 @@ function triggerSpinConfetti() {
 function spinLuckyWheel() {
   if (gameState.rewardState && gameState.rewardState.isSpinning) return;
 
-  // Consume ticket if available
-  if (gameState.player.chestTickets && gameState.player.chestTickets > 0) {
-    gameState.player.chestTickets--;
+  // Strict Entry Requirement (Req 11): 1 Ticket required
+  const tickets = (gameState.player && gameState.player.chestTickets) || 0;
+  if (tickets < 1) {
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Spin Ticket', '🎟️', 'Lucky Spin Wheel');
+    }
+    return;
   }
+  gameState.player.chestTickets--;
 
   if (!gameState.rewardState) gameState.rewardState = {};
   gameState.rewardState.isSpinning = true;
@@ -353,17 +360,19 @@ function spinLuckyWheel() {
   const level = Math.max(1, Math.min(1000, spinState.level || 1));
   const targetLimit = spinState.targetCrowns || getKingLevelTarget(level);
   const crownProb = getCrownWinProbability(targetLimit);
-  const jackpotProb = 0.08; // 8% chance for 10 Gold Coins Jackpot
+
+  // Req 13: Diamond win probability must be exactly 0.0001% (1 in 1,000,000)
+  const DIAMOND_JACKPOT_PROB = 0.000001;
 
   const rand = Math.random();
   let sliceIndex;
-  if (rand < jackpotProb) {
-    sliceIndex = 6; // 10 Gold Coins Jackpot
-  } else if (rand < jackpotProb + crownProb) {
+  if (rand < DIAMOND_JACKPOT_PROB) {
+    sliceIndex = 6; // 💎 1,000 Diamonds Jackpot
+  } else if (rand < DIAMOND_JACKPOT_PROB + crownProb) {
     sliceIndex = 0; // 👑 King Crown slice (inverse to level limit)
   } else {
-    const nonCrownSlices = [1, 2, 3, 4, 5, 7];
-    sliceIndex = nonCrownSlices[Math.floor(Math.random() * nonCrownSlices.length)];
+    const nonJackpotSlices = [1, 2, 3, 4, 5, 7];
+    sliceIndex = nonJackpotSlices[Math.floor(Math.random() * nonJackpotSlices.length)];
   }
 
   const prizes = SPIN_PRIZES;
@@ -555,6 +564,14 @@ function applySpinPrize(prize, multiplier = 1) {
 
   if (prize.type === 'coins') {
     gameState.player.coins += finalAmount;
+  } else if (prize.type === 'diamonds') {
+    gameState.player.diamonds = (gameState.player.diamonds || 0) + finalAmount;
+    if (prize.isJackpot) {
+      gameState.player.diamondWins = (gameState.player.diamondWins || 0) + 1;
+      if (window.firebaseSync && typeof window.firebaseSync.updateLeaderboardEntry === 'function') {
+        window.firebaseSync.updateLeaderboardEntry();
+      }
+    }
   } else if (prize.type === 'blue_coins') {
     gameState.player.blueCoins = (gameState.player.blueCoins || 0) + finalAmount;
   } else if (prize.type === 'keys') {

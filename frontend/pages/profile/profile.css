@@ -62,26 +62,32 @@
 }
 
 .profile-subtab-btn {
-  background: transparent;
-  border: 1px solid transparent;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.88) 0%, rgba(15, 23, 42, 0.96) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  padding: 9px 8px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  color: #94a3b8;
+  gap: 7px;
+  color: #cbd5e1;
   font-family: var(--font-primary);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.35);
   transition: all 0.14s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   position: relative;
 }
 
 .profile-subtab-btn:hover {
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%);
   color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }
 
@@ -91,26 +97,26 @@
 
 /* Active Profile Tab */
 .profile-subtab-btn.active#subtabProfile {
-  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%);
-  color: #ffffff;
-  border: 1px solid #7dd3fc;
-  box-shadow: 
-    inset 0 2px 0 rgba(255, 255, 255, 0.65),
-    inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
-    0 3px 0 #075985,
-    0 0 18px rgba(56, 189, 248, 0.6);
-}
-
-/* Active Shop Tab */
-.profile-subtab-btn.active#subtabShop {
-  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%);
-  color: #030712;
-  border: 1px solid #fef08a;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #7dd3fc !important;
   box-shadow: 
     inset 0 2px 0 rgba(255, 255, 255, 0.7),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
-    0 3px 0 #92400e,
-    0 0 18px rgba(245, 158, 11, 0.6);
+    0 4px 0 #075985,
+    0 0 18px rgba(56, 189, 248, 0.6) !important;
+}
+
+/* Active Shop Tab (Req 8: Full filled tab background, shading, active state) */
+.profile-subtab-btn.active#subtabShop {
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%) !important;
+  color: #030712 !important;
+  border: 1.5px solid #fef08a !important;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
+    0 4px 0 #92400e,
+    0 0 20px rgba(245, 158, 11, 0.65) !important;
 }
 
 /* Active Blue Tab (1 💎 = 1 TAP) */
@@ -123,6 +129,67 @@
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
     0 3px 0 #1e3a8a,
     0 0 20px rgba(59, 130, 246, 0.75);
+}
+
+/* ==========================================================================
+   SHOP CATEGORY FILTER TABS (Req 8: FULL TAB DESIGN)
+   ========================================================================== */
+.shop-filter-tabs-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 16px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shop-category-tab-btn {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #cbd5e1;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: all 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.shop-category-tab-btn:hover {
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.shop-category-tab-btn:active {
+  transform: translateY(2px);
+}
+
+.shop-category-tab-btn.active {
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%) !important;
+  color: #030712 !important;
+  border: 1.5px solid #fef08a !important;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -2.5px 0 rgba(0, 0, 0, 0.45),
+    0 3px 0 #92400e,
+    0 0 16px rgba(245, 158, 11, 0.6) !important;
+}
+
+.shop-tab-emoji {
+  font-size: 14px;
 }
 
 .blue-tab-badge {

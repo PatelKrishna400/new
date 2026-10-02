@@ -1,25 +1,24 @@
 /* ==========================================================================
-   QUANTUM DIAMOND GENERATOR ENGINE (pages/diamond-generator/diamond-generator.js)
-   - Uses Energy to Start Generation (Base 100 ⚡ + 5 ⚡ per upgrade level)
-   - 60.00s Timer -> Rewards 0.000001 💎 * Power Level upon completion
-   - Power Upgrade: +0.000001 💎 rate (Costs 50 Coins for Lv 2, 100 for Lv 3, 150 for Lv 4...)
-   - Speed Upgrade: -0.01s cycle (Costs 10 Diamonds for Lv 2, 15 for Lv 3, 20 for Lv 4...)
-   - Cost Reducer Tabs [ POWER ] and [ SPEED ]:
-       * Power Tab: Watch Ad reduces coin cost by 10 coins (30s cooldown timer between ads)
-       * Speed Tab: Watch Ad reduces diamond cost by 1 diamond (30s cooldown timer between ads)
-       * Milestone Rule: Every 10 levels (10->11, 20->21...), 3 ads watch is compulsory with 30s timer between ads!
-   - Firebase Realtime Database Sync on all actions
+   QUANTUM DIAMOND GENERATOR & PIGGY BANK ENGINE (diamond-generator.js)
+   - Strict 100 Energy = 60 Seconds Generation Rule
+   - Does NOT auto-start on page load; strictly requires user energy spend
+   - Page refresh does NOT restart or reset timer; resumes or completes seamlessly
+   - All rewards go directly into the 30-Day Piggy Bank Storage
+   - Collect from Piggy Bank to Main Balance with duplicate prevention
+   - +1 Day Storage Extension via Rewarded Ad
+   - Separate Power & Speed Ad discounts with explicit activation
+   - Firebase Realtime Database is authoritative source of truth
    ========================================================================== */
 
 let _dgProductionInterval = null;
 let _dgLastTickTime = Date.now();
 
-// Configuration Constants
+// Constants
 const DG_BASE_CYCLE_SEC = 60.00;
 const DG_BASE_OUTPUT_RATE = 0.000001;
-const DG_BASE_START_ENERGY = 100; // 100 Energy to start generation
-const DG_ENERGY_STEP_PER_UPGRADE = 5; // +5 Energy per upgrade
-const DG_AD_COOLDOWN_MS = 30 * 1000; // 30 Seconds timer between ads
+const DG_REQUIRED_ENERGY = 100; // 100 Energy = 60s Generation
+const DG_AD_COOLDOWN_MS = 30 * 1000; // 30s between ads
+const PIGGY_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30-Day retention rule
 
 // Format Diamond display (up to 6 decimals)
 function formatDiamondDisplay(num) {
@@ -27,7 +26,7 @@ function formatDiamondDisplay(num) {
   return Number(num).toFixed(6);
 }
 
-// Initializer & State Verification
+// Initializer & State Verification for Diamond Generator
 function ensureDiamondGenState() {
   if (!window.gameState) return null;
   if (!window.gameState.diamondGenerator) {
@@ -35,13 +34,14 @@ function ensureDiamondGenState() {
   }
   const dg = window.gameState.diamondGenerator;
 
-  // Support migration from old keys if any
   if (dg.powerLevel === undefined) dg.powerLevel = dg.productionLevel || 1;
   if (dg.speedLevel === undefined) dg.speedLevel = dg.timeLevel || 1;
   if (dg.isRunning === undefined) dg.isRunning = false;
   if (dg.cycleProgress === undefined || isNaN(dg.cycleProgress)) dg.cycleProgress = 0;
   if (dg.generationStartTime === undefined) dg.generationStartTime = 0;
   if (dg.totalProduced === undefined) dg.totalProduced = 0;
+  if (dg.status === undefined) dg.status = 'ready';
+  if (dg.claimed === undefined) dg.claimed = true;
 
   // Discounts & Ad Timers
   if (dg.powerDiscount === undefined) dg.powerDiscount = 0;
@@ -49,19 +49,33 @@ function ensureDiamondGenState() {
   if (dg.lastPowerAdTime === undefined) dg.lastPowerAdTime = 0;
   if (dg.lastSpeedAdTime === undefined) dg.lastSpeedAdTime = 0;
 
-  // Milestone Compulsory Ads (0 to 3)
+  // Milestones
   if (dg.powerMilestoneAds === undefined) dg.powerMilestoneAds = 0;
   if (dg.speedMilestoneAds === undefined) dg.speedMilestoneAds = 0;
 
   return dg;
 }
 
-// Energy Cost: Base 100 + 5 per each upgrade beyond level 1
+// Initializer & State Verification for Piggy Bank
+function ensurePiggyBankState() {
+  if (!window.gameState) return null;
+  if (!window.gameState.piggyBank) {
+    window.gameState.piggyBank = {
+      totalStored: 0,
+      extensionDays: 0,
+      records: []
+    };
+  }
+  const pb = window.gameState.piggyBank;
+  if (pb.extensionDays === undefined) pb.extensionDays = 0;
+  if (!Array.isArray(pb.records)) pb.records = [];
+
+  return pb;
+}
+
+// Energy Cost: Exactly 100 Energy per cycle
 function getDiamondGenEnergyCost() {
-  const dg = ensureDiamondGenState();
-  if (!dg) return DG_BASE_START_ENERGY;
-  const totalUpgrades = Math.max(0, ((dg.powerLevel || 1) - 1) + ((dg.speedLevel || 1) - 1));
-  return DG_BASE_START_ENERGY + (totalUpgrades * DG_ENERGY_STEP_PER_UPGRADE);
+  return DG_REQUIRED_ENERGY;
 }
 
 // Diamond Output Rate: 0.000001 * powerLevel
@@ -72,16 +86,16 @@ function getDiamondsPerCycle() {
   return Number((pLvl * DG_BASE_OUTPUT_RATE).toFixed(6));
 }
 
-// Cycle Duration: 60.00s - 0.01s * (speedLevel - 1)
+// Cycle Duration: Exactly 60.00s base (speed upgrade reduces slightly down to 30s)
 function getDiamondCycleDuration() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_CYCLE_SEC;
   const sLvl = Math.max(1, parseInt(dg.speedLevel, 10) || 1);
-  const dur = DG_BASE_CYCLE_SEC - (sLvl - 1) * 0.01;
-  return Math.max(1.00, Number(dur.toFixed(2)));
+  const dur = DG_BASE_CYCLE_SEC - (sLvl - 1) * 0.05;
+  return Math.max(30.00, Number(dur.toFixed(2)));
 }
 
-// Power Upgrade Cost: Lv 1->2 is 50, Lv 2->3 is 100, Lv 3->4 is 150...
+// Upgrade Costs
 function getDiamondPowerUpgradeCost() {
   const dg = ensureDiamondGenState();
   if (!dg) return 50;
@@ -91,7 +105,6 @@ function getDiamondPowerUpgradeCost() {
   return Math.max(10, baseCost - discount);
 }
 
-// Speed Upgrade Cost: Lv 1->2 is 10, Lv 2->3 is 15, Lv 3->4 is 20... (+5 each)
 function getDiamondSpeedUpgradeCost() {
   const dg = ensureDiamondGenState();
   if (!dg) return 10;
@@ -101,7 +114,6 @@ function getDiamondSpeedUpgradeCost() {
   return Math.max(1, baseCost - discount);
 }
 
-// Check if player is at a 10-level milestone requiring compulsory ads
 function isPowerMilestoneLocked() {
   const dg = ensureDiamondGenState();
   if (!dg) return false;
@@ -116,17 +128,152 @@ function isSpeedMilestoneLocked() {
   return (curLvl % 10 === 0) && ((dg.speedMilestoneAds || 0) < 3);
 }
 
+// ==========================================================================
+// PIGGY BANK STORAGE & 30-DAY RETENTION ENGINE
+// ==========================================================================
+function getRecordExpiryTimestamp(record) {
+  const pb = ensurePiggyBankState();
+  const extensionMs = (pb ? (pb.extensionDays || 0) : 0) * 86400000;
+  const baseCreated = Number(record.createdAt || Date.now());
+  return baseCreated + PIGGY_RETENTION_MS + extensionMs;
+}
+
+function isPiggyRecordActive(record) {
+  if (!record || record.collected) return false;
+  return Date.now() < getRecordExpiryTimestamp(record);
+}
+
+function getPiggyBankCollectibleTotal() {
+  const pb = ensurePiggyBankState();
+  if (!pb || !Array.isArray(pb.records)) return 0;
+  let total = 0;
+  pb.records.forEach(rec => {
+    if (isPiggyRecordActive(rec)) {
+      total += Number(rec.amount || 0);
+    }
+  });
+  return Number(total.toFixed(6));
+}
+
+// Deposit newly generated diamonds into Piggy Bank
+function depositDiamondToPiggyBank(amount, source = 'diamond_generator') {
+  const pb = ensurePiggyBankState();
+  if (!pb) return;
+
+  const now = Date.now();
+  const record = {
+    id: `pgr_${now}_${Math.random().toString(36).substr(2, 5)}`,
+    amount: Number(amount),
+    source: source,
+    createdAt: now,
+    collected: false,
+    collectedAt: 0
+  };
+
+  pb.records.unshift(record);
+  // Cap history to 60 items to keep payload light
+  if (pb.records.length > 60) {
+    pb.records = pb.records.slice(0, 60);
+  }
+  pb.totalStored = getPiggyBankCollectibleTotal();
+}
+
+// Action: Collect Diamonds from Piggy Bank to Main Balance
+function collectPiggyBankDiamonds() {
+  const pb = ensurePiggyBankState();
+  if (!pb || !window.gameState) return;
+
+  const collectible = getPiggyBankCollectibleTotal();
+  if (collectible <= 0) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('ℹ️ No active diamonds ready to collect in Piggy Bank!');
+    }
+    return;
+  }
+
+  // Mark all active records as collected
+  const now = Date.now();
+  let collectedCount = 0;
+  pb.records.forEach(rec => {
+    if (isPiggyRecordActive(rec)) {
+      rec.collected = true;
+      rec.collectedAt = now;
+      collectedCount++;
+    }
+  });
+
+  // Credit to main player balance
+  window.gameState.player.diamonds = Number(((window.gameState.player.diamonds || 0) + collectible).toFixed(6));
+  if (!window.gameState.player.diamondWins) window.gameState.player.diamondWins = 0;
+  window.gameState.player.diamondWins += collectedCount;
+
+  pb.totalStored = getPiggyBankCollectibleTotal();
+
+  saveAllState();
+  updateDiamondGeneratorUI();
+
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🎉 Collected +${formatDiamondDisplay(collectible)} 💎 to Balance!`);
+  }
+  if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+    sfx.playLevelUpSound();
+  }
+}
+
+// Action: Extend Piggy Bank Storage by +1 Day via Ad
+function extendPiggyBankWithAd() {
+  const pb = ensurePiggyBankState();
+  if (!pb) return;
+
+  const triggerExtension = () => {
+    pb.extensionDays = (pb.extensionDays || 0) + 1;
+    saveAllState();
+    updateDiamondGeneratorUI();
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⏳ +1 Day Added! Storage extended by 24 hours.`);
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playBuySound === 'function') {
+      sfx.playBuySound();
+    }
+  };
+
+  if (typeof showMonetagRewardedAd === 'function') {
+    showMonetagRewardedAd({ onRewarded: triggerExtension, onError: triggerExtension });
+  } else {
+    triggerExtension();
+  }
+}
+
+// Toggle collapsible records view
+function togglePiggyRecords() {
+  const listEl = document.getElementById('piggyRecordsList');
+  const arrowEl = document.getElementById('piggyRecordsArrow');
+  if (!listEl) return;
+
+  const isOpen = listEl.style.display !== 'none';
+  listEl.style.display = isOpen ? 'none' : 'flex';
+  if (arrowEl) arrowEl.classList.toggle('open', !isOpen);
+}
+
+// ==========================================================================
+// DIAMOND GENERATION ACTIONS (STRICT ENERGY & REFRESH SAFETY)
+// ==========================================================================
+
 // Action: Start Diamond Generation
 function startDiamondGeneration() {
   if (!window.gameState) return;
   const dg = ensureDiamondGenState();
   if (!dg) return;
 
+  const cycleDuration = getDiamondCycleDuration();
+
+  // If already generating, show remaining time
   if (dg.isRunning) {
-    const dur = getDiamondCycleDuration();
-    const rem = Math.max(0, dur - (dg.cycleProgress || 0));
+    const elapsed = dg.generationStartTime ? Math.max(0, (Date.now() - dg.generationStartTime) / 1000) : (dg.cycleProgress || 0);
+    const rem = Math.max(0, cycleDuration - elapsed);
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⚡ In progress: ${rem.toFixed(1)}s remaining`);
+      showFloatingToast(`⚡ Generation in progress: ${rem.toFixed(1)}s remaining`);
     }
     return;
   }
@@ -134,25 +281,36 @@ function startDiamondGeneration() {
   const energyCost = getDiamondGenEnergyCost();
   const currentEnergy = Math.floor(window.gameState.reactor?.currentEnergy || 0);
 
+  // Strict: Cannot start without 100 Energy
   if (currentEnergy < energyCost) {
+    dg.status = 'not_enough_energy';
+    updateDiamondGeneratorUI();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`Need ${energyCost} ⚡ Energy! (Have: ${currentEnergy}). Tap reactor!`);
+      showFloatingToast(`⚠️ Need ${energyCost} ⚡ Energy! (You have: ${currentEnergy}). Earn energy first!`);
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
+      sfx.playErrorSound();
     }
     return;
   }
 
-  // Deduct energy & start timer
+  // Deduct 100 Energy authoritative
   window.gameState.reactor.currentEnergy -= energyCost;
   dg.isRunning = true;
+  dg.status = 'generating';
   dg.cycleProgress = 0;
   dg.generationStartTime = Date.now();
+  dg.claimed = false;
 
   saveAllState();
   updateDiamondGeneratorUI();
   updateDiamondGeneratorRealtime();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`⚡ Generation Started (-${energyCost} ⚡)`);
+    showFloatingToast(`⚡ Diamond Generation Started (-${energyCost} ⚡)`);
+  }
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(2);
   }
 }
 
@@ -180,8 +338,8 @@ function purchaseDiamondOutputUpgrade() {
 
   window.gameState.player.coins -= cost;
   dg.powerLevel = (dg.powerLevel || 1) + 1;
-  dg.powerDiscount = 0; // Reset discount for next level
-  dg.powerMilestoneAds = 0; // Reset milestone for next level
+  dg.powerDiscount = 0;
+  dg.powerMilestoneAds = 0;
 
   saveAllState();
   updateDiamondGeneratorUI();
@@ -215,8 +373,8 @@ function purchaseDiamondSpeedUpgrade() {
 
   window.gameState.player.diamonds = Number((playerDiamonds - cost).toFixed(6));
   dg.speedLevel = (dg.speedLevel || 1) + 1;
-  dg.speedDiscount = 0; // Reset discount for next level
-  dg.speedMilestoneAds = 0; // Reset milestone for next level
+  dg.speedDiscount = 0;
+  dg.speedMilestoneAds = 0;
 
   saveAllState();
   updateDiamondGeneratorUI();
@@ -226,7 +384,7 @@ function purchaseDiamondSpeedUpgrade() {
   }
 }
 
-// Ad Action: Watch Power Ad Discount (-10 Coins) with 30s Cooldown
+// Power Ad: Reduces coin cost by 10
 function watchPowerAdDiscount() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
@@ -257,7 +415,7 @@ function watchPowerAdDiscount() {
   }
 }
 
-// Ad Action: Watch Speed Ad Discount (-1 Diamond) with 30s Cooldown
+// Speed Ad: Reduces diamond cost by 1
 function watchSpeedAdDiscount() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
@@ -288,68 +446,49 @@ function watchSpeedAdDiscount() {
   }
 }
 
-// Milestone Ad Actions (Compulsory 3 Ads on every 10 levels with 30s Cooldown)
+// Milestones
 function watchPowerMilestoneAd() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
-
   const now = Date.now();
   if (now - (dg.lastPowerAdTime || 0) < DG_AD_COOLDOWN_MS) {
     const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastPowerAdTime)) / 1000);
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
-    }
+    if (typeof showFloatingToast === 'function') showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
     return;
   }
-
   const triggerReward = () => {
     dg.powerMilestoneAds = Math.min(3, (dg.powerMilestoneAds || 0) + 1);
     dg.lastPowerAdTime = Date.now();
     saveAllState();
     updateDiamondGeneratorUI();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎬 Milestone Ad ${dg.powerMilestoneAds}/3 Watched!`);
-    }
+    if (typeof showFloatingToast === 'function') showFloatingToast(`🎬 Milestone Ad ${dg.powerMilestoneAds}/3 Watched!`);
   };
-
   if (typeof showMonetagRewardedAd === 'function') {
     showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
-  } else {
-    triggerReward();
-  }
+  } else triggerReward();
 }
 
 function watchSpeedMilestoneAd() {
   const dg = ensureDiamondGenState();
   if (!dg) return;
-
   const now = Date.now();
   if (now - (dg.lastSpeedAdTime || 0) < DG_AD_COOLDOWN_MS) {
     const rem = Math.ceil((DG_AD_COOLDOWN_MS - (now - dg.lastSpeedAdTime)) / 1000);
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
-    }
+    if (typeof showFloatingToast === 'function') showFloatingToast(`⏳ Wait ${rem}s before next ad!`);
     return;
   }
-
   const triggerReward = () => {
     dg.speedMilestoneAds = Math.min(3, (dg.speedMilestoneAds || 0) + 1);
     dg.lastSpeedAdTime = Date.now();
     saveAllState();
     updateDiamondGeneratorUI();
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🎬 Milestone Ad ${dg.speedMilestoneAds}/3 Watched!`);
-    }
+    if (typeof showFloatingToast === 'function') showFloatingToast(`🎬 Milestone Ad ${dg.speedMilestoneAds}/3 Watched!`);
   };
-
   if (typeof showMonetagRewardedAd === 'function') {
     showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
-  } else {
-    triggerReward();
-  }
+  } else triggerReward();
 }
 
-// Tab Switch Function for Cost Reducers: [ POWER ] and [ SPEED ]
 function switchDgCostTab(tab) {
   const tabPower = document.getElementById('tabPowerCost');
   const tabSpeed = document.getElementById('tabSpeedCost');
@@ -369,7 +508,6 @@ function switchDgCostTab(tab) {
   }
 }
 
-// Save All Game State & Sync to Firebase
 function saveAllState() {
   if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -379,53 +517,60 @@ function saveAllState() {
   if (typeof updateHomeUI === 'function') updateHomeUI();
 }
 
-// Main 100ms Generator Loop
+// ==========================================================================
+// PERSISTENT GENERATOR TICK LOOP
+// ==========================================================================
 function startDiamondGeneratorLoop() {
   if (_dgProductionInterval) clearInterval(_dgProductionInterval);
   _dgLastTickTime = Date.now();
 
   _dgProductionInterval = setInterval(() => {
     const now = Date.now();
-    const dt = (now - _dgLastTickTime) / 1000;
-    _dgLastTickTime = now;
-
     if (!window.gameState) return;
     const dg = ensureDiamondGenState();
     if (!dg) return;
 
-    if (dg.isRunning) {
-      const cycleDuration = getDiamondCycleDuration();
+    const cycleDuration = getDiamondCycleDuration();
 
-      if (dg.generationStartTime) {
-        dg.cycleProgress = Math.min(cycleDuration, (now - dg.generationStartTime) / 1000);
-      } else {
-        dg.cycleProgress = (dg.cycleProgress || 0) + dt;
-      }
+    // STRICT: Only progress if explicitly started with energy!
+    if (dg.isRunning && dg.generationStartTime > 0) {
+      const elapsedSeconds = (now - dg.generationStartTime) / 1000;
+      dg.cycleProgress = Math.min(cycleDuration, Math.max(0, elapsedSeconds));
 
       if (dg.cycleProgress >= cycleDuration) {
-        // Complete Cycle!
-        dg.isRunning = false;
-        dg.cycleProgress = 0;
-        dg.generationStartTime = 0;
+        // Complete Cycle authoritative & reward to Piggy Bank once
+        if (!dg.claimed) {
+          dg.claimed = true;
+          dg.isRunning = false;
+          dg.cycleProgress = 0;
+          dg.generationStartTime = 0;
+          dg.status = 'completed';
 
-        const outputPerCycle = getDiamondsPerCycle();
-        window.gameState.player.diamonds = Number(((window.gameState.player.diamonds || 0) + outputPerCycle).toFixed(6));
-        dg.totalProduced = Number(((dg.totalProduced || 0) + outputPerCycle).toFixed(6));
+          const outputPerCycle = getDiamondsPerCycle();
+          dg.totalProduced = Number(((dg.totalProduced || 0) + outputPerCycle).toFixed(6));
 
-        saveAllState();
-        updateDiamondGeneratorUI();
+          // REWARD GOES TO PIGGY BANK
+          depositDiamondToPiggyBank(outputPerCycle, 'diamond_generator');
 
-        // Crystal pulse
-        document.querySelectorAll('.diamond-crystal-node').forEach(node => {
-          node.classList.add('cycle-complete-pulse');
-          setTimeout(() => node.classList.remove('cycle-complete-pulse'), 800);
-        });
+          saveAllState();
+          updateDiamondGeneratorUI();
 
-        if (typeof showFloatingToast === 'function') {
-          showFloatingToast(`💎 Won +${formatDiamondDisplay(outputPerCycle)} Diamond!`);
-        }
-        if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-          sfx.playLevelUpSound();
+          // Crystal pulse
+          document.querySelectorAll('.diamond-crystal-node').forEach(node => {
+            node.classList.add('cycle-complete-pulse');
+            setTimeout(() => node.classList.remove('cycle-complete-pulse'), 800);
+          });
+
+          if (typeof showFloatingToast === 'function') {
+            showFloatingToast(`💎 +${formatDiamondDisplay(outputPerCycle)} Diamond stored in Piggy Bank!`);
+          }
+          if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+            sfx.playLevelUpSound();
+          }
+        } else {
+          dg.isRunning = false;
+          dg.generationStartTime = 0;
+          dg.cycleProgress = 0;
         }
       }
     }
@@ -443,21 +588,40 @@ function updateDiamondGeneratorRealtime() {
   const currentProgress = dg.cycleProgress || 0;
   const remainingSeconds = dg.isRunning ? Math.max(0, cycleDuration - currentProgress) : cycleDuration;
   const percent = dg.isRunning ? Math.min(100, Math.max(0, (currentProgress / cycleDuration) * 100)) : 0;
-  const energyCost = getDiamondGenEnergyCost();
+  const currentEnergy = Math.floor(window.gameState?.reactor?.currentEnergy || 0);
 
   // 1. Countdown Text
   document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
     if (el) el.textContent = `${remainingSeconds.toFixed(1)}s`;
   });
 
-  // 2. Circular SVG Progress Ring
+  // 2. Circular SVG Progress Ring (Smooth Outer Loading Indicator)
   const circumference = 439.82;
   const offset = dg.isRunning ? (circumference - (percent / 100) * circumference) : circumference;
   document.querySelectorAll('#diamondProgressRing, .diamond-ring-fill, #diamondProgressRingHome').forEach(ring => {
     if (ring) ring.style.strokeDashoffset = offset.toFixed(2);
   });
 
-  // 3. Start Generation Buttons
+  // 3. Status Badge State Display (Ready, Generating, Completed, Not Enough Energy)
+  const statusBadge = document.getElementById('dgStatusBadge');
+  if (statusBadge) {
+    statusBadge.className = 'dg-status-tag';
+    if (dg.isRunning) {
+      statusBadge.textContent = 'GENERATING';
+      statusBadge.classList.add('generating');
+    } else if (dg.status === 'completed') {
+      statusBadge.textContent = 'COMPLETED';
+      statusBadge.classList.add('completed');
+    } else if (currentEnergy < DG_REQUIRED_ENERGY) {
+      statusBadge.textContent = 'NOT ENOUGH ENERGY';
+      statusBadge.classList.add('not-enough-energy');
+    } else {
+      statusBadge.textContent = 'READY';
+      statusBadge.classList.add('ready');
+    }
+  }
+
+  // 4. Start Generation Button
   const startBtnText = document.getElementById('btnStartDiamondGenText');
   const startBtn = document.getElementById('btnStartDiamondGen');
   if (startBtn) {
@@ -465,37 +629,32 @@ function updateDiamondGeneratorRealtime() {
       if (startBtnText) startBtnText.textContent = `⚡ GENERATING... (${remainingSeconds.toFixed(1)}s)`;
       startBtn.classList.add('generating-active');
       startBtn.disabled = true;
+    } else if (currentEnergy < DG_REQUIRED_ENERGY) {
+      if (startBtnText) startBtnText.textContent = `⚠️ NEED 100 ⚡ (HAVE ${currentEnergy} ⚡)`;
+      startBtn.classList.remove('generating-active');
+      startBtn.disabled = false;
     } else {
-      if (startBtnText) startBtnText.textContent = `⚡ START GENERATION (${energyCost} ⚡)`;
+      if (startBtnText) startBtnText.textContent = '⚡ START GENERATION (100 ⚡)';
       startBtn.classList.remove('generating-active');
       startBtn.disabled = false;
     }
   }
 
-  // Home Start Button (if present)
+  // Home Start Button Sync
   document.querySelectorAll('#btnStartDiamondGenHome').forEach(btn => {
     if (dg.isRunning) {
       btn.innerHTML = `<span>⚡ GENERATING (${remainingSeconds.toFixed(1)}s)</span>`;
       btn.disabled = true;
+    } else if (currentEnergy < DG_REQUIRED_ENERGY) {
+      btn.innerHTML = `<span>⚠️ NEED 100 ⚡</span>`;
+      btn.disabled = false;
     } else {
-      btn.innerHTML = `<span>⚡ START (${energyCost} ⚡)</span>`;
+      btn.innerHTML = `<span>⚡ START (100 ⚡)</span>`;
       btn.disabled = false;
     }
   });
 
-  // 4. Status Badge
-  const statusBadge = document.getElementById('dgStatusBadge');
-  if (statusBadge) {
-    if (dg.isRunning) {
-      statusBadge.textContent = 'ACTIVE';
-      statusBadge.classList.add('active');
-    } else {
-      statusBadge.textContent = 'READY';
-      statusBadge.classList.remove('active');
-    }
-  }
-
-  // 5. Cooldowns on Ad Buttons (30s Timer)
+  // 5. Cooldowns on Ad Buttons
   const now = Date.now();
   const powerCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastPowerAdTime || 0))) / 1000));
   const speedCdRem = Math.max(0, Math.ceil((DG_AD_COOLDOWN_MS - (now - (dg.lastSpeedAdTime || 0))) / 1000));
@@ -523,34 +682,12 @@ function updateDiamondGeneratorRealtime() {
       sAdBtn.classList.remove('cooldown');
     }
   }
-
-  // Milestone ad buttons
-  const pMBtn = document.getElementById('btnPowerMilestoneAd');
-  if (pMBtn) {
-    if (powerCdRem > 0) {
-      pMBtn.innerHTML = `<span>⏳ Wait ${powerCdRem}s</span>`;
-      pMBtn.classList.add('cooldown');
-    } else {
-      pMBtn.innerHTML = '<span>🎬 Watch Required Ad (30s Timer)</span>';
-      pMBtn.classList.remove('cooldown');
-    }
-  }
-
-  const sMBtn = document.getElementById('btnSpeedMilestoneAd');
-  if (sMBtn) {
-    if (speedCdRem > 0) {
-      sMBtn.innerHTML = `<span>⏳ Wait ${speedCdRem}s</span>`;
-      sMBtn.classList.add('cooldown');
-    } else {
-      sMBtn.innerHTML = '<span>🎬 Watch Required Ad (30s Timer)</span>';
-      sMBtn.classList.remove('cooldown');
-    }
-  }
 }
 
 // Full UI Synchronizer
 function updateDiamondGeneratorUI() {
   const dg = ensureDiamondGenState();
+  const pb = ensurePiggyBankState();
   if (!dg || !window.gameState) return;
 
   const rate = getDiamondsPerCycle();
@@ -558,7 +695,7 @@ function updateDiamondGeneratorUI() {
   const powerCost = getDiamondPowerUpgradeCost();
   const speedCost = getDiamondSpeedUpgradeCost();
 
-  // Resource Pills
+  // Resource Sticky Pills
   const dVal = document.getElementById('dgStickyDiamonds');
   if (dVal) dVal.textContent = formatDiamondDisplay(window.gameState.player.diamonds);
 
@@ -574,6 +711,41 @@ function updateDiamondGeneratorUI() {
 
   const coreRate = document.getElementById('diamondCoreRateLabel');
   if (coreRate) coreRate.textContent = `+${formatDiamondDisplay(rate)} 💎`;
+
+  // Piggy Bank UI
+  const piggyCollectible = getPiggyBankCollectibleTotal();
+  const piggyAmountEl = document.getElementById('piggyStoredAmount');
+  if (piggyAmountEl) piggyAmountEl.textContent = formatDiamondDisplay(piggyCollectible);
+
+  const piggyBtn = document.getElementById('btnCollectPiggyBank');
+  if (piggyBtn) {
+    piggyBtn.disabled = (piggyCollectible <= 0);
+    piggyBtn.classList.toggle('can-collect', piggyCollectible > 0);
+  }
+
+  const extensionBadge = document.getElementById('piggyExtensionBadge');
+  if (extensionBadge) {
+    extensionBadge.textContent = `+${pb ? (pb.extensionDays || 0) : 0} Days Extended`;
+  }
+
+  const expiryStatusEl = document.getElementById('piggyExpiryStatus');
+  if (expiryStatusEl && pb) {
+    // Find oldest active deposit
+    const activeRecords = (pb.records || []).filter(r => isPiggyRecordActive(r));
+    if (activeRecords.length > 0) {
+      const oldest = activeRecords[activeRecords.length - 1];
+      const expiryTime = getRecordExpiryTimestamp(oldest);
+      const remainingHours = Math.max(0, Math.floor((expiryTime - Date.now()) / (1000 * 3600)));
+      const days = Math.floor(remainingHours / 24);
+      const hrs = remainingHours % 24;
+      expiryStatusEl.textContent = `Oldest Deposit: Expires in ${days}d ${hrs}h`;
+    } else {
+      expiryStatusEl.textContent = 'Storage: Ready for generated diamonds';
+    }
+  }
+
+  // Render Records
+  renderPiggyBankRecordsList();
 
   // Power Upgrade Card
   const pBadge = document.getElementById('ducOutputLevelBadge');
@@ -599,27 +771,12 @@ function updateDiamondGeneratorUI() {
     }
   }
 
-  // Power Milestone Box
-  const pMBox = document.getElementById('powerMilestoneBox');
-  const pMProg = document.getElementById('powerMilestoneProgressText');
-  if (pMBox && pMProg) {
-    if (dg.powerLevel % 10 === 0) {
-      pMBox.style.display = 'flex';
-      pMProg.textContent = `${dg.powerMilestoneAds || 0} / 3 Ads`;
-    } else {
-      pMBox.style.display = 'none';
-    }
-  }
-
-  const pDiscBadge = document.getElementById('powerDiscountBadge');
-  if (pDiscBadge) pDiscBadge.textContent = `-${dg.powerDiscount || 0} 🪙 DISCOUNT`;
-
   // Speed Upgrade Card
   const sBadge = document.getElementById('ducSpeedLevelBadge');
   if (sBadge) sBadge.textContent = `Lv. ${dg.speedLevel}`;
 
   const sSub = document.getElementById('ducSpeedSub');
-  if (sSub) sSub.textContent = `Cycle: ${cycleDur.toFixed(2)}s (-0.01s)`;
+  if (sSub) sSub.textContent = `Cycle: ${cycleDur.toFixed(2)}s (-0.05s)`;
 
   const sCostTxt = document.getElementById('btnUpgradeSpeedCostText');
   if (sCostTxt) sCostTxt.textContent = `${speedCost} 💎`;
@@ -634,30 +791,60 @@ function updateDiamondGeneratorUI() {
     } else {
       sUpgBtn.classList.remove('locked');
       const sUpgTxt = document.getElementById('btnUpgradeSpeedText');
-      if (sUpgTxt) sUpgTxt.textContent = 'OVERCLOCK (-0.01s)';
+      if (sUpgTxt) sUpgTxt.textContent = 'OVERCLOCK (-0.05s)';
     }
   }
-
-  // Speed Milestone Box
-  const sMBox = document.getElementById('speedMilestoneBox');
-  const sMProg = document.getElementById('speedMilestoneProgressText');
-  if (sMBox && sMProg) {
-    if (dg.speedLevel % 10 === 0) {
-      sMBox.style.display = 'flex';
-      sMProg.textContent = `${dg.speedMilestoneAds || 0} / 3 Ads`;
-    } else {
-      sMBox.style.display = 'none';
-    }
-  }
-
-  const sDiscBadge = document.getElementById('speedDiscountBadge');
-  if (sDiscBadge) sDiscBadge.textContent = `-${dg.speedDiscount || 0} 💎 DISCOUNT`;
 
   // Update Home Card if present
   const dgeRate = document.getElementById('dgeHomeRateVal');
   if (dgeRate) dgeRate.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
 
   updateDiamondGeneratorRealtime();
+}
+
+function renderPiggyBankRecordsList() {
+  const listEl = document.getElementById('piggyRecordsList');
+  const countEl = document.getElementById('piggyRecordCount');
+  if (!listEl) return;
+
+  const pb = ensurePiggyBankState();
+  const records = (pb && Array.isArray(pb.records)) ? pb.records : [];
+  if (countEl) countEl.textContent = records.length;
+
+  if (records.length === 0) {
+    listEl.innerHTML = '<div class="no-records-msg">No diamond deposits yet. Generate diamonds with 100 ⚡!</div>';
+    return;
+  }
+
+  let html = '';
+  records.slice(0, 15).forEach(rec => {
+    const isAct = isPiggyRecordActive(rec);
+    const isCol = !!rec.collected;
+    const expiryTime = getRecordExpiryTimestamp(rec);
+    const remDays = Math.max(0, Math.ceil((expiryTime - Date.now()) / (1000 * 86400)));
+    const dateStr = new Date(rec.createdAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    let statusPill = '';
+    if (isCol) {
+      statusPill = '<span class="record-status-pill collected">Collected</span>';
+    } else if (isAct) {
+      statusPill = `<span class="record-status-pill active">${remDays}d left</span>`;
+    } else {
+      statusPill = '<span class="record-status-pill expired">Expired</span>';
+    }
+
+    html += `
+      <div class="piggy-record-item">
+        <div>
+          <span class="record-amount">+${formatDiamondDisplay(rec.amount)} 💎</span>
+          <div class="record-meta">${dateStr}</div>
+        </div>
+        ${statusPill}
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
 }
 
 // Lifecycle Hooks
@@ -685,3 +872,6 @@ window.updateDiamondGeneratorRealtime = updateDiamondGeneratorRealtime;
 window.formatDiamondDisplay = formatDiamondDisplay;
 window.getDiamondsPerCycle = getDiamondsPerCycle;
 window.getDiamondCycleDuration = getDiamondCycleDuration;
+window.collectPiggyBankDiamonds = collectPiggyBankDiamonds;
+window.extendPiggyBankWithAd = extendPiggyBankWithAd;
+window.togglePiggyRecords = togglePiggyRecords;

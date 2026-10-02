@@ -17,7 +17,7 @@ const EGG_HATCH_REWARDS = {
   key: { type: 'key', label: '1 Key', icon: '🔑', winAmount: 1, unit: 'Key', weight: 30 },
   ticket: { type: 'ticket', label: '1 Ticket', icon: '🎟️', winAmount: 1, unit: 'Ticket', weight: 30 },
   card: { type: 'card', label: '1 Card', icon: '🎴', winAmount: 1, unit: 'Card', weight: 20 },
-  coin: { type: 'coin', label: '1 Coin', icon: '🪙', winAmount: 1, unit: 'Coins', weight: 20 }
+  coin: { type: 'diamond', label: '25 Diamonds', icon: '💎', winAmount: 25, unit: 'Diamonds', weight: 20 }
 };
 
 if (!gameState.eggHatchState) {
@@ -140,11 +140,13 @@ function hatchEggCell(index) {
   const egg = gameState.eggHatchState.eggs[index];
   if (!egg || egg.revealed || egg.hatching) return;
 
-  // Check 1 Egg Coin cost
+  // Check 1 Egg Coin cost (Req 11)
   const eggsAvailable = gameState.player.eggs !== undefined ? gameState.player.eggs : 0;
   if (eggsAvailable <= 0) {
-    if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🥚 You need 1 Egg Coin to hatch! Tap the reactor orb or complete daily goals!');
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Egg Coin', '🥚', 'Egg Hatchery');
+    } else if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🥚 You need 1 Egg Coin to hatch!');
     }
     return;
   }
@@ -222,9 +224,14 @@ function triggerEggWinCelebration(itemType, rewardDef) {
   gameState.eggHatchState.gameCompleted = true;
   sfx.playLevelUpSound();
 
+  // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
+  if (typeof rollDiamondJackpot === 'function') {
+    rollDiamondJackpot('egg_hatchery');
+  }
+
   // 1. Credit the respective winning prize
-  if (itemType === 'coin') {
-    gameState.player.coins = (gameState.player.coins || 0) + (rewardDef.winAmount || 1);
+  if (itemType === 'coin' || itemType === 'diamond') {
+    gameState.player.diamonds = (gameState.player.diamonds || 0) + (rewardDef.winAmount || 25);
   } else if (itemType === 'key') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + 1);

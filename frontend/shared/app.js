@@ -66,6 +66,15 @@ function getPageMap() {
       coinCatcher: document.getElementById('pageCoinCatcher'),
       'coin-catcher': document.getElementById('pageCoinCatcher'),
       sunflower: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      crystal: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      'crystal-mining': document.getElementById('pageSunflower') || DOM.pageSunflower,
+      crystalMining: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      stone: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      'honey-bee': document.getElementById('pageSunflower') || DOM.pageSunflower,
+      honeyBee: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      flower: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      'honey-bee-house': document.getElementById('pageSunflower') || DOM.pageSunflower,
+      honeyBeeHouse: document.getElementById('pageSunflower') || DOM.pageSunflower,
       beeFarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
       'bee-farm': document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
       beefarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
@@ -115,6 +124,15 @@ const PAGE_FILE_MAP = {
   'coinCatcher': 'coin-catcher',
   'coin-catcher': 'coin-catcher',
   'sunflower': 'sunflower',
+  'crystal': 'sunflower',
+  'crystal-mining': 'sunflower',
+  'crystalMining': 'sunflower',
+  'stone': 'sunflower',
+  'honey-bee': 'sunflower',
+  'honeyBee': 'sunflower',
+  'honey-bee-house': 'sunflower',
+  'honeyBeeHouse': 'sunflower',
+  'flower': 'sunflower',
   'bee-farm': 'bee-farm',
   'beefarm': 'bee-farm',
   'mining': 'mining',
@@ -201,6 +219,10 @@ window.preloadNonCriticalPages = preloadNonCriticalPages;
 // Navigation Switcher (Full Mobile View Pages)
 function switchPage(pageName) {
   window.switchPage = switchPage;
+  const previousTab = gameState ? gameState.currentTab : null;
+  if (previousTab === 'leaderboard' && pageName !== 'leaderboard') {
+    if (typeof cleanupLeaderboardListener === 'function') cleanupLeaderboardListener();
+  }
   gameState.currentTab = pageName;
 
   // Ensure any open home action popups are closed
@@ -227,13 +249,19 @@ function switchPage(pageName) {
   const bottomNavEl = document.querySelector('.bottom-nav') || (typeof DOM !== 'undefined' ? DOM.bottomNav : null);
   const sfBottomMenuBar = document.getElementById('sfBottomMenuBar');
   const beeBottomMenuBar = document.getElementById('beeBottomMenuBar');
+  const isSunflowerGame = (pageName === 'sunflower' || pageName === 'land' || pageName === 'water' || pageName === 'crystal' || pageName === 'crystal-mining' || pageName === 'crystalMining' || pageName === 'stone' || pageName === 'flower');
   if (bottomNavEl) {
-    if (pageName === 'sunflower') {
+    if (isSunflowerGame) {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'flex';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
       document.body.classList.add('page-sunflower-active');
       document.body.classList.remove('page-beefarm-active');
+      if ((pageName === 'water' || pageName === 'stone') && typeof navigateSunflowerPage === 'function') {
+        setTimeout(() => navigateSunflowerPage(2), 20);
+      } else if (typeof navigateSunflowerPage === 'function') {
+        setTimeout(() => navigateSunflowerPage(1), 20);
+      }
     } else if (pageName === 'bee-farm' || pageName === 'beefarm') {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
@@ -287,7 +315,8 @@ function switchPage(pageName) {
       if (typeof updateEnergyUI === 'function') updateEnergyUI();
       if (typeof refreshEnergyStationMiniStats === 'function') refreshEnergyStationMiniStats();
     } else if (targetPage === 'sunflower') {
-      if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
+      if (typeof initSunflowerPage === 'function') initSunflowerPage();
+      else if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
     } else if (targetPage === 'bee-farm' || targetPage === 'beefarm') {
       if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
     } else if (targetPage === 'mining') {
@@ -473,6 +502,15 @@ function updateUI(full = false) {
   }
   if (curTab === 'egg' || full) {
     if (typeof renderEggPageContent === 'function') renderEggPageContent();
+  }
+  if (curTab === 'memoryMatch' || curTab === 'memory-match' || full) {
+    if (typeof updateBrainCoinPill === 'function') updateBrainCoinPill();
+  }
+  if (curTab === 'coinCatcher' || curTab === 'coin-catcher' || full) {
+    if (typeof updateBoomCoinBalances === 'function') updateBoomCoinBalances();
+  }
+  if (curTab === 'leaderboard' || full) {
+    if (typeof renderLeaderboardRoster === 'function') renderLeaderboardRoster();
   }
 }
 
@@ -875,4 +913,98 @@ window.filterNotifications = filterNotifications;
 window.handleNotificationAction = handleNotificationAction;
 window.markAllNotificationsRead = markAllNotificationsRead;
 window.fetchNotifications = fetchNotifications;
+
+/* ==========================================================================
+   GAME ENTRY REQUIREMENT MODAL (Req 11) & DIAMOND CONVERSION PROBABILITY (Req 13)
+   ========================================================================== */
+function showGameEntryRequirementModal(itemName, itemIcon, gameName, shopSubtab = 'shop') {
+  let modal = document.getElementById('gameEntryRequirementModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'gameEntryRequirementModal';
+    modal.className = 'game-entry-modal-overlay';
+    modal.innerHTML = `
+      <div class="game-entry-modal-card">
+        <div class="gem-modal-glow"></div>
+        <div class="gem-icon-circle" id="gemModalIcon">🎟️</div>
+        <h3 class="gem-title" id="gemModalTitle">ENTRY REQUIREMENT</h3>
+        <p class="gem-notice" id="gemModalNotice">You need 1 Ticket to play this game.</p>
+        <div class="gem-actions-row">
+          <button type="button" class="gem-shop-btn" id="gemModalShopBtn">
+            <span>🛒 Buy from Shop</span>
+          </button>
+          <button type="button" class="gem-close-btn" onclick="closeGameEntryRequirementModal()">
+            <span>Cancel</span>
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  const iconEl = document.getElementById('gemModalIcon');
+  const noticeEl = document.getElementById('gemModalNotice');
+  const shopBtn = document.getElementById('gemModalShopBtn');
+
+  if (iconEl) iconEl.textContent = itemIcon || '🔒';
+  if (noticeEl) {
+    noticeEl.innerHTML = `You need <strong>${itemName}</strong> to play <strong>${gameName}</strong>.<br><span style="font-size: 11px; color: #94a3b8; display: block; margin-top: 6px;">Available now in the Quantum Shop!</span>`;
+  }
+
+  if (shopBtn) {
+    shopBtn.onclick = () => {
+      closeGameEntryRequirementModal();
+      if (typeof switchPage === 'function') {
+        switchPage('profile');
+      }
+      setTimeout(() => {
+        if (typeof switchProfileSubtab === 'function') {
+          switchProfileSubtab(shopSubtab || 'shop');
+        }
+      }, 100);
+    };
+  }
+
+  modal.classList.add('open');
+  if (typeof sfx !== 'undefined' && sfx.playErrorSound) sfx.playErrorSound();
+}
+
+function closeGameEntryRequirementModal() {
+  const modal = document.getElementById('gameEntryRequirementModal');
+  if (modal) modal.classList.remove('open');
+}
+window.showGameEntryRequirementModal = showGameEntryRequirementModal;
+window.closeGameEntryRequirementModal = closeGameEntryRequirementModal;
+
+/**
+ * Evaluates the 0.0001% (1 in 1,000,000) Diamond Jackpot chance independently per attempt.
+ * Converts coins to Diamonds and tracks diamondWins in Firebase.
+ */
+function rollDiamondJackpot(sourceName = 'game') {
+  // 0.0001% probability = 0.000001
+  const DIAMOND_JACKPOT_PROBABILITY = 0.000001;
+  const isWon = Math.random() < DIAMOND_JACKPOT_PROBABILITY;
+  if (isWon) {
+    const jackpotAmount = 10000;
+    if (typeof gameState !== 'undefined') {
+      if (!gameState.player) gameState.player = {};
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + jackpotAmount;
+      gameState.player.diamondWins = (gameState.player.diamondWins || 0) + 1;
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof saveGame === 'function') saveGame(true);
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+      if (window.firebaseSync && typeof window.firebaseSync.updateLeaderboardEntry === 'function') {
+        window.firebaseSync.updateLeaderboardEntry();
+      }
+    }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`👑 ULTRA MEGA JACKPOT! 1 IN 1,000,000 WIN! +${jackpotAmount.toLocaleString()} 💎 DIAMONDS!`);
+    }
+    return { won: true, amount: jackpotAmount };
+  }
+  return { won: false, amount: 0 };
+}
+window.rollDiamondJackpot = rollDiamondJackpot;
 

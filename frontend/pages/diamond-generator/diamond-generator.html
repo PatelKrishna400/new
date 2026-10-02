@@ -12,15 +12,15 @@
 
     <!-- Live Resource Badges -->
     <div class="dg-resources">
-      <div class="dg-pill cyan">
+      <div class="dg-pill cyan" title="Main Diamond Balance">
         <span>💎</span>
         <span id="dgStickyDiamonds" class="font-mono">0.000000</span>
       </div>
-      <div class="dg-pill gold">
+      <div class="dg-pill gold" title="Coins">
         <span>🪙</span>
         <span id="dgStickyCoins" class="font-mono">0</span>
       </div>
-      <div class="dg-pill sky">
+      <div class="dg-pill sky" title="Reactor Energy">
         <span>⚡</span>
         <span id="dgStickyEnergy" class="font-mono">0</span>
       </div>
@@ -35,7 +35,7 @@
         <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.000001 💎 / 60.00s</span>
       </div>
 
-      <!-- Hologram Node -->
+      <!-- Hologram Node with Smooth Loading Progress Ring -->
       <div class="dg-core-wrapper">
         <div class="dg-aura"></div>
         <svg class="dg-ring-svg" viewBox="0 0 160 160">
@@ -86,11 +86,61 @@
         </div>
       </div>
 
-      <!-- Start Button with Energy -->
+      <!-- Start Button with Energy Requirement -->
       <button type="button" class="btn-start-diamond-gen" id="btnStartDiamondGen" onclick="startDiamondGeneration()">
         <span class="btn-shine"></span>
         <span id="btnStartDiamondGenText">⚡ START GENERATION (100 ⚡)</span>
       </button>
+    </section>
+
+    <!-- ============================================================
+         PIGGY BANK / DIAMOND STORAGE (30-DAY RETENTION & AD EXTENSION)
+         ============================================================ -->
+    <section class="dg-piggy-section" id="dgPiggyBankCard">
+      <div class="piggy-header-row">
+        <div class="piggy-title-wrap">
+          <div class="piggy-icon-halo">
+            <span class="piggy-emoji">🐷</span>
+          </div>
+          <div>
+            <h3 class="piggy-title font-sci">PIGGY BANK</h3>
+            <span class="piggy-sub">Vault Storage • 30-Day Retention</span>
+          </div>
+        </div>
+        <div class="piggy-balance-badge font-mono" id="piggyStoredBadge" title="Stored Diamonds in Piggy Bank">
+          <span>💎</span>
+          <span id="piggyStoredAmount">0.000000</span>
+        </div>
+      </div>
+
+      <!-- Expiry Status Banner -->
+      <div class="piggy-expiry-strip">
+        <span class="expiry-icon">⏳</span>
+        <span class="expiry-text" id="piggyExpiryStatus">Retention: Active (30 Days)</span>
+        <span class="expiry-badge" id="piggyExtensionBadge">+0 Days Extended</span>
+      </div>
+
+      <!-- Piggy Bank Action Controls -->
+      <div class="piggy-actions-grid">
+        <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()">
+          <span>🎁 COLLECT TO BALANCE</span>
+        </button>
+
+        <button type="button" class="piggy-extend-btn font-sci" id="btnExtendPiggyAd" onclick="extendPiggyBankWithAd()">
+          <span>🎬 EXTEND +1 DAY (AD)</span>
+        </button>
+      </div>
+
+      <!-- Generation Records Collapsible -->
+      <div class="piggy-records-wrapper">
+        <div class="piggy-records-header" onclick="togglePiggyRecords()">
+          <span class="records-title">📜 Generation Vault Records (<span id="piggyRecordCount">0</span>)</span>
+          <span class="records-toggle-arrow" id="piggyRecordsArrow">▼</span>
+        </div>
+        <div class="piggy-records-list" id="piggyRecordsList" style="display: none;">
+          <!-- Dynamically injected records -->
+        </div>
+      </div>
     </section>
 
     <!-- Upgrades Row (Power & Speed) -->
@@ -130,7 +180,7 @@
       </div>
     </section>
 
-    <!-- Tabbed Cost Reducer Section (Two Options: Power or Speed) -->
+    <!-- Tabbed Cost Reducer Section (Power & Speed Ads) -->
     <section class="dg-cost-reducer-section">
       <!-- Tab Switch -->
       <div class="dg-cost-tabs" role="tablist">

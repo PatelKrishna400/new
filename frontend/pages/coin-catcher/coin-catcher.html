@@ -13,18 +13,18 @@
       <span>COIN FALL</span>
     </div>
 
-    <div class="spin-ticket-header-pill" id="catcherDiamondPill" onclick="startCoinCatcherGame()" title="Play for 100 Diamonds">
-      <span class="ticket-pill-icon">💎</span>
-      <span class="ticket-pill-val" id="catcherPlayerDiamondsVal">0</span>
+    <div class="spin-ticket-header-pill" id="catcherBoomCoinPill" onclick="startCoinCatcherGame()" title="Play for 1 💣 Boom Coin">
+      <span class="ticket-pill-icon">💣</span>
+      <span class="ticket-pill-val" id="catcherPlayerBoomCoinsVal">0</span>
     </div>
   </div>
 
   <!-- Quick Info Strip -->
   <div class="mini-game-info-strip">
     <div class="info-strip-chip">
-      <span class="chip-dot cyan"></span>
+      <span class="chip-dot amber"></span>
       <span class="chip-label">COST:</span>
-      <span class="chip-val">100 💎</span>
+      <span class="chip-val">1 💣 Boom Coin</span>
     </div>
     <div class="info-strip-chip">
       <span class="chip-dot gold"></span>
@@ -32,7 +32,7 @@
       <span class="chip-val">Tap 🪙 Coins</span>
     </div>
     <div class="info-strip-chip">
-      <span class="chip-dot amber"></span>
+      <span class="chip-dot red"></span>
       <span class="chip-label">HAZARD:</span>
       <span class="chip-val">Avoid 💣 Boom</span>
     </div>
@@ -71,10 +71,10 @@
         </div>
       </div>
       <div class="catcher-hud-pill">
-        <span class="hud-icon">💎</span>
+        <span class="hud-icon">💣</span>
         <div class="hud-data">
           <span class="hud-label">COST PAID</span>
-          <span class="hud-val" id="catcherCostDisplay">100 💎</span>
+          <span class="hud-val" id="catcherCostDisplay">1 💣</span>
         </div>
       </div>
     </div>
@@ -93,13 +93,18 @@
           </p>
 
           <div class="catcher-entry-badge-row">
-            <span class="catcher-entry-cost-pill">💎 Entry Cost: 100 Diamonds</span>
-            <span class="catcher-balance-pill">Your Diamonds: <strong id="catcherIntroDiaBal">0</strong> 💎</span>
+            <span class="catcher-entry-cost-pill">💣 Entry Cost: 1 Boom Coin</span>
+            <span class="catcher-balance-pill">Your Boom Coins: <strong id="catcherIntroBoomBal">0</strong> 💣</span>
           </div>
 
-          <button class="catcher-start-btn" onclick="startCoinCatcherGame()">
-            <span>⚡</span> Pay 100 💎 &amp; Start
-          </button>
+          <div class="flex items-center gap-2 mt-2">
+            <button class="catcher-start-btn flex-1" onclick="startCoinCatcherGame()">
+              <span>💣</span> Play (1 Boom Coin)
+            </button>
+            <button class="catcher-start-btn flex-1" onclick="claimFreeBoomCoinAd()" style="background: linear-gradient(135deg, #f97316, #ef4444); border: none;">
+              <span>🎬</span> Free 💣 (+1 Coin)
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -53,6 +53,26 @@
     initDOMElements();
     if (!elGrid) return;
 
+    // Strict Entry Requirement Check (1 🧠 Brain Coin)
+    const brainCoins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.brainCoins !== undefined)
+      ? Number(gameState.player.brainCoins)
+      : 0;
+
+    if (brainCoins < 1) {
+      if (typeof showGameEntryRequirementModal === 'function') {
+        showGameEntryRequirementModal('1 Brain Coin', '🧠', 'Memory Match', 'passes');
+      } else if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚠️ 1 🧠 Brain Coin required to play Memory Match!');
+      }
+      return;
+    }
+
+    // Deduct 1 🧠 Brain Coin
+    gameState.player.brainCoins--;
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame(true);
+    updateBrainCoinPill();
+
     // Reset game state
     clearInterval(timerInterval);
     isGameActive = true;
@@ -205,6 +225,14 @@
         diamondBonus = 35;
       }
 
+      // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot Evaluation
+      if (typeof rollDiamondJackpot === 'function') {
+        const jackpotResult = rollDiamondJackpot('memory_match');
+        if (jackpotResult && jackpotResult.won) {
+          diamondBonus += jackpotResult.amount;
+        }
+      }
+
       const totalCoins = baseCoins + timeBonus;
 
       lastCalculatedReward = {
@@ -307,16 +335,49 @@
 
     if (elOverlay) elOverlay.classList.remove('open');
     lastCalculatedReward = null;
-    startMemoryMatchGame();
+    isGameActive = false;
+    updateBrainCoinPill();
+  }
+
+  function updateBrainCoinPill() {
+    const el = document.getElementById('memoryPlayerBrainCoinsVal');
+    const coins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.brainCoins !== undefined)
+      ? Number(gameState.player.brainCoins)
+      : 0;
+    if (el) el.textContent = coins.toLocaleString();
+  }
+
+  window.claimFreeBrainCoinAd = function() {
+    if (typeof window.show_11677609 === 'function') {
+      window.show_11677609().then(() => {
+        grantBrainCoin();
+      }).catch(() => {
+        grantBrainCoin();
+      });
+    } else {
+      grantBrainCoin();
+    }
+  };
+
+  function grantBrainCoin() {
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      gameState.player.brainCoins = (gameState.player.brainCoins || 0) + 1;
+      if (typeof saveGame === 'function') saveGame(true);
+      if (typeof updateUI === 'function') updateUI();
+      updateBrainCoinPill();
+      if (typeof sfx !== 'undefined' && sfx.playUpgradeChime) sfx.playUpgradeChime();
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎉 +1 🧠 Brain Coin received!');
+      }
+    }
   }
 
   // Global window bindings
   window.startMemoryMatchGame = startMemoryMatchGame;
   window.claimMemoryMatchReward = claimMemoryMatchReward;
+  window.updateBrainCoinPill = updateBrainCoinPill;
   window.initMemoryMatchPage = function() {
     initDOMElements();
-    if (!isGameActive) {
-      startMemoryMatchGame();
-    }
+    updateBrainCoinPill();
   };
 })();

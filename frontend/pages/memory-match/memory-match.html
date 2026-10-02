@@ -13,9 +13,9 @@
       <span>MEMORY MATCH</span>
     </div>
 
-    <div class="spin-ticket-header-pill" onclick="startMemoryMatchGame()">
-      <span class="ticket-pill-icon">🔄</span>
-      <span class="ticket-pill-val">Restart</span>
+    <div class="spin-ticket-header-pill" id="memoryBrainCoinPill" onclick="startMemoryMatchGame()" title="Play with 1 🧠 Brain Coin">
+      <span class="ticket-pill-icon">🧠</span>
+      <span class="ticket-pill-val" id="memoryPlayerBrainCoinsVal">0</span>
     </div>
   </div>
 
@@ -54,9 +54,12 @@
     </div>
 
     <!-- Controls / Action Strip -->
-    <div class="memory-controls-bar">
+    <div class="memory-controls-bar flex items-center justify-center gap-2">
       <button class="memory-action-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
-        <span>🚀</span> Start Memory Match
+        <span>🧠</span> Play (1 Brain Coin)
+      </button>
+      <button class="memory-action-btn" id="memoryAdBtn" onclick="claimFreeBrainCoinAd()" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;">
+        <span>🎬</span> Free 🧠 (+1 Coin)
       </button>
     </div>
   </section>

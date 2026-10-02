@@ -47,8 +47,8 @@
           </div>
           <div class="hlb-leader-details">
             <span class="hlb-leader-label">#1 LEADER</span>
-            <span class="hlb-leader-name">QuantumKing</span>
-            <span class="hlb-leader-score">28.9M 🪙</span>
+            <span class="hlb-leader-name" id="homeHlbLeaderName">Top Player</span>
+            <span class="hlb-leader-score" id="homeHlbLeaderScore">💎 Rankings</span>
           </div>
         </div>
         <div class="hlb-prize-tag">
@@ -57,80 +57,73 @@
         </div>
       </div>
 
-      <!-- 3. Bottom Interactive Quick Category Tabs -->
+      <!-- 3. Bottom Interactive Category Tab: Diamond Win Rankings Focus -->
       <div class="hlb-category-tabs-grid" role="group" aria-label="Leaderboard Categories">
-        <button type="button" class="hlb-cat-btn gold" onclick="event.stopPropagation(); switchHomeLeaderboardTab('coins');" title="Open Coin Rankings">
-          <span class="hlb-cat-icon">👑</span>
-          <span class="hlb-cat-text">Coin Rankings</span>
-        </button>
-        <button type="button" class="hlb-cat-btn purple" onclick="event.stopPropagation(); switchHomeLeaderboardTab('spin');" title="Open Spinner Event Rankings">
-          <span class="hlb-cat-icon">🎡</span>
-          <span class="hlb-cat-text">Spin Event</span>
-        </button>
-        <button type="button" class="hlb-cat-btn cyan" onclick="event.stopPropagation(); switchHomeLeaderboardTab('taps');" title="Open Energy Tap Rankings">
-          <span class="hlb-cat-icon">⚡</span>
-          <span class="hlb-cat-text">Energy Taps</span>
+        <button type="button" class="hlb-cat-btn gold active" onclick="event.stopPropagation(); switchPage('leaderboard');" title="Open Diamond Win Rankings" style="grid-column: 1 / -1; width: 100%;">
+          <span class="hlb-cat-icon">💎</span>
+          <span class="hlb-cat-text">Diamond Win Rankings (Global Real-Time)</span>
         </button>
       </div>
     </section>
 
-    <!-- 2. MIDDLE: Quantum Energy Reactor (Tap to generate energy) -->
-    <section class="reactor-card" id="reactorSection">
-      <div class="reactor-header">
-        <div class="reactor-pill-cyan">
-          <svg class="pill-lightning" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-          <span>QUANTUM ENERGY REACTOR</span>
-        </div>
+    <!-- 2. MIDDLE: Imperial Mega Rewards Feature Card (Home Navigation) -->
+    <section class="home-leaderboard-tab-card home-mega-reward-card" id="homeMegaRewardSection" onclick="switchPage('megaReward')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('megaReward');}" role="button" tabindex="0" title="Tap to open Mega Rewards Vault">
+      <div class="hlb-card-glow hmr-glow"></div>
+      <div class="hlb-shimmer-sweep"></div>
 
-        <div class="reactor-pill-dark" id="comboPill">
-          <span class="combo-flame">🔥</span>
-          <span id="comboMultiplierText">1.0x COMBO</span>
-        </div>
-      </div>
-
-      <div class="orb-stage" id="orbStage">
-        <!-- Central Quantum Plasma Orb Wrapper -->
-        <div class="orb-center-wrapper">
-          <div class="orb-aura aura-1"></div>
-          <div class="orb-aura aura-2"></div>
-          <div class="orb-particle-layer" id="orbParticleLayer"></div>
-
-          <button class="reactor-orb" id="reactorOrb" aria-label="Tap to generate energy">
-            <div class="orb-inner-gloss"></div>
-            <div class="orb-electric-ring"></div>
-            <div class="orb-core">
-              <!-- High-Voltage Quantum Core Lightning Bolt -->
-              <svg class="orb-lightning-bolt" viewBox="0 0 24 24" width="76" height="76" fill="currentColor">
-                <path d="M13 2L3 14h9l-1.5 8 10.5-12h-9l1.5-8z"/>
-              </svg>
+      <!-- Header Row: 3D Crown + Heading + Catalog Status + Chevron -->
+      <div class="hlb-header-row">
+        <div class="hlb-header-left">
+          <div class="hlb-badge-box hmr-crown-box">
+            <div class="hlb-trophy-symbol">👑</div>
+            <div class="hlb-sparkle-dot s1">✦</div>
+            <div class="hlb-sparkle-dot s2">💎</div>
+          </div>
+          <div class="hlb-heading-group">
+            <div class="hlb-top-meta-pills">
+              <span class="hlb-season-pill hmr-pill">💎 EXCLUSIVE PRIZES</span>
+              <span class="hlb-live-pill">
+                <span class="hlb-pulse-dot"></span>
+                <span>VAULT LIVE</span>
+              </span>
             </div>
-          </button>
+            <h3 class="hlb-main-heading">MEGA REWARDS CATALOG</h3>
+          </div>
+        </div>
+
+        <div class="hlb-header-right">
+          <div class="hlb-open-cta-pill hmr-cta-pill">
+            <span>EXPLORE</span>
+            <svg class="hlb-chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div class="reactor-footer">
-        <div class="energy-counter-pill" id="energyCounterPill" onclick="switchPage('energy')" style="cursor: pointer;" title="Energy Balance - Tap to Mine Energy">
-          <svg class="energy-icon icon-left" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-          <span class="energy-value" id="energyTapCount">0</span>
-          <svg class="energy-icon icon-right" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
+      <!-- Spotlight Row: Real Prizes & Live Shelf Info -->
+      <div class="hlb-spotlight-row">
+        <div class="hlb-leaders-preview">
+          <div class="hlb-avatar-stack">
+            <div class="hlb-mini-avatar gold-av" title="Gadgets & Electronics">📱</div>
+            <div class="hlb-mini-avatar silver-av" title="Gift Cards & Vouchers">🎁</div>
+            <div class="hlb-mini-avatar bronze-av" title="Gold & Luxury">🪙</div>
+          </div>
+          <div class="hlb-leader-details">
+            <span class="hlb-leader-label">REAL PRIZES &amp; VOUCHERS</span>
+            <span class="hlb-leader-name" id="rewardAdminItemCount">9 Categories Live</span>
+            <span class="hlb-leader-score" id="rewardMegaDiamonds">Available for 💎</span>
+          </div>
         </div>
+        <div class="hlb-prize-tag hmr-prize-tag">
+          <span class="hlb-prize-emoji">✨</span>
+          <span class="hlb-prize-amount">VIP Catalog</span>
+        </div>
+      </div>
 
-        <!-- Multi-Tap Power Selector (*1, *2, *3, *5, *10, *50, *100) -->
-        <div class="multi-tap-strip" id="multiTapStrip" role="group" aria-label="Multi-Tap Power Multiplier">
-          <button type="button" class="multi-tap-circle active" id="btnMultiTap1" onclick="setMultiTapMultiplier(1)" title="*1 Multi-Tap (1 Energy/click)">*1</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap2" onclick="setMultiTapMultiplier(2)" title="*2 Multi-Tap (2 Energy/click, unlocks at 100+ Energy)" style="display: none;">*2</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap3" onclick="setMultiTapMultiplier(3)" title="*3 Multi-Tap (3 Energy/click, unlocks at 250+ Energy)" style="display: none;">*3</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap5" onclick="setMultiTapMultiplier(5)" title="*5 Multi-Tap (5 Energy/click, unlocks at 500+ Energy)" style="display: none;">*5</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap10" onclick="setMultiTapMultiplier(10)" title="*10 Multi-Tap (10 Energy/click, unlocks at 1000+ Energy)" style="display: none;">*10</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap50" onclick="setMultiTapMultiplier(50)" title="*50 Multi-Tap (50 Energy/click, unlocks at 5000+ Energy)" style="display: none;">*50</button>
-          <button type="button" class="multi-tap-circle" id="btnMultiTap100" onclick="setMultiTapMultiplier(100)" title="*100 Multi-Tap (100 Energy/click, unlocks at 10000+ Energy)" style="display: none;">*100</button>
-        </div>
+      <!-- Admin Mega Rewards Shelf Preview -->
+      <div class="reward-admin-products-shelf" id="rewardAdminMegaShelf" onclick="event.stopPropagation()">
+        <!-- Rendered dynamically from window.cloudMegaRewards -->
       </div>
     </section>
 

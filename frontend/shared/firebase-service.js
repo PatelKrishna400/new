@@ -285,6 +285,12 @@ class FirebaseSyncService {
           if (cloudData.xpState) Object.assign(gameState.xpState, cloudData.xpState);
           if (cloudData.goalState) Object.assign(gameState.goalState, cloudData.goalState);
           if (cloudData.dailyStats) Object.assign(gameState.dailyStats, cloudData.dailyStats);
+          if (cloudData.diamondGenerator) {
+            gameState.diamondGenerator = Object.assign(gameState.diamondGenerator || {}, cloudData.diamondGenerator);
+          }
+          if (cloudData.piggyBank) {
+            gameState.piggyBank = Object.assign(gameState.piggyBank || {}, cloudData.piggyBank);
+          }
 
           let shouldCatchup = false;
           let catchupTimestamp = null;
@@ -977,7 +983,9 @@ class FirebaseSyncService {
           targetCrowns: 5,
           giftsClaimed: 0
         },
-        sunflower: (typeof window !== 'undefined' && window.sunflowerState) ? window.sunflowerState : null
+        sunflower: (typeof window !== 'undefined' && window.sunflowerState) ? window.sunflowerState : null,
+        diamondGenerator: gameState.diamondGenerator || null,
+        piggyBank: gameState.piggyBank || null
       };
 
       this.database.ref(`players/${this.userId}`).set(payload)
@@ -1010,6 +1018,7 @@ class FirebaseSyncService {
         handle: gameState.player.handle || 'player',
         level: Number(gameState.player.level || 0),
         coins: Number(gameState.player.coins || 0),
+        diamondWins: Number(gameState.player.diamondWins || gameState.player.diamondWinsCount || 0),
         energyTaps: Number(gameState.reactor.energyTaps || 0),
         resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6,
         lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
