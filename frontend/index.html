@@ -213,17 +213,6 @@
             <span class="pill-value" id="headerCoinBalance">0</span>
           </div>
 
-          <!-- Blue Gem Coin Badge -->
-          <div class="metric-pill blue-coin-pill" id="blueCoinPill" title="Blue Gem Coins">
-            <div class="coin-icon blue-coin-icon">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-                <polygon points="12 2 21 8.5 17.5 21 6.5 21 3 8.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
-                <polygon points="12 5 18 9.5 15.5 18 8.5 18 6 9.5" fill="#38bdf8" stroke="#bae6fd" stroke-width="1"/>
-                <circle cx="12" cy="12" r="2.5" fill="#f0f9ff"/>
-              </svg>
-            </div>
-            <span class="pill-value blue-pill-val" id="headerBlueBalance">0</span>
-          </div>
 
           <!-- Diamond Badge -->
           <div class="metric-pill diamond-pill" id="diamondPill" title="Diamonds (Mega Rewards)">
@@ -403,7 +392,7 @@
                 <span class="dgh-gem-icon">💎</span>
                 <div class="dgh-title-group">
                   <h2 class="dgh-main-title font-sci">DIAMOND GENERATOR</h2>
-                  <div class="dgh-rate-text font-mono" id="dgeHomeRateVal">+0.000001 💎 / 60.00s</div>
+                  <div class="dgh-rate-text font-mono" id="dgeHomeRateVal">+0.00000001 💎 / 5m</div>
                 </div>
               </div>
               <div class="dgh-status-badge font-sci" id="dgStatusText">READY (100 ⚡)</div>
@@ -1092,7 +1081,7 @@
       <!-- PAGE: PROFILE -->
       <div class="page-view" id="pageProfile">
         
-        <!-- Profile, Shop & Blue Subtab Switcher -->
+        <!-- Profile & Shop Subtab Switcher -->
         <div class="profile-tabs-header">
           <button class="profile-subtab-btn active" id="subtabProfile" onclick="switchProfileSubtab('profile')">
             <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1190,36 +1179,7 @@
             <!-- Profile Stats Info Box -->
             <div class="profile-stats-box">
               
-              <div class="profile-stat-row">
-                <div class="stat-left">
-                  <span class="stat-icon">🪙</span>
-                  <span class="stat-label">Coin Balance:</span>
-                </div>
-                <div class="stat-right">
-                  <span class="coin-dot">🟡</span>
-                  <span class="stat-val" id="profileCoinBalance">0</span>
-                </div>
-              </div>
-      
-              <div class="profile-stat-row">
-                <div class="stat-left">
-                  <span class="stat-icon">💎</span>
-                  <span class="stat-label">Diamond Balance:</span>
-                </div>
-                <div class="stat-right">
-                  <span class="stat-val diamond-highlight" id="profileDiamondBalance">0</span>
-                </div>
-              </div>
-      
-              <div class="profile-stat-row">
-                <div class="stat-left">
-                  <span class="stat-icon">💙</span>
-                  <span class="stat-label">Blue Coin Balance:</span>
-                </div>
-                <div class="stat-right">
-                  <span class="stat-val blue-highlight" id="profileBlueCoinBalance" style="color: #38bdf8; font-weight: 800;">0</span>
-                </div>
-              </div>
+              
       
               <div class="profile-stat-row">
                 <div class="stat-left">
@@ -1438,10 +1398,7 @@
                   <span class="curr-icon">🪙</span>
                   <span class="curr-amount" id="shopCoinVal">0</span>
                 </div>
-                <div class="shop-curr-pill diamond-pill-glow" title="Blue Coins" style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4;">
-                  <span class="curr-icon">💙</span>
-                  <span class="curr-amount" id="shopBlueCoinVal">0</span>
-                </div>
+                
                 <div class="shop-curr-pill diamond-pill-glow" title="Diamonds" style="background: rgba(8, 145, 178, 0.15); border: 1.5px solid #0891b2;">
                   <span class="curr-icon">💎</span>
                   <span class="curr-amount" id="shopDiamondVal">0</span>
@@ -2208,11 +2165,10 @@
               
               <!-- Top Action Nav Row -->
               <div class="xp-top-actions-row">
-                <button class="xp-back-btn" onclick="switchPage('reward')">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                   </svg>
-                  <span>Back</span>
                 </button>
       
                 <div class="xp-timer-pill">
@@ -2263,12 +2219,11 @@
               
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="xp-timer-pill">
             <span>👑 MEGA REWARDS</span>
@@ -2346,12 +2301,11 @@
       <div class="page-view" id="pageGiftCard">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>🎁 1. GIFT CARD</span>
           </div>
@@ -2370,12 +2324,11 @@
       <div class="page-view" id="pageGadgets">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>📱 2. GADGETS</span>
           </div>
@@ -2394,12 +2347,11 @@
       <div class="page-view" id="pageAccessories">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>🎒 3. ACCESSORIES</span>
           </div>
@@ -2418,12 +2370,11 @@
       <div class="page-view" id="pageGamingTool">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>🎮 4. GAMING TOOL</span>
           </div>
@@ -2442,12 +2393,11 @@
       <div class="page-view" id="pageKitchen">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>☕ 5. KITCHEN</span>
           </div>
@@ -2466,12 +2416,11 @@
       <div class="page-view" id="pageStationery">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>✒️ 6. STATIONERY</span>
           </div>
@@ -2490,12 +2439,11 @@
       <div class="page-view" id="pageFitness">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>🏋️ 7. FITNESS</span>
           </div>
@@ -2514,12 +2462,11 @@
       <div class="page-view" id="pageHomeDecorate">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>🏠 8. HOME DECORATE</span>
           </div>
@@ -2538,12 +2485,11 @@
       <div class="page-view" id="pageCustom">
         <!-- Top Actions Row: Back Button, Title, and Diamond Counter -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('megaReward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('megaReward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>⭐ 9. CUSTOM REQUEST</span>
           </div>
@@ -2657,12 +2603,11 @@
       <div class="page-view" id="pageSuggestBox">
         <!-- Top Navigation Header: Back Button & Page Title -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('profile')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('profile')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
           <div class="xp-timer-pill">
             <span>💡 SUGGEST BOX</span>
           </div>
@@ -2747,11 +2692,10 @@
               
               <!-- Top Action Nav Row -->
               <div class="xp-top-actions-row">
-                <button class="xp-back-btn" onclick="switchPage('energy')">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <button class="xp-back-btn" onclick="switchPage('energy')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                   </svg>
-                  <span>Back</span>
                 </button>
       
                 <div class="xp-timer-pill">
@@ -2797,12 +2741,11 @@
       <div class="page-view" id="pageSpin">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="spin-header-title-pill">
             <span class="spin-sparkle-icon">✨</span>
@@ -2933,7 +2876,7 @@
                 <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
       
-                <!-- Slice 1: 50 Blue Coins (45 deg / 1:30) -->
+                <!-- Slice 1: 50 Coins (45 deg / 1:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
@@ -2951,7 +2894,7 @@
                 <!-- Slice 6: 1 Gold Coin Jackpot (270 deg / 9 o'clock) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
       
-                <!-- Slice 7: 50 Blue Coins (315 deg / 10:30) -->
+                <!-- Slice 7: 5 Diamonds (315 deg / 10:30) -->
                 <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
       
                 <!-- Divider Rays between Slices with Golden Metallic Sheen -->
@@ -2975,7 +2918,7 @@
                   <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
                 </g>
       
-                <!-- Slice 1: 50 Blue Coins (45 deg) -->
+                <!-- Slice 1: 50 Coins (45 deg) -->
                 <g transform="translate(150, 150) rotate(45) translate(0, -92)">
                   <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
@@ -3005,7 +2948,7 @@
                   <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
                 </g>
       
-                <!-- Slice 7: 50 Blue Coins (315 deg) -->
+                <!-- Slice 7: 5 Diamonds (315 deg) -->
                 <g transform="translate(150, 150) rotate(315) translate(0, -92)">
                   <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
                 </g>
@@ -3151,10 +3094,10 @@
                 <span class="reward-val" id="spinGiftCoinsVal">+10</span>
                 <span class="reward-label">Coins</span>
               </div>
-              <div class="gift-reward-card blue">
-                <span class="reward-icon">💙</span>
-                <span class="reward-val" id="spinGiftBlueVal">+100</span>
-                <span class="reward-label">Blue Coins</span>
+              <div class="gift-reward-card diamond">
+                <span class="reward-icon">💎</span>
+                <span class="reward-val" id="spinGiftDiamondsVal">+5</span>
+                <span class="reward-label">Diamonds</span>
               </div>
               <div class="gift-reward-card purple">
                 <span class="reward-icon">🗝️</span>
@@ -3180,12 +3123,11 @@
       <div class="page-view" id="pageChest">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="chest-header-title-pill">
             <span class="chest-sparkle-icon">✨</span>
@@ -3471,12 +3413,11 @@
       <div class="page-view" id="pageScratch">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="scratch-header-title-pill">
             <span class="scratch-sparkle-icon">✨</span>
@@ -3505,7 +3446,7 @@
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
             <span class="chip-label">ODDS:</span>
-            <span class="chip-val">50% Eggs, 20% Keys, 20% Tix, 8% Blue, 2% Coins</span>
+            <span class="chip-val">50% Eggs, 20% Keys, 20% Tix, 5% Diamonds, 5% Coins</span>
           </div>
         </div>
       
@@ -3595,12 +3536,11 @@
       <div class="page-view" id="pageEgg">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="egg-header-title-pill">
             <span class="egg-sparkle-icon">✨</span>
@@ -3736,11 +3676,11 @@
       <div class="page-view" id="pageLeaderboard">
         <!-- Top Action Nav Row (Req 18: Circular Home Button) -->
         <div class="xp-top-actions-row">
-          <button class="lb-home-circle-btn" onclick="switchPage('home')" aria-label="Navigate to Home" title="Home">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
-          </button>
+          <button class="lb-home-circle-btn" onclick="switchPage('home')" aria-label="Back to Home" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="leaderboard-header-title-pill">
             <span class="leaderboard-trophy-icon">🏆</span>
@@ -3881,12 +3821,11 @@
       <div class="page-view" id="pageMemoryMatch">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="spin-header-title-pill">
             <span class="spin-sparkle-icon">🧠</span>
@@ -3992,12 +3931,11 @@
       <div class="page-view" id="pageCoinCatcher">
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back</span>
-          </button>
+          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
           <div class="spin-header-title-pill">
             <span class="spin-sparkle-icon">🪙</span>
@@ -4180,106 +4118,779 @@
 
       <!-- PAGE: SUNFLOWER -->
       <div class="page-view" id="pageSunflower">
-        <!-- Pinned Sticky Top Header Bar ("Stay Heading Bar") -->
+        <!-- Pinned Sticky Top Header Bar ("Stay Heading Bar") as the Top First Bar -->
         <header class="sf-sticky-header-bar" id="sfStickyHeader">
           <div class="sf-sticky-left">
             <button onclick="switchPage('energy')" class="sf-sticky-back-btn" title="Back to Energy" aria-label="Back">
-              <span class="sf-back-arrow">←</span>
-            </button>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
             <div class="sf-sticky-title-wrap">
-              <span class="sf-sticky-title-icon text-amber-400">🌻</span>
-              <span class="sf-sticky-title-text font-black">Sunflower</span>
+              <span class="sf-sticky-title-icon">🌻</span>
+              <span class="sf-sticky-title-text font-black">Sunflower Valley</span>
             </div>
           </div>
       
-          <!-- Single Main Balance Display: Gold Coin Tab Only (Cloud sync, blue coin & other tabs removed) -->
+          <!-- Sticky Live Resource Balances: Coins, Buckets, Shovels, Seeds & Firebase Cloud Status -->
           <div class="sf-sticky-resources">
-            <div class="sf-hdr-pill pill-gold" title="Gold Coins">
-              <span class="sf-hdr-ico">🪙</span>
-              <span id="sfStickyCoins" class="sf-hdr-val font-mono font-black">0</span>
+            <!-- 1. 🌻 Sunflower Coin Balance -->
+            <div class="sf-hdr-pill pill-amber" title="Sunflower Coins">
+              <span class="sf-hdr-ico">🌻</span>
+              <span id="sfStickyCoins" class="sf-hdr-val font-mono font-black">150</span>
+            </div>
+            <!-- 2. 🌱 Seeds in Inventory -->
+            <div class="sf-hdr-pill pill-emerald" title="Sunflower Plants / Seeds in Inventory">
+              <span class="sf-hdr-ico">🌱</span>
+              <span id="sfStickySeeds" class="sf-hdr-val font-mono font-black">3</span>
+            </div>
+            <!-- 3. 🪣 Bucket Balance -->
+            <div class="sf-hdr-pill pill-blue" title="Water Buckets (+10s Hydration)">
+              <span class="sf-hdr-ico">🪣</span>
+              <span id="sfStickyBaskets" class="sf-hdr-val font-mono font-black">2</span>
+            </div>
+            <!-- 4. 🪏 Shovel Balance -->
+            <div class="sf-hdr-pill pill-stone" title="Garden Shovels (Clear Dead Sunflowers)">
+              <span class="sf-hdr-ico">🪏</span>
+              <span id="sfStickyShovels" class="sf-hdr-val font-mono font-black">1</span>
+            </div>
+            
+            <!-- 6. ☁️ Firebase Cloud Sync Indicator -->
+            <div class="sf-hdr-pill pill-firebase" id="sfStickyFirebase" title="Firebase Realtime Database Status">
+              <span class="sf-cloud-dot online" id="sfFbDot">●</span>
+              <span id="sfFbLabel" class="text-[9.5px] font-bold">Cloud Synced</span>
             </div>
           </div>
         </header>
       
-        <div class="sunflower-tycoon-container flex flex-col text-amber-100 pb-20">
-      
-          <!-- Subpage Navigation Bar: 🌻 Land vs 💧 Water -->
-          <div class="sf-center-menu-bar my-2">
-            <button class="sf-center-menu-btn active" id="sfTopNavLand" onclick="navigateSunflowerPage(1)">
-              <span class="sf-center-menu-ico">🌻</span>
-              <span class="sf-center-menu-label font-black">Sunflower Lands</span>
-            </button>
-            <button class="sf-center-menu-btn" id="sfTopNavWater" onclick="navigateSunflowerPage(2)">
-              <span class="sf-center-menu-ico">💧</span>
-              <span class="sf-center-menu-label font-black">Water Wells</span>
-            </button>
-          </div>
+        <div class="sunflower-tycoon-container flex flex-col text-stone-800 pb-20">
       
           <!-- ============================================================== -->
-          <!-- SF PAGE 1: 🌻 20 LANDS                                         -->
+          <!-- SF PAGE 1: 🌻 20 LAND PLOTS GARDEN (FIXED 1*20 FORMAT)         -->
           <!-- ============================================================== -->
           <section id="sfPage1" class="sf-game-page active-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-amber-500/50 shadow-xl flex flex-col gap-3">
-            <!-- Land Header (Clean, only Land controls, no plant all / water all / shovel all) -->
+            <!-- Garden Header -->
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-2">
               <div class="flex items-center gap-2">
-                <span class="text-2xl text-amber-400">🌻</span>
+                <span class="text-2xl">🌻</span>
                 <div>
                   <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-                    <span>Sunflower Lands (20 Lands)</span>
+                    <span>Sunflower Valley (20 Lands)</span>
+                    <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Land 1 Free</span>
                   </h2>
                 </div>
               </div>
       
               <div class="flex items-center gap-2">
                 <span id="sfPlotsSummaryLabel" class="text-amber-300 text-xs font-bold bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-700/60 font-mono">
-                  0 of 20 Lands Unlocked
+                  1 of 20 Lands Unlocked
                 </span>
+              </div>
+            </div>
       
-                <!-- Multiplier Toggle (1x → 10x → 100x → MAX) -->
+            <!-- Quick Action & Upgrade Multiplier Tool Strip (Only visible on Lands/Garden tab) -->
+            <div class="sf-garden-tools-strip my-1">
+              <div class="sf-tools-left">
+                <!-- Circular Multiplier Toggle Switch (Tap to cycle 1x → 10x → 100x → MAX) -->
                 <button id="sfMultToggleCircleBtn" onclick="toggleSfUpgradeMultiplier(event)" class="sf-mult-circle-toggle-btn" data-mult="1" title="Tap to toggle Buy Multiplier (1x → 10x → 100x → MAX)" aria-label="Toggle Buy Multiplier">
                   <span class="sf-mult-circle-badge">BUY</span>
                   <span id="sfMultCircleVal" class="sf-mult-circle-val">1x</span>
                 </button>
       
+                <div class="sf-garden-cps-badge">
+                  <span class="text-amber-500 font-bold">⚡ Total:</span>
+                  <span id="sfTotalIncomeRate" class="font-mono font-black text-amber-700">0.0</span>
+                  <span class="text-amber-600 text-[10px]">☀️/s</span>
+                </div>
+              </div>
+      
+              <div class="sf-tools-right">
+                <button id="sfPlantAllBtn" onclick="plantAllSfPlots(event)" class="sf-quick-tool-btn emerald" title="Plant seeds on all empty plots">
+                  <span>🌱 Plant All</span>
+                </button>
+                <button id="sfWaterAllBtn" onclick="waterAllSfPlots(event)" class="sf-quick-tool-btn blue" title="Water all mature plots (+10s life)">
+                  <span>🧺 Water All</span>
+                </button>
+                <button id="sfShovelAllBtn" onclick="shovelAllSfPlots(event)" class="sf-quick-tool-btn stone" title="Clear all dead plots with shovel">
+                  <span>🪏 Shovel All</span>
+                </button>
                 <button id="sfSoundBtn" class="sf-sound-toggle-btn" title="Toggle Sound">🔊</button>
               </div>
             </div>
       
-            <!-- 20 Lands Grid in Fixed 1*20 Format -->
+            <!-- 20 Plots List in Fixed 1*20 Format -->
             <div id="sfPlotsContainer" class="sf-plots-1x20-grid sf-plots-2x10-grid">
-              <!-- Rendered dynamically by renderSunflowerLands() in sunflower.js -->
+              <!-- Rendered dynamically by renderSunflowerPlots() in sunflower.js -->
             </div>
           </section>
       
           <!-- ============================================================== -->
-          <!-- SF PAGE 2: 💧 20 WATER WELLS                                   -->
+          <!-- SF PAGE 2: 💧 20 WATER WELLS (FIXED 1*20 FORMAT)               -->
           <!-- ============================================================== -->
-          <section id="sfPage2" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-sky-500/50 text-white shadow-xl flex flex-col gap-3 hidden">
-            <!-- Water Wells Header -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-800 pb-2">
+          <section id="sfPage2" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-cyan-500/50 text-white shadow-xl flex flex-col gap-3 hidden">
+            <!-- Water Wells Header matching Lands Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-cyan-900/40 pb-2">
               <div class="flex items-center gap-2">
                 <span class="text-2xl">💧</span>
                 <div>
-                  <h2 class="text-xs sm:text-sm font-black text-sky-200 flex items-center gap-1.5">
-                    <span>Water Wells (20 Wells)</span>
-                    <span class="text-[9px] bg-sky-950 text-sky-300 font-bold px-1.5 py-0.5 rounded-full border border-sky-700">Storage: 5 → 50 🪣</span>
+                  <h2 class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-1.5">
+                    <span>Water Aquifer (20 Wells)</span>
+                    <span class="text-[9px] bg-cyan-950 text-cyan-300 font-bold px-1.5 py-0.5 rounded-full border border-cyan-700">Well 1 Free</span>
                   </h2>
                 </div>
               </div>
       
               <div class="flex items-center gap-2">
-                <span id="sfWellsSummaryLabel" class="text-sky-300 text-xs font-bold bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-700 font-mono">
-                  1 of 20 Water Wells Unlocked
+                <span id="sfWellsSummaryLabel" class="text-cyan-300 text-xs font-bold bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-700/60 font-mono">
+                  1 of 20 Wells Unlocked
+                </span>
+                <span id="sfWellWorkersSummaryBadge" class="text-amber-300 text-xs font-bold bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-700/60 font-mono">
+                  👷 0/20 Workers
                 </span>
               </div>
             </div>
       
-            <!-- 20 Water Wells Grid in Fixed 1*20 Format -->
+            <!-- Quick Action Tool Strip with Manual Water Collection (1 ⚡) -->
+            <div class="sf-water-tools-strip flex flex-wrap items-center justify-between gap-2 bg-stone-950/80 p-2.5 rounded-xl border border-cyan-800/60 shadow-inner">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-cyan-200">
+                  <span>🧺 Inventory:</span>
+                  <span id="sfWaterPageBasketsCount" class="font-mono font-black text-white bg-blue-900/80 px-2 py-0.5 rounded border border-blue-500/40">2 🧺</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-200">
+                  <span>👷 Idle:</span>
+                  <span id="sfWaterPageIdleWorkers" class="font-mono font-black text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/40">0</span>
+                </div>
+              </div>
+      
+              <div class="flex items-center gap-1.5">
+                <button id="sfStartWaterCollectionBtn" onclick="startWaterCollectionSession(event)" class="sf-start-water-btn" title="Collect water using 1 energy">
+                  <span>⚡ Start Water Collection (1 ⚡)</span>
+                </button>
+                <button id="sfCollectAllWellsBtn" onclick="collectAllWellsBaskets(event)" class="sf-quick-tool-btn blue" title="Collect from all ready wells">
+                  <span>🧺 Collect All</span>
+                </button>
+                <button onclick="autoAssignAllWellWorkers(event)" class="sf-quick-tool-btn amber" title="Auto-assign available workers to wells">
+                  <span>⚡ Auto-Assign</span>
+                </button>
+                <button onclick="navigateSunflowerPage(4); switchSunflowerWorkerSubtab('water');" class="sf-quick-tool-btn emerald" title="Go to Workers HQ to hire more workers">
+                  <span>👷 Hire</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- 20 Wells List in Fixed 1*20 Format -->
             <div id="sfWellsContainer" class="sf-wells-1x20-grid sf-plots-1x20-grid">
               <!-- Rendered dynamically by renderSunflowerWells() in sunflower.js -->
             </div>
           </section>
       
+          <!-- ============================================================== -->
+          <!-- SF PAGE 3: 🏪 SHOP & STORE (STORE LOGO)                        -->
+          <!-- ============================================================== -->
+          <section id="sfPage3" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">🏪💎</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-400 flex items-center gap-1.5">
+                    <span>Garden Store &amp; Tool Depot</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-1.5 py-0.5 rounded-full border border-amber-500/40">
+                      Official Supply
+                    </span>
+                  </h2>
+                </div>
+              </div>
+      
+              <div class="bg-cyan-950/80 border border-cyan-500/40 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs">
+                <span>💎</span>
+                <span class="text-cyan-200 font-extrabold text-[10px]">
+                  Vault: <span id="sfShopDiamondCount" class="text-cyan-400 font-black">25 💎</span>
+                </span>
+              </div>
+            </div>
+      
+            <!-- Items Grid -->
+            <div class="flex flex-col gap-3">
+              <!-- Item 1: Sunflower Plant / Seed -->
+              <div class="bg-stone-950/80 rounded-xl p-3.5 border border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-3xl">🌱</span>
+                    <div>
+                      <h4 class="text-xs font-black text-amber-300">Sunflower Plant / Seed</h4>
+                      <div class="text-[9.5px] text-emerald-400 font-mono mt-0.5 font-bold">
+                        In Inventory: <span id="sfShopPlantCount">3</span> 🌱 Owned
+                      </div>
+                    </div>
+                  </div>
+                  <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
+                    50 ☀️ / 1 💎
+                  </span>
+                </div>
+      
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-1">
+                  <button onclick="buySunflowerItem('seed', 1, 'coins')" class="bg-amber-600 hover:bg-amber-500 active:scale-95 text-stone-950 font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🌱 (50 ☀️)</span>
+                  </button>
+                  <button onclick="buySunflowerItem('seed', 1, 'diamonds')" class="bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🌱 (1 💎)</span>
+                  </button>
+                  <button onclick="openSunflowerAdModal('sprout')" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>🎬 Watch Ad (+1 Free 🌱)</span>
+                  </button>
+                </div>
+                <button onclick="buySunflowerItem('seed', 5, 'coins')" class="w-full bg-stone-800 hover:bg-stone-750 text-amber-300 font-bold text-[10px] py-1.5 rounded-lg border border-amber-500/30 transition flex items-center justify-center gap-1">
+                  <span>📦 Pack of 5 Plants: 200 ☀️ Coins (or 4 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Item 2: Water Bucket (Adds +10s Life) -->
+              <div class="bg-stone-950/80 rounded-xl p-3.5 border border-blue-500/40 flex flex-col justify-between gap-2.5 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-3xl">🪣</span>
+                    <div>
+                      <h4 class="text-xs font-black text-cyan-300">Water Bucket</h4>
+                      <div class="text-[9.5px] text-cyan-400 font-mono mt-0.5 font-bold">
+                        In Inventory: <span id="sfShopBucketCount">2</span> 🪣 Owned &bull; Adds +10s Life
+                      </div>
+                    </div>
+                  </div>
+                  <span class="bg-blue-950 text-cyan-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-blue-500/40">
+                    20 ☀️ / 1 💎
+                  </span>
+                </div>
+      
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-1">
+                  <button onclick="buySunflowerItem('basket', 1, 'coins')" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🪣 (20 ☀️)</span>
+                  </button>
+                  <button onclick="buySunflowerItem('basket', 1, 'diamonds')" class="bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🪣 (1 💎)</span>
+                  </button>
+                  <button onclick="openSunflowerAdModal('basket')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 active:scale-95 text-white font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>🎬 Watch Ad (+1 Free 🪣)</span>
+                  </button>
+                </div>
+                <button onclick="buySunflowerItem('basket', 5, 'coins')" class="w-full bg-stone-800 hover:bg-stone-750 text-cyan-300 font-bold text-[10px] py-1.5 rounded-lg border border-blue-500/30 transition flex items-center justify-center gap-1">
+                  <span>📦 Pack of 5 Buckets: 80 ☀️ Coins (or 3 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Item 3: Garden Shovel (Clears Dead Sunflowers) -->
+              <div class="bg-stone-950/80 rounded-xl p-3.5 border border-stone-700 flex flex-col justify-between gap-2.5 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-3xl">🪏</span>
+                    <div>
+                      <h4 class="text-xs font-black text-stone-200">Garden Shovel</h4>
+                      <div class="text-[9.5px] text-stone-300 font-mono mt-0.5 font-bold">
+                        In Inventory: <span id="sfShopShovelCount">1</span> 🪏 Owned &bull; Clears Dead Crops
+                      </div>
+                    </div>
+                  </div>
+                  <span class="bg-stone-800 text-stone-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-stone-600">
+                    50 ☀️ / 3 💎
+                  </span>
+                </div>
+      
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-1">
+                  <button onclick="buySunflowerItem('shovel', 1, 'coins')" class="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🪏 (50 ☀️)</span>
+                  </button>
+                  <button onclick="buySunflowerItem('shovel', 1, 'diamonds')" class="bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>Buy 1 🪏 (3 💎)</span>
+                  </button>
+                  <button onclick="openSunflowerAdModal('shovel')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-[10.5px] py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
+                    <span>🎬 Watch Ad (+1 Free 🪏)</span>
+                  </button>
+                </div>
+                <button onclick="buySunflowerItem('shovel', 3, 'coins')" class="w-full bg-stone-800 hover:bg-stone-750 text-stone-300 font-bold text-[10px] py-1.5 rounded-lg border border-stone-600 transition flex items-center justify-center gap-1">
+                  <span>📦 Pack of 3 Shovels: 120 ☀️ Coins (or 7 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Item 4: Pump Overdrive Boost -->
+              <div class="bg-stone-950/80 rounded-xl p-3 border border-yellow-500/40 flex flex-col justify-between gap-2 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                      <h4 class="text-xs font-black text-yellow-300">Cistern Pump Overdrive</h4>
+                      <p class="text-[10px] text-stone-300 leading-snug">
+                        Pump 2x faster (1 basket every 2 seconds) for 60 seconds on Page 2!
+                      </p>
+                    </div>
+                  </div>
+                  <span class="bg-yellow-950 text-yellow-300 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full shrink-0 border border-yellow-500/40">
+                    8 💎
+                  </span>
+                </div>
+                <button id="sfBuyBoostDiamondBtn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 active:scale-95 text-stone-950 font-black text-[10px] py-2 rounded-lg shadow transition">
+                  <span>Throw 8 💎 &rarr; 2x Pump Speed ⚡</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 4: 👷 WORKERS & AUTOMATION HQ                          -->
+          <!-- ============================================================== -->
+          <section id="sfPage4" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl">👷🧑‍🌾</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                    <span>Sunflower Workers &amp; Automation</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-1.5 py-0.5 rounded-full border border-amber-500/40">Automation HQ</span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Hire specialized farm and water workers to automate planting, watering, and harvesting!
+                  </p>
+                </div>
+              </div>
+            </div>
+      
+            <!-- WORKER SUBTABS: 2 TABS (FARMING / WATER) AT THE TOP -->
+            <div class="sf-worker-tabs-nav flex items-center gap-2 p-1 bg-stone-950/80 rounded-xl border border-amber-500/40">
+              <button class="sf-worker-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 active" id="sfWorkerTabFarming" onclick="switchSunflowerWorkerSubtab('farming')">
+                <span>🌾</span>
+                <span>Farming Workers</span>
+              </button>
+              <button class="sf-worker-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5" id="sfWorkerTabWater" onclick="switchSunflowerWorkerSubtab('water')">
+                <span>💧</span>
+                <span>Water Workers</span>
+              </button>
+            </div>
+      
+            <!-- TAB 1: FARMING WORKERS (Harvesters, Planters, Botanists) -->
+            <div class="flex flex-col gap-3" id="sfWorkerSectionFarming">
+              <!-- Worker 1: Dave the Solar Harvester -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-amber-900/60 border border-amber-400 flex items-center justify-center text-xl">🌻</div>
+                    <div>
+                      <h4 class="text-xs font-black text-amber-300">Dave &bull; Solar Harvester</h4>
+                      <p class="text-[10px] text-stone-300">Automatically collects coins from Lands 1 to 5!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeDave" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerDaveBtn" onclick="hireSunflowerWorker('dave')" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Dave &bull; 1,500 ☀️ Coins (or 25 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 2: Elena the Sun Botanist -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-emerald-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-emerald-900/60 border border-emerald-400 flex items-center justify-center text-xl">🌿</div>
+                    <div>
+                      <h4 class="text-xs font-black text-emerald-300">Elena &bull; Sun Botanist</h4>
+                      <p class="text-[10px] text-stone-300">Auto-harvests Lands 6 to 10 + gives +20% Coin boost!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeElena" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerElenaBtn" onclick="hireSunflowerWorker('elena')" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Elena &bull; 10,000 ☀️ Coins (or 50 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 3: Leo the Master Overseer -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-purple-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-400 flex items-center justify-center text-xl">👑</div>
+                    <div>
+                      <h4 class="text-xs font-black text-purple-300">Leo &bull; Master Overseer</h4>
+                      <p class="text-[10px] text-stone-300">Auto-harvests Lands 11 to 20 + doubles all garden speed!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeLeo" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerLeoBtn" onclick="hireSunflowerWorker('leo')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Leo &bull; 50,000 ☀️ Coins (or 100 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 4: Barney the Auto-Planter -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-yellow-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-yellow-900/60 border border-yellow-400 flex items-center justify-center text-xl">🌱</div>
+                    <div>
+                      <h4 class="text-xs font-black text-yellow-300">Barney &bull; Master Planter</h4>
+                      <p class="text-[10px] text-stone-300">Auto-plants seeds into empty cleared plots whenever seeds are available!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeBarney" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerBarneyBtn" onclick="hireSunflowerWorker('barney')" class="w-full bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Barney &bull; 5,000 ☀️ Coins (or 35 💎)</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- TAB 2: WATER WORKERS (Well Workers, Pumpers & Hydrators) -->
+            <div class="flex flex-col gap-3 hidden" id="sfWorkerSectionWater">
+              <!-- Worker 1: Well Automation Worker (Repeatable / Assignable to 20 Wells) -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border-2 border-cyan-500/60 flex flex-col justify-between gap-3 shadow-lg">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-11 h-11 rounded-full bg-cyan-900/70 border-2 border-cyan-400 flex items-center justify-center text-2xl shadow">👷💧</div>
+                    <div>
+                      <h4 class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                        <span>Well Automation Worker</span>
+                        <span class="text-[9px] bg-cyan-950 text-cyan-300 font-mono border border-cyan-500/40 px-1.5 py-0.2 rounded-full">Core Automator</span>
+                      </h4>
+                      <p class="text-[10px] text-stone-300">
+                        Assign to any of the 20 Wells on Page 2! Automatically produces and collects Water Baskets (🧺) continuously!
+                      </p>
+                    </div>
+                  </div>
+                  <span id="sfWellWorkerBadge" class="text-[9.5px] bg-cyan-950 text-cyan-300 font-mono font-bold px-2 py-0.5 rounded-full border border-cyan-500/50">
+                    <span id="sfWellWorkersHiredCount">0</span> / 20 Hired
+                  </span>
+                </div>
+      
+                <!-- Well Worker Allocation Status -->
+                <div class="grid grid-cols-3 gap-2 bg-stone-900/90 rounded-lg p-2 border border-cyan-800/40 text-center text-xs">
+                  <div class="flex flex-col">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Total Hired</span>
+                    <span id="sfWorkerStatHired" class="font-mono font-black text-cyan-300 text-sm">0</span>
+                  </div>
+                  <div class="flex flex-col border-x border-stone-800">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Assigned</span>
+                    <span id="sfWorkerStatAssigned" class="font-mono font-black text-emerald-400 text-sm">0</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Idle (Available)</span>
+                    <span id="sfWorkerStatIdle" class="font-mono font-black text-amber-300 text-sm">0</span>
+                  </div>
+                </div>
+      
+                <!-- Buy Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button id="sfBuyWellWorkerCoinBtn" onclick="hireWellWorker('coins')" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 active:scale-95 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                    <span>Hire Worker &bull; 250 ☀️ Coins</span>
+                  </button>
+                  <button id="sfBuyWellWorkerDiaBtn" onclick="hireWellWorker('diamonds')" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                    <span>Hire Worker &bull; 5 💎</span>
+                  </button>
+                </div>
+      
+                <!-- Quick Assignment Actions -->
+                <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-stone-800/80">
+                  <button onclick="autoAssignAllWellWorkers(event)" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[10.5px] py-1.5 px-2 rounded-lg transition border border-emerald-500/40 flex items-center justify-center gap-1">
+                    <span>⚡ Auto-Assign Idle Workers to Wells</span>
+                  </button>
+                  <button onclick="navigateSunflowerPage(2)" class="bg-stone-800 hover:bg-stone-700 text-cyan-300 font-bold text-[10.5px] py-1.5 px-3 rounded-lg transition border border-stone-700 flex items-center justify-center gap-1">
+                    <span>💧 Open 20 Wells Page &rarr;</span>
+                  </button>
+                </div>
+      
+                <!-- 20 Wells Quick Assign Mini Matrix -->
+                <div class="flex flex-col gap-1.5 bg-stone-900/60 p-2 rounded-lg border border-stone-800">
+                  <div class="flex items-center justify-between text-[10px] text-stone-400">
+                    <span class="font-bold text-stone-300">Quick Well Assignments (Wells 1 to 20):</span>
+                    <span class="text-[9px] text-cyan-400 font-mono">Click to toggle assignment</span>
+                  </div>
+                  <div id="sfWellWorkerMiniGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-1">
+                    <!-- Dynamically populated by updateWorkersUI() -->
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Worker 2: Walter the Well Pump Master -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-cyan-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-cyan-900/60 border border-cyan-400 flex items-center justify-center text-xl">💧</div>
+                    <div>
+                      <h4 class="text-xs font-black text-cyan-300">Walter &bull; Aquifer Grandmaster</h4>
+                      <p class="text-[10px] text-stone-300">Boosts all 20 wells speed by +25% &amp; grants 1 free Well Worker!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeWalter" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerWalterBtn" onclick="hireSunflowerWorker('walter')" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Walter &bull; 500 ☀️ Coins (or 10 💎)</span>
+                </button>
+              </div>
+      
+              <!-- Worker 3: Chloe the Auto-Hydrator -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-blue-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-blue-900/60 border border-blue-400 flex items-center justify-center text-xl">🪣</div>
+                    <div>
+                      <h4 class="text-xs font-black text-blue-300">Chloe &bull; Rainmaker Hydrator</h4>
+                      <p class="text-[10px] text-stone-300">Auto-waters alive sunflowers with buckets when life timer drops below 30s!</p>
+                    </div>
+                  </div>
+                  <span id="sfWorkerBadgeChloe" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                </div>
+                <button id="sfHireWorkerChloeBtn" onclick="hireSunflowerWorker('chloe')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs py-2 rounded-xl shadow transition">
+                  <span>Hire Chloe &bull; 3,500 ☀️ Coins (or 40 💎)</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- ============================================================== -->
+          <!-- SF PAGE 5: ⚡ SOLAR CONVERTER (100 COINS = 29⚡)                -->
+          <!-- ============================================================== -->
+          <section id="sfPage5" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-yellow-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
+                <div>
+                  <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
+                    <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
+                    <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
+                  </h2>
+                  <p class="text-[10px] text-stone-300">
+                    Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
+                  </p>
+                </div>
+              </div>
+            </div>
+      
+            <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
+              <div class="text-5xl animate-bounce">⚡☀️</div>
+              <div>
+                <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
+                <p class="text-xs text-stone-300 max-w-sm mt-1">
+                  Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
+                </p>
+              </div>
+      
+              <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Your Coins</span>
+                  <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
+                </div>
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Batch Rate</span>
+                  <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
+                </div>
+                <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+                  <span class="text-stone-400 text-[10px] block">Total Converted</span>
+                  <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
+                </div>
+              </div>
+      
+              <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
+                <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                  <span>Throw 100 ☀️</span>
+                  <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
+                </button>
+                <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
+                  <span>Throw 1000 ☀️</span>
+                  <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
+                </button>
+                <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
+                  <span>⚡ Throw ALL Available Coins</span>
+                </button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Valley (Matching Bee Farm) -->
+          <nav class="sf-bottom-menu-bar" id="sfBottomMenuBar">
+            <!-- Tab 1: Water Wells (💧 Water) -->
+            <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="20 Water Wells">
+              <div class="sf-menu-ico">💧</div>
+              <span class="sf-menu-txt">Water</span>
+            </button>
+      
+            <!-- Tab 2: Workers HQ (👷 Workers) -->
+            <button class="sf-menu-tab-btn" id="sfMenuTabWorkers" onclick="navigateSunflowerPage(4)" title="Workers &amp; Automation">
+              <div class="sf-menu-ico">👷</div>
+              <span class="sf-menu-txt">Workers</span>
+            </button>
+      
+            <!-- Center Primary Button: Sunflower Lands (🌻 Garden) -->
+            <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Play Sunflower Lands">
+              <div class="center-play-circle">
+                <span class="sf-menu-play-icon">🌻</span>
+              </div>
+              <span class="sf-menu-txt font-black">Garden</span>
+            </button>
+      
+            <!-- Tab 4: Store & Depot (🏪 Shop) -->
+            <button class="sf-menu-tab-btn" id="sfMenuTabShop" onclick="navigateSunflowerPage(3)" title="Store &amp; Supplies">
+              <div class="sf-menu-ico">🏪</div>
+              <span class="sf-menu-txt">Shop</span>
+            </button>
+      
+            <!-- Tab 5: Solar to Energy Converter (⚡ 29⚡ Exch) -->
+            <button class="sf-menu-tab-btn" id="sfMenuTabConvert" onclick="navigateSunflowerPage(5)" title="Convert 100 Coins to 29 Energy">
+              <div class="sf-menu-ico">⚡</div>
+              <span class="sf-menu-txt">29⚡ Exch</span>
+            </button>
+          </nav>
+        </div>
+      
+        <!-- Modals & Dialogs -->
+      
+        <!-- 2X Harvest Profit Ad Modal (Triggered on Collect) -->
+        <div id="sfCollectProfitModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+          <div class="bg-stone-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white animate-scale-up">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 px-4 py-3 border-b border-amber-400/50 flex items-center justify-between text-stone-950">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl animate-bounce">🌻</span>
+                <div>
+                  <h3 class="font-black text-sm tracking-tight" id="sfCollectModalLandTitle">Land #1 Harvest Ready!</h3>
+                  <span class="text-[10px] font-bold text-amber-950 uppercase tracking-wider" id="sfCollectModalLvSub">Level 1 Blooming Sunflower</span>
+                </div>
+              </div>
+              <button onclick="closeSfCollectModal()" class="w-7 h-7 rounded-full bg-stone-950/20 hover:bg-stone-950/40 text-stone-950 flex items-center justify-center font-black text-base cursor-pointer transition">&times;</button>
+            </div>
+      
+            <!-- Modal Body -->
+            <div class="p-5 flex flex-col items-center justify-center text-center bg-stone-950">
+              <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/10 border-2 border-amber-400/40 flex items-center justify-center text-4xl shadow-inner mb-3 relative">
+                <span id="sfCollectModalEmoji">🌻</span>
+                <span class="absolute -top-2 -right-2 bg-emerald-500 text-stone-950 text-[9px] font-black px-1.5 py-0.5 rounded-full shadow">FULL</span>
+              </div>
+      
+              <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Uncollected Harvest Profit</span>
+              <div class="flex items-center justify-center gap-1.5 my-1">
+                <span class="text-3xl font-black text-amber-300 font-mono" id="sfCollectModalProfitVal">+1</span>
+                <span class="text-lg font-bold text-amber-400">🌻</span>
+              </div>
+              <p class="text-stone-400 text-[11px] max-w-xs mt-1">
+                Double your earnings by watching a quick sponsored video, or collect standard profit now!
+              </p>
+      
+              <!-- Profit Double Preview Badge -->
+              <div class="mt-3 inline-flex items-center gap-2 bg-gradient-to-r from-amber-950/80 to-yellow-950/80 px-3 py-1.5 rounded-xl border border-amber-500/40 text-xs">
+                <span class="text-amber-400 font-black">⚡ 2X Bonus:</span>
+                <span class="font-black text-emerald-400 font-mono text-sm" id="sfCollectModalDoubleVal">+2 🌻</span>
+              </div>
+            </div>
+      
+            <!-- Modal Actions (2 Buttons) -->
+            <div class="p-3.5 bg-stone-900 border-t border-stone-800 flex flex-col gap-2">
+              <!-- 1. Watch Ad for 2X Profit -->
+              <button id="sfCollect2xAdBtn" onclick="confirmSfCollect(true)" class="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-stone-950 font-black text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 cursor-pointer transition transform active:scale-95">
+                <span class="text-base">📺</span>
+                <span class="text-[12.5px]">2X PROFIT (Watch Ad)</span>
+              </button>
+      
+              <!-- 2. Normal 1X Collect -->
+              <button onclick="confirmSfCollect(false)" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-95">
+                <span>🧺</span>
+                <span>Collect (<span id="sfCollectModalNormalVal">1X</span>)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- 5-Second Rewarded Sponsor Ad Reel Modal -->
+        <div id="sfAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+          <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
+            <div class="bg-stone-800 px-3.5 py-2 border-b border-stone-700 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[8.5px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
+                <span id="sfAdBrandName" class="text-xs text-stone-400">SunHarvest Bio</span>
+              </div>
+              <span id="sfAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
+                ⏳ 5s
+              </span>
+            </div>
+      
+            <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px]">
+              <div id="sfAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">🌻</div>
+              <h3 id="sfAdHeadline" class="text-sm font-black text-amber-300">Golden Bloom Fertilizer</h3>
+              <p id="sfAdCatchphrase" class="text-stone-300 text-[10.5px] mt-1 max-w-xs">
+                "Accelerate sunflower photosynthesis and harvest double solar coins effortlessly."
+              </p>
+      
+              <div class="mt-2.5 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
+                <span class="text-amber-300 font-semibold">Reward:</span>
+                <span id="sfAdRewardTag" class="font-bold text-white">1 Free Sprout 🌱</span>
+              </div>
+      
+              <div class="w-full bg-stone-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div id="sfAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
+              </div>
+            </div>
+      
+            <div class="p-2.5 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
+              <span class="text-[9.5px] text-stone-400">Watch full 5s clip for reward.</span>
+              <button id="sfAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
+                Watching...
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Panoramic Master Image View & Edit Inspection Modal -->
+        <div id="sfImageViewerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+          <div class="bg-stone-900 border-2 border-amber-500/70 rounded-2xl max-w-4xl w-full p-4 sm:p-5 shadow-2xl relative max-h-[92vh] overflow-y-auto flex flex-col gap-3 text-white">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🖼️</span>
+                <div>
+                  <h3 class="font-black text-sm text-amber-300">Sunflower Valley Master Panoramic Landscape Artwork</h3>
+                  <p class="text-[10px] text-stone-400">
+                    File Path: <code class="bg-stone-800 text-amber-200 px-1.5 py-0.5 rounded font-mono text-[9.5px]">pages/sunflower/sunflower-bg.png</code> &bull; Native Resolution: 1024 &times; 254 px
+                  </p>
+                </div>
+              </div>
+              <button onclick="closeSunflowerImageViewer()" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center font-bold text-lg">&times;</button>
+            </div>
+      
+            <!-- High-Def Image Scrollable Canvas Frame -->
+            <div class="relative w-full overflow-x-auto rounded-xl border border-stone-800 bg-stone-950 p-2 flex justify-start sm:justify-center shadow-inner custom-scrollbar">
+              <img src="sunflower-bg.png" alt="Sunflower Panoramic Master Artwork View" class="rounded-lg max-w-none w-full min-w-[760px] h-auto object-contain select-none shadow-2xl">
+            </div>
+      
+            <!-- Scene Sections Map Guide -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-blue-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-cyan-300 flex items-center gap-1"><span>💧</span> Left: Ancient Water Well</span>
+                <span class="text-stone-300">Represents the <strong>Water Cistern &amp; Pump Station</strong> (Page 2) for drawing water baskets.</span>
+              </div>
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-emerald-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-emerald-300 flex items-center gap-1"><span>🌲</span> Center: Valley Pine Forest</span>
+                <span class="text-stone-300">Represents the misty dawn mountains connecting the valley to the solar gardens.</span>
+              </div>
+              <div class="p-2 rounded-xl bg-stone-800/80 border border-amber-500/30 flex flex-col gap-0.5">
+                <span class="font-bold text-amber-300 flex items-center gap-1"><span>🌻</span> Right: Sunflower Harvesting</span>
+                <span class="text-stone-300">Represents the <strong>20 Land Plots Garden</strong> and <strong>100 ☀️ &rarr; 29 ⚡ Solar Converter</strong>.</span>
+              </div>
+            </div>
+      
+            <!-- Edit / Customization Instructions Card -->
+            <div class="bg-amber-950/40 rounded-xl p-3 border border-amber-500/30 text-[10.5px] text-stone-200 flex flex-col gap-1.5">
+              <div class="flex items-center gap-1.5 font-bold text-amber-400">
+                <span>✏️</span>
+                <span>How to Edit or Swap this Image in the Codebase:</span>
+              </div>
+              <p class="leading-relaxed text-[10px]">
+                1. Replace the file at <code class="text-amber-200 bg-stone-900 px-1 py-0.5 rounded font-mono">frontend/pages/sunflower/sunflower-bg.png</code> and <code class="text-amber-200 bg-stone-900 px-1 py-0.5 rounded font-mono">frontend/sunflower-bg.png</code>.<br>
+                2. Recommended aspect ratio is <strong>~4:1</strong> (e.g. 1024 &times; 254 px or 2048 &times; 508 px).<br>
+                3. Changes immediately reflect across the subtabs, cards, and atmospheric background.
+              </p>
+              <div class="flex flex-wrap items-center gap-2 mt-1">
+                <a href="sunflower-bg.png" download="sunflower-bg.png" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow">
+                  <span>⬇️ Download Master Image</span>
+                </a>
+                <button onclick="closeSunflowerImageViewer()" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-[10px] px-3 py-1.5 rounded-lg transition">
+                  Close Viewer
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -4303,9 +4914,11 @@
       
             <!-- Top Row: Back Button, Title, Sound & Guide -->
             <div class="bee-dash-top-row">
-              <button onclick="switchPage('energy')" class="bee-dash-back-btn" title="Return to Fuel Reactor">
-                <span>&larr;</span> <span>Reactor</span>
-              </button>
+              <button onclick="switchPage('energy')" class="bee-dash-back-btn" title="Return to Fuel Reactor" aria-label="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
               <div class="bee-dash-title-wrap">
                 <span class="bee-dash-bee-icon animate-buzz-float">🐝</span>
@@ -4922,9 +5535,11 @@
       
             <!-- Top Row: Back Button, Title, Sound & Guide -->
             <div class="mine-dash-top-row">
-              <button onclick="switchPage('energy')" class="mine-dash-back-btn font-sci" title="Return to Fuel Reactor">
-                <span>&larr;</span> <span>Reactor</span>
-              </button>
+              <button onclick="switchPage('energy')" class="mine-dash-back-btn font-sci" title="Return to Fuel Reactor" aria-label="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
       
               <div class="mine-dash-title-wrap">
                 <span class="mine-dash-gem-icon animate-pulse">🔮</span>
@@ -5443,10 +6058,10 @@
         <header class="dg-header-bar">
           <div class="dg-header-left">
             <button onclick="switchPage('home')" class="dg-back-btn" title="Back" aria-label="Back">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-            </button>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
             <span class="dg-title font-sci">DIAMOND GENERATOR</span>
           </div>
       
@@ -5454,7 +6069,7 @@
           <div class="dg-resources">
             <div class="dg-pill cyan" title="Main Diamond Balance">
               <span>💎</span>
-              <span id="dgStickyDiamonds" class="font-mono">0.000000</span>
+              <span id="dgStickyDiamonds" class="font-mono">0.00000000</span>
             </div>
             <div class="dg-pill gold" title="Coins">
               <span>🪙</span>
@@ -5472,7 +6087,7 @@
           <section class="dg-stage-card">
             <div class="dg-stage-top">
               <span class="dg-status-tag" id="dgStatusBadge">READY</span>
-              <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.000001 💎 / 60.00s</span>
+              <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.00000001 💎 / 5m</span>
             </div>
       
             <!-- Hologram Node with Smooth Loading Progress Ring -->
@@ -5520,10 +6135,15 @@
                 </svg>
       
                 <div class="diamond-core-info">
-                  <span class="diamond-countdown-text font-mono" id="diamondCountdownText">60.0s</span>
-                  <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.000001 💎</span>
+                  <span class="diamond-countdown-text font-mono" id="diamondCountdownText">05:00.0</span>
+                  <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.00000001 💎</span>
                 </div>
               </div>
+            </div>
+      
+            <!-- Linear Loading Progress Bar (Zero-Jitter Smooth Loading Indicator) -->
+            <div class="dg-progress-bar-wrap" title="Generation Progress">
+              <div class="dg-progress-bar-fill" id="diamondLinearBar" style="width: 0%;"></div>
             </div>
       
             <!-- Start Button with Energy Requirement -->
@@ -5549,7 +6169,7 @@
               </div>
               <div class="piggy-balance-badge font-mono" id="piggyStoredBadge" title="Stored Diamonds in Piggy Bank">
                 <span>💎</span>
-                <span id="piggyStoredAmount">0.000000</span>
+                <span id="piggyStoredAmount">0.00000000</span>
               </div>
             </div>
       
@@ -5728,23 +6348,6 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-        </button>
-      </nav>
-
-      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Hidden unless active) -->
-      <nav class="sf-bottom-menu-bar sf-two-tabs" id="sfBottomMenuBar" style="display: none;">
-        <!-- Tab 1: Sunflower Lands (🌻 Land) -->
-        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Sunflower Lands">
-          <div class="center-play-circle">
-            <span class="sf-menu-play-icon">🌻</span>
-          </div>
-          <span class="sf-menu-txt font-black">Land</span>
-        </button>
-
-        <!-- Tab 2: Water Wells (💧 Water) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Wells & Collection">
-          <div class="sf-menu-ico">💧</div>
-          <span class="sf-menu-txt font-black">Water</span>
         </button>
       </nav>
 

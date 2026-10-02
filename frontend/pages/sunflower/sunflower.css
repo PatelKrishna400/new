@@ -68,26 +68,29 @@
 }
 
 .sf-dash-back-btn {
-  background: rgba(255, 255, 255, 0.9);
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.95);
   border: 1.5px solid #f59e0b;
   color: #78350f;
-  font-weight: 800;
-  font-size: 11px;
-  padding: 6px 12px;
-  border-radius: 12px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 6px rgba(120, 53, 15, 0.12);
+  justify-content: center;
+  padding: 0 !important;
+  box-shadow: 0 2px 6px rgba(120, 53, 15, 0.15);
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 .sf-dash-back-btn:hover {
   background: #fef3c7;
-  transform: translateY(-1px);
+  transform: scale(1.08);
 }
 .sf-dash-back-btn:active {
-  transform: translateY(1px);
+  transform: scale(0.92);
 }
 
 .sf-dash-title-wrap {
@@ -348,28 +351,32 @@
 }
 
 .sf-sticky-back-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50% !important;
   background: #fef3c7;
   border: 1.5px solid #f59e0b;
   color: #78350f;
-  border-radius: 10px;
-  padding: 6px 11px;
-  font-size: 14px;
-  font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.18s ease;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+  padding: 0 !important;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+  flex-shrink: 0;
 }
 
 .sf-sticky-back-btn:hover {
   background: #fde68a;
-  transform: scale(1.05);
+  transform: scale(1.08);
+  border-color: #d97706;
 }
 
 .sf-sticky-back-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 .sf-back-arrow {
@@ -1613,4 +1620,487 @@ body.page-sunflower-active #sfBottomMenuBar {
   transform: scale(1.05);
 }
 
+/* ==========================================================================
+   SUNFLOWER VALLEY 5-TAB BOTTOM NAVIGATION BAR
+   ========================================================================== */
+.sf-bottom-menu-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px + max(0px, env(safe-area-inset-bottom)));
+  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
+  width: calc(100% - 24px);
+  max-width: 440px;
+  background: #1c1917 !important;
+  border: 2px solid #f59e0b !important;
+  border-radius: 32px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 
+    0 8px 24px rgba(245, 158, 11, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(254, 240, 138, 0.2);
+  z-index: 120;
+  flex-shrink: 0;
+}
 
+#pageSunflower.active .sf-bottom-menu-bar,
+body.page-sunflower-active .sf-bottom-menu-bar {
+  display: flex !important;
+}
+
+.sf-menu-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 12px;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #a8a29e;
+  outline: none;
+}
+
+.sf-menu-tab-btn:hover {
+  color: #fde047;
+}
+
+.sf-menu-tab-btn.active {
+  color: #f59e0b;
+  font-weight: 800;
+  transform: translateY(-2px);
+}
+
+.sf-menu-tab-btn .sf-menu-ico {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.sf-menu-tab-btn .sf-menu-txt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.sf-menu-tab-btn.center-play-btn {
+  position: relative;
+  top: -10px;
+}
+
+.sf-menu-tab-btn.center-play-btn .center-play-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 2.5px solid #fef08a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sf-menu-tab-btn.center-play-btn.active .center-play-circle {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+}
+
+.sf-menu-tab-btn.center-play-btn .sf-menu-play-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   HANDWRITTEN SKETCH CARD LAYOUT FOR SUNFLOWER LANDS
+   Left: Big Square Lifecycle Box
+   Right Top: Land Title | Lv 1 | Upgrade Button | +1 Rate
+   Center: Loading Bar with live countdown timer inside (e.g. 60s)
+   Bottom: [ Water ] and [ Collect ] Dual Buttons
+   ========================================================================== */
+.sf-sketch-card {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #fde047;
+  border-radius: 20px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  user-select: none;
+}
+
+.sf-sketch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.18);
+  border-color: #f59e0b;
+}
+
+.sf-sketch-card.alive {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, #ffffff 0%, #fffdf5 100%);
+}
+
+.sf-sketch-card.growing {
+  border-color: #86efac;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.sf-sketch-card.empty {
+  border-color: #fcd34d;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.sf-sketch-card.dead {
+  border-color: #fda4af;
+  background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%);
+}
+
+.sf-sketch-card.locked {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  opacity: 0.94;
+}
+
+/* BIG SQUARE ON THE LEFT */
+.sf-sketch-square {
+  width: 104px;
+  min-width: 104px;
+  height: 104px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fffbeb, #fef3c7);
+  border: 2px solid #fde047;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 6px rgba(245, 158, 11, 0.15), 0 3px 8px rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  text-align: center;
+}
+
+.sf-sketch-square.stage-growing {
+  background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+  border-color: #86efac;
+}
+
+.sf-sketch-square.stage-alive {
+  background: radial-gradient(circle at 50% 40%, #fef9c3 0%, #fef08a 60%, #fde047 100%);
+  border-color: #f59e0b;
+}
+
+.sf-sketch-square.stage-dead {
+  background: linear-gradient(145deg, #fff1f2, #ffe4e6);
+  border-color: #fb7185;
+}
+
+.sf-sketch-square.stage-locked {
+  background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+  border-color: #94a3b8;
+}
+
+.sf-sketch-square-art {
+  font-size: 34px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sf-sketch-card:hover .sf-sketch-square-art {
+  transform: scale(1.12);
+}
+
+.sf-sketch-square-badge {
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1.5px 5px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.sf-sketch-square-badge.growing {
+  background: #166534;
+  color: #bbf7d0;
+}
+
+.sf-sketch-square-badge.alive {
+  background: #78350f;
+  color: #fef08a;
+}
+
+.sf-sketch-square-badge.dead {
+  background: #9f1239;
+  color: #ffe4e6;
+}
+
+/* RIGHT CONTENT COLUMN */
+.sf-sketch-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* TOP ROW: Land Name on left, Level & Upgrade & Rate on right */
+.sf-sketch-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sf-sketch-land-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #451a03;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sf-sketch-lv-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.sf-sketch-lv-tag {
+  font-size: 12px;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: #78350f;
+  background: #fef3c7;
+  border: 1px solid #fde047;
+  padding: 1px 7px;
+  border-radius: 6px;
+  line-height: 1.2;
+}
+
+.sf-sketch-up-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 1.5px solid #fef08a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+  transition: transform 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.sf-sketch-up-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+}
+
+.sf-sketch-up-btn:active {
+  transform: scale(0.96);
+}
+
+.sf-sketch-up-btn.disabled {
+  background: #cbd5e1 !important;
+  color: #64748b !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.sf-sketch-rate {
+  font-size: 11px;
+  font-weight: 900;
+  color: #15803d;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.2px;
+}
+
+/* MIDDLE ROW: LOADING BAR WITH COUNTDOWN TIMER INSIDE */
+.sf-sketch-middle {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.sf-loading-bar-wrap {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background: #e2e8f0;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+}
+
+.sf-loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #facc15 100%);
+  border-radius: 10px;
+  transition: width 0.15s linear;
+}
+
+.sf-loading-bar-fill.ready {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #10b981 100%);
+  animation: barReadyGlow 1.2s infinite ease-in-out;
+}
+
+@keyframes barReadyGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+.sf-loading-bar-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: #0f172a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+  z-index: 2;
+  letter-spacing: 0.2px;
+}
+
+/* Life meter info line */
+.sf-sketch-life-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: #78350f;
+  font-weight: 700;
+  padding: 0 2px;
+}
+
+/* BOTTOM ROW: DUAL BUTTONS [ WATER ] & [ COLLECT ] */
+.sf-sketch-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.sf-btn-sketch-action {
+  border: none;
+  border-radius: 11px;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.sf-btn-sketch-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.sf-btn-sketch-action:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Left button: Water */
+.sf-btn-sketch-water {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1.5px solid #38bdf8;
+  color: #ffffff;
+}
+.sf-btn-sketch-water:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+}
+
+/* Right button: Collect */
+.sf-btn-sketch-collect {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1.5px solid #6ee7b7;
+  color: #ffffff;
+}
+
+.sf-btn-sketch-collect.active-ready {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  animation: pulseCollectReady 1s infinite ease-in-out;
+}
+
+@keyframes pulseCollectReady {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+  50% { transform: scale(1.02); box-shadow: 0 0 14px rgba(245, 158, 11, 0.85); }
+}
+
+.sf-btn-sketch-collect:disabled,
+.sf-btn-sketch-collect.disabled {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+@media (max-width: 480px) {
+  .sf-sketch-card {
+    padding: 10px;
+    gap: 10px;
+  }
+  .sf-sketch-square {
+    width: 86px;
+    min-width: 86px;
+    height: 86px;
+  }
+  .sf-sketch-square-art {
+    font-size: 28px;
+  }
+  .sf-sketch-land-title {
+    font-size: 13px;
+  }
+  .sf-loading-bar-wrap {
+    height: 22px;
+  }
+  .sf-loading-bar-text {
+    font-size: 10px;
+  }
+  .sf-btn-sketch-action {
+    font-size: 10.5px;
+    padding: 6px 8px;
+  }
+}

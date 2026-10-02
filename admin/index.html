@@ -269,14 +269,7 @@
               </div>
             </div>
       
-            <!-- 8. Blue Coins in Circulation -->
-            <div class="metric-box">
-              <div class="metric-icon-box" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">💙</div>
-              <div class="metric-meta">
-                <span class="metric-label">Blue Coins in Circulation</span>
-                <span class="metric-value" id="dashTotalBlueCoins" style="color: #38bdf8;">0</span>
-              </div>
-            </div>
+            
           </div>
         </div>
       
@@ -415,7 +408,7 @@
               </div>
               <div class="kpi-foot">
                 <span class="kpi-status-tag" id="kpiTagEconomy">0% Goal</span>
-                <span class="kpi-subtext" id="kpiSubEconomy">Coins + Blue Gems Mined</span>
+                <span class="kpi-subtext" id="kpiSubEconomy">Coins + Diamonds Mined</span>
               </div>
             </div>
       
@@ -781,7 +774,7 @@
               <div class="chart-editor-header">
                 <div>
                   <h4 class="chart-editor-title">🪙 All Coin &amp; Currencies Pie Chart</h4>
-                  <p class="chart-editor-desc">All 6 virtual currency holdings across all players: Gold Coins, Blue Diamonds, Chest Keys, Tickets, Eggs, and Cards.</p>
+                  <p class="chart-editor-desc">All 6 virtual currency holdings across all players: Gold Coins, Diamonds, Chest Keys, Tickets, Eggs, and Cards.</p>
                 </div>
                 <button type="button" class="btn-dash-outline btn-reset-slice" onclick="resetChartOverrides('economy')">
                   <span>↺</span> Reset to Live Data
@@ -1216,10 +1209,7 @@
                   <div style="font-size: 10px; font-weight: 800; color: #b45309;">COINS 🪙</div>
                   <div style="font-size: 15px; font-weight: 800; color: #b45309; font-family: 'JetBrains Mono', monospace;" id="detailCoins">0</div>
                 </div>
-                <div style="padding: 10px; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.3); border-radius: 8px;">
-                  <div style="font-size: 10px; font-weight: 800; color: #0284c7;">BLUE COINS 💙</div>
-                  <div style="font-size: 15px; font-weight: 800; color: #0284c7; font-family: 'JetBrains Mono', monospace;" id="detailBlueCoins">0</div>
-                </div>
+                
                 <div style="padding: 10px; background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.3); border-radius: 8px;">
                   <div style="font-size: 10px; font-weight: 800; color: #0891b2;">DIAMONDS 💎</div>
                   <div style="font-size: 15px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace;" id="detailDiamonds">0</div>
@@ -1332,10 +1322,7 @@
                   <label class="form-label" style="font-size: 11px; font-weight: 700; color: #ca8a04;">Coins 🪙</label>
                   <input type="number" id="inpAddCoins" value="2500" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
                 </div>
-                <div class="form-group">
-                  <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0284c7;">Blue Coins 💙</label>
-                  <input type="number" id="inpAddBlueCoins" value="100" min="0" class="form-input" style="font-weight: 700; color: #0284c7;">
-                </div>
+                
                 <div class="form-group">
                   <label class="form-label" style="font-size: 11px; font-weight: 700; color: #0891b2;">Diamonds 💎</label>
                   <input type="number" id="inpAddDiamonds" value="150" min="0" class="form-input" style="font-weight: 700; color: #0891b2;">
@@ -2947,10 +2934,6 @@
                 <input type="number" id="cfgFuelBaseAd" class="form-input" min="1" value="1" style="font-weight: 800; color: #ef4444;">
               </div>
               <div class="form-group">
-                <label class="form-label" style="font-size: 11px;">💙 Blue Coins</label>
-                <input type="number" id="cfgFuelBaseBlue" class="form-input" min="1" value="150" style="font-weight: 800; color: #0284c7;">
-              </div>
-              <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">🪙 Gold Coin</label>
                 <input type="number" id="cfgFuelBaseGold" class="form-input" min="1" value="125" style="font-weight: 800; color: #ca8a04;">
               </div>
@@ -2961,10 +2944,6 @@
               <div class="form-group">
                 <label class="form-label" style="font-size: 11px;">🪙 150× Coin Pack</label>
                 <input type="number" id="cfgFuelBaseCoinPack" class="form-input" min="1" value="150" style="font-weight: 800; color: #ca8a04;">
-              </div>
-              <div class="form-group">
-                <label class="form-label" style="font-size: 11px;">💙 75× Blue Pack</label>
-                <input type="number" id="cfgFuelBaseBluePack" class="form-input" min="1" value="75" style="font-weight: 800; color: #0284c7;">
               </div>
             </div>
           </div>
@@ -3181,10 +3160,6 @@
         <div class="form-group">
           <label class="form-label">Coins 🪙</label>
           <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Blue Coins 💙</label>
-          <input type="number" id="editModalBlueCoins" class="form-input" style="color: #0284c7; font-weight: 800;">
         </div>
         <div class="form-group">
           <label class="form-label">Diamonds 💎</label>
@@ -3620,7 +3595,6 @@
           energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           currentEnergy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
-          blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
           chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
           scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,

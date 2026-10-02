@@ -56,25 +56,35 @@
 }
 
 .xp-back-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50% !important;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
   color: #fbbf24;
-  font-family: var(--font-primary);
-  font-size: 12px;
-  font-weight: 800;
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .xp-back-btn:hover {
-  background: rgba(245, 158, 11, 0.15);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%);
   border-color: #fbbf24;
-  transform: translateX(-2px);
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.xp-back-btn:active {
+  transform: scale(0.92);
 }
 
 .xp-timer-pill {

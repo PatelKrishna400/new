@@ -5,13 +5,13 @@
    ========================================================================== */
 
 // 1. REWARD POOLS WITH EXACT PROBABILITIES:
-// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 1 Coin (2%), 50 Blue Coins (8%)
+// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 5 Diamonds (5%), 100-250 Coins (5%)
 const SCRATCH_CARD_TIERS = [
   { type: 'keys', min: 1, max: 2, weight: 20, icon: '🔑', tier: 'KEY REWARD 🔑', tierColor: '#f59e0b', desc: 'Keys to unlock mystery chests!' },
   { type: 'egg', min: 10, max: 20, weight: 50, icon: '🥚', tier: 'EGG REWARD 🥚', tierColor: '#10b981', desc: 'Egg coins to hatch 12-Egg cyber prizes!' },
   { type: 'tickets', min: 1, max: 2, weight: 20, icon: '🎟️', tier: 'TICKET REWARD 🎟️', tierColor: '#ec4899', desc: 'Tickets to spin the lucky wheel!' },
-  { type: 'diamonds', min: 25, max: 50, weight: 2, icon: '💎', tier: 'RARE DIAMONDS 💎', tierColor: '#38bdf8', desc: 'Diamonds deposited into your vault balance!' },
-  { type: 'blue_coins', min: 50, max: 50, weight: 8, icon: '💙', tier: 'BLUE COINS 💙', tierColor: '#38bdf8', desc: 'Premium blue coins deposited to your balance!' }
+  { type: 'diamonds', min: 25, max: 50, weight: 5, icon: '💎', tier: 'RARE DIAMONDS 💎', tierColor: '#38bdf8', desc: 'Diamonds deposited into your vault balance!' },
+  { type: 'coins', min: 100, max: 250, weight: 5, icon: '🪙', tier: 'GOLD COINS 🪙', tierColor: '#fbbf24', desc: 'Gold coins deposited to your balance!' }
 ];
 
 function generateScratchReward() {
@@ -35,8 +35,7 @@ function generateScratchReward() {
     label = `${amount} Ticket${amount > 1 ? 's' : ''}`;
   } else if (selected.type === 'coins') {
     label = `${amount} Coin${amount > 1 ? 's' : ''}`;
-  } else if (selected.type === 'blue_coins') {
-    label = `${amount} Blue Coins`;
+  
   }
 
   return {
@@ -197,9 +196,7 @@ function renderSingleRewardCard() {
     } else if (reward.type === 'coins') {
       amountEl.textContent = `+${reward.amount} COIN${reward.amount > 1 ? 'S' : ''} 🪙`;
       amountEl.style.color = '#fbbf24';
-    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
-      amountEl.textContent = `+${reward.amount} BLUE COINS 💙`;
-      amountEl.style.color = '#38bdf8';
+    
     } else {
       amountEl.textContent = `+${reward.amount} ${reward.type.toUpperCase()}`;
       amountEl.style.color = reward.tierColor || '#fbbf24';
@@ -216,8 +213,7 @@ function renderSingleRewardCard() {
       descEl.textContent = `+${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} added to spin the lucky wheel!`;
     } else if (reward.type === 'coins') {
       descEl.textContent = `+${reward.amount} Gold coin${reward.amount > 1 ? 's' : ''} deposited to your vault!`;
-    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
-      descEl.textContent = `+${reward.amount} Premium blue coins deposited to your vault!`;
+    
     } else {
       descEl.textContent = reward.desc || reward.label;
     }
@@ -724,16 +720,6 @@ function completeSingleCardReveal() {
       }
       if (typeof showFloatingToast === 'function') {
         showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Diamonds 💎!`);
-      }
-    } else if (reward.type === 'blue_coins' || reward.type === 'blue') {
-      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + reward.amount;
-      sfx.playLevelUpSound();
-      const statusEl = document.getElementById('singleScratchStatusText');
-      if (statusEl) {
-        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Blue Coins 💙</strong>!`;
-      }
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Blue Coins 💙!`);
       }
     }
   }

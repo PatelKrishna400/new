@@ -206,8 +206,7 @@ function updateDashboardMetrics() {
   const elEggs = document.getElementById('dashTotalEggs');
   const elLevels = document.getElementById('dashTotalLevels');
   const elDiamonds = document.getElementById('dashTotalDiamonds');
-  const elBlueCoins = document.getElementById('dashTotalBlueCoins');
-
+  
   if (elCoins) {
     const c = Number(metrics.totalCoins || 0);
     elCoins.textContent = c >= 1000000 ? (c / 1000000).toFixed(2) + 'M' : c.toLocaleString();
@@ -227,11 +226,7 @@ function updateDashboardMetrics() {
     elDiamonds.textContent = d >= 1000000 ? (d / 1000000).toFixed(2) + 'M' : d.toLocaleString();
     elDiamonds.title = `${d.toLocaleString()} Diamonds 💎`;
   }
-  if (elBlueCoins) {
-    const b = Number(metrics.totalBlueCoins || 0);
-    elBlueCoins.textContent = b >= 1000000 ? (b / 1000000).toFixed(2) + 'M' : b.toLocaleString();
-    elBlueCoins.title = `${b.toLocaleString()} Blue Coins 💙`;
-  }
+  
 
   // Legacy elements if present
   const elDaily = document.getElementById('dashDailyTasksCompleted');

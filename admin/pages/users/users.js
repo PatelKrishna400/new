@@ -340,8 +340,7 @@ function viewUserDetails(uid) {
 
   // Currency Balances
   if (document.getElementById('detailCoins')) document.getElementById('detailCoins').textContent = Number(u.coins || 0).toLocaleString();
-  if (document.getElementById('detailBlueCoins')) document.getElementById('detailBlueCoins').textContent = Number(u.blueCoins || 0).toLocaleString();
-  if (document.getElementById('detailDiamonds')) document.getElementById('detailDiamonds').textContent = Number(u.diamonds || 0).toLocaleString();
+    if (document.getElementById('detailDiamonds')) document.getElementById('detailDiamonds').textContent = Number(u.diamonds || 0).toLocaleString();
   if (document.getElementById('detailXp')) document.getElementById('detailXp').textContent = Number(u.xp || 0).toLocaleString();
   if (document.getElementById('detailKeys')) document.getElementById('detailKeys').textContent = Number(u.chestKeys || 0).toLocaleString();
   if (document.getElementById('detailCards')) document.getElementById('detailCards').textContent = Number(u.scratchCards || 0).toLocaleString();
@@ -428,8 +427,7 @@ function openUserEditModal(uid) {
   const inpXp = document.getElementById('editModalXp');
   const inpGoalLevel = document.getElementById('editModalGoalLevel');
   const inpCoins = document.getElementById('editModalCoins');
-  const inpBlueCoins = document.getElementById('editModalBlueCoins');
-  const inpDiamonds = document.getElementById('editModalDiamonds');
+    const inpDiamonds = document.getElementById('editModalDiamonds');
   const inpKeys = document.getElementById('editModalKeys');
   const inpCards = document.getElementById('editModalCards');
   const inpTickets = document.getElementById('editModalTickets');
@@ -447,8 +445,7 @@ function openUserEditModal(uid) {
   if (inpXp) inpXp.value = player.xp || 0;
   if (inpGoalLevel) inpGoalLevel.value = player.goalLevel || 0;
   if (inpCoins) inpCoins.value = player.coins || 0;
-  if (inpBlueCoins) inpBlueCoins.value = player.blueCoins || 0;
-  if (inpDiamonds) inpDiamonds.value = player.diamonds || 0;
+    if (inpDiamonds) inpDiamonds.value = player.diamonds || 0;
   if (inpKeys) inpKeys.value = player.chestKeys || 0;
   if (inpCards) inpCards.value = player.scratchCards || 0;
   if (inpTickets) inpTickets.value = player.chestTickets || 0;
@@ -478,8 +475,7 @@ function savePlayerEditToFirebase() {
   const updates = {
     level: Number(document.getElementById('editModalLevel')?.value) || 0,
     coins: Number(document.getElementById('editModalCoins')?.value) || 0,
-    blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
-    diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
+        diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
     chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
     scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,
     chestTickets: Number(document.getElementById('editModalTickets')?.value) || 0,
@@ -868,8 +864,7 @@ function saveNewPlayerToFirebase(event) {
   const telegram = (document.getElementById('inpAddTelegram')?.value || '').trim();
   const level = Number(document.getElementById('inpAddLevel')?.value) || 1;
   const coins = Number(document.getElementById('inpAddCoins')?.value) || 2500;
-  const blueCoins = Number(document.getElementById('inpAddBlueCoins')?.value) || 100;
-  const diamonds = Number(document.getElementById('inpAddDiamonds')?.value) || 150;
+    const diamonds = Number(document.getElementById('inpAddDiamonds')?.value) || 150;
   const keys = Number(document.getElementById('inpAddKeys')?.value) || 3;
   const tickets = Number(document.getElementById('inpAddTickets')?.value) || 2;
   const cards = Number(document.getElementById('inpAddCards')?.value) || 2;
@@ -900,8 +895,7 @@ function saveNewPlayerToFirebase(event) {
       level: level,
       xp: 0,
       coins: coins,
-      blueCoins: blueCoins,
-      diamonds: diamonds,
+            diamonds: diamonds,
       chestKeys: keys,
       scratchCards: cards,
       chestTickets: tickets,

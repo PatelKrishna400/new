@@ -227,28 +227,16 @@ function handleOrbTap(e) {
 
   // Check 24-hour full bank withdrawal pass
   const is24hPassActive = !!(gameState.bank && gameState.bank.fullWithdrawalPassEndTime && now < gameState.bank.fullWithdrawalPassEndTime);
-  let blueCoinDepositText = `+${activeMult} 🏦 Bank`;
+  let coinDepositText = `+${activeMult} 🪙`;
   if (is24hPassActive) {
-    // If pass is active, blue coins go directly to player wallet!
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + activeMult;
-    blueCoinDepositText = `+${activeMult} 💙 Blue Coin${activeMult > 1 ? 's' : ''}`;
+    gameState.player.coins = (gameState.player.coins || 0) + activeMult;
+    coinDepositText = `+${activeMult} 🪙`;
   } else {
-    // Otherwise, per tap blue coin collects in the Big Bank
-    if (!gameState.bank) gameState.bank = { blueCoins: 0, fullWithdrawalPassEndTime: 0 };
-    gameState.bank.blueCoins = (gameState.bank.blueCoins || 0) + activeMult;
+    if (!gameState.bank) gameState.bank = { coins: 0, fullWithdrawalPassEndTime: 0 };
+    gameState.bank.coins = (gameState.bank.coins || 0) + activeMult;
   }
 
-  if (!_homeBlueEls || _homeBlueEls.length === 0) {
-    _homeBlueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-  }
-  _homeBlueEls.forEach(el => {
-    el.textContent = formatNumber(gameState.player.blueCoins || 0);
-  });
-  const bluePill = document.getElementById('blueCoinPill') || (typeof DOM !== 'undefined' && DOM.blueCoinPill);
-  if (bluePill) {
-    bluePill.classList.add('pulse-glow');
-    setTimeout(() => bluePill.classList.remove('pulse-glow'), 220);
-  }
+  
 
   // 4. Boosters & XP Progression
   const isProfit2xActive = !!(
@@ -347,9 +335,7 @@ function handleOrbTap(e) {
     if (isProfit2xActive) tapText = `🔥 +${activeMult} Tap${activeMult > 1 ? 's' : ''} (*2 Profit)`;
     createFloatingNumber(clientX, clientY, tapText, isProfit2xActive ? '#fbbf24' : '#38bdf8');
     
-    setTimeout(() => {
-      createFloatingNumber(clientX + (Math.random() - 0.5) * 24, clientY - 26, blueCoinDepositText, '#38bdf8');
-    }, 70);
+    
 
     if (isFastXpActive) {
       setTimeout(() => {
@@ -493,13 +479,7 @@ function updateHomeUI() {
     _cachedHomeGoldEls.forEach(el => { if (el.textContent !== formattedGold) el.textContent = formattedGold; });
   }
 
-  // 2. Blue Gem Coins
-  const formattedBlue = formatNumber(gameState.player.blueCoins || 0);
-  if (_lastHomeBlueText !== formattedBlue) {
-    _lastHomeBlueText = formattedBlue;
-    if (!_cachedHomeBlueEls) _cachedHomeBlueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-    _cachedHomeBlueEls.forEach(el => { if (el.textContent !== formattedBlue) el.textContent = formattedBlue; });
-  }
+  
 
   // 3. Diamonds
   const formattedDiamonds = formatNumber(gameState.player.diamonds || 0);
@@ -598,7 +578,7 @@ function updateHomeUI() {
 
   const badgeBank = document.getElementById('badgeBoosterBank');
   if (badgeBank) {
-    const bankCoins = (gameState.bank && gameState.bank.blueCoins) || 0;
+    const bankCoins = (gameState.bank && gameState.bank.coins) || 0;
     const bankStr = `${bankCoins} 🪙`;
     if (badgeBank.textContent !== bankStr) badgeBank.textContent = bankStr;
   }
@@ -1329,7 +1309,7 @@ function buyGarba2xWithDiamonds() {
   }
 
   gameState.player.diamonds -= cost;
-  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  if (gameState.player.coins !== undefined) gameState.player.coins = gameState.player.diamonds;
   if (typeof sfx !== 'undefined' && sfx.playBuySound) sfx.playBuySound();
   
   activateHome2xBoost(GARBA_BOOST_DURATION_SEC, 'diamonds');
@@ -1734,7 +1714,7 @@ window.buyProfitBoosterWithCoins = function() {
 // 3. Big Bank Blue Coin Deposit/Withdraw Popup View
 function renderBoosterBankPopup(header, body) {
   const now = Date.now();
-  const bankBalance = (gameState.bank && gameState.bank.blueCoins) || 0;
+  const bankBalance = (gameState.bank && gameState.bank.coins) || 0;
   const isPassActive = !!(gameState.bank && gameState.bank.fullWithdrawalPassEndTime && now < gameState.bank.fullWithdrawalPassEndTime);
   const remSecs = isPassActive ? Math.ceil((gameState.bank.fullWithdrawalPassEndTime - now) / 1000) : 0;
   const h = Math.floor(remSecs / 3600);
@@ -1743,10 +1723,10 @@ function renderBoosterBankPopup(header, body) {
   const passStr = `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
 
   header.innerHTML = `
-    <div class="home-popup-festive-pill">🏦 BLUE COIN BIG BANK</div>
+    <div class="home-popup-festive-pill">🏦 VAULT BIG BANK</div>
     <div class="home-popup-icon-wrap" style="background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, rgba(8, 145, 178, 0.1) 100%); border: 2px solid #06b6d4; color: #38bdf8; font-size: 28px;">🏦</div>
     <h3 class="home-popup-title">BIG BANK VAULT</h3>
-    <p class="home-popup-subtitle">Every sacred tap deposits 1 Blue Coin into this vault! Withdraw 100 with 1 Ad, or unlock full withdrawals + 24-hour pass with 100 Diamonds.</p>
+    <p class="home-popup-subtitle">Every tap deposits coins into this vault! Withdraw 100 with 1 Ad, or unlock full withdrawals + 24-hour pass with 100 Diamonds.</p>
   `;
 
   let passHtml = '';
@@ -1764,11 +1744,11 @@ function renderBoosterBankPopup(header, body) {
     ${passHtml}
     <div class="popup-stat-banner" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.4);">
       <span class="popup-stat-label">Bank Vault Balance</span>
-      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 💙 Blue Coins</span>
+      <span class="popup-stat-value" style="color: #38bdf8; font-size: 20px; font-weight: 900;">${bankBalance} 🪙 Gold Coins</span>
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="withdrawBankWithAd()">
-        <span style="font-size: 18px;">🎬</span> WATCH 1 AD -> WITHDRAW 100 BLUE COINS
+        <span style="font-size: 18px;">🎬</span> WATCH 1 AD -> WITHDRAW 100 COINS
       </button>
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 1.5px solid #a78bfa; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);" onclick="withdrawFullBankWithDiamonds()">
         <span style="font-size: 18px;">💎</span> 100 DIAMONDS: FULL WITHDRAWAL + 24H PASS
@@ -1778,21 +1758,21 @@ function renderBoosterBankPopup(header, body) {
 }
 
 window.withdrawBankWithAd = function() {
-  const available = (gameState.bank && gameState.bank.blueCoins) || 0;
+  const available = (gameState.bank && gameState.bank.coins) || 0;
   if (available <= 0) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('Big Bank is empty! Tap the reactor to store Blue Coins first.');
+      showFloatingToast('Big Bank is empty! Tap the reactor to store Gold Coins first.');
     }
     return;
   }
 
   const doReward = () => {
-    const amt = Math.min(100, (gameState.bank && gameState.bank.blueCoins) || 0);
-    gameState.bank.blueCoins = Math.max(0, (gameState.bank.blueCoins || 0) - amt);
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + amt;
+    const amt = Math.min(100, (gameState.bank && gameState.bank.coins) || 0);
+    gameState.bank.coins = Math.max(0, (gameState.bank.coins || 0) - amt);
+    gameState.player.coins = (gameState.player.coins || 0) + amt;
     sfx.playLevelUpSound();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast(`🏦 Withdrew ${amt} Blue Coins from Big Bank!`);
+      showFloatingToast(`🏦 Withdrew ${amt} Gold Coins from Big Bank!`);
     }
     closeHomeActionPopup();
     updateUI();
@@ -1805,7 +1785,7 @@ window.withdrawBankWithAd = function() {
   if (typeof showRewardedAd === 'function') {
     showRewardedAd(doReward);
   } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation('bank', 'Big Bank Withdrawal', 'Watch 1 Ad to withdraw 100 Blue Coins', doReward);
+    startAdSimulation('bank', 'Big Bank Withdrawal', 'Watch 1 Ad to withdraw 100 Gold Coins', doReward);
   } else {
     doReward();
   }
@@ -1820,14 +1800,14 @@ window.withdrawFullBankWithDiamonds = function() {
   }
 
   gameState.player.diamonds -= 100;
-  const available = (gameState.bank && gameState.bank.blueCoins) || 0;
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + available;
-  if (gameState.bank) gameState.bank.blueCoins = 0;
+  const available = (gameState.bank && gameState.bank.coins) || 0;
+  gameState.player.coins = (gameState.player.coins || 0) + available;
+  if (gameState.bank) gameState.bank.coins = 0;
   gameState.bank.fullWithdrawalPassEndTime = Date.now() + (24 * 3600 * 1000);
 
   sfx.playLevelUpSound();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🏦 Full Bank Withdrawn (${available} Blue Coins) & 24H Pass Activated!`);
+    showFloatingToast(`🏦 Full Bank Withdrawn (${available} Gold Coins) & 24H Pass Activated!`);
   }
   closeHomeActionPopup();
   updateUI();
@@ -2063,7 +2043,7 @@ function renderHomeProfilePopup(header, body) {
   const xpCur = +(gameState.player.xp || 0);
   const xpTar = gameState.player.xpToNextLevel || 1000;
   const goldCoins = gameState.player.coins || 0;
-  const blueCoins = gameState.player.diamonds || gameState.player.blueCoins || 0;
+  const blueCoins = gameState.player.diamonds || gameState.player.coins || 0;
 
   header.innerHTML = `
     <div class="home-popup-icon-wrap" style="background: rgba(168, 85, 247, 0.2); border: 2px solid #a855f7; color: #c084fc;">⚡</div>
@@ -2089,8 +2069,8 @@ function renderHomeProfilePopup(header, body) {
         <span class="popup-stat-value" style="color: #fbbf24; font-size: 16px;">🪙 ${formatNumber(goldCoins)}</span>
       </div>
       <div class="popup-stat-banner" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-        <span class="popup-stat-label">Blue Coins</span>
-        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">💙 ${formatNumber(blueCoins)}</span>
+        <span class="popup-stat-label">Diamonds</span>
+        <span class="popup-stat-value" style="color: #38bdf8; font-size: 16px;">💎 ${formatNumber(gameState.player.diamonds || 0)}</span>
       </div>
     </div>
 
@@ -2119,7 +2099,7 @@ function renderHomeProfilePopup(header, body) {
 function claimHomeProfileBlessing() {
   gameState.player.coins = (gameState.player.coins || 0) + 2000;
   gameState.player.diamonds = (gameState.player.diamonds || 0) + 10;
-  if (gameState.player.blueCoins !== undefined) gameState.player.blueCoins = gameState.player.diamonds;
+  if (gameState.player.coins !== undefined) gameState.player.coins = gameState.player.diamonds;
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
@@ -2212,7 +2192,7 @@ function convertHomeEnergyToCoins() {
 
 // 5. Blue Coin Vault Reward Popup
 function renderHomeBlueCoinPopup(header, body) {
-  const blueCoins = gameState.player.blueCoins || 0;
+  const blueCoins = gameState.player.coins || 0;
 
   header.innerHTML = `
     <div class="home-popup-icon-wrap" style="background: rgba(6, 182, 212, 0.2); border: 2px solid #06b6d4; color: #38bdf8;">💙</div>
@@ -2231,7 +2211,7 @@ function renderHomeBlueCoinPopup(header, body) {
         <span class="popup-feature-icon">🎁</span>
         <div class="popup-feature-info">
           <span class="popup-feature-title">Free Quantum Drop</span>
-          <span class="popup-feature-sub">+15 Blue Coins</span>
+          <span class="popup-feature-sub">+15 Gold Coins</span>
         </div>
       </div>
       <button class="popup-mini-btn btn-cyan-glow" onclick="claimHomeBlueCoinBonus(15, 'Quantum Drop')">Claim</button>
@@ -2264,7 +2244,7 @@ function renderHomeBlueCoinPopup(header, body) {
         <span class="popup-feature-icon">💎</span>
         <div class="popup-feature-info">
           <span class="popup-feature-title">Quantum Crystal Gift</span>
-          <span class="popup-feature-sub">+50 Blue Coins</span>
+          <span class="popup-feature-sub">+50 Gold Coins</span>
         </div>
       </div>
       <button class="popup-mini-btn btn-cyan-glow" onclick="claimHomeBlueCoinBonus(50, 'Amrit Gem Gift')">Claim</button>
@@ -2273,11 +2253,11 @@ function renderHomeBlueCoinPopup(header, body) {
 }
 
 function claimHomeBlueCoinBonus(amount, sourceName) {
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + amount;
+  gameState.player.coins = (gameState.player.coins || 0) + amount;
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`💙 +${amount} Blue Coins Claimed!`);
+    showFloatingToast(`💙 +${amount} Gold Coins Claimed!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCoinSound) sfx.playCoinSound();
   refreshHomePopupIfOpen('blue');
@@ -2287,16 +2267,16 @@ function exchangeGoldToBlueCoins() {
   const currentGold = gameState.player.coins || 0;
   if (currentGold < 5000) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('⚠️ Need at least 5,000 Gold Coins to synthesize Blue Coins!');
+      showFloatingToast('⚠️ Need at least 5,000 Gold Coins to synthesize Gold Coins!');
     }
     return;
   }
   gameState.player.coins -= 5000;
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + 25;
+  gameState.player.coins = (gameState.player.coins || 0) + 25;
   if (typeof saveGame === 'function') saveGame();
   updateHomeUI();
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast('🔄 Synthesized 5,000 Gold Coins into 25 Blue Coins!');
+    showFloatingToast('🔄 Synthesized 5,000 Gold Coins into 25 Gold Coins!');
   }
   if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
   refreshHomePopupIfOpen('blue');
@@ -2348,7 +2328,7 @@ function openHomeMysteryCapsule() {
   const goldBonus = Math.floor(Math.random() * 2500) + 3500;
   const blueBonus = Math.floor(Math.random() * 15) + 10;
   gameState.player.coins = (gameState.player.coins || 0) + goldBonus;
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + blueBonus;
+  gameState.player.coins = (gameState.player.coins || 0) + blueBonus;
   if (gameState.player.chestKeys !== undefined) gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
   if (gameState.player.spinTickets !== undefined) gameState.player.spinTickets = (gameState.player.spinTickets || 0) + 1;
   if (gameState.player.scratchCards !== undefined) gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
@@ -2357,7 +2337,7 @@ function openHomeMysteryCapsule() {
   updateHomeUI();
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`🎉 Capsule Reward: +${formatNumber(goldBonus)} Gold, +${blueBonus} 💙 Blue Coins, 🎫 1 Ticket, 🔑 1 Key!`);
+    showFloatingToast(`🎉 Capsule Reward: +${formatNumber(goldBonus)} Gold, +${blueBonus} 💙 Gold Coins, 🎫 1 Ticket, 🔑 1 Key!`);
   }
   if (typeof sfx !== 'undefined' && sfx.playCardRewardSound) {
     sfx.playCardRewardSound();

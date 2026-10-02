@@ -649,7 +649,7 @@ window.saveGlobalGameConfig = saveGlobalGameConfig;
 // ADMIN ENERGY FUEL CELL SHOP PRICING & MULTIPLIERS ENGINE
 // ==========================================================================
 const DEFAULT_ADMIN_FUEL_CONFIG = {
-  basePrices: { ad: 1, blueCoin: 150, goldCoin: 125, diamond: 25, coinPack: 150, bluePack: 75 },
+  basePrices: { ad: 1, goldCoin: 125, diamond: 25, coinPack: 150 },
   multipliers: { green: 1.0, yellow: 1.5, orange: 2.5, pink: 7.0, purple: 8.5, red: 5.0, darkred: 6.5 }
 };
 
@@ -659,19 +659,15 @@ function loadFuelCellsConfigFromFirebase() {
   const mults = cfg.multipliers || DEFAULT_ADMIN_FUEL_CONFIG.multipliers;
 
   const elAd = document.getElementById('cfgFuelBaseAd');
-  const elBlue = document.getElementById('cfgFuelBaseBlue');
-  const elGold = document.getElementById('cfgFuelBaseGold');
+    const elGold = document.getElementById('cfgFuelBaseGold');
   const elDiamond = document.getElementById('cfgFuelBaseDiamond');
   const elCoinPack = document.getElementById('cfgFuelBaseCoinPack');
-  const elBluePack = document.getElementById('cfgFuelBaseBluePack');
-
+  
   if (elAd) elAd.value = base.ad !== undefined ? base.ad : 1;
-  if (elBlue) elBlue.value = base.blueCoin !== undefined ? base.blueCoin : 150;
-  if (elGold) elGold.value = base.goldCoin !== undefined ? base.goldCoin : 125;
+    if (elGold) elGold.value = base.goldCoin !== undefined ? base.goldCoin : 125;
   if (elDiamond) elDiamond.value = base.diamond !== undefined ? base.diamond : 25;
   if (elCoinPack) elCoinPack.value = base.coinPack !== undefined ? base.coinPack : 150;
-  if (elBluePack) elBluePack.value = base.bluePack !== undefined ? base.bluePack : 75;
-
+  
   const elGreen = document.getElementById('cfgFuelMultGreen');
   const elYellow = document.getElementById('cfgFuelMultYellow');
   const elOrange = document.getElementById('cfgFuelMultOrange');
@@ -700,12 +696,10 @@ function saveFuelCellsConfigFromAdmin() {
     const payload = {
       basePrices: {
         ad: Math.max(1, Number(document.getElementById('cfgFuelBaseAd')?.value) || 1),
-        blueCoin: Math.max(1, Number(document.getElementById('cfgFuelBaseBlue')?.value) || 150),
-        goldCoin: Math.max(1, Number(document.getElementById('cfgFuelBaseGold')?.value) || 125),
+                goldCoin: Math.max(1, Number(document.getElementById('cfgFuelBaseGold')?.value) || 125),
         diamond: Math.max(1, Number(document.getElementById('cfgFuelBaseDiamond')?.value) || 25),
         coinPack: Math.max(1, Number(document.getElementById('cfgFuelBaseCoinPack')?.value) || 150),
-        bluePack: Math.max(1, Number(document.getElementById('cfgFuelBaseBluePack')?.value) || 75)
-      },
+              },
       multipliers: {
         green: Number(document.getElementById('cfgFuelMultGreen')?.value) || 1.0,
         yellow: Number(document.getElementById('cfgFuelMultYellow')?.value) || 1.5,

@@ -274,10 +274,6 @@ const footerContent = `
           <input type="number" id="editModalCoins" class="form-input" style="color: #ca8a04; font-weight: 800;">
         </div>
         <div class="form-group">
-          <label class="form-label">Blue Coins 💙</label>
-          <input type="number" id="editModalBlueCoins" class="form-input" style="color: #0284c7; font-weight: 800;">
-        </div>
-        <div class="form-group">
           <label class="form-label">Diamonds 💎</label>
           <input type="number" id="editModalDiamonds" class="form-input" style="color: #0891b2; font-weight: 800;">
         </div>
@@ -711,7 +707,6 @@ const footerContent = `
           energy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           currentEnergy: Number(document.getElementById('editModalEnergy')?.value) || 0,
           coins: Number(document.getElementById('editModalCoins')?.value) || 0,
-          blueCoins: Number(document.getElementById('editModalBlueCoins')?.value) || 0,
           diamonds: Number(document.getElementById('editModalDiamonds')?.value) || 0,
           chestKeys: Number(document.getElementById('editModalKeys')?.value) || 0,
           scratchCards: Number(document.getElementById('editModalCards')?.value) || 0,

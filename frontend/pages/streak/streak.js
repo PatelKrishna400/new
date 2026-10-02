@@ -3,7 +3,7 @@
    ========================================================================== */
 const STREAK_DAYS_CONFIG = [
   { day: 1, icon: '🔋', darkgreen: 1, label: '+1 Dark Green Fuel' },
-  { day: 2, icon: '💙', blueCoins: 10, label: '+10 Blue Coins' },
+  { day: 2, icon: '💎', diamonds: 5, label: '+5 Diamonds' },
   { day: 3, icon: '🔑', keys: 1, label: '+1 Key' },
   { day: 4, icon: '🎟️', tickets: 1, label: '+1 Ticket' },
   { day: 5, icon: '🎴', cards: 1, label: '+1 Card' },
@@ -160,13 +160,7 @@ function claimCurrentStreakDay() {
       gameState.energyGenerator.fuelCells.orange = (gameState.energyGenerator.fuelCells.orange || 0) + todayCfg.orange;
     }
 
-    // Award Blue Coins
-    if (todayCfg.blueCoins) {
-      gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.blueCoins;
-      if (gameState.player.diamonds !== undefined) {
-        gameState.player.diamonds = gameState.player.blueCoins;
-      }
-    }
+        }
 
     // Award Diamonds
     if (todayCfg.diamonds) {

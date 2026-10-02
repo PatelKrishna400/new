@@ -319,9 +319,7 @@ window.updateShopUI = function() {
   const diaEl = document.getElementById('shopDiamondVal');
   if (diaEl) diaEl.textContent = formatNumber(gameState.player.diamonds || 0);
 
-  const blueCoinEl = document.getElementById('shopBlueCoinVal');
-  const currentBlueVal = gameState.player.blueCoins !== undefined ? gameState.player.blueCoins : (gameState.player.diamonds || 0);
-  if (blueCoinEl) blueCoinEl.textContent = formatNumber(currentBlueVal);
+  
 
   // Tap Power Upgrade info
   const tapPowerLvlEl = document.getElementById('shopTapPowerLvl');
@@ -1386,9 +1384,7 @@ function updateProfileUI() {
   const diaEl = document.getElementById('profileDiamondBalance');
   if (diaEl) diaEl.textContent = formatNumber(gameState.player.diamonds || 0);
 
-  // Blue Coin balance on profile
-  const blueEl = document.getElementById('profileBlueCoinBalance');
-  if (blueEl) blueEl.textContent = formatNumber(gameState.player.blueCoins || 0);
+  
 
   // Streak on profile
   const streakEl = document.getElementById('profileStreakVal');

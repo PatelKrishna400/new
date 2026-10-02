@@ -286,17 +286,6 @@ const headerContent = `<!DOCTYPE html>
             <span class="pill-value" id="headerCoinBalance">0</span>
           </div>
 
-          <!-- Blue Gem Coin Badge -->
-          <div class="metric-pill blue-coin-pill" id="blueCoinPill" title="Blue Gem Coins">
-            <div class="coin-icon blue-coin-icon">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-                <polygon points="12 2 21 8.5 17.5 21 6.5 21 3 8.5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
-                <polygon points="12 5 18 9.5 15.5 18 8.5 18 6 9.5" fill="#38bdf8" stroke="#bae6fd" stroke-width="1"/>
-                <circle cx="12" cy="12" r="2.5" fill="#f0f9ff"/>
-              </svg>
-            </div>
-            <span class="pill-value blue-pill-val" id="headerBlueBalance">0</span>
-          </div>
 
           <!-- Diamond Badge -->
           <div class="metric-pill diamond-pill" id="diamondPill" title="Diamonds (Mega Rewards)">
@@ -384,23 +373,6 @@ const footerContent = `
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-        </button>
-      </nav>
-
-      <!-- Dedicated Fixed Bottom Menu Bar for Sunflower Tycoon (Hidden unless active) -->
-      <nav class="sf-bottom-menu-bar sf-two-tabs" id="sfBottomMenuBar" style="display: none;">
-        <!-- Tab 1: Sunflower Lands (🌻 Land) -->
-        <button class="sf-menu-tab-btn center-play-btn active" id="sfMenuTabGarden" onclick="navigateSunflowerPage(1)" title="Sunflower Lands">
-          <div class="center-play-circle">
-            <span class="sf-menu-play-icon">🌻</span>
-          </div>
-          <span class="sf-menu-txt font-black">Land</span>
-        </button>
-
-        <!-- Tab 2: Water Wells (💧 Water) -->
-        <button class="sf-menu-tab-btn" id="sfMenuTabWater" onclick="navigateSunflowerPage(2)" title="Water Wells & Collection">
-          <div class="sf-menu-ico">💧</div>
-          <span class="sf-menu-txt font-black">Water</span>
         </button>
       </nav>
 

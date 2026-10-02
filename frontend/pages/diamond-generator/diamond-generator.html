@@ -3,10 +3,10 @@
   <header class="dg-header-bar">
     <div class="dg-header-left">
       <button onclick="switchPage('home')" class="dg-back-btn" title="Back" aria-label="Back">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-      </button>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
       <span class="dg-title font-sci">DIAMOND GENERATOR</span>
     </div>
 
@@ -14,7 +14,7 @@
     <div class="dg-resources">
       <div class="dg-pill cyan" title="Main Diamond Balance">
         <span>💎</span>
-        <span id="dgStickyDiamonds" class="font-mono">0.000000</span>
+        <span id="dgStickyDiamonds" class="font-mono">0.00000000</span>
       </div>
       <div class="dg-pill gold" title="Coins">
         <span>🪙</span>
@@ -32,7 +32,7 @@
     <section class="dg-stage-card">
       <div class="dg-stage-top">
         <span class="dg-status-tag" id="dgStatusBadge">READY</span>
-        <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.000001 💎 / 60.00s</span>
+        <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.00000001 💎 / 5m</span>
       </div>
 
       <!-- Hologram Node with Smooth Loading Progress Ring -->
@@ -80,10 +80,15 @@
           </svg>
 
           <div class="diamond-core-info">
-            <span class="diamond-countdown-text font-mono" id="diamondCountdownText">60.0s</span>
-            <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.000001 💎</span>
+            <span class="diamond-countdown-text font-mono" id="diamondCountdownText">05:00.0</span>
+            <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.00000001 💎</span>
           </div>
         </div>
+      </div>
+
+      <!-- Linear Loading Progress Bar (Zero-Jitter Smooth Loading Indicator) -->
+      <div class="dg-progress-bar-wrap" title="Generation Progress">
+        <div class="dg-progress-bar-fill" id="diamondLinearBar" style="width: 0%;"></div>
       </div>
 
       <!-- Start Button with Energy Requirement -->
@@ -109,7 +114,7 @@
         </div>
         <div class="piggy-balance-badge font-mono" id="piggyStoredBadge" title="Stored Diamonds in Piggy Bank">
           <span>💎</span>
-          <span id="piggyStoredAmount">0.000000</span>
+          <span id="piggyStoredAmount">0.00000000</span>
         </div>
       </div>
 

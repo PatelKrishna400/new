@@ -1,6 +1,6 @@
 <div class="page-view" id="pageProfile">
   
-  <!-- Profile, Shop & Blue Subtab Switcher -->
+  <!-- Profile & Shop Subtab Switcher -->
   <div class="profile-tabs-header">
     <button class="profile-subtab-btn active" id="subtabProfile" onclick="switchProfileSubtab('profile')">
       <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -98,36 +98,7 @@
       <!-- Profile Stats Info Box -->
       <div class="profile-stats-box">
         
-        <div class="profile-stat-row">
-          <div class="stat-left">
-            <span class="stat-icon">🪙</span>
-            <span class="stat-label">Coin Balance:</span>
-          </div>
-          <div class="stat-right">
-            <span class="coin-dot">🟡</span>
-            <span class="stat-val" id="profileCoinBalance">0</span>
-          </div>
-        </div>
-
-        <div class="profile-stat-row">
-          <div class="stat-left">
-            <span class="stat-icon">💎</span>
-            <span class="stat-label">Diamond Balance:</span>
-          </div>
-          <div class="stat-right">
-            <span class="stat-val diamond-highlight" id="profileDiamondBalance">0</span>
-          </div>
-        </div>
-
-        <div class="profile-stat-row">
-          <div class="stat-left">
-            <span class="stat-icon">💙</span>
-            <span class="stat-label">Blue Coin Balance:</span>
-          </div>
-          <div class="stat-right">
-            <span class="stat-val blue-highlight" id="profileBlueCoinBalance" style="color: #38bdf8; font-weight: 800;">0</span>
-          </div>
-        </div>
+        
 
         <div class="profile-stat-row">
           <div class="stat-left">
@@ -346,10 +317,7 @@
             <span class="curr-icon">🪙</span>
             <span class="curr-amount" id="shopCoinVal">0</span>
           </div>
-          <div class="shop-curr-pill diamond-pill-glow" title="Blue Coins" style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid #06b6d4;">
-            <span class="curr-icon">💙</span>
-            <span class="curr-amount" id="shopBlueCoinVal">0</span>
-          </div>
+          
           <div class="shop-curr-pill diamond-pill-glow" title="Diamonds" style="background: rgba(8, 145, 178, 0.15); border: 1.5px solid #0891b2;">
             <span class="curr-icon">💎</span>
             <span class="curr-amount" id="shopDiamondVal">0</span>

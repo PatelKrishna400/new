@@ -330,9 +330,7 @@ function listenToFirebase() {
 
     const coins = Number(pl.coins || 0);
     const diamonds = Number(pl.diamonds || 0);
-    const blueCoins = (pl.blueCoins !== undefined) ? Number(pl.blueCoins) : diamonds;
-    const blueTapsLeft = Number(pl.blueTapsLeft || 0);
-    const chestKeys = Number(pl.chestKeys || 0);
+            const chestKeys = Number(pl.chestKeys || 0);
     const scratchCards = Number(pl.scratchCards || 0);
     const chestTickets = Number(pl.chestTickets || 0);
     const eggs = Number(pl.eggs || 0);
@@ -369,9 +367,7 @@ function listenToFirebase() {
       webDone: webDone,
       coins: coins,
       diamonds: diamonds,
-      blueCoins: blueCoins,
-      blueTapsLeft: blueTapsLeft,
-      chestKeys: chestKeys,
+                  chestKeys: chestKeys,
       scratchCards: scratchCards,
       chestTickets: chestTickets,
       eggs: eggs,
@@ -720,8 +716,7 @@ function calculateAggregatedMetrics() {
   let totalTickets = 0;
   let totalEggs = 0;
   let totalDiamonds = 0;
-  let totalBlueCoins = 0;
-  let totalEnergy = 0;
+    let totalEnergy = 0;
   let totalAdViews = 0;
   let totalCompletedTasks = 0;
   let totalReferrals = 0;
@@ -734,8 +729,7 @@ function calculateAggregatedMetrics() {
     totalTickets += Number(u.chestTickets || 0);
     totalEggs += Number(u.eggs || 0);
     totalDiamonds += Number(u.diamonds || 0);
-    totalBlueCoins += Number(u.blueCoins !== undefined ? u.blueCoins : (u.diamonds || 0));
-    totalEnergy += Number(u.currentEnergy || 0);
+        totalEnergy += Number(u.currentEnergy || 0);
     totalAdViews += Number(u.adsWatched || u.adsButtonCount || 0);
     totalCompletedTasks += (Number(u.dailyTasksDone || 0) + Number(u.webTasksDone || 0) + Number(u.tgDone || 0));
     totalReferrals += Number(u.referralCount || u.referrals || 0);
@@ -762,8 +756,7 @@ function calculateAggregatedMetrics() {
     totalTickets: totalTickets,
     totalEggs: totalEggs,
     totalDiamonds: totalDiamonds,
-    totalBlueCoins: totalBlueCoins,
-    totalEnergy: totalEnergy,
+        totalEnergy: totalEnergy,
     totalWithdrawals: requests.length,
     pendingWithdrawals: pendingWithdrawals,
     completedWithdrawals: completedWithdrawals,

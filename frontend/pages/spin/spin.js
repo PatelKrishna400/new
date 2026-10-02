@@ -2,13 +2,13 @@
    LUCKY SPIN WHEEL MINI-GAME (pages/spin/spin.js)
    - 8 Precise Slices:
      0: 👑 1 Crown (Collect 👑 for Level Mystery Gift!)
-     1: 💙 50 Blue Coins
+     1: 🪙 50 Coins
      2: 🔑 1 Winning Key
      3: 🎴 1 Scratch Card
      4: ❌ Try Again
      5: 🎟️ 1 Spin Ticket
      6: 🪙 1 Gold Coin (Jackpot)
-     7: 💙 50 Blue Coins
+     7: 💎 5 Diamonds
    - Mathematically exact pointer alignment at 12 o'clock
    - Clean White Luxury Wedges for high contrast
    - Crown Quest Level Tab: Track and collect 👑 crowns to unlock Grand Gifts
@@ -18,13 +18,13 @@
 
 const SPIN_PRIZES = [
   { label: '1 Crown', type: 'crown', amount: 1, icon: '👑', isCrown: true, rarity: 'epic' },
-  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' },
+  { label: '50 Coins', type: 'coins', amount: 50, icon: '🪙', rarity: 'common' },
   { label: '1 Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
   { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
   { label: '1,000 Diamonds', type: 'diamonds', amount: 1000, icon: '💎', isJackpot: true, rarity: 'jackpot' },
-  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' }
+  { label: '5 Diamonds', type: 'diamonds', amount: 5, icon: '💎', rarity: 'rare' }
 ];
 
 // ==========================================================================
@@ -90,7 +90,7 @@ window.getCrownGainPerHit = getCrownGainPerHit;
 /**
  * Calculates the rich level rewards for a given King Event level.
  * - Coins: starts at 10 and increases by +10 per level (10 * level).
- * - Blue coins: cyclic increase from 100 to 1000 blue coins level-wise.
+ * - Diamonds: cyclic increase level-wise.
  * - Keys, tickets, and cards scale steadily.
  */
 function getKingLevelRewards(level) {
@@ -98,11 +98,11 @@ function getKingLevelRewards(level) {
   const coins = 10 * lvl;
   const cyclePos = ((lvl - 1) % 10) + 1; // 1 to 10
   const cycleBlock = Math.floor((lvl - 1) / 10);
-  const blueCoins = (cyclePos * 100) + (cycleBlock * 50);
+  const diamonds = Math.max(1, Math.floor(cyclePos / 2) + cycleBlock);
   const keys = Math.min(25, 2 + Math.floor(lvl / 50));
   const tickets = Math.min(50, 3 + Math.floor(lvl / 25));
   const cards = Math.min(25, 2 + Math.floor(lvl / 50));
-  return { coins, blueCoins, keys, tickets, cards };
+  return { coins, diamonds, keys, tickets, cards };
 }
 window.getKingLevelRewards = getKingLevelRewards;
 
@@ -250,7 +250,7 @@ function updateSpinLevelUI() {
 
   const rewards = getKingLevelRewards(level);
   if (rewardPreviewEl) {
-    rewardPreviewEl.textContent = `+${rewards.coins} 🪙 • +${rewards.blueCoins} 💙 • +${rewards.keys} 🗝️ • +${rewards.tickets} 🎫`;
+    rewardPreviewEl.textContent = `+${rewards.coins} 🪙 • +${rewards.diamonds} 💎 • +${rewards.keys} 🗝️ • +${rewards.tickets} 🎫`;
   }
 }
 window.updateSpinLevelUI = updateSpinLevelUI;
@@ -572,8 +572,7 @@ function applySpinPrize(prize, multiplier = 1) {
         window.firebaseSync.updateLeaderboardEntry();
       }
     }
-  } else if (prize.type === 'blue_coins') {
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + finalAmount;
+
   } else if (prize.type === 'keys') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + finalAmount;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + finalAmount);
@@ -670,7 +669,7 @@ function showMysteryGiftModal() {
   const titleEl = document.getElementById('spinGiftTitle');
   const subEl = document.getElementById('spinGiftSub');
   const coinsValEl = document.getElementById('spinGiftCoinsVal');
-  const blueValEl = document.getElementById('spinGiftBlueVal');
+  const diaValEl = document.getElementById('spinGiftDiamondsVal');
   const keysValEl = document.getElementById('spinGiftKeysVal');
   const ticketsValEl = document.getElementById('spinGiftTicketsVal');
   const claimBtn = document.getElementById('btnClaimMysteryGift');
@@ -679,7 +678,7 @@ function showMysteryGiftModal() {
   if (subEl) subEl.textContent = `You collected all ${spinState.targetCrowns} 👑 King Crowns and completed Level ${level} of 1000!`;
 
   if (coinsValEl) coinsValEl.textContent = `+${rewards.coins}`;
-  if (blueValEl) blueValEl.textContent = `+${rewards.blueCoins}`;
+  if (diaValEl) diaValEl.textContent = `+${rewards.diamonds}`;
   if (keysValEl) keysValEl.textContent = `+${rewards.keys}`;
   if (ticketsValEl) ticketsValEl.textContent = `+${rewards.tickets}`;
 
@@ -706,7 +705,7 @@ function showMysteryGiftPreview() {
   const titleEl = document.getElementById('spinGiftTitle');
   const subEl = document.getElementById('spinGiftSub');
   const coinsValEl = document.getElementById('spinGiftCoinsVal');
-  const blueValEl = document.getElementById('spinGiftBlueVal');
+  const diaValEl = document.getElementById('spinGiftDiamondsVal');
   const keysValEl = document.getElementById('spinGiftKeysVal');
   const ticketsValEl = document.getElementById('spinGiftTicketsVal');
   const claimBtn = document.getElementById('btnClaimMysteryGift');
@@ -715,7 +714,7 @@ function showMysteryGiftPreview() {
   if (subEl) subEl.textContent = `Collect ${spinState.targetCrowns} 👑 King Crowns to unlock this Level ${level} gift!`;
 
   if (coinsValEl) coinsValEl.textContent = `+${rewards.coins}`;
-  if (blueValEl) blueValEl.textContent = `+${rewards.blueCoins}`;
+  if (diaValEl) diaValEl.textContent = `+${rewards.diamonds}`;
   if (keysValEl) keysValEl.textContent = `+${rewards.keys}`;
   if (ticketsValEl) ticketsValEl.textContent = `+${rewards.tickets}`;
 
@@ -740,7 +739,7 @@ function claimMysteryGiftReward() {
   const rewards = getKingLevelRewards(currentLevel);
 
   gameState.player.coins += rewards.coins;
-  gameState.player.blueCoins = (gameState.player.blueCoins || 0) + rewards.blueCoins;
+  gameState.player.diamonds = (gameState.player.diamonds || 0) + rewards.diamonds;
   gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewards.keys;
   gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewards.tickets;
   gameState.player.scratchCards = (gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : 0) + rewards.cards;
@@ -761,7 +760,7 @@ function claimMysteryGiftReward() {
   }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`👑 LEVEL ${currentLevel} COMPLETED! +${rewards.coins} 🪙, +${rewards.blueCoins} 💙, +${rewards.keys} 🗝️, +${rewards.tickets} 🎫! Next: Level ${nextLevel}`);
+    showFloatingToast(`👑 LEVEL ${currentLevel} COMPLETED! +${rewards.coins} 🪙, +${rewards.diamonds} 💎, +${rewards.keys} 🗝️, +${rewards.tickets} 🎫! Next: Level ${nextLevel}`);
   }
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();

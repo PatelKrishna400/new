@@ -14,17 +14,29 @@ let _dgProductionInterval = null;
 let _dgLastTickTime = Date.now();
 
 // Constants
-const DG_BASE_CYCLE_SEC = 60.00;
-const DG_BASE_OUTPUT_RATE = 0.000001;
+const DG_BASE_CYCLE_SEC = 300.00; // 5 Minutes (300 seconds)
+const DG_BASE_OUTPUT_RATE = 0.00000001; // 0.00000001 Diamonds per 5 min cycle
 const DG_REQUIRED_ENERGY = 100; // 100 Energy = 60s Generation
 const DG_AD_COOLDOWN_MS = 30 * 1000; // 30s between ads
 const PIGGY_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30-Day retention rule
 
 // Format Diamond display (up to 6 decimals)
 function formatDiamondDisplay(num) {
-  if (num === undefined || num === null || isNaN(num)) return '0.000000';
-  return Number(num).toFixed(6);
+  if (num === undefined || num === null || isNaN(num)) return '0.00000000';
+  return Number(num).toFixed(8);
 }
+
+
+// Format Diamond Timer with decimals: e.g. 05:00.0, 04:59.8
+function formatDiamondTimer(seconds) {
+  const s = Math.max(0, Number(seconds) || 0);
+  const mins = Math.floor(s / 60);
+  const remainingSecs = s % 60;
+  const wholeSecs = Math.floor(remainingSecs);
+  const tenths = Math.floor((remainingSecs - wholeSecs) * 10);
+  return `${String(mins).padStart(2, '0')}:${String(wholeSecs).padStart(2, '0')}.${tenths}`;
+}
+window.formatDiamondTimer = formatDiamondTimer;
 
 // Initializer & State Verification for Diamond Generator
 function ensureDiamondGenState() {
@@ -83,7 +95,7 @@ function getDiamondsPerCycle() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_OUTPUT_RATE;
   const pLvl = Math.max(1, parseInt(dg.powerLevel, 10) || 1);
-  return Number((pLvl * DG_BASE_OUTPUT_RATE).toFixed(6));
+  return Number((pLvl * DG_BASE_OUTPUT_RATE).toFixed(8));
 }
 
 // Cycle Duration: Exactly 60.00s base (speed upgrade reduces slightly down to 30s)
@@ -91,8 +103,8 @@ function getDiamondCycleDuration() {
   const dg = ensureDiamondGenState();
   if (!dg) return DG_BASE_CYCLE_SEC;
   const sLvl = Math.max(1, parseInt(dg.speedLevel, 10) || 1);
-  const dur = DG_BASE_CYCLE_SEC - (sLvl - 1) * 0.05;
-  return Math.max(30.00, Number(dur.toFixed(2)));
+  const dur = DG_BASE_CYCLE_SEC - (sLvl - 1) * 2.00;
+  return Math.max(120.00, Number(dur.toFixed(2)));
 }
 
 // Upgrade Costs
@@ -547,9 +559,14 @@ function startDiamondGeneratorLoop() {
           dg.status = 'completed';
 
           const outputPerCycle = getDiamondsPerCycle();
-          dg.totalProduced = Number(((dg.totalProduced || 0) + outputPerCycle).toFixed(6));
+          dg.totalProduced = Number(((dg.totalProduced || 0) + outputPerCycle).toFixed(8));
 
-          // REWARD GOES TO PIGGY BANK
+          // IMMEDIATELY CREATE & CREDIT DIAMOND DIRECTLY TO PLAYER BALANCE
+          window.gameState.player.diamonds = Number(((window.gameState.player.diamonds || 0) + outputPerCycle).toFixed(8));
+          if (!window.gameState.player.diamondWins) window.gameState.player.diamondWins = 0;
+          window.gameState.player.diamondWins += 1;
+
+          // Also record in Piggy Bank for history / vault storage
           depositDiamondToPiggyBank(outputPerCycle, 'diamond_generator');
 
           saveAllState();
@@ -591,15 +608,20 @@ function updateDiamondGeneratorRealtime() {
   const currentEnergy = Math.floor(window.gameState?.reactor?.currentEnergy || 0);
 
   // 1. Countdown Text
+  const formattedTime = formatDiamondTimer(remainingSeconds);
   document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
-    if (el) el.textContent = `${remainingSeconds.toFixed(1)}s`;
+    if (el) el.textContent = formattedTime;
   });
 
   // 2. Circular SVG Progress Ring (Smooth Outer Loading Indicator)
   const circumference = 439.82;
-  const offset = dg.isRunning ? (circumference - (percent / 100) * circumference) : circumference;
+  const offset = dg.isRunning ? Math.max(0, circumference - (percent / 100) * circumference) : circumference;
   document.querySelectorAll('#diamondProgressRing, .diamond-ring-fill, #diamondProgressRingHome').forEach(ring => {
     if (ring) ring.style.strokeDashoffset = offset.toFixed(2);
+  });
+  // Update linear progress bar (zero-jitter smooth loading bar)
+  document.querySelectorAll('#diamondLinearBar, .diamond-linear-fill, #diamondLinearBarHome').forEach(bar => {
+    if (bar) bar.style.width = `${percent.toFixed(2)}%`;
   });
 
   // 3. Status Badge State Display (Ready, Generating, Completed, Not Enough Energy)
@@ -626,7 +648,7 @@ function updateDiamondGeneratorRealtime() {
   const startBtn = document.getElementById('btnStartDiamondGen');
   if (startBtn) {
     if (dg.isRunning) {
-      if (startBtnText) startBtnText.textContent = `⚡ GENERATING... (${remainingSeconds.toFixed(1)}s)`;
+      if (startBtnText) startBtnText.textContent = `⚡ GENERATING... (${formattedTime})`;
       startBtn.classList.add('generating-active');
       startBtn.disabled = true;
     } else if (currentEnergy < DG_REQUIRED_ENERGY) {
@@ -643,7 +665,7 @@ function updateDiamondGeneratorRealtime() {
   // Home Start Button Sync
   document.querySelectorAll('#btnStartDiamondGenHome').forEach(btn => {
     if (dg.isRunning) {
-      btn.innerHTML = `<span>⚡ GENERATING (${remainingSeconds.toFixed(1)}s)</span>`;
+      btn.innerHTML = `<span>⚡ GENERATING (${formattedTime})</span>`;
       btn.disabled = true;
     } else if (currentEnergy < DG_REQUIRED_ENERGY) {
       btn.innerHTML = `<span>⚠️ NEED 100 ⚡</span>`;

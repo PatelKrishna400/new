@@ -423,10 +423,7 @@ function getCoinElements() {
 }
 
 function getBlueElements() {
-  if (!_cachedBlueEls || _cachedBlueEls.length === 0) {
-    _cachedBlueEls = document.querySelectorAll('#blueCoinCounter, #headerBlueBalance, .blue-coin-val');
-  }
-  return _cachedBlueEls;
+  return [];
 }
 
 function getDiamondElements() {
@@ -437,13 +434,11 @@ function getDiamondElements() {
 }
 
 let _lastFormattedCoins = null;
-let _lastFormattedBlueCoins = null;
 let _lastFormattedDiamonds = null;
 
 function updateUI(full = false) {
   // Sync Header & Page Balance Badges across all pages
   const formattedCoins = formatNumber(gameState.player.coins || 0);
-  const formattedBlueCoins = formatNumber(gameState.player.blueCoins || 0);
   const formattedDiamonds = formatNumber(gameState.player.diamonds || 0);
 
   // 1. Gold Coins
@@ -453,14 +448,7 @@ function updateUI(full = false) {
     coinElements.forEach(el => { if (el.textContent !== formattedCoins) el.textContent = formattedCoins; });
   }
 
-  // 2. Blue Gem Coins (Header & In-Game Badges)
-  if (full || _lastFormattedBlueCoins !== formattedBlueCoins) {
-    _lastFormattedBlueCoins = formattedBlueCoins;
-    const blueElements = getBlueElements();
-    blueElements.forEach(el => { if (el.textContent !== formattedBlueCoins) el.textContent = formattedBlueCoins; });
-  }
-
-  // 3. Diamonds (Header & Mega Reward & Profile Badges)
+  // 2. Diamonds (Header & Mega Reward & Profile Badges)
   if (full || _lastFormattedDiamonds !== formattedDiamonds) {
     _lastFormattedDiamonds = formattedDiamonds;
     const diamondElements = getDiamondElements();

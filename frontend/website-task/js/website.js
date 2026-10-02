@@ -58,7 +58,7 @@ class WebsiteApp {
 
   updateHeaderUserInfo() {
     const userTag = document.getElementById('navUserId');
-    const blueCoinsVal = document.getElementById('navBlueCoins');
+    const blueCoinsVal = document.getElementById('navDiamonds');
     const statusDot = document.getElementById('navStatusDot');
 
     if (window.firebaseService) {
@@ -75,7 +75,7 @@ class WebsiteApp {
       }
 
       if (blueCoinsVal) {
-        const bal = window.firebaseService.userBalance.blueCoins || 0;
+        const bal = window.firebaseService.userBalance.diamonds || 0;
         blueCoinsVal.innerText = bal.toLocaleString();
       }
 

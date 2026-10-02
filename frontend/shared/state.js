@@ -1518,8 +1518,8 @@ const DOM = {
   playerUsername: document.getElementById('playerUsername'),
   coinCounter: document.getElementById('coinCounter') || document.getElementById('headerCoinBalance'),
   coinPill: document.getElementById('coinPill'),
-  blueCoinCounter: document.getElementById('blueCoinCounter') || document.getElementById('headerBlueBalance'),
-  blueCoinPill: document.getElementById('blueCoinPill'),
+  blueCoinCounter: null,
+  blueCoinPill: null,
   streakBtn: document.getElementById('streakBtn'),
   
   pageHome: document.getElementById('pageHome'),

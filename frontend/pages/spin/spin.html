@@ -1,12 +1,11 @@
 <div class="page-view" id="pageSpin">
   <!-- Top Action Nav Row -->
   <div class="xp-top-actions-row">
-    <button class="xp-back-btn" onclick="switchPage('reward')">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      <span>Back</span>
-    </button>
+    <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
 
     <div class="spin-header-title-pill">
       <span class="spin-sparkle-icon">✨</span>
@@ -137,7 +136,7 @@
           <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
 
-          <!-- Slice 1: 50 Blue Coins (45 deg / 1:30) -->
+          <!-- Slice 1: 50 Coins (45 deg / 1:30) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
@@ -155,7 +154,7 @@
           <!-- Slice 6: 1 Gold Coin Jackpot (270 deg / 9 o'clock) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
 
-          <!-- Slice 7: 50 Blue Coins (315 deg / 10:30) -->
+          <!-- Slice 7: 5 Diamonds (315 deg / 10:30) -->
           <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
 
           <!-- Divider Rays between Slices with Golden Metallic Sheen -->
@@ -179,7 +178,7 @@
             <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
           </g>
 
-          <!-- Slice 1: 50 Blue Coins (45 deg) -->
+          <!-- Slice 1: 50 Coins (45 deg) -->
           <g transform="translate(150, 150) rotate(45) translate(0, -92)">
             <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
           </g>
@@ -209,7 +208,7 @@
             <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
           </g>
 
-          <!-- Slice 7: 50 Blue Coins (315 deg) -->
+          <!-- Slice 7: 5 Diamonds (315 deg) -->
           <g transform="translate(150, 150) rotate(315) translate(0, -92)">
             <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
           </g>
@@ -355,10 +354,10 @@
           <span class="reward-val" id="spinGiftCoinsVal">+10</span>
           <span class="reward-label">Coins</span>
         </div>
-        <div class="gift-reward-card blue">
-          <span class="reward-icon">💙</span>
-          <span class="reward-val" id="spinGiftBlueVal">+100</span>
-          <span class="reward-label">Blue Coins</span>
+        <div class="gift-reward-card diamond">
+          <span class="reward-icon">💎</span>
+          <span class="reward-val" id="spinGiftDiamondsVal">+5</span>
+          <span class="reward-label">Diamonds</span>
         </div>
         <div class="gift-reward-card purple">
           <span class="reward-icon">🗝️</span>

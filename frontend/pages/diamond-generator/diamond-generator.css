@@ -39,19 +39,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50% !important;
   background: rgba(15, 23, 42, 0.9);
   border: 1px solid rgba(0, 240, 255, 0.4);
   color: #38bdf8;
   cursor: pointer;
+  padding: 0 !important;
   transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.dg-back-btn:hover {
+  transform: scale(1.08);
+  border-color: #38bdf8;
+  background: rgba(0, 240, 255, 0.15);
 }
 
 .dg-back-btn:active {
   transform: scale(0.92);
-  background: rgba(0, 240, 255, 0.2);
+  background: rgba(0, 240, 255, 0.25);
 }
 
 .dg-title {
@@ -224,7 +234,7 @@
   stroke: #00f0ff;
   stroke-width: 6;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s linear;
+  transition: stroke-dashoffset 0.08s linear;
   filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.8));
 }
 
@@ -877,4 +887,26 @@
   font-size: 10.5px;
   color: #64748b;
   font-style: italic;
+}
+
+/* Smooth Linear Loading Bar (Dual Indicator for Progress) */
+.dg-progress-bar-wrap {
+  width: 100%;
+  max-width: 280px;
+  height: 8px;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 0 auto 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.dg-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0284c7 0%, #00f0ff 50%, #38bdf8 100%);
+  border-radius: 99px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+  transition: width 0.1s linear;
 }
