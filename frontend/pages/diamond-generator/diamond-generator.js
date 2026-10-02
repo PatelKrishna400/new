@@ -150,7 +150,7 @@ function getRecordExpiryTimestamp(record) {
 
 function isPiggyRecordActive(record) {
   if (!record || record.collected) return false;
-  return Date.now() < getRecordExpiryTimestamp(record);
+  return true; // Unlimited retention: diamonds never expire!
 }
 
 function getPiggyBankCollectibleTotal() {
@@ -181,10 +181,7 @@ function depositDiamondToPiggyBank(amount, source = 'diamond_generator') {
   };
 
   pb.records.unshift(record);
-  // Cap history to 60 items to keep payload light
-  if (pb.records.length > 60) {
-    pb.records = pb.records.slice(0, 60);
-  }
+  // Unlimited storage capacity
   pb.totalStored = getPiggyBankCollectibleTotal();
 }
 

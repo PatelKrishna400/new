@@ -158,10 +158,9 @@ const SF_LAND_BASE_TIMES = [
   86400     // Land 20: 24h
 ];
 
-// Max Life Limit Formula: Level 1 = 120s limit, +5s added per level upgrade
+// Max Life Limit Formula: Unlimited life limit cap
 function getSfPlotMaxLifeLimit(level) {
-  const L = Math.max(1, level || 1);
-  return 120 + (L - 1) * 5;
+  return Infinity;
 }
 
 function createDefaultSfPlots() {
@@ -964,7 +963,7 @@ window.waterSfPlot = function(plotId, event = null) {
     sunflowerAudio.playWaterSplash();
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`+10s Solar Life! (Cap: ${maxCap}s) 🪣`, posX, posY, 'text-cyan-400');
+    spawnSfFloat('+10s Solar Life! (Unlimited) 🪣', posX, posY, 'text-cyan-400');
 
     saveSunflowerStateDebounced();
     updateStickyHeaderAndMiniStats();
@@ -999,7 +998,7 @@ window.upgradeSfPlot = function(plotId, event = null) {
     sunflowerAudio.playUpgradeChime();
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level}! Max Life Cap: ${newCap}s (+${info.levelsToAdd * 5}s)! 🌻`, posX, posY, 'text-yellow-400');
+    spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level}! (Unlimited Cap) 🌻`, posX, posY, 'text-yellow-400');
 
     updateSinglePlotUI(plotId);
     updateStickyHeaderAndMiniStats();
@@ -1103,8 +1102,7 @@ window.startWaterCollectionSession = function(event = null) {
         if (w.hasWorker) {
           sunflowerState.baskets = (sunflowerState.baskets || 0) + basketsPerCycle;
         } else {
-          const maxCap = w.maxStorage || Math.max(5, basketsPerCycle * 5);
-          w.storedBaskets = Math.min(maxCap, (w.storedBaskets || 0) + basketsPerCycle);
+          w.storedBaskets = (w.storedBaskets || 0) + basketsPerCycle;
         }
         w.productionTime = getSfWellCycleTime(idx, w.level);
         updateSingleWellUI(w.id, true);
@@ -1701,8 +1699,8 @@ function renderSunflowerWells() {
     const progress = Math.max(0, Math.min(1, 1 - (well.timer / cycleTime)));
     const stored = well.storedBaskets || 0;
 
-    const maxCap = well.maxStorage || Math.max(5, basketsPerCycle * 5);
-    const isFull = !well.hasWorker && stored >= maxCap;
+    const maxCap = Infinity;
+    const isFull = false;
     const wellSecLeft = Math.ceil(Math.max(0, well.timer));
 
     let cardClass = "sf-well-card active";
@@ -1740,7 +1738,7 @@ function renderSunflowerWells() {
         <div class="sf-card-details flex-1 flex flex-col gap-1">
           <div class="flex justify-between items-center text-[11px]">
             <span class="font-black text-cyan-800" id="sfWellOut-${well.id}">+${formatNumber(basketsPerCycle)} 🧺 Baskets</span>
-            <span class="font-mono text-cyan-700 font-bold text-[10px]" id="sfWellTime-${well.id}">⏱️ ${isFull ? `Storage Full (${stored}/${maxCap})` : `${formatTimerText(well.timer, cycleTime)} / ${formatTimerText(cycleTime, cycleTime)}`}</span>
+            <span class="font-mono text-cyan-700 font-bold text-[10px]" id="sfWellTime-${well.id}">⏱️ ${formatTimerText(well.timer, cycleTime)} / ${formatTimerText(cycleTime, cycleTime)}</span>
           </div>
 
           <div class="sf-progress-bar-track">
@@ -1750,7 +1748,7 @@ function renderSunflowerWells() {
           <div class="text-[9.5px] text-stone-600 mt-0.5 flex justify-between items-center" id="sfWellDescRow-${well.id}">
             ${well.hasWorker
               ? `<span class="text-emerald-700 font-bold flex items-center gap-1"><span>⚡</span> Worker auto-deposits directly into inventory!</span>`
-              : `<span class="text-cyan-800 font-semibold">Well Storage: <strong id="sfWellStoredCount-${well.id}">${stored}</strong> / ${maxCap} 🧺</span>`
+              : `<span class="text-cyan-800 font-semibold">Well Storage: <strong id="sfWellStoredCount-${well.id}">${stored}</strong> 🧺 <span class="text-[9px] text-emerald-600 font-bold">(Unlimited)</span></span>`
             }
             <span class="font-mono text-[9px] text-stone-500">Base: ${SF_WELL_BASE_TIMES[idx]}s &bull; ${SF_WELL_BASE_BASKETS[idx]}🧺</span>
           </div>
@@ -1805,17 +1803,13 @@ function updateSingleWellUI(wellId, full = true) {
   const progress = Math.max(0, Math.min(1, 1 - (well.timer / cycleTime)));
   const stored = well.storedBaskets || 0;
   const basketsPerCycle = getSfWellBasketsPerCycle(wellIndex, well.level);
-  const maxCap = well.maxStorage || Math.max(5, basketsPerCycle * 5);
-  const isFull = !well.hasWorker && stored >= maxCap;
+  const maxCap = Infinity;
+  const isFull = false;
   const wellSecLeft = Math.ceil(Math.max(0, well.timer));
 
   const timeEl = document.getElementById(`sfWellTime-${wellId}`);
   if (timeEl) {
-    if (isFull) {
-      timeEl.innerText = `🧺 Storage Full (${stored}/${maxCap})`;
-    } else {
-      timeEl.innerText = `⏱️ ${formatTimerText(well.timer, cycleTime)} / ${formatTimerText(cycleTime, cycleTime)}`;
-    }
+    timeEl.innerText = `⏱️ ${formatTimerText(well.timer, cycleTime)} / ${formatTimerText(cycleTime, cycleTime)}`;
   }
 
   const barEl = document.getElementById(`sfWellProgressBar-${wellId}`);
@@ -1969,11 +1963,12 @@ let sfActiveCollectPlotId = null;
 window.openSfCollectModal = function(plotId, event = null) {
   const plotIndex = plotId - 1;
   const plot = sunflowerState.plots[plotIndex];
-  if (!plot || !plot.unlocked || !plot.readyToCollect) return;
+  if (!plot || !plot.unlocked) return;
 
   sfActiveCollectPlotId = plotId;
   const coinsPerCycle = getSfPlotCoinsPerCycle(plotIndex, plot.level);
-  const profit = plot.uncollectedCoins || coinsPerCycle;
+  const profit = (plot.uncollectedCoins && plot.uncollectedCoins > 0) ? plot.uncollectedCoins : coinsPerCycle;
+  if (profit <= 0) return;
   const art = getSfPlotVisualLifecycle(plot.level);
 
   const titleEl = document.getElementById('sfCollectModalLandTitle');
@@ -1983,7 +1978,7 @@ window.openSfCollectModal = function(plotId, event = null) {
   const doubleEl = document.getElementById('sfCollectModalDoubleVal');
   const normalEl = document.getElementById('sfCollectModalNormalVal');
 
-  if (titleEl) titleEl.innerText = `Land #${plot.id} Harvest Ready!`;
+  if (titleEl) titleEl.innerText = `Land #${plot.id} Harvest Ready! (Unlimited)`;
   if (lvSubEl) lvSubEl.innerText = `Level ${plot.level} ${art.title}`;
   if (emojiEl) emojiEl.innerText = art.emoji;
   if (profitEl) profitEl.innerText = `+${formatNumber(profit)}`;
@@ -2004,14 +1999,14 @@ window.confirmSfCollect = function(isWatchAd) {
   if (!sfActiveCollectPlotId) return;
   const plotIndex = sfActiveCollectPlotId - 1;
   const plot = sunflowerState.plots[plotIndex];
-  if (!plot || !plot.readyToCollect) {
+  if (!plot) {
     closeSfCollectModal();
     return;
   }
 
   const cycleTime = getSfPlotCycleTime(plotIndex, plot.level);
   const coinsPerCycle = getSfPlotCoinsPerCycle(plotIndex, plot.level);
-  const baseProfit = plot.uncollectedCoins || coinsPerCycle;
+  const baseProfit = (plot.uncollectedCoins && plot.uncollectedCoins > 0) ? plot.uncollectedCoins : coinsPerCycle;
 
   if (isWatchAd) {
     const doDoubleClaim = () => {
@@ -2263,12 +2258,12 @@ function renderSunflowerPlots() {
           <div class="sf-loading-bar-wrap">
             <div class="sf-loading-bar-fill ${plot.readyToCollect ? 'ready' : ''}" id="sfPlotBarFill-${plot.id}" style="width: ${progressPct.toFixed(1)}%"></div>
             <span class="sf-loading-bar-text" id="sfPlotBarText-${plot.id}">
-              ${plot.readyToCollect ? `✨ Ready (+${formatNumber(plot.uncollectedCoins || coinsPerCycle)} 🌻)` : `${formatTimerText(plot.timer, cycleTime)}`}
+              ${(plot.uncollectedCoins || 0) > 0 ? `✨ Ready (+${formatNumber(plot.uncollectedCoins)} 🌻 Unlimited)` : `${formatTimerText(plot.timer, cycleTime)}`}
             </span>
           </div>
           <div class="sf-sketch-life-info">
             <span>⏳ Life: <strong id="sfPlotLifeText-${plot.id}">${Math.ceil(plot.lifeTimer || 0)}s</strong></span>
-            <span>Cap: <strong id="sfCapLabel-${plot.id}">${maxCap}s</strong></span>
+            <span>Cap: <strong id="sfCapLabel-${plot.id}">∞ Unlimited</strong></span>
           </div>
         </div>
 
@@ -2277,8 +2272,8 @@ function renderSunflowerPlots() {
           <button onclick="waterSfPlot(${plot.id}, event)" class="sf-btn-sketch-action sf-btn-sketch-water" title="Water flower to extend life (+10s)">
             <span>🪣 Water</span>
           </button>
-          <button onclick="openSfCollectModal(${plot.id}, event)" id="sfPlotCollectBtn-${plot.id}" class="sf-btn-sketch-action sf-btn-sketch-collect ${plot.readyToCollect ? 'active-ready' : 'disabled'}" ${!plot.readyToCollect ? 'disabled' : ''} title="Collect ready coins (Watch Ad for 2X Profit!)">
-            <span>🧺 Collect</span>
+          <button onclick="openSfCollectModal(${plot.id}, event)" id="sfPlotCollectBtn-${plot.id}" class="sf-btn-sketch-action sf-btn-sketch-collect ${(plot.uncollectedCoins || 0) > 0 ? 'active-ready' : 'disabled'}" ${(plot.uncollectedCoins || 0) <= 0 ? 'disabled' : ''} title="Collect ready coins (Watch Ad for 2X Profit!)">
+            <span>🧺 Collect ${(plot.uncollectedCoins || 0) > 0 ? `(${formatNumber(plot.uncollectedCoins)})` : ''}</span>
           </button>
         </div>
       </div>
@@ -2333,23 +2328,28 @@ function updateSinglePlotUI(plotId) {
   const lifeEl = document.getElementById(`sfPlotLifeText-${plotId}`);
   if (lifeEl) lifeEl.innerText = `${Math.ceil(plot.lifeTimer || 0)}s`;
 
-  // Loading bar update
+  // Loading bar & unlimited collect button update
+  const capEl = document.getElementById(`sfCapLabel-${plotId}`);
+  if (capEl) capEl.innerText = '∞ Unlimited';
+
   const barFill = document.getElementById(`sfPlotBarFill-${plotId}`);
   const barText = document.getElementById(`sfPlotBarText-${plotId}`);
   const collectBtn = document.getElementById(`sfPlotCollectBtn-${plotId}`);
+  const uncollected = plot.uncollectedCoins || 0;
 
-  if (plot.readyToCollect) {
+  if (uncollected > 0) {
     if (barFill) {
       barFill.style.width = '100%';
       barFill.classList.add('ready');
     }
     if (barText) {
-      barText.innerText = `✨ Ready (+${formatNumber(plot.uncollectedCoins || coinsPerCycle)} 🌻)`;
+      barText.innerText = `✨ Ready (+${formatNumber(uncollected)} 🌻 Unlimited)`;
     }
     if (collectBtn) {
       collectBtn.disabled = false;
       collectBtn.classList.remove('disabled');
       collectBtn.classList.add('active-ready');
+      collectBtn.innerHTML = `<span>🧺 Collect (${formatNumber(uncollected)})</span>`;
     }
   } else {
     const progressPct = Math.max(0, Math.min(100, (1 - (plot.timer / cycleTime)) * 100));
@@ -2364,6 +2364,7 @@ function updateSinglePlotUI(plotId) {
       collectBtn.disabled = true;
       collectBtn.classList.add('disabled');
       collectBtn.classList.remove('active-ready');
+      collectBtn.innerHTML = `<span>🧺 Collect</span>`;
     }
   }
 
@@ -2413,33 +2414,26 @@ function sunflowerMainLoop(now) {
       well.basketProduction = basketsPerCycle;
       well.lastTick = Date.now();
 
-      const maxCap = well.maxStorage || Math.max(5, basketsPerCycle * 5);
-      const isFull = !well.hasWorker && (well.storedBaskets || 0) >= maxCap;
+      // Unlimited Well Storage - Continuous generation without cap
+      if (typeof well.timer !== 'number' || isNaN(well.timer) || well.timer <= 0) {
+        well.timer = cycleTime;
+      }
+      well.timer -= dt * surgeMultiplier;
+      if (well.timer <= 0) {
+        well.timer = cycleTime;
+        const produced = basketsPerCycle;
+        well.totalBasketsGenerated = (well.totalBasketsGenerated || 0) + produced;
 
-      if (!isFull) {
-        if (typeof well.timer !== 'number' || isNaN(well.timer) || well.timer <= 0) {
-          well.timer = cycleTime;
-        }
-        well.timer -= dt * surgeMultiplier;
-        if (well.timer <= 0) {
-          well.timer = cycleTime;
-          const produced = basketsPerCycle;
-          well.totalBasketsGenerated = (well.totalBasketsGenerated || 0) + produced;
-
-          if (well.hasWorker) {
-            // Automatic Well Worker creates water baskets directly into player inventory!
-            sunflowerState.baskets = (sunflowerState.baskets || 0) + produced;
-          } else {
-            // Manual storage in well
-            well.storedBaskets = Math.min(maxCap, (well.storedBaskets || 0) + produced);
-          }
-          updateSingleWellUI(well.id, true);
+        if (well.hasWorker) {
+          // Automatic Well Worker creates water baskets directly into player inventory!
+          sunflowerState.baskets = (sunflowerState.baskets || 0) + produced;
         } else {
-          // Fast progress bar & live countdown timer update
-          updateSingleWellUI(well.id, false);
+          // Unlimited manual storage in well
+          well.storedBaskets = (well.storedBaskets || 0) + produced;
         }
+        updateSingleWellUI(well.id, true);
       } else {
-        well.timer = 0;
+        // Fast progress bar & live countdown timer update
         updateSingleWellUI(well.id, false);
       }
     });
@@ -2529,28 +2523,28 @@ function sunflowerMainLoop(now) {
       plot.coinProduction = coinsPerCycle;
       gardenTotalCps += coinsPerCycle / cycleTime;
 
-      if (!plot.readyToCollect) {
-        if (typeof plot.timer !== 'number' || isNaN(plot.timer) || plot.timer <= 0) {
-          plot.timer = cycleTime;
-        }
-        plot.timer -= dt;
-
-        // When loading bar completes:
-        if (plot.timer <= 0) {
-          plot.timer = 0;
-          plot.readyToCollect = true;
-          plot.uncollectedCoins = coinsPerCycle;
-
-          if (!sunflowerAudio.muted) {
-            sunflowerAudio.playTone(880, 'sine', 0.12, 0.08);
-          }
-          updateSinglePlotUI(plot.id);
-        } else {
-          updateSinglePlotUI(plot.id);
-        }
-      } else {
-        updateSinglePlotUI(plot.id);
+      // UNLIMITED COIN PRODUCTION: Continuous cycle without capping
+      if (typeof plot.timer !== 'number' || isNaN(plot.timer) || plot.timer <= 0) {
+        plot.timer = cycleTime;
       }
+      plot.timer -= dt;
+
+      // Each time cycle completes, accumulate coins infinitely with NO LIMIT!
+      if (plot.timer <= 0) {
+        plot.timer = cycleTime; // Continue immediately to next cycle!
+        plot.uncollectedCoins = (plot.uncollectedCoins || 0) + coinsPerCycle;
+        plot.readyToCollect = true;
+
+        if (!sunflowerAudio.muted) {
+          sunflowerAudio.playTone(880, 'sine', 0.12, 0.08);
+        }
+      }
+
+      if ((plot.uncollectedCoins || 0) > 0) {
+        plot.readyToCollect = true;
+      }
+
+      updateSinglePlotUI(plot.id);
     }
   });
 
