@@ -29,15 +29,15 @@ function startAdSimulation(fuelType, title, desc, callback) {
   if (DOM.adRewardDesc) DOM.adRewardDesc.textContent = desc;
   if (DOM.btnClaimAdReward) {
     DOM.btnClaimAdReward.classList.add('disabled');
-    DOM.btnClaimAdReward.innerHTML = `<span>WATCHING AD (5s)...</span>`;
+    DOM.btnClaimAdReward.innerHTML = `<span>WATCHING AD (15s)...</span>`;
   }
   if (DOM.adProgressFill) DOM.adProgressFill.style.width = '0%';
-  if (DOM.adCountdownBadge) DOM.adCountdownBadge.textContent = '5s';
+  if (DOM.adCountdownBadge) DOM.adCountdownBadge.textContent = '15s';
 
   if (adSimulationInterval) clearInterval(adSimulationInterval);
 
-  let secondsLeft = 5;
-  const totalSeconds = 5;
+  let secondsLeft = 15;
+  const totalSeconds = 15;
 
   adSimulationInterval = setInterval(() => {
     secondsLeft--;

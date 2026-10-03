@@ -23,8 +23,8 @@ const SPIN_PRIZES = [
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
   { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
-  { label: '1,000 Diamonds', type: 'diamonds', amount: 1000, icon: '💎', isJackpot: true, rarity: 'jackpot' },
-  { label: '5 Diamonds', type: 'diamonds', amount: 5, icon: '💎', rarity: 'rare' }
+  { label: '500 Coins', type: 'coins', amount: 500, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
+  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' }
 ];
 
 // ==========================================================================
@@ -332,14 +332,13 @@ function spinLuckyWheel() {
   const targetLimit = spinState.targetCrowns || getKingLevelTarget(level);
   const crownProb = getCrownWinProbability(targetLimit);
 
-  // Req 13: Diamond win probability must be exactly 0.0001% (1 in 1,000,000)
-  const DIAMOND_JACKPOT_PROB = 0.000001;
+  const COIN_JACKPOT_PROB = 0.05;
 
   const rand = Math.random();
   let sliceIndex;
-  if (rand < DIAMOND_JACKPOT_PROB) {
-    sliceIndex = 6; // 💎 1,000 Diamonds Jackpot
-  } else if (rand < DIAMOND_JACKPOT_PROB + crownProb) {
+  if (rand < COIN_JACKPOT_PROB) {
+    sliceIndex = 6; // 🪙 500 Coins Jackpot
+  } else if (rand < COIN_JACKPOT_PROB + crownProb) {
     sliceIndex = 0; // 👑 King Crown slice (inverse to level limit)
   } else {
     const nonJackpotSlices = [1, 2, 3, 4, 5, 7];
@@ -535,15 +534,8 @@ function applySpinPrize(prize, multiplier = 1) {
 
   if (prize.type === 'coins') {
     gameState.player.coins += finalAmount;
-  } else if (prize.type === 'diamonds') {
-    gameState.player.diamonds = (gameState.player.diamonds || 0) + finalAmount;
-    if (prize.isJackpot) {
-      gameState.player.diamondWins = (gameState.player.diamondWins || 0) + 1;
-      if (window.firebaseSync && typeof window.firebaseSync.updateLeaderboardEntry === 'function') {
-        window.firebaseSync.updateLeaderboardEntry();
-      }
-    }
-
+  } else if (prize.type === 'blue_coins' || prize.type === 'blueCoins') {
+    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + finalAmount;
   } else if (prize.type === 'keys') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + finalAmount;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + finalAmount);

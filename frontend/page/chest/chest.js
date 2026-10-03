@@ -11,7 +11,7 @@ const CHEST_AND_CARD_REWARDS = [
   { label: '1 Cyber Egg', type: 'egg', amount: 1, icon: '🥚' },
   { label: '1 Coin', type: 'coins', amount: 1, icon: '🪙' },
   { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙' },
-  { label: '5 Diamonds', type: 'diamonds', amount: 5, icon: '💎' },
+  { label: '100 Coins', type: 'coins', amount: 100, icon: '🪙' },
   { label: '1 Spin Ticket', type: 'tickets', amount: 1, icon: '🎟️' }
 ];
 
@@ -146,8 +146,6 @@ function awardChestPrize(reward) {
     if (gameState.goal) {
       gameState.goal.currentTickets = Math.min(gameState.goal.targetTickets || 10, (gameState.goal.currentTickets || 0) + reward.amount);
     }
-  } else if (reward.type === 'diamonds') {
-    gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
   } else if (reward.type === 'blue_coins' || reward.type === 'blueCoins' || reward.type === 'blue') {
     gameState.player.blueCoins = (gameState.player.blueCoins || 0) + reward.amount;
   }

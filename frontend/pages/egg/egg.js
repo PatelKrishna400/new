@@ -17,7 +17,7 @@ const EGG_HATCH_REWARDS = {
   key: { type: 'key', label: '1 Key', icon: '🔑', winAmount: 1, unit: 'Key', weight: 30 },
   ticket: { type: 'ticket', label: '1 Ticket', icon: '🎟️', winAmount: 1, unit: 'Ticket', weight: 30 },
   card: { type: 'card', label: '1 Card', icon: '🎴', winAmount: 1, unit: 'Card', weight: 20 },
-  coin: { type: 'diamond', label: '25 Diamonds', icon: '💎', winAmount: 25, unit: 'Diamonds', weight: 20 }
+  coin: { type: 'coin', label: '100 Coins', icon: '🪙', winAmount: 100, unit: 'Coins', weight: 20 }
 };
 
 if (!gameState.eggHatchState) {
@@ -224,14 +224,9 @@ function triggerEggWinCelebration(itemType, rewardDef) {
   gameState.eggHatchState.gameCompleted = true;
   sfx.playLevelUpSound();
 
-  // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
-  if (typeof rollDiamondJackpot === 'function') {
-    rollDiamondJackpot('egg_hatchery');
-  }
-
   // 1. Credit the respective winning prize
-  if (itemType === 'coin' || itemType === 'diamond') {
-    gameState.player.diamonds = (gameState.player.diamonds || 0) + (rewardDef.winAmount || 25);
+  if (itemType === 'coin') {
+    gameState.player.coins = (gameState.player.coins || 0) + (rewardDef.winAmount || 100);
   } else if (itemType === 'key') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + 1);

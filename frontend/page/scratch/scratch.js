@@ -97,6 +97,9 @@ function prepareFreshScratchTicket() {
 
   renderSingleRewardCard();
   initSingleScratchCanvas();
+  requestAnimationFrame(() => {
+    initSingleScratchCanvas();
+  });
   updateScratchProgressUI(0);
 
   const statusEl = document.getElementById('singleScratchStatusText');

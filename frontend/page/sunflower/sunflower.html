@@ -697,7 +697,7 @@
     </div>
   </div>
 
-  <!-- 5-Second Rewarded Sponsor Ad Reel Modal -->
+  <!-- 15-Second Rewarded Sponsor Ad Reel Modal -->
   <div id="sfAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
     <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
       <div class="bg-stone-800 px-3.5 py-2 border-b border-stone-700 flex items-center justify-between">
@@ -706,18 +706,22 @@
           <span id="sfAdBrandName" class="text-xs text-stone-400">SunHarvest Bio</span>
         </div>
         <span id="sfAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
-          ⏳ 5s
+          ⏳ 15s
         </span>
       </div>
 
-      <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px]">
+      <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px] cursor-pointer" onclick="window.open('https://otieuche.com/4/8893420', '_blank')">
         <div id="sfAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">🌻</div>
         <h3 id="sfAdHeadline" class="text-sm font-black text-amber-300">Golden Bloom Fertilizer</h3>
         <p id="sfAdCatchphrase" class="text-stone-300 text-[10.5px] mt-1 max-w-xs">
           "Accelerate sunflower photosynthesis and harvest double solar coins effortlessly."
         </p>
 
-        <div class="mt-2.5 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
+        <a href="https://otieuche.com/4/8893420" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 font-bold px-3 py-1 rounded-full text-[10px]" onclick="event.stopPropagation(); window.open('https://otieuche.com/4/8893420', '_blank');">
+          <span>🌐 VISIT SPONSOR AD</span>
+        </a>
+
+        <div class="mt-2 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
           <span class="text-amber-300 font-semibold">Reward:</span>
           <span id="sfAdRewardTag" class="font-bold text-white">1 Free Sprout 🌱</span>
         </div>
@@ -728,9 +732,9 @@
       </div>
 
       <div class="p-2.5 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
-        <span class="text-[9.5px] text-stone-400">Watch full 5s clip for reward.</span>
+        <span class="text-[9.5px] text-stone-400">Watch full 15s clip for reward.</span>
         <button id="sfAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
-          Watching...
+          Watching (15s)...
         </button>
       </div>
     </div>

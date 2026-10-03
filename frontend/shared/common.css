@@ -682,8 +682,8 @@ body.full-page-game-active div[id^="page"].active {
 }
 
 @keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Subpage Sticky Top Actions Row */
@@ -1892,6 +1892,31 @@ body.full-page-game-active div[id^="page"].active {
   font-weight: 700;
   color: rgba(148, 163, 184, 0.5);
   letter-spacing: 0.5px;
+}
+
+.ad-direct-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff !important;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  cursor: pointer;
+  margin-top: 6px;
+  z-index: 10;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ad-direct-link-btn:hover, .ad-direct-link-btn:active {
+  transform: scale(1.04);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.6);
 }
 
 /* Progress Strip */

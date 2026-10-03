@@ -302,8 +302,10 @@ const gameState = {
     scratchCards: 0,
     eggs: 0,
     brainCoins: 0,
+    balloonCoins: 0,
     boomCoins: 0,
     sunflower: 0,
+    sunflowerCoins: 0,
     waterBuckets: 0,
     shovels: 0,
     passAdCooldowns: {},
@@ -598,6 +600,12 @@ function loadSavedGame() {
       }
       if (gameState.player.scratchCards === undefined) {
         gameState.player.scratchCards = 0;
+      }
+      if (gameState.player.balloonCoins === undefined) {
+        gameState.player.balloonCoins = 0;
+      }
+      if (gameState.player.sunflowerCoins === undefined) {
+        gameState.player.sunflowerCoins = gameState.player.sunflower || 0;
       }
       if (!gameState.player.passAdCooldowns) {
         gameState.player.passAdCooldowns = {};

@@ -502,6 +502,7 @@ function updateUI(full = false) {
   }
   if (curTab === 'memoryMatch' || curTab === 'memory-match' || full) {
     if (typeof updateBrainCoinPill === 'function') updateBrainCoinPill();
+    if (typeof updateBalloonCoinPill === 'function') updateBalloonCoinPill();
   }
   if (curTab === 'coinCatcher' || curTab === 'coin-catcher' || full) {
     if (typeof updateBoomCoinBalances === 'function') updateBoomCoinBalances();

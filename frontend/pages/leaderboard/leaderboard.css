@@ -22,8 +22,14 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain !important;
-  padding: 6px 12px calc(150px + max(0px, env(safe-area-inset-bottom))) 12px !important;
+  padding: 6px 12px calc(160px + max(0px, env(safe-area-inset-bottom))) 12px !important;
   box-sizing: border-box !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+  contain: none !important;
+  will-change: auto !important;
 }
 
 /* Header Title Pill */
@@ -612,25 +618,25 @@
 }
 
 .leaderboard-my-standing-bar {
-  position: fixed;
-  bottom: calc(76px + max(0px, env(safe-area-inset-bottom)));
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 24px);
-  max-width: 420px;
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(245, 158, 11, 0.6);
-  border-radius: 16px;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.75), 0 0 15px rgba(245, 158, 11, 0.25);
-  z-index: 95;
-  box-sizing: border-box;
-  pointer-events: auto;
+  position: fixed !important;
+  bottom: calc(76px + max(8px, env(safe-area-inset-bottom))) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 24px) !important;
+  max-width: 420px !important;
+  background: rgba(15, 23, 42, 0.96) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
+  border-radius: 16px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.75), 0 0 15px rgba(245, 158, 11, 0.25) !important;
+  z-index: 105 !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
 }
 
 .my-standing-left {

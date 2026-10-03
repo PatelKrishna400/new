@@ -28,6 +28,7 @@
       modal.className = 'rewarded-ad-modal-backdrop';
       modal.style.display = 'none';
 
+      const MONETAG_DIRECT_LINK = 'https://otieuche.com/4/8893420';
       modal.innerHTML = `
         <div class="rewarded-ad-dialog" id="rewardedAdDialog">
           <!-- Top Ad Badge Row -->
@@ -36,11 +37,11 @@
               <span class="ad-pulse-circle"></span>
               <span>🎬 SPONSORED REWARDED AD</span>
             </div>
-            <span class="ad-timer-countdown" id="adTimerCountdown">3s</span>
+            <span class="ad-timer-countdown" id="adTimerCountdown">15s</span>
           </div>
 
-          <!-- Video Simulation Screen -->
-          <div class="ad-video-screen">
+          <!-- Video Simulation Screen with Proper Monetag Direct Link -->
+          <div class="ad-video-screen" id="adVideoScreenBox" style="cursor: pointer;" title="Tap to visit official sponsor ad" onclick="window.open('${MONETAG_DIRECT_LINK}', '_blank')">
             <div class="ad-screen-grid-pattern"></div>
             <div class="ad-center-visual">
               <div class="ad-core-spinner outer"></div>
@@ -51,6 +52,13 @@
               <h4 class="ad-screen-title" id="adDialogTitle">ENERGY TAP NETWORK</h4>
               <p class="ad-screen-desc" id="adDialogDesc">Watching sponsored video to claim bonus reward...</p>
             </div>
+
+            <!-- Clickable Official Ads Link Button -->
+            <a href="${MONETAG_DIRECT_LINK}" target="_blank" rel="noopener noreferrer" class="ad-direct-link-btn" onclick="event.stopPropagation(); window.open('${MONETAG_DIRECT_LINK}', '_blank');">
+              <span>🌐 OPEN SPONSOR AD</span>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+
             <div class="ad-monetag-tag">MONETAG ZONE 11677609</div>
           </div>
 
@@ -60,14 +68,14 @@
               <div class="ad-progress-fill" id="adDialogProgressFill" style="width: 0%;"></div>
             </div>
             <div class="ad-progress-meta">
-              <span class="ad-meta-text" id="adDialogStatusText">Streaming High-Tech Video Ad...</span>
+              <span class="ad-meta-text" id="adDialogStatusText">Streaming Sponsored Ad (15s)...</span>
               <span class="ad-meta-percent" id="adDialogPercentText">0%</span>
             </div>
           </div>
 
           <!-- Collect / Action Button -->
           <button class="ad-collect-reward-btn disabled" id="btnCollectAdReward">
-            <span id="btnCollectAdText">⏳ WATCHING AD (3s)...</span>
+            <span id="btnCollectAdText">⏳ WATCHING AD (15s)...</span>
           </button>
         </div>
       `;
@@ -174,14 +182,14 @@
         resolve(true);
       };
 
-      // 3-Second Interactive Ad Player Animation
-      const totalSeconds = 3;
+      // 15-Second Interactive Ad Player Animation (Proper Rewarded Ad)
+      const totalSeconds = 15;
       let secondsLeft = totalSeconds;
 
       if (countdownEl) countdownEl.textContent = `${secondsLeft}s`;
       if (fillEl) fillEl.style.width = '0%';
       if (percentEl) percentEl.textContent = '0%';
-      if (statusEl) statusEl.textContent = 'Streaming High-Tech Video Ad...';
+      if (statusEl) statusEl.textContent = 'Streaming Sponsored Ad (15s)...';
       if (btnCollect) {
         btnCollect.classList.add('disabled');
         btnCollect.onclick = null;

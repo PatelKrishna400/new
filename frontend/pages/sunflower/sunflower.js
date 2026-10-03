@@ -530,8 +530,13 @@ Object.defineProperty(sunflowerState, 'diamonds', {
 
 Object.defineProperty(sunflowerState, 'coins', {
   get() {
-    if (typeof window !== 'undefined' && window.gameState && window.gameState.player && typeof window.gameState.player.coins === 'number') {
-      return window.gameState.player.coins;
+    if (typeof window !== 'undefined' && window.gameState && window.gameState.player) {
+      if (typeof window.gameState.player.sunflowerCoins === 'number') {
+        return window.gameState.player.sunflowerCoins;
+      }
+      if (typeof window.gameState.player.sunflower === 'number') {
+        return window.gameState.player.sunflower;
+      }
     }
     return this._coins || 0;
   },
@@ -539,7 +544,8 @@ Object.defineProperty(sunflowerState, 'coins', {
     const num = Math.max(0, Number(val) || 0);
     this._coins = num;
     if (typeof window !== 'undefined' && window.gameState && window.gameState.player) {
-      window.gameState.player.coins = num;
+      window.gameState.player.sunflowerCoins = num;
+      window.gameState.player.sunflower = num;
       if (typeof window.updateUI === 'function') window.updateUI();
       if (typeof window.saveGame === 'function') window.saveGame(true);
     }
