@@ -627,10 +627,12 @@ function updateDiamondGeneratorRealtime() {
   const stickyEnergyEl = document.getElementById('dgStickyEnergy');
   if (stickyEnergyEl) stickyEnergyEl.textContent = String(currentEnergy);
 
-  // 1. Countdown Text: Clean second-by-second countdown
+  // 1. Countdown Text: Clean second-by-second countdown (no DOM thrashing or flickering)
   const formattedTime = formatDiamondTimer(remainingSeconds);
   document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
-    if (el) el.textContent = formattedTime;
+    if (el && el.textContent !== formattedTime) {
+      el.textContent = formattedTime;
+    }
   });
 
   // 2. Circular SVG Progress Ring

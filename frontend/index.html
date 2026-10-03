@@ -2827,7 +2827,7 @@
               <div class="spin-chaser-ring" id="spinChaserRing"></div>
       
             <!-- Rotating Wheel Disc (Clean White Wedges for High Contrast) -->
-            <div class="spin-wheel-disc" id="spinWheelCircle">
+            <div class="spin-wheel-disc" id="spinWheelCircle" onclick="handleSpinButtonClick()" style="cursor: pointer;">
               <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
                 <defs>
                   <!-- Clean White Slices (below the logos/emojis) -->
@@ -2982,39 +2982,22 @@
           </div>
         </div>
       
-          <!-- King Event Level Card (1 - 1000 Levels Wave Progression) -->
+          <!-- King Event: 👑 Loading bar with progress & emoji winning prizes -->
           <div class="spin-level-display" id="spinLevelBox">
-            <div class="spin-level-header">
-              <div class="spin-level-title-group">
-                <span class="spin-level-crown-badge">👑</span>
-                <div>
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                    <span class="spin-level-name" id="spinLevelTitle">👑 KING EVENT • LEVEL 1 / 1000</span>
-                    <span class="spin-wave-badge crest" id="spinWaveTag">⚡ WAVE CREST</span>
-                  </div>
-                  <div class="spin-level-sub" id="spinLevelSub">Collect 5 👑 King Crowns to unlock Level 1 Gift!</div>
+            <div class="spin-level-progress-container">
+              <div class="spin-crown-track-wrap">
+                <span class="spin-bar-crown-ico">👑</span>
+                <div class="spin-crown-track">
+                  <div class="spin-crown-fill" id="spinCrownBarFill" style="width: 0%;"></div>
+                </div>
+                <div class="spin-level-gift-badge" id="spinLevelGiftBadge" onclick="showMysteryGiftPreview()" title="View King Event Gift">
+                  <span class="gift-badge-icon">🎁</span>
                 </div>
               </div>
-              <div class="spin-level-gift-badge" id="spinLevelGiftBadge" onclick="showMysteryGiftPreview()">
-                <span class="gift-badge-icon">🎁</span>
-                <span class="gift-badge-text">LEVEL GIFT</span>
+              <div class="spin-crown-meta-row">
+                <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5</span>
+                <span class="spin-reward-emoji-preview" id="spinLevelRewardPreviewText">🎁 🪙 +10 • 🗝️ +2 • 🎟️ +3</span>
               </div>
-            </div>
-      
-            <div class="spin-level-progress-container">
-              <div class="spin-crown-track">
-                <div class="spin-crown-fill" id="spinCrownBarFill" style="width: 0%;"></div>
-              </div>
-              <div class="spin-crown-meta">
-                <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5 King Crowns Collected</span>
-                <span class="spin-crown-status" id="spinCrownStatusText">🎯 Crown Chance: 45% (Inverse Odds)</span>
-              </div>
-            </div>
-      
-            <!-- Level Reward Preview Strip -->
-            <div class="spin-level-reward-strip" id="spinLevelRewardStrip">
-              <span style="color: #94a3b8; font-size: 10px;">🎁 Level Reward:</span>
-              <span class="spin-reward-preview-val" id="spinLevelRewardPreviewText">+10 🪙 • +100 💙 • +2 🗝️ • +3 🎫</span>
             </div>
           </div>
       
@@ -3085,19 +3068,14 @@
               <div class="spin-gift-chest-icon">🎁</div>
             </div>
       
-            <h3 class="spin-gift-title" id="spinGiftTitle">MYSTERY GIFT UNLOCKED!</h3>
-            <p class="spin-gift-sub" id="spinGiftSub">You collected all 👑 crowns and unlocked the Grand Level Gift!</p>
+            <h3 class="spin-gift-title" id="spinGiftTitle">👑 KING EVENT GIFT!</h3>
+            <p class="spin-gift-sub" id="spinGiftSub">You collected all 👑 crowns and unlocked the King Event Gift!</p>
       
             <div class="spin-gift-rewards-grid" id="spinGiftRewardsGrid">
               <div class="gift-reward-card gold">
                 <span class="reward-icon">🪙</span>
                 <span class="reward-val" id="spinGiftCoinsVal">+10</span>
                 <span class="reward-label">Coins</span>
-              </div>
-              <div class="gift-reward-card diamond">
-                <span class="reward-icon">💎</span>
-                <span class="reward-val" id="spinGiftDiamondsVal">+5</span>
-                <span class="reward-label">Diamonds</span>
               </div>
               <div class="gift-reward-card purple">
                 <span class="reward-icon">🗝️</span>
@@ -3108,6 +3086,11 @@
                 <span class="reward-icon">🎟️</span>
                 <span class="reward-val" id="spinGiftTicketsVal">+3</span>
                 <span class="reward-label">Tickets</span>
+              </div>
+              <div class="gift-reward-card green">
+                <span class="reward-icon">🎴</span>
+                <span class="reward-val" id="spinGiftCardsVal">+2</span>
+                <span class="reward-label">Cards</span>
               </div>
             </div>
       
@@ -3693,13 +3676,6 @@
           </div>
         </div>
       
-        <!-- Leaderboard Category Banner (Req 20: Focused on Diamond Win Ranking) -->
-        <div class="leaderboard-filter-tabs single-focus">
-          <button type="button" class="lb-tab-btn active" id="lbTabDiamondWins">
-            <span class="lb-tab-icon">💎</span>
-            <span class="lb-tab-text">Global Diamond Win Rankings</span>
-          </button>
-        </div>
       
         <!-- Master Leaderboard Card Wrapper -->
         <section class="leaderboard-master-card">
@@ -4204,18 +4180,6 @@
                 </div>
               </div>
       
-              <div class="sf-tools-right">
-                <button id="sfPlantAllBtn" onclick="plantAllSfPlots(event)" class="sf-quick-tool-btn emerald" title="Plant seeds on all empty plots">
-                  <span>🌱 Plant All</span>
-                </button>
-                <button id="sfWaterAllBtn" onclick="waterAllSfPlots(event)" class="sf-quick-tool-btn blue" title="Water all mature plots (+10s life)">
-                  <span>🧺 Water All</span>
-                </button>
-                <button id="sfShovelAllBtn" onclick="shovelAllSfPlots(event)" class="sf-quick-tool-btn stone" title="Clear all dead plots with shovel">
-                  <span>🪏 Shovel All</span>
-                </button>
-                <button id="sfSoundBtn" class="sf-sound-toggle-btn" title="Toggle Sound">🔊</button>
-              </div>
             </div>
       
             <!-- 20 Plots List in Fixed 1*20 Format -->

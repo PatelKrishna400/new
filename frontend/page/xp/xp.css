@@ -64,23 +64,36 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.45);
-  color: #fbbf24;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.96) 100%);
+  border: 1.5px solid #0284c7;
+  color: #38bdf8;
   cursor: pointer;
   padding: 0 !important;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
 }
 
+.xp-back-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #38bdf8;
+  fill: none;
+  stroke-width: 2.2;
+}
+
 .xp-back-btn:hover {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%);
-  border-color: #fbbf24;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border-color: #38bdf8;
   color: #ffffff;
   transform: scale(1.08);
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+.xp-back-btn:hover svg {
+  stroke: #ffffff;
+  transform: translateX(-1px);
 }
 
 .xp-back-btn:active {

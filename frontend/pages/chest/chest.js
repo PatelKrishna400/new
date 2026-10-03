@@ -83,9 +83,9 @@ function updateChestUI() {
     if (btnIcon) btnIcon.textContent = '🔑';
     if (btnText) btnText.textContent = `UNLOCK RANDOM CHEST (${keys} KEY${keys === 1 ? '' : 'S'})`;
   } else {
-    btn.disabled = false;
-    btn.className = 'chest-action-main-btn no-key-mode';
-    if (btnIcon) btnIcon.textContent = '🔑';
+    btn.disabled = true;
+    btn.className = 'chest-action-main-btn no-key-mode disabled';
+    if (btnIcon) btnIcon.textContent = '🔒';
     if (btnText) btnText.textContent = 'NEED 1 KEY TO UNLOCK (0 🔑)';
   }
 }
@@ -103,10 +103,8 @@ function handleChestActionButtonClick() {
   if (keys > 0) {
     unlockMysteryChest();
   } else {
-    if (typeof showGameEntryRequirementModal === 'function') {
-      showGameEntryRequirementModal('1 Mystery Key', '🔑', 'Mystery Chest Vault');
-    } else if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔑 You need 1 Mystery Key to unlock a chest!');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Winning Key to open a chest! Without a key, chests cannot be opened.');
     }
     if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
       sfx.playTapSound(1);
@@ -165,13 +163,19 @@ function onChestBoxClicked(boxNum) {
   if (chestRoundState.isProcessing) return;
 
   if (chestRoundState.isActiveRound) {
-    // If user clicks an unchosen revealed chest in the active round, prompt ad watch
-    if (!chestRoundState.claimed[boxNum]) {
-      claimNonChoiceChestWithAd(boxNum);
-    } else {
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`Vault Chest #${boxNum} has already been claimed!`);
-      }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔄 Tap RESET CHESTS to use a key for the next round!');
+    }
+    return;
+  }
+
+  const keys = (gameState.player && gameState.player.chestKeys) || 0;
+  if (keys <= 0) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Winning Key to open a chest! Without a key, chests cannot be opened.');
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
+      sfx.playErrorSound();
     }
     return;
   }
@@ -185,10 +189,11 @@ function unlockMysteryChestBox(boxNum) {
 
   const keys = (gameState.player && gameState.player.chestKeys) || 0;
   if (keys <= 0) {
-    if (typeof showGameEntryRequirementModal === 'function') {
-      showGameEntryRequirementModal('1 Mystery Key', '🔑', 'Mystery Chest Vault');
-    } else if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🔑 You need 1 Winning Key to open a chest!');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔑 You need 1 Winning Key to open a chest! Without a key, chests cannot be opened.');
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playErrorSound === 'function') {
+      sfx.playErrorSound();
     }
     return;
   }

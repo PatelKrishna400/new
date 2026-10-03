@@ -96,13 +96,10 @@ window.getCrownGainPerHit = getCrownGainPerHit;
 function getKingLevelRewards(level) {
   const lvl = Math.max(1, Math.min(1000, Math.floor(level || 1)));
   const coins = 10 * lvl;
-  const cyclePos = ((lvl - 1) % 10) + 1; // 1 to 10
-  const cycleBlock = Math.floor((lvl - 1) / 10);
-  const diamonds = Math.max(1, Math.floor(cyclePos / 2) + cycleBlock);
   const keys = Math.min(25, 2 + Math.floor(lvl / 50));
   const tickets = Math.min(50, 3 + Math.floor(lvl / 25));
   const cards = Math.min(25, 2 + Math.floor(lvl / 50));
-  return { coins, diamonds, keys, tickets, cards };
+  return { coins, diamonds: 0, keys, tickets, cards };
 }
 window.getKingLevelRewards = getKingLevelRewards;
 
@@ -191,14 +188,14 @@ function playWheelTickSound() {
 // Unified Spin click handler
 function handleSpinButtonClick() {
   if (gameState.rewardState && gameState.rewardState.isSpinning) return;
-  const tickets = (gameState.player && gameState.player.chestTickets) || 0;
-  if (tickets > 0) {
+  const tickets = Math.max(0, parseInt(gameState.player && gameState.player.chestTickets) || 0);
+  if (tickets >= 1) {
     spinLuckyWheel();
   } else {
     if (typeof showGameEntryRequirementModal === 'function') {
       showGameEntryRequirementModal('1 Spin Ticket', '🎟️', 'Lucky Spin Wheel');
     } else if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎟️ You need 1 Spin Ticket to play!');
+      showFloatingToast('🎟️ You need 1 Spin Ticket to spin the wheel!');
     }
     if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
       sfx.playTapSound(1);
@@ -206,51 +203,25 @@ function handleSpinButtonClick() {
   }
 }
 
-// Update King Event Level Tab UI (1 - 1000 Levels Wave Progression)
+// Update King Event UI (Only shows 👑 loading bar, 👑 collected / target, and winning prizes in emoji)
 function updateSpinLevelUI() {
   const state = getSpinState();
   const level = Math.max(1, Math.min(1000, state.level || 1));
   const targetLimit = state.targetCrowns || getKingLevelTarget(level);
   state.targetCrowns = targetLimit;
 
-  const titleEl = document.getElementById('spinLevelTitle');
-  const subEl = document.getElementById('spinLevelSub');
   const fillEl = document.getElementById('spinCrownBarFill');
   const countEl = document.getElementById('spinCrownCountText');
-  const statusEl = document.getElementById('spinCrownStatusText');
-  const waveTagEl = document.getElementById('spinWaveTag');
   const rewardPreviewEl = document.getElementById('spinLevelRewardPreviewText');
 
-  if (titleEl) titleEl.textContent = `👑 KING EVENT • LEVEL ${level} / 1000`;
-  if (subEl) subEl.textContent = `Collect ${targetLimit} 👑 King Crowns to unlock Level ${level} Gift!`;
-  
   const crowns = state.crowns || 0;
   const pct = Math.min(100, Math.max(0, (crowns / targetLimit) * 100));
   if (fillEl) fillEl.style.width = `${pct}%`;
-  if (countEl) countEl.textContent = `👑 ${crowns} / ${targetLimit} King Crowns Collected`;
-
-  const crownProb = getCrownWinProbability(targetLimit);
-  const probPercent = Math.round(crownProb * 100);
-
-  if (statusEl) {
-    if (crowns >= targetLimit) {
-      statusEl.textContent = '🎁 Mystery Gift Ready to Open!';
-      statusEl.style.color = '#fbbf24';
-    } else {
-      statusEl.textContent = `🎯 Crown Chance: ${probPercent}% (Inverse to Limit ${targetLimit})`;
-      statusEl.style.color = '#94a3b8';
-    }
-  }
-
-  if (waveTagEl) {
-    const waveInfo = getKingWaveStageInfo(level, targetLimit);
-    waveTagEl.className = `spin-wave-badge ${waveInfo.type}`;
-    waveTagEl.textContent = waveInfo.text;
-  }
+  if (countEl) countEl.innerHTML = `👑 ${crowns} / ${targetLimit}`;
 
   const rewards = getKingLevelRewards(level);
   if (rewardPreviewEl) {
-    rewardPreviewEl.textContent = `+${rewards.coins} 🪙 • +${rewards.diamonds} 💎 • +${rewards.keys} 🗝️ • +${rewards.tickets} 🎫`;
+    rewardPreviewEl.innerHTML = `🎁 🪙 +${rewards.coins} • 🗝️ +${rewards.keys} • 🎟️ +${rewards.tickets} • 🎴 +${rewards.cards}`;
   }
 }
 window.updateSpinLevelUI = updateSpinLevelUI;
@@ -669,18 +640,18 @@ function showMysteryGiftModal() {
   const titleEl = document.getElementById('spinGiftTitle');
   const subEl = document.getElementById('spinGiftSub');
   const coinsValEl = document.getElementById('spinGiftCoinsVal');
-  const diaValEl = document.getElementById('spinGiftDiamondsVal');
   const keysValEl = document.getElementById('spinGiftKeysVal');
   const ticketsValEl = document.getElementById('spinGiftTicketsVal');
+  const cardsValEl = document.getElementById('spinGiftCardsVal');
   const claimBtn = document.getElementById('btnClaimMysteryGift');
 
-  if (titleEl) titleEl.textContent = `👑 LEVEL ${level} COMPLETE!`;
-  if (subEl) subEl.textContent = `You collected all ${spinState.targetCrowns} 👑 King Crowns and completed Level ${level} of 1000!`;
+  if (titleEl) titleEl.textContent = `👑 KING EVENT GIFT UNLOCKED!`;
+  if (subEl) subEl.textContent = `You collected all ${spinState.targetCrowns} 👑 King Crowns and unlocked the Mystery Gift!`;
 
   if (coinsValEl) coinsValEl.textContent = `+${rewards.coins}`;
-  if (diaValEl) diaValEl.textContent = `+${rewards.diamonds}`;
   if (keysValEl) keysValEl.textContent = `+${rewards.keys}`;
   if (ticketsValEl) ticketsValEl.textContent = `+${rewards.tickets}`;
+  if (cardsValEl) cardsValEl.textContent = `+${rewards.cards}`;
 
   if (claimBtn) {
     claimBtn.onclick = claimMysteryGiftReward;
@@ -705,18 +676,18 @@ function showMysteryGiftPreview() {
   const titleEl = document.getElementById('spinGiftTitle');
   const subEl = document.getElementById('spinGiftSub');
   const coinsValEl = document.getElementById('spinGiftCoinsVal');
-  const diaValEl = document.getElementById('spinGiftDiamondsVal');
   const keysValEl = document.getElementById('spinGiftKeysVal');
   const ticketsValEl = document.getElementById('spinGiftTicketsVal');
+  const cardsValEl = document.getElementById('spinGiftCardsVal');
   const claimBtn = document.getElementById('btnClaimMysteryGift');
 
-  if (titleEl) titleEl.textContent = `👑 LEVEL ${level} REWARD PREVIEW`;
-  if (subEl) subEl.textContent = `Collect ${spinState.targetCrowns} 👑 King Crowns to unlock this Level ${level} gift!`;
+  if (titleEl) titleEl.textContent = `👑 KING EVENT REWARD PREVIEW`;
+  if (subEl) subEl.textContent = `Collect ${spinState.targetCrowns} 👑 King Crowns to unlock this Gift!`;
 
   if (coinsValEl) coinsValEl.textContent = `+${rewards.coins}`;
-  if (diaValEl) diaValEl.textContent = `+${rewards.diamonds}`;
   if (keysValEl) keysValEl.textContent = `+${rewards.keys}`;
   if (ticketsValEl) ticketsValEl.textContent = `+${rewards.tickets}`;
+  if (cardsValEl) cardsValEl.textContent = `+${rewards.cards}`;
 
   if (claimBtn) {
     claimBtn.onclick = () => {
@@ -739,7 +710,7 @@ function claimMysteryGiftReward() {
   const rewards = getKingLevelRewards(currentLevel);
 
   gameState.player.coins += rewards.coins;
-  gameState.player.diamonds = (gameState.player.diamonds || 0) + rewards.diamonds;
+  // Diamonds removed from King Event rewards
   gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewards.keys;
   gameState.player.chestTickets = (gameState.player.chestTickets || 0) + rewards.tickets;
   gameState.player.scratchCards = (gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : 0) + rewards.cards;
@@ -760,7 +731,7 @@ function claimMysteryGiftReward() {
   }
 
   if (typeof showFloatingToast === 'function') {
-    showFloatingToast(`👑 LEVEL ${currentLevel} COMPLETED! +${rewards.coins} 🪙, +${rewards.diamonds} 💎, +${rewards.keys} 🗝️, +${rewards.tickets} 🎫! Next: Level ${nextLevel}`);
+    showFloatingToast(`👑 KING EVENT GIFT CLAIMED! +${rewards.coins} 🪙, +${rewards.keys} 🗝️, +${rewards.tickets} 🎫, +${rewards.cards} 🎴!`);
   }
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();

@@ -1137,8 +1137,6 @@ div[id^="page"].active {
     gap: 6px;
   }
 
-  .xp-back-btn,
-  .goal-back-btn,
   .xp-level-badge-btn,
   .goal-level-badge-btn {
     padding: 6px 10px;
@@ -2341,6 +2339,106 @@ div[id^="page"].active {
   justify-content: center;
   gap: 6px;
 }
+
+/* ==========================================================================
+   UNIVERSAL CIRCULAR BLUE BACK ARROW BUTTON
+   ========================================================================== */
+.xp-back-btn,
+.goal-back-btn,
+.dg-back-btn,
+.sf-sticky-back-btn,
+.sf-dash-back-btn,
+.bee-dash-back-btn,
+.mine-dash-back-btn,
+.page-back-btn,
+.common-back-btn,
+.header-back-btn {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.96) 100%) !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #38bdf8 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  flex-shrink: 0 !important;
+  text-decoration: none !important;
+}
+
+.xp-back-btn svg,
+.goal-back-btn svg,
+.dg-back-btn svg,
+.sf-sticky-back-btn svg,
+.sf-dash-back-btn svg,
+.bee-dash-back-btn svg,
+.mine-dash-back-btn svg,
+.page-back-btn svg,
+.common-back-btn svg,
+.header-back-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: #38bdf8 !important;
+  fill: none !important;
+  stroke-width: 2.2 !important;
+  transition: stroke 0.18s ease, transform 0.18s ease !important;
+}
+
+.xp-back-btn:hover,
+.goal-back-btn:hover,
+.dg-back-btn:hover,
+.sf-sticky-back-btn:hover,
+.sf-dash-back-btn:hover,
+.bee-dash-back-btn:hover,
+.mine-dash-back-btn:hover,
+.page-back-btn:hover,
+.common-back-btn:hover,
+.header-back-btn:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6) !important;
+}
+
+.xp-back-btn:hover svg,
+.goal-back-btn:hover svg,
+.dg-back-btn:hover svg,
+.sf-sticky-back-btn:hover svg,
+.sf-dash-back-btn:hover svg,
+.bee-dash-back-btn:hover svg,
+.mine-dash-back-btn:hover svg,
+.page-back-btn:hover svg,
+.common-back-btn:hover svg,
+.header-back-btn:hover svg {
+  stroke: #ffffff !important;
+  transform: translateX(-1px) !important;
+}
+
+.xp-back-btn:active,
+.goal-back-btn:active,
+.dg-back-btn:active,
+.sf-sticky-back-btn:active,
+.sf-dash-back-btn:active,
+.bee-dash-back-btn:active,
+.mine-dash-back-btn:active,
+.page-back-btn:active,
+.common-back-btn:active,
+.header-back-btn:active {
+  transform: scale(0.92) !important;
+}
+
 
 
 

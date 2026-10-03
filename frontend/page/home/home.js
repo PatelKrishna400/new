@@ -692,13 +692,13 @@ function initDiamondGeneratorEngine() {
 
   if (_diamondGenInterval) {
     clearInterval(_diamondGenInterval);
+    _diamondGenInterval = null;
   }
 
-  _diamondGenInterval = setInterval(() => {
-    tickDiamondGenerator();
-  }, 100);
-
-  updateDiamondGeneratorUI();
+  // Defer to diamond-generator.js engine to prevent duplicate timers and screen blinking
+  if (typeof updateDiamondGeneratorUI === 'function') {
+    updateDiamondGeneratorUI();
+  }
 }
 
 function catchupDiamondGenerator() {
@@ -775,45 +775,17 @@ function tickDiamondGenerator() {
 }
 
 function updateDiamondLiveIndicators(cycleDur, rate) {
-  const progSecs = gameState.diamondGenerator.progressSeconds || 0;
-  const remaining = Math.max(0, cycleDur - progSecs);
-  const percent = Math.min(100, Math.max(0, (progSecs / cycleDur) * 100));
-
-  // 1. Core Countdown Text
-  const countEl = document.getElementById('diamondCountdownText');
-  if (countEl) {
-    countEl.textContent = `${remaining.toFixed(1)}s`;
+  if (typeof updateDiamondGeneratorRealtime === 'function') {
+    updateDiamondGeneratorRealtime();
+    return;
   }
-
-  // 2. Core Rate Label
-  const rateEl = document.getElementById('diamondCoreRateLabel');
-  if (rateEl) {
-    rateEl.textContent = `+${formatDiamondDisplay(rate)} 💎`;
-  }
-
-  // 3. SVG Circular Progress Ring (circumference = 2 * PI * 70 = 439.82)
-  const ringEl = document.getElementById('diamondProgressRing');
-  if (ringEl) {
-    const circumference = 439.82;
-    const offset = circumference - (percent / 100) * circumference;
-    ringEl.style.strokeDashoffset = offset.toFixed(2);
-  }
-
-  // 4. Linear Progress Fill & Meta
-  const fillEl = document.getElementById('diamondLinearProgressFill');
-  if (fillEl) {
-    fillEl.style.width = `${percent.toFixed(1)}%`;
-  }
-  const pctEl = document.getElementById('diamondCyclePercent');
-  if (pctEl) {
-    pctEl.textContent = `${Math.floor(percent)}%`;
-  }
-
-  // 5. Speed Ad Cooldown Real-time Countdown
-  updateSpeedAdCooldownRealtime();
 }
 
 function updateDiamondGeneratorUI() {
+  if (typeof window.updateDiamondGeneratorUI === 'function' && window.updateDiamondGeneratorUI !== updateDiamondGeneratorUI) {
+    window.updateDiamondGeneratorUI();
+    return;
+  }
   if (!gameState || !gameState.diamondGenerator) return;
 
   const cycleDur = getDiamondCycleDuration();
