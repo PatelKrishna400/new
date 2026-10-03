@@ -185,16 +185,60 @@ function depositDiamondToPiggyBank(amount, source = 'diamond_generator') {
   pb.totalStored = getPiggyBankCollectibleTotal();
 }
 
+// Helper to get total verified completed website tasks
+function getCompletedWebsiteTasksCount() {
+  if (!window.gameState) return 0;
+  const pCount = Number(window.gameState.player?.websiteTasksCompleted || 0);
+  const claimedWeb = window.gameState.tasksState?.claimedWebsite || {};
+  const claimedCount = Object.keys(claimedWeb).filter(k => claimedWeb[k]).length;
+  return Math.max(pCount, claimedCount);
+}
+
+function showPiggyWebsiteTaskNotice(completedCount) {
+  const modal = document.getElementById('piggyWebTasksModal');
+  const countLabel = document.getElementById('piggyWebTasksCountLabel');
+  if (countLabel) countLabel.textContent = `${completedCount} / 5 Completed`;
+  if (modal) modal.style.display = 'flex';
+}
+
+function closePiggyWebTasksModal() {
+  const modal = document.getElementById('piggyWebTasksModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function goToWebsiteTasksFromPiggy() {
+  closePiggyWebTasksModal();
+  if (typeof switchPage === 'function') {
+    switchPage('tasks');
+    setTimeout(() => {
+      if (typeof switchTaskSubtab === 'function') {
+        switchTaskSubtab('website');
+      }
+    }, 50);
+  }
+}
+
 // Action: Collect Diamonds from Piggy Bank to Main Balance
 function collectPiggyBankDiamonds() {
   const pb = ensurePiggyBankState();
   if (!pb || !window.gameState) return;
 
   const collectible = getPiggyBankCollectibleTotal();
-  if (collectible <= 0) {
+  // Must have at least 1 diamond accumulated
+  if (collectible < 1) {
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('ℹ️ No active diamonds ready to collect in Piggy Bank!');
+      showFloatingToast('ℹ️ You need at least 1.0 💎 in Piggy Bank to collect!');
     }
+    return;
+  }
+
+  // Requirement: Must have completed at least 5 website tasks
+  const completedWebTasks = getCompletedWebsiteTasksCount();
+  if (completedWebTasks < 5) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⚠️ Complete 5 Website Tasks to collect! (${completedWebTasks}/5 completed)`);
+    }
+    showPiggyWebsiteTaskNotice(completedWebTasks);
     return;
   }
 
@@ -617,7 +661,8 @@ function updateDiamondGeneratorRealtime() {
     remainingSeconds = Math.max(0, cycleDuration - elapsedSeconds);
     percent = Math.min(100, Math.max(0, (elapsedSeconds / cycleDuration) * 100));
   } else {
-    remainingSeconds = cycleDuration;
+    // If not using 100 energy in diamond page, timer does NOT do any action!
+    remainingSeconds = 0;
     percent = 0;
   }
 
@@ -627,13 +672,18 @@ function updateDiamondGeneratorRealtime() {
   const stickyEnergyEl = document.getElementById('dgStickyEnergy');
   if (stickyEnergyEl) stickyEnergyEl.textContent = String(currentEnergy);
 
-  // 1. Countdown Text: Clean second-by-second countdown (no DOM thrashing or flickering)
-  const formattedTime = formatDiamondTimer(remainingSeconds);
+  // 1. Countdown Text: Idle at 00:00 until 100 energy used
+  const formattedTime = (dg.isRunning && startTime > 0) ? formatDiamondTimer(remainingSeconds) : '00:00';
   document.querySelectorAll('#diamondCountdownText, .diamond-countdown-text, #diamondCountdownTextHome').forEach(el => {
     if (el && el.textContent !== formattedTime) {
       el.textContent = formattedTime;
     }
   });
+
+  const rateLabelEl = document.getElementById('diamondCoreRateLabel');
+  if (rateLabelEl) {
+    rateLabelEl.textContent = (dg.isRunning && startTime > 0) ? `+${formatDiamondDisplay(getDiamondsPerCycle())} 💎` : 'Needs 100 ⚡';
+  }
 
   // 2. Circular SVG Progress Ring
   const circumference = 439.82;
@@ -763,9 +813,22 @@ function updateDiamondGeneratorUI() {
   if (piggyAmountEl) piggyAmountEl.textContent = formatDiamondDisplay(piggyCollectible);
 
   const piggyBtn = document.getElementById('btnCollectPiggyBank');
+  const piggyNoticeEl = document.getElementById('piggyCollectNotice');
   if (piggyBtn) {
-    piggyBtn.disabled = (piggyCollectible <= 0);
-    piggyBtn.classList.toggle('can-collect', piggyCollectible > 0);
+    if (piggyCollectible >= 1) {
+      piggyBtn.style.display = 'flex';
+      piggyBtn.disabled = false;
+      piggyBtn.classList.add('can-collect');
+      if (piggyNoticeEl) piggyNoticeEl.style.display = 'none';
+    } else {
+      piggyBtn.style.display = 'none';
+      piggyBtn.disabled = true;
+      piggyBtn.classList.remove('can-collect');
+      if (piggyNoticeEl) {
+        piggyNoticeEl.style.display = 'block';
+        piggyNoticeEl.textContent = `Collect button appears when at least 1.0 💎 is accumulated in Piggy Bank (Current: ${formatDiamondDisplay(piggyCollectible)} 💎). Complete 5 Website Tasks to collect.`;
+      }
+    }
   }
 
   const extensionBadge = document.getElementById('piggyExtensionBadge');

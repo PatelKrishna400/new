@@ -245,35 +245,44 @@ function switchPage(pageName) {
     }
   });
 
-  // Dedicated Bottom Nav visibility sync (Sunflower Tycoon & Honeybee Farm replace global bottom nav with their own menu bar)
+  // Dedicated Bottom Nav visibility sync (Menu bar stays in page at bottom across all pages)
   const bottomNavEl = document.querySelector('.bottom-nav') || (typeof DOM !== 'undefined' ? DOM.bottomNav : null);
   const sfBottomMenuBar = document.getElementById('sfBottomMenuBar');
   const beeBottomMenuBar = document.getElementById('beeBottomMenuBar');
   const isSunflowerGame = (pageName === 'sunflower' || pageName === 'land' || pageName === 'water' || pageName === 'crystal' || pageName === 'crystal-mining' || pageName === 'crystalMining' || pageName === 'stone' || pageName === 'flower');
+  const isBeeFarmGame = (pageName === 'bee-farm' || pageName === 'beefarm');
+  const FULL_GAME_PAGES = new Set(['memoryMatch', 'memory-match', 'scratch', 'spin', 'chest', 'egg', 'coinCatcher', 'coin-catcher', 'mining']);
+  const isFullPageGame = FULL_GAME_PAGES.has(pageName);
+
   if (bottomNavEl) {
     if (isSunflowerGame) {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'flex';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
       document.body.classList.add('page-sunflower-active');
-      document.body.classList.remove('page-beefarm-active');
+      document.body.classList.remove('page-beefarm-active', 'full-page-game-active');
       if ((pageName === 'water' || pageName === 'stone') && typeof navigateSunflowerPage === 'function') {
         setTimeout(() => navigateSunflowerPage(2), 20);
       } else if (typeof navigateSunflowerPage === 'function') {
         setTimeout(() => navigateSunflowerPage(1), 20);
       }
-    } else if (pageName === 'bee-farm' || pageName === 'beefarm') {
+    } else if (isBeeFarmGame) {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'flex';
       document.body.classList.add('page-beefarm-active');
-      document.body.classList.remove('page-sunflower-active');
+      document.body.classList.remove('page-sunflower-active', 'full-page-game-active');
     } else {
-      bottomNavEl.style.display = '';
+      // Menu bar stays in page at bottom for all pages and games
+      bottomNavEl.style.display = 'flex';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
-      document.body.classList.remove('page-sunflower-active');
-      document.body.classList.remove('page-beefarm-active');
+      if (isFullPageGame) {
+        document.body.classList.add('full-page-game-active');
+      } else {
+        document.body.classList.remove('full-page-game-active');
+      }
+      document.body.classList.remove('page-sunflower-active', 'page-beefarm-active');
     }
   }
 
@@ -545,7 +554,7 @@ function initTelegramWebApp() {
         triggerTelegramHaptic('selection');
         if (gameState.currentTab === 'suggestBox' || gameState.currentTab === 'suggest-box') {
           switchPage('profile');
-        } else if (['spin', 'chest', 'scratch', 'egg', 'streak', 'adRewards'].includes(gameState.currentTab)) {
+        } else if (['spin', 'chest', 'scratch', 'egg', 'streak', 'adRewards', 'memoryMatch', 'memory-match', 'coinCatcher', 'coin-catcher'].includes(gameState.currentTab)) {
           switchPage('reward');
         } else {
           switchPage('home');

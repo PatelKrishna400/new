@@ -2079,7 +2079,7 @@
                   <div class="rewards-stat-divider"></div>
                   <div class="rewards-stat-item">
                     <span class="stat-item-label">REWARD</span>
-                    <span class="stat-item-val green">Coins + 💎</span>
+                    <span class="stat-item-val green">🔋 Dark Green Fuel</span>
                   </div>
                 </div>
       
@@ -2219,11 +2219,11 @@
               
         <!-- Top Action Nav Row -->
         <div class="xp-top-actions-row">
-          <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                  </svg>
-                </button>
+          <button class="xp-back-btn" onclick="switchPage('home')" aria-label="Back" title="Back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
       
           <div class="xp-timer-pill">
             <span>👑 MEGA REWARDS</span>
@@ -3424,12 +3424,12 @@
           <div class="info-strip-chip">
             <span class="chip-dot gold"></span>
             <span class="chip-label">PRIZES:</span>
-            <span class="chip-val">1-2 🔑, 10-20 🥚, 1-2 🎟️, 1 🪙, 50 💙</span>
+            <span class="chip-val">1-2 🔑, 10-20 🥚, 1-2 🎟️, 100-250 🪙</span>
           </div>
           <div class="info-strip-chip">
             <span class="chip-dot cyan"></span>
             <span class="chip-label">ODDS:</span>
-            <span class="chip-val">50% Eggs, 20% Keys, 20% Tix, 5% Diamonds, 5% Coins</span>
+            <span class="chip-val">50% Eggs, 20% Keys, 20% Tix, 10% Coins</span>
           </div>
         </div>
       
@@ -3851,7 +3851,7 @@
           <!-- Controls / Action Strip -->
           <div class="memory-controls-bar flex items-center justify-center gap-2">
             <button class="memory-action-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
-              <span>🧠</span> Play (1 Brain Coin)
+              <span>🧠</span> New Game / Deal (16 Cards)
             </button>
             <button class="memory-action-btn" id="memoryAdBtn" onclick="claimFreeBrainCoinAd()" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;">
               <span>🎬</span> Free 🧠 (+1 Coin)
@@ -3886,13 +3886,13 @@
               </div>
               <div class="breakdown-row highlight">
                 <span>Reward Calculated:</span>
-                <strong id="memoryStatReward">+250 Coins 🪙, +35 💎</strong>
+                <strong id="memoryStatReward">+1 Dark Green Fuel 🔋</strong>
               </div>
             </div>
       
             <div class="memory-modal-actions">
               <button class="memory-claim-btn" id="memoryClaimBtn" onclick="claimMemoryMatchReward()">
-                <span>🎁</span> Claim Reward
+                <span>🔋</span> Claim Reward
               </button>
               <button class="memory-retry-btn" onclick="startMemoryMatchGame()">
                 <span>🔄</span> Play Again
@@ -5689,7 +5689,7 @@
                     <span class="text-[9px] bg-sky-950 text-sky-300 font-mono border border-sky-500/50 px-1.5 py-0.2 rounded-full">Auto-Compression</span>
                   </h2>
                   <p class="text-[10px] text-slate-300 font-medium">
-                    Sub-zero thermal vents discharge vapor. Engineer Nora condenses coolant into pressurized canisters (max 5 🧪)!
+                    Sub-zero thermal vents discharge vapor. Engineer Nora condenses coolant into pressurized canisters (Unlimited Capacity)!
                   </p>
                 </div>
               </div>
@@ -5699,7 +5699,7 @@
                   ⚡ 2x VAPOR (<span id="mineOverdriveSecLeft">60</span>s)
                 </div>
                 <div class="bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-400/60 font-sci text-[10px] text-sky-300">
-                  DEPOT: <span id="mineWallCrateCounter" class="text-white text-xs font-bold font-mono">0</span> / 5 🧪
+                  DEPOT: <span id="mineWallCrateCounter" class="text-white text-xs font-bold font-mono">0</span> 🧪 (Unlimited)
                 </div>
               </div>
             </div>
@@ -5751,7 +5751,7 @@
               </div>
               <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
                 <div class="text-[9px] font-sci uppercase text-slate-400">BULKHEAD STORAGE</div>
-                <div class="text-base font-sci font-bold text-cyan-400 mt-0.5" id="mineWallCrateDisplay">0 / 5 🧪</div>
+                <div class="text-base font-sci font-bold text-cyan-400 mt-0.5" id="mineWallCrateDisplay">0 🧪 (Unlimited)</div>
               </div>
               <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
                 <div class="text-[9px] font-sci uppercase text-slate-400">THERMAL STABILIZATION</div>
@@ -6133,8 +6133,8 @@
                 </svg>
       
                 <div class="diamond-core-info">
-                  <span class="diamond-countdown-text font-mono" id="diamondCountdownText">05:00</span>
-                  <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.00000001 💎</span>
+                  <span class="diamond-countdown-text font-mono" id="diamondCountdownText">00:00</span>
+                  <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">Needs 100 ⚡</span>
                 </div>
               </div>
             </div>
@@ -6180,13 +6180,18 @@
       
             <!-- Piggy Bank Action Controls -->
             <div class="piggy-actions-grid">
-              <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()">
+              <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()" style="display: none;">
                 <span>🎁 COLLECT TO BALANCE</span>
               </button>
       
               <button type="button" class="piggy-extend-btn font-sci" id="btnExtendPiggyAd" onclick="extendPiggyBankWithAd()">
                 <span>🎬 EXTEND +1 DAY (AD)</span>
               </button>
+            </div>
+      
+            <!-- Notice when collect button is locked (< 1 Diamond) -->
+            <div id="piggyCollectNotice" class="piggy-collect-notice" style="display: none;">
+              Collect button appears when at least 1.0 💎 is accumulated in Piggy Bank. Complete 5 Website Tasks to collect.
             </div>
       
             <!-- Generation Records Collapsible -->
@@ -6304,6 +6309,29 @@
               </div>
             </div>
           </section>
+        </div>
+      
+        <!-- Modal: 5 Website Tasks Required to Collect Diamonds -->
+        <div id="piggyWebTasksModal" class="dg-modal-overlay" style="display: none;">
+          <div class="dg-modal-card">
+            <div class="dg-modal-icon">🌐</div>
+            <h3 class="dg-modal-title font-sci">5 WEBSITE TASKS REQUIRED</h3>
+            <p class="dg-modal-desc">
+              To collect diamonds from your Piggy Bank into your main balance, you must complete at least <strong>5 Website Tasks</strong>.
+            </p>
+            <div class="dg-modal-progress-box">
+              <span class="text-xs text-slate-400">Current Progress:</span>
+              <span class="text-sm font-bold text-cyan-400 font-mono" id="piggyWebTasksCountLabel">0 / 5 Completed</span>
+            </div>
+            <div class="dg-modal-actions">
+              <button type="button" class="dg-modal-btn-primary font-sci" onclick="goToWebsiteTasksFromPiggy()">
+                🚀 GO TO WEBSITE TASKS
+              </button>
+              <button type="button" class="dg-modal-btn-secondary font-sci" onclick="closePiggyWebTasksModal()">
+                CLOSE
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       

@@ -22,7 +22,7 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain !important;
-  padding: 6px 12px 90px 12px !important;
+  padding: 6px 12px calc(150px + max(0px, env(safe-area-inset-bottom))) 12px !important;
   box-sizing: border-box !important;
 }
 
@@ -605,25 +605,32 @@
 }
 
 /* ==========================================================================
-   STICKY / PINNED USER'S LIVE STANDING BAR
+   FIXED / PINNED USER'S LIVE STANDING BAR (STAYS DIRECTLY ABOVE MENU BAR)
    ========================================================================== */
+#pageLeaderboard:not(.active) .leaderboard-my-standing-bar {
+  display: none !important;
+}
+
 .leaderboard-my-standing-bar {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(15, 23, 42, 0.95);
+  position: fixed;
+  bottom: calc(76px + max(0px, env(safe-area-inset-bottom)));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 420px;
+  background: rgba(15, 23, 42, 0.96);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
   border-radius: 16px;
   padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(245, 158, 11, 0.2);
-  z-index: 10;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.75), 0 0 15px rgba(245, 158, 11, 0.25);
+  z-index: 95;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 
 .my-standing-left {

@@ -68,7 +68,7 @@ function loadInitialMiningState() {
     geodeDiamondCost: 1,
     wall: {
       canistersInCrate: 0,
-      maxCapacity: 5,
+      maxCapacity: Infinity,
       baseFillSeconds: 4.0,
       currentProgress: 0,
       overdriveRemaining: 0
@@ -78,6 +78,9 @@ function loadInitialMiningState() {
 }
 
 const mineState = loadInitialMiningState();
+if (mineState && mineState.wall) {
+  mineState.wall.maxCapacity = Infinity;
+}
 window.mineState = mineState;
 
 let mineSaveTimeout = null;
@@ -599,15 +602,13 @@ function mineGameLoop(now) {
       mineState.wall.currentProgress = 0;
       mineState.wall.canistersInCrate += 1;
     }
-    if (statusText) statusText.innerText = "Condensing high-pressure thermal vapor...";
+    if (statusText) statusText.innerText = "Condensing high-pressure thermal vapor (Unlimited)...";
   } else {
     mineState.wall.currentProgress = 0;
-    if (statusText) statusText.innerText = "Crate capacity full (5/5 🧪)! Collect now.";
+    if (statusText) statusText.innerText = "Condensing high-pressure thermal vapor (Unlimited)...";
   }
 
-  const geyserPct = mineState.wall.canistersInCrate >= mineState.wall.maxCapacity
-    ? 100
-    : Math.floor((mineState.wall.currentProgress / currentRate) * 100);
+  const geyserPct = Math.min(100, Math.floor((mineState.wall.currentProgress / currentRate) * 100));
 
   const progBar = document.getElementById('mineGeyserProgressBar');
   const pctLbl = document.getElementById('mineGeyserPercentLabel');
@@ -623,7 +624,7 @@ function mineGameLoop(now) {
   if (badgeInner) badgeInner.innerText = mineState.wall.canistersInCrate;
   if (wallBadge) wallBadge.innerText = mineState.wall.canistersInCrate;
   if (invCoolant) invCoolant.innerText = `${mineState.coolant} 🧪`;
-  if (crateDisp) crateDisp.innerText = `${mineState.wall.canistersInCrate} / 5 🧪`;
+  if (crateDisp) crateDisp.innerText = `${mineState.wall.canistersInCrate} 🧪 (Unlimited)`;
 
   // 2. Active Gem Spire Continuous Shard Generation (+2 🔮/s) & Thermal Life Decay
   mineShardSecondAccumulator += deltaSec;

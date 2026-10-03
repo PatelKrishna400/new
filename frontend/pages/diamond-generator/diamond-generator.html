@@ -80,8 +80,8 @@
           </svg>
 
           <div class="diamond-core-info">
-            <span class="diamond-countdown-text font-mono" id="diamondCountdownText">05:00</span>
-            <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">+0.00000001 💎</span>
+            <span class="diamond-countdown-text font-mono" id="diamondCountdownText">00:00</span>
+            <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">Needs 100 ⚡</span>
           </div>
         </div>
       </div>
@@ -127,13 +127,18 @@
 
       <!-- Piggy Bank Action Controls -->
       <div class="piggy-actions-grid">
-        <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()">
+        <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()" style="display: none;">
           <span>🎁 COLLECT TO BALANCE</span>
         </button>
 
         <button type="button" class="piggy-extend-btn font-sci" id="btnExtendPiggyAd" onclick="extendPiggyBankWithAd()">
           <span>🎬 EXTEND +1 DAY (AD)</span>
         </button>
+      </div>
+
+      <!-- Notice when collect button is locked (< 1 Diamond) -->
+      <div id="piggyCollectNotice" class="piggy-collect-notice" style="display: none;">
+        Collect button appears when at least 1.0 💎 is accumulated in Piggy Bank. Complete 5 Website Tasks to collect.
       </div>
 
       <!-- Generation Records Collapsible -->
@@ -251,5 +256,28 @@
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- Modal: 5 Website Tasks Required to Collect Diamonds -->
+  <div id="piggyWebTasksModal" class="dg-modal-overlay" style="display: none;">
+    <div class="dg-modal-card">
+      <div class="dg-modal-icon">🌐</div>
+      <h3 class="dg-modal-title font-sci">5 WEBSITE TASKS REQUIRED</h3>
+      <p class="dg-modal-desc">
+        To collect diamonds from your Piggy Bank into your main balance, you must complete at least <strong>5 Website Tasks</strong>.
+      </p>
+      <div class="dg-modal-progress-box">
+        <span class="text-xs text-slate-400">Current Progress:</span>
+        <span class="text-sm font-bold text-cyan-400 font-mono" id="piggyWebTasksCountLabel">0 / 5 Completed</span>
+      </div>
+      <div class="dg-modal-actions">
+        <button type="button" class="dg-modal-btn-primary font-sci" onclick="goToWebsiteTasksFromPiggy()">
+          🚀 GO TO WEBSITE TASKS
+        </button>
+        <button type="button" class="dg-modal-btn-secondary font-sci" onclick="closePiggyWebTasksModal()">
+          CLOSE
+        </button>
+      </div>
+    </div>
   </div>
 </div>

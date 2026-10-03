@@ -703,52 +703,72 @@ function initDiamondGeneratorEngine() {
 
 function catchupDiamondGenerator() {
   if (!gameState || !gameState.diamondGenerator) return;
+  const dg = gameState.diamondGenerator;
+  // Strict: If not started with 100 energy, timer does NO action!
+  if (!dg.isRunning || !dg.generationStartTime) {
+    dg.progressSeconds = 0;
+    return;
+  }
   const now = Date.now();
-  const lastTick = gameState.diamondGenerator.lastTickTime || now;
-  const elapsed = Math.max(0, (now - lastTick) / 1000);
+  const startTime = Number(dg.generationStartTime) || 0;
   const cycleDur = getDiamondCycleDuration();
   const rate = getDiamondsPerCycle();
+  const elapsed = Math.max(0, (now - startTime) / 1000);
 
-  if (elapsed > 0) {
-    const totalProg = (gameState.diamondGenerator.progressSeconds || 0) + elapsed;
-    const completed = Math.floor(totalProg / cycleDur);
-    if (completed > 0) {
-      const generated = Number((completed * rate).toFixed(6));
-      gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + generated).toFixed(6));
-      gameState.diamondGenerator.totalDiamondsProduced = Number(((gameState.diamondGenerator.totalDiamondsProduced || 0) + generated).toFixed(6));
-      gameState.diamondGenerator.progressSeconds = totalProg % cycleDur;
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`💎 Generator produced +${formatDiamondDisplay(generated)} Diamonds while away!`);
-      }
-      if (typeof updateUI === 'function') updateUI();
-      if (typeof saveGame === 'function') saveGame();
-    } else {
-      gameState.diamondGenerator.progressSeconds = totalProg;
+  if (elapsed >= cycleDur) {
+    // Exactly 1 cycle completed for the 100 energy spent
+    const generated = Number(rate.toFixed(8));
+    gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + generated).toFixed(8));
+    dg.totalDiamondsProduced = Number(((dg.totalDiamondsProduced || 0) + generated).toFixed(8));
+    dg.isRunning = false;
+    dg.generationStartTime = 0;
+    dg.cycleProgress = 0;
+    dg.progressSeconds = 0;
+    dg.status = 'completed';
+    dg.claimed = true;
+
+    if (typeof depositDiamondToPiggyBank === 'function') {
+      depositDiamondToPiggyBank(generated, 'diamond_generator');
     }
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`💎 Diamond Generator finished: +${formatDiamondDisplay(generated)} Diamonds!`);
+    }
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame();
   }
-  gameState.diamondGenerator.lastTickTime = now;
+  dg.lastTickTime = now;
 }
 window.catchupDiamondGenerator = catchupDiamondGenerator;
 
 function tickDiamondGenerator() {
   if (!gameState || !gameState.diamondGenerator) return;
+  const dg = gameState.diamondGenerator;
+  // Strict: If not running with 100 energy, timer does NO action!
+  if (!dg.isRunning || !dg.generationStartTime) {
+    dg.progressSeconds = 0;
+    return;
+  }
   const now = Date.now();
-  const lastTick = gameState.diamondGenerator.lastTickTime || now;
-  const dt = Math.max(0, (now - lastTick) / 1000);
-  gameState.diamondGenerator.lastTickTime = now;
-
+  const startTime = Number(dg.generationStartTime) || 0;
   const cycleDur = getDiamondCycleDuration();
   const rate = getDiamondsPerCycle();
+  const elapsed = Math.max(0, (now - startTime) / 1000);
 
-  gameState.diamondGenerator.progressSeconds = (gameState.diamondGenerator.progressSeconds || 0) + dt;
+  if (elapsed >= cycleDur) {
+    const awardedDiamonds = Number(rate.toFixed(8));
+    gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + awardedDiamonds).toFixed(8));
+    dg.totalDiamondsProduced = Number(((dg.totalDiamondsProduced || 0) + awardedDiamonds).toFixed(8));
+    dg.isRunning = false;
+    dg.generationStartTime = 0;
+    dg.cycleProgress = 0;
+    dg.progressSeconds = 0;
+    dg.status = 'completed';
+    dg.claimed = true;
 
-  if (gameState.diamondGenerator.progressSeconds >= cycleDur) {
-    const completedCycles = Math.floor(gameState.diamondGenerator.progressSeconds / cycleDur);
-    gameState.diamondGenerator.progressSeconds = gameState.diamondGenerator.progressSeconds % cycleDur;
-
-    const awardedDiamonds = Number((completedCycles * rate).toFixed(6));
-    gameState.player.diamonds = Number(((gameState.player.diamonds || 0) + awardedDiamonds).toFixed(6));
-    gameState.diamondGenerator.totalDiamondsProduced = Number(((gameState.diamondGenerator.totalDiamondsProduced || 0) + awardedDiamonds).toFixed(6));
+    if (typeof depositDiamondToPiggyBank === 'function') {
+      depositDiamondToPiggyBank(awardedDiamonds, 'diamond_generator');
+    }
 
     // Audio & Visual celebratory burst
     triggerDiamondGlintEffect();
@@ -756,13 +776,11 @@ function tickDiamondGenerator() {
       sfx.playCoinSound();
     }
 
-    if (completedCycles === 1) {
-      const coreEl = document.getElementById('diamondCrystalNode');
-      if (coreEl) {
-        const rect = coreEl.getBoundingClientRect();
-        if (typeof createFloatingNumber === 'function') {
-          createFloatingNumber(rect.left + rect.width / 2, rect.top + 20, `+${formatDiamondDisplay(awardedDiamonds)} 💎`, '#00f0ff');
-        }
+    const coreEl = document.getElementById('diamondCrystalNode');
+    if (coreEl) {
+      const rect = coreEl.getBoundingClientRect();
+      if (typeof createFloatingNumber === 'function') {
+        createFloatingNumber(rect.left + rect.width / 2, rect.top + 20, `+${formatDiamondDisplay(awardedDiamonds)} 💎`, '#00f0ff');
       }
     }
 

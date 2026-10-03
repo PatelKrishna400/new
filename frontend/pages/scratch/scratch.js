@@ -4,14 +4,13 @@
    - 3x3 Match-3 Alternate Mode
    ========================================================================== */
 
-// 1. REWARD POOLS WITH EXACT PROBABILITIES:
-// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 5 Diamonds (5%), 100-250 Coins (5%)
+// 1. REWARD POOLS WITH EXACT PROBABILITIES (Diamonds removed per Req 8):
+// 1-2 Keys (20%), 10-20 Eggs (50%), 1-2 Tickets (20%), 100-250 Coins (10%)
 const SCRATCH_CARD_TIERS = [
   { type: 'keys', min: 1, max: 2, weight: 20, icon: '🔑', tier: 'KEY REWARD 🔑', tierColor: '#f59e0b', desc: 'Keys to unlock mystery chests!' },
   { type: 'egg', min: 10, max: 20, weight: 50, icon: '🥚', tier: 'EGG REWARD 🥚', tierColor: '#10b981', desc: 'Egg coins to hatch 12-Egg cyber prizes!' },
   { type: 'tickets', min: 1, max: 2, weight: 20, icon: '🎟️', tier: 'TICKET REWARD 🎟️', tierColor: '#ec4899', desc: 'Tickets to spin the lucky wheel!' },
-  { type: 'diamonds', min: 25, max: 50, weight: 5, icon: '💎', tier: 'RARE DIAMONDS 💎', tierColor: '#38bdf8', desc: 'Diamonds deposited into your vault balance!' },
-  { type: 'coins', min: 100, max: 250, weight: 5, icon: '🪙', tier: 'GOLD COINS 🪙', tierColor: '#fbbf24', desc: 'Gold coins deposited to your balance!' }
+  { type: 'coins', min: 100, max: 250, weight: 10, icon: '🪙', tier: 'GOLD COINS 🪙', tierColor: '#fbbf24', desc: 'Gold coins deposited to your balance!' }
 ];
 
 function generateScratchReward() {
@@ -86,75 +85,50 @@ function switchScratchMode(mode = 'single') {
 // ==========================================================================
 
 // Deal a fresh Single Scratch Card (Strict Rule: requires 1 card!)
-function dealNewSingleCard(consumeCard = true) {
-  const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
-
-  if (consumeCard) {
-    if (cards <= 0) {
-      singleCardState.hasActiveTicket = false;
-      renderLockedCardPlaceholder();
-      if (typeof showGameEntryRequirementModal === 'function') {
-        showGameEntryRequirementModal('1 Scratch Card', '🎴', 'Scratch Card Fortune');
-      } else if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎴 You need 1 Scratch Card to play!');
-      }
-      const statusEl = document.getElementById('singleScratchStatusText');
-      if (statusEl) {
-        statusEl.innerHTML = '⚠️ <strong>No Scratch Cards!</strong> Buy cards in the Shop to play.';
-      }
-      if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('error');
-      updateScratchUI();
-      return false;
-    }
-    if (gameState.player.scratchCards !== undefined) {
-      gameState.player.scratchCards = Math.max(0, gameState.player.scratchCards - 1);
-    } else {
-      gameState.player.chestTickets = Math.max(0, (gameState.player.chestTickets || 0) - 1);
-    }
-    sfx.playTapSound(2);
-
-    // Daily Stats tracking
-    if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
-    if (gameState.dailyStats) gameState.dailyStats.scratches = (gameState.dailyStats.scratches || 0) + 1;
-    singleCardState.cardCountedForDay = true;
-    singleCardState.hasActiveTicket = true;
-  } else {
-    singleCardState.cardCountedForDay = false;
-    if (!singleCardState.hasActiveTicket) {
-      renderLockedCardPlaceholder();
-      return false;
-    }
-  }
-
-  // Generate weighted random reward
-  const selected = generateScratchReward();
-
-  singleCardState.currentReward = selected;
+// Prepare a fresh scratch ticket covered in metallic gray foil
+function prepareFreshScratchTicket() {
+  singleCardState.hasActiveTicket = false; // Uses 1 coin upon first rub/scratch
+  singleCardState.currentReward = generateScratchReward();
   singleCardState.serial = `#TKT-${Math.floor(10000 + Math.random() * 90000)}`;
   singleCardState.isRevealed = false;
   singleCardState.isScratching = false;
   singleCardState.scratchedPercent = 0;
   singleCardState.rubStrokeCount = 0;
 
-  // Render Underneath Secret Reward
   renderSingleRewardCard();
-
-  // Draw Metallic Gray Film Canvas
   initSingleScratchCanvas();
-
-  // Reset Progress & Status
   updateScratchProgressUI(0);
+
   const statusEl = document.getElementById('singleScratchStatusText');
   if (statusEl) {
-    statusEl.innerHTML = '🪙 Rub or scratch the gray film to reveal your reward!';
+    statusEl.innerHTML = '🪙 Rub or scratch the gray foil to use 1 Card Coin and reveal your prize!';
+  }
+  updateScratchUI();
+}
+
+// Deal a fresh Single Scratch Card
+function dealNewSingleCard(consumeCard = false) {
+  const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
+
+  if (cards <= 0) {
+    singleCardState.hasActiveTicket = false;
+    renderLockedCardPlaceholder();
+    if (typeof showGameEntryRequirementModal === 'function') {
+      showGameEntryRequirementModal('1 Scratch Card', '🎴', 'Scratch Card Fortune');
+    } else if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎴 You need 1 Scratch Card to play!');
+    }
+    const statusEl = document.getElementById('singleScratchStatusText');
+    if (statusEl) {
+      statusEl.innerHTML = '⚠️ <strong>No Scratch Cards!</strong> Earn cards to scratch.';
+    }
+    if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('error');
+    updateScratchUI();
+    return false;
   }
 
-  updateScratchUI();
-  updateUI();
-  saveGame();
-  if (consumeCard && window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-    window.firebaseSync.saveToCloudImmediate();
-  }
+  prepareFreshScratchTicket();
+  sfx.playTapSound(1);
   return true;
 }
 
@@ -446,17 +420,43 @@ function bindScratchEvents(canvas) {
   };
 
   const handlePointerDown = (e) => {
-    // If ticket is not unlocked, require spending a card to unlock
+    // If ticket is not activated yet, spend 1 Card Coin upon first scratch!
     if (!singleCardState.hasActiveTicket) {
       const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
       if (cards <= 0) {
         if (typeof showFloatingToast === 'function') {
           showFloatingToast('🎴 You have 0 Scratch Cards! Tap reactor orb or complete goals to earn cards!');
         }
+        const statusEl = document.getElementById('singleScratchStatusText');
+        if (statusEl) {
+          statusEl.innerHTML = '⚠️ <strong>No Card Coins!</strong> You need 1 Card Coin to scratch.';
+        }
+        if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('error');
         return;
       }
-      dealNewSingleCard(true);
-      return;
+
+      // Consume 1 card coin for this scratch card
+      if (gameState.player.scratchCards !== undefined) {
+        gameState.player.scratchCards = Math.max(0, gameState.player.scratchCards - 1);
+      } else {
+        gameState.player.chestTickets = Math.max(0, (gameState.player.chestTickets || 0) - 1);
+      }
+      singleCardState.hasActiveTicket = true;
+      singleCardState.cardCountedForDay = true;
+      if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+      if (gameState.dailyStats) gameState.dailyStats.scratches = (gameState.dailyStats.scratches || 0) + 1;
+      sfx.playTapSound(2);
+      updateScratchUI();
+      updateUI();
+      saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+
+      const statusEl = document.getElementById('singleScratchStatusText');
+      if (statusEl) {
+        statusEl.innerHTML = '🪙 1 Card Coin used! Rub to remove the gray foil and reveal your reward!';
+      }
     }
     if (singleCardState.isRevealed) return;
 
@@ -707,19 +707,15 @@ function completeSingleCardReveal() {
       if (typeof showFloatingToast === 'function') {
         showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Ticket${reward.amount > 1 ? 's' : ''} 🎟️!`);
       }
-    } else if (reward.type === 'diamonds' || reward.type === 'coins') {
-      gameState.player.diamonds = (gameState.player.diamonds || 0) + reward.amount;
-      // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot chance
-      if (typeof rollDiamondJackpot === 'function') {
-        rollDiamondJackpot('scratch_card');
-      }
+    } else if (reward.type === 'coins') {
+      gameState.player.coins = (gameState.player.coins || 0) + reward.amount;
       sfx.playLevelUpSound();
       const statusEl = document.getElementById('singleScratchStatusText');
       if (statusEl) {
-        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Diamonds 💎</strong>!`;
+        statusEl.innerHTML = `🎉 <strong>WINNER!</strong> You revealed <strong>+${reward.amount} Coins 🪙</strong>!`;
       }
       if (typeof showFloatingToast === 'function') {
-        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Diamonds 💎!`);
+        showFloatingToast(`🎉 Scratch Card: Won +${reward.amount} Coins 🪙!`);
       }
     }
   }
@@ -763,7 +759,11 @@ function scratchTile(index, event) {
 // Initialize on page entry (Single Luxury Card Full Page View)
 function initScratchPage() {
   singleCardState.activeMode = 'single';
-  if (!singleCardState.hasActiveTicket || !singleCardState.currentReward) {
+  const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
+
+  if (cards > 0 && (!singleCardState.currentReward || singleCardState.isRevealed)) {
+    prepareFreshScratchTicket();
+  } else if (!singleCardState.hasActiveTicket || !singleCardState.currentReward) {
     renderLockedCardPlaceholder();
   } else {
     setTimeout(() => {
@@ -777,6 +777,15 @@ function updateScratchUI() {
   const cards = gameState.player.scratchCards !== undefined ? gameState.player.scratchCards : (gameState.player.chestTickets || 0);
   const pillVal = document.getElementById('scratchCardsVal');
   if (pillVal) pillVal.textContent = cards.toString();
+
+  const mainBtnLabel = document.getElementById('scratchMainBtnLabel');
+  if (mainBtnLabel) {
+    if (cards > 0) {
+      mainBtnLabel.textContent = `🎴 NEW TICKET (${cards} CARDS)`;
+    } else {
+      mainBtnLabel.textContent = `⚠️ NEED 1 CARD (0 🎴)`;
+    }
+  }
 
   const nextBtnText = document.getElementById('btnNewCardText');
   if (nextBtnText) {

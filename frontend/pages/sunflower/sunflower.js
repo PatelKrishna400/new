@@ -372,7 +372,7 @@ function createDefaultSfWells() {
       upgradeCost: Math.round(baseBaskets * 30 + 20),
       timer: baseTime,
       storedBaskets: 0,
-      maxStorage: Math.max(5, baseBaskets * 5),
+      maxStorage: Infinity,
       hasWorker: false, // Manager hired for this well
       isProducing: false, // In manual mode, starts FALSE until user clicks Water Coin!
       totalBasketsGenerated: 0,
@@ -431,7 +431,7 @@ function loadInitialSunflowerState() {
             w.upgradeCost = getSfWellUpgradeCost(idx, w.level);
             if (typeof w.timer !== 'number') w.timer = w.productionTime;
             if (typeof w.storedBaskets !== 'number') w.storedBaskets = 0;
-            if (typeof w.maxStorage !== 'number') w.maxStorage = Math.max(5, w.basketProduction * 5);
+            w.maxStorage = Infinity;
             if (typeof w.hasWorker !== 'boolean') w.hasWorker = false;
             if (typeof w.totalBasketsGenerated !== 'number') w.totalBasketsGenerated = 0;
             if (!w.name) w.name = SF_WELL_NAMES[idx];
@@ -491,7 +491,7 @@ function loadInitialSunflowerState() {
     },
     cistern: {
       basketsInCrate: 0,
-      maxCrateCapacity: 5,
+      maxCrateCapacity: Infinity,
       baseFillSeconds: 4.0,
       currentProgress: 0,
       boostTimerRemaining: 0
@@ -503,6 +503,10 @@ function loadInitialSunflowerState() {
 }
 
 const sunflowerState = loadInitialSunflowerState();
+if (sunflowerState.cistern) sunflowerState.cistern.maxCrateCapacity = Infinity;
+if (Array.isArray(sunflowerState.wells)) {
+  sunflowerState.wells.forEach(w => { w.maxStorage = Infinity; });
+}
 sunflowerState._diamonds = sunflowerState.diamonds || 25;
 sunflowerState._coins = sunflowerState.coins || 150;
 
@@ -1856,7 +1860,7 @@ window.upgradeSfWell = function(wellId, event = null) {
     well.productionTime = getSfWellCycleTime(wellIndex, well.level);
     well.basketProduction = getSfWellBasketsPerCycle(wellIndex, well.level);
     well.upgradeCost = getSfWellUpgradeCost(wellIndex, well.level);
-    well.maxStorage = Math.max(5, well.basketProduction * 5);
+    well.maxStorage = Infinity;
 
     sunflowerAudio.playUpgradeChime();
     const posX = event ? event.clientX : window.innerWidth / 2;

@@ -671,6 +671,16 @@ div[id^="page"].active {
   animation: pageFadeIn 0.25s ease-out forwards;
 }
 
+/* Full Page Game View (Ensure Menu Bar Stays at Bottom) */
+body.full-page-game-active .bottom-nav {
+  display: flex !important;
+}
+
+body.full-page-game-active .page-view.active,
+body.full-page-game-active div[id^="page"].active {
+  padding-bottom: calc(84px + max(0px, env(safe-area-inset-bottom))) !important;
+}
+
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }

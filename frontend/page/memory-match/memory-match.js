@@ -1,14 +1,17 @@
 /**
- * Memory Match 4x4 Mini-Game
- * Matches 8 pairs within a timer.
- * Rewards depend on: completion, time, and mistakes.
+ * Memory Match 4x4 Mini-Game (pages/memory-match/memory-match.js)
+ * - 4x4 Grid of 16 Cards (8 Pairs with Emojis, No Diamonds)
+ * - 1 Brain Coin per Card Split/Flip
+ * - Matching pairs are removed from the board
+ * - Finish game -> Wins 1 Dark Green Fuel
+ * - Otherwise (Incomplete/Time expired) -> Wins 10 Brain Coins
  */
 
 (function() {
   const MEMORY_CARD_TYPES = [
-    { id: 'core', symbol: '⚡', title: 'Energy Core', color: '#00f0ff' },
+    { id: 'core', symbol: '⚡', title: 'Lightning', color: '#00f0ff' },
     { id: 'fuel', symbol: '🔋', title: 'Fuel Cell', color: '#10b981' },
-    { id: 'gem', symbol: '💎', title: 'Diamond', color: '#38bdf8' },
+    { id: 'rocket', symbol: '🚀', title: 'Rocket', color: '#38bdf8' },
     { id: 'coin', symbol: '🪙', title: 'Cyber Coin', color: '#eab308' },
     { id: 'key', symbol: '🔑', title: 'Shakti Key', color: '#f59e0b' },
     { id: 'ticket', symbol: '🎟️', title: 'Lucky Ticket', color: '#ec4899' },
@@ -53,26 +56,6 @@
     initDOMElements();
     if (!elGrid) return;
 
-    // Strict Entry Requirement Check (1 🧠 Brain Coin)
-    const brainCoins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.brainCoins !== undefined)
-      ? Number(gameState.player.brainCoins)
-      : 0;
-
-    if (brainCoins < 1) {
-      if (typeof showGameEntryRequirementModal === 'function') {
-        showGameEntryRequirementModal('1 Brain Coin', '🧠', 'Memory Match', 'passes');
-      } else if (typeof showFloatingToast === 'function') {
-        showFloatingToast('⚠️ 1 🧠 Brain Coin required to play Memory Match!');
-      }
-      return;
-    }
-
-    // Deduct 1 🧠 Brain Coin
-    gameState.player.brainCoins--;
-    if (typeof updateUI === 'function') updateUI();
-    if (typeof saveGame === 'function') saveGame(true);
-    updateBrainCoinPill();
-
     // Reset game state
     clearInterval(timerInterval);
     isGameActive = true;
@@ -85,8 +68,9 @@
 
     if (elOverlay) elOverlay.classList.remove('open');
     updateHUD();
+    updateBrainCoinPill();
 
-    // Create 16 cards (8 pairs)
+    // Create 16 cards (8 pairs of 2 cards each)
     const deck = [];
     MEMORY_CARD_TYPES.forEach(type => {
       deck.push({ ...type, uid: `${type.id}_1` });
@@ -95,7 +79,7 @@
 
     const shuffledDeck = shuffle(deck);
 
-    // Build DOM
+    // Build 4x4 DOM Grid
     elGrid.innerHTML = '';
     const fragment = document.createDocumentFragment();
 
@@ -107,10 +91,10 @@
 
       cardEl.innerHTML = `
         <div class="memory-card-front">
-          <span class="card-circuit-logo">⚡</span>
+          <span class="card-circuit-logo">🧠</span>
         </div>
         <div class="memory-card-back" style="border-color: ${card.color};">
-          <span class="card-symbol">${card.symbol}</span>
+          <span class="card-symbol-emoji">${card.symbol}</span>
           <span class="card-title">${card.title}</span>
         </div>
       `;
@@ -121,7 +105,7 @@
 
     elGrid.appendChild(fragment);
 
-    // Start Timer
+    // Start 60s countdown timer
     timerInterval = setInterval(() => {
       if (!isGameActive) return;
       timeRemaining--;
@@ -139,8 +123,30 @@
 
   function handleCardClick(cardEl, card) {
     if (!isGameActive || isBoardLocked) return;
-    if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+    if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched') || cardEl.classList.contains('card-removed')) return;
 
+    // Strict Rule: 1 Brain Coin per card split/flip
+    const brainCoins = (typeof gameState !== 'undefined' && gameState.player && gameState.player.brainCoins !== undefined)
+      ? Number(gameState.player.brainCoins)
+      : 0;
+
+    if (brainCoins < 1) {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('⚠️ Need 1 🧠 Brain Coin to flip a card! Claim free coins below.');
+      }
+      if (typeof sfx !== 'undefined' && sfx.playErrorSound) {
+        sfx.playErrorSound();
+      }
+      return;
+    }
+
+    // Deduct 1 Brain Coin for this split/flip
+    gameState.player.brainCoins = Math.max(0, gameState.player.brainCoins - 1);
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof saveGame === 'function') saveGame(true);
+    updateBrainCoinPill();
+
+    // Flip card & show emoji
     cardEl.classList.add('flipped');
     flippedCards.push({ el: cardEl, data: card });
 
@@ -158,10 +164,11 @@
     const [card1, card2] = flippedCards;
 
     if (card1.data.id === card2.data.id) {
-      // MATCH FOUND!
+      // MATCH FOUND! Both cards match -> REMOVE CARDS FROM BOARD
       setTimeout(() => {
-        card1.el.classList.add('matched');
-        card2.el.classList.add('matched');
+        card1.el.classList.add('matched', 'card-removed');
+        card2.el.classList.add('matched', 'card-removed');
+
         matchesFound++;
         flippedCards = [];
         isBoardLocked = false;
@@ -176,7 +183,7 @@
         }
       }, 350);
     } else {
-      // NO MATCH
+      // NO MATCH -> Flip back after preview
       mistakes++;
       updateHUD();
       setTimeout(() => {
@@ -211,124 +218,121 @@
     const elClaimBtn = document.getElementById('memoryClaimBtn');
 
     if (isVictory) {
-      // Calculate Rewards based on completion, time remaining, and mistakes
-      const baseCoins = 150;
-      const timeBonus = timeRemaining * 3; // +3 coins per second left
-      let diamondBonus = 15;
-      let stars = 1;
-
-      if (mistakes <= 2) {
-        stars = 3;
-        diamondBonus = 60;
-      } else if (mistakes <= 5) {
-        stars = 2;
-        diamondBonus = 35;
-      }
-
-      // Req 13: 0.0001% (1 in 1,000,000) Diamond Jackpot Evaluation
-      if (typeof rollDiamondJackpot === 'function') {
-        const jackpotResult = rollDiamondJackpot('memory_match');
-        if (jackpotResult && jackpotResult.won) {
-          diamondBonus += jackpotResult.amount;
-        }
-      }
-
-      const totalCoins = baseCoins + timeBonus;
-
+      // Finish game -> Win 1 Dark Green Fuel
       lastCalculatedReward = {
-        coins: totalCoins,
-        diamonds: diamondBonus,
-        keys: 1,
+        isVictory: true,
+        type: 'darkgreen_fuel',
+        amount: 1,
         timeRemaining: timeRemaining,
-        mistakes: mistakes,
-        stars: stars,
-        isVictory: true
+        mistakes: mistakes
       };
 
-      if (elIcon) elIcon.textContent = '🏆';
+      if (elIcon) elIcon.textContent = '🔋';
       if (elTitle) elTitle.textContent = 'REACTOR SYNCHRONIZED!';
-      if (elDesc) elDesc.textContent = `Completed with ${timeRemaining}s remaining and ${mistakes} mistake${mistakes === 1 ? '' : 's'}.`;
+      if (elDesc) elDesc.textContent = `All 8 pairs matched in ${60 - timeRemaining}s! You won Dark Green Fuel!`;
 
       if (elStars) {
         const starItems = elStars.querySelectorAll('.star-item');
-        starItems.forEach((st, idx) => {
-          st.classList.toggle('active', idx < stars);
-        });
+        const stars = mistakes <= 2 ? 3 : (mistakes <= 6 ? 2 : 1);
+        starItems.forEach((st, idx) => st.classList.toggle('active', idx < stars));
       }
 
-      if (elStatTime) elStatTime.textContent = `${timeRemaining}s left (+${timeBonus} Coins)`;
-      if (elStatMistakes) elStatMistakes.textContent = `${mistakes} (${stars} Star${stars > 1 ? 's' : ''})`;
-      if (elStatReward) elStatReward.textContent = `+${totalCoins.toLocaleString()} Coins 🪙, +${diamondBonus} 💎, +1 🔑`;
+      if (elStatTime) elStatTime.textContent = `${timeRemaining}s Remaining`;
+      if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
+      if (elStatReward) {
+        elStatReward.innerHTML = `<span style="color: #34d399; font-size: 16px; font-weight: 800;">+1 Dark Green Fuel 🔋</span>`;
+      }
       if (elClaimBtn) {
         elClaimBtn.style.display = 'flex';
         elClaimBtn.disabled = false;
-        elClaimBtn.textContent = '🎁 Claim Reward';
+        elClaimBtn.innerHTML = '<span>🔋</span> Claim Dark Green Fuel';
       }
 
       if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
         sfx.playLevelUpSound();
       }
     } else {
-      lastCalculatedReward = null;
-      if (elIcon) elIcon.textContent = '⏳';
+      // Incomplete / Time expired -> Otherwise win 10 Brain Coins
+      lastCalculatedReward = {
+        isVictory: false,
+        type: 'brain_coins',
+        amount: 10,
+        timeRemaining: 0,
+        mistakes: mistakes
+      };
+
+      if (elIcon) elIcon.textContent = '🧠';
       if (elTitle) elTitle.textContent = 'TIME EXPIRED!';
-      if (elDesc) elDesc.textContent = 'The quantum reactor destabilized. Try again to claim rewards!';
+      if (elDesc) elDesc.textContent = 'Game ended before clearing all cards. Consolation reward awarded!';
+
       if (elStars) {
         elStars.querySelectorAll('.star-item').forEach(st => st.classList.remove('active'));
       }
+
       if (elStatTime) elStatTime.textContent = '0s';
-      if (elStatMistakes) elStatMistakes.textContent = mistakes;
-      if (elStatReward) elStatReward.textContent = '0 Coins (Requires All 8 Pairs)';
-      if (elClaimBtn) elClaimBtn.style.display = 'none';
+      if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
+      if (elStatReward) {
+        elStatReward.innerHTML = `<span style="color: #c084fc; font-size: 16px; font-weight: 800;">+10 Brain Coins 🧠</span>`;
+      }
+      if (elClaimBtn) {
+        elClaimBtn.style.display = 'flex';
+        elClaimBtn.disabled = false;
+        elClaimBtn.innerHTML = '<span>🧠</span> Claim 10 Brain Coins';
+      }
     }
 
     elOverlay.classList.add('open');
   }
 
-  async function claimMemoryMatchReward() {
-    if (!lastCalculatedReward || !lastCalculatedReward.isVictory) return;
+  function claimMemoryMatchReward() {
+    if (!lastCalculatedReward) return;
 
     const elClaimBtn = document.getElementById('memoryClaimBtn');
     if (elClaimBtn) {
       elClaimBtn.disabled = true;
-      elClaimBtn.textContent = '⏳ Verifying with Server...';
+      elClaimBtn.textContent = '✓ Claimed!';
     }
 
-    const payload = {
-      action: 'mini_game_memory',
-      timeRemaining: lastCalculatedReward.timeRemaining,
-      mistakes: lastCalculatedReward.mistakes,
-      stars: lastCalculatedReward.stars,
-      claimedCoins: lastCalculatedReward.coins,
-      claimedDiamonds: lastCalculatedReward.diamonds,
-      claimedKeys: lastCalculatedReward.keys
-    };
-
-    // Server authoritative claim validation
-    if (typeof window.claimServerAuthoritativeReward === 'function') {
-      try {
-        const res = await window.claimServerAuthoritativeReward('mini_game_memory', payload);
-        if (res && res.success) {
-          if (typeof showFloatingToast === 'function') {
-            showFloatingToast(`✅ Server Verified: +${lastCalculatedReward.coins} Coins & +${lastCalculatedReward.diamonds} Diamonds!`);
-          }
-        }
-      } catch (e) {
-        console.warn('Fallback local claim:', e);
-      }
-    } else {
-      // Local fallback
+    if (lastCalculatedReward.isVictory) {
+      // Award 1 Dark Green Fuel
       if (typeof gameState !== 'undefined') {
-        gameState.player.coins = (gameState.player.coins || 0) + lastCalculatedReward.coins;
-        gameState.bank.diamonds = (gameState.bank.diamonds || 0) + lastCalculatedReward.diamonds;
-        gameState.bank.keys = (gameState.bank.keys || 0) + (lastCalculatedReward.keys || 0);
+        if (!gameState.energyGenerator) gameState.energyGenerator = {};
+        if (!gameState.energyGenerator.fuelCells) {
+          gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
+        }
+        gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + 1;
         if (typeof updateUI === 'function') updateUI();
         if (typeof saveGame === 'function') saveGame(true);
+        if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+          window.firebaseSync.saveToCloudImmediate();
+        }
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎉 Victory! +1 Dark Green Fuel 🔋 added to Energy Reactor!');
+      }
+      if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
+        sfx.playLevelUpSound();
+      }
+    } else {
+      // Otherwise: Award 10 Brain Coins
+      if (typeof gameState !== 'undefined' && gameState.player) {
+        gameState.player.brainCoins = (gameState.player.brainCoins || 0) + 10;
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame(true);
+        if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+          window.firebaseSync.saveToCloudImmediate();
+        }
+      }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('🎁 Consolation Reward: +10 🧠 Brain Coins claimed!');
+      }
+      if (typeof sfx !== 'undefined' && sfx.playCoinSound) {
+        sfx.playCoinSound();
       }
     }
 
     // Increment mini-game counter on profile stats
-    if (typeof gameState !== 'undefined') {
+    if (typeof gameState !== 'undefined' && gameState.player) {
       if (!gameState.player.miniGamesPlayed) gameState.player.miniGamesPlayed = 0;
       gameState.player.miniGamesPlayed++;
     }
@@ -379,5 +383,8 @@
   window.initMemoryMatchPage = function() {
     initDOMElements();
     updateBrainCoinPill();
+    if (!isGameActive) {
+      startMemoryMatchGame();
+    }
   };
 })();

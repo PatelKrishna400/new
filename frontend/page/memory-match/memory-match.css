@@ -183,9 +183,27 @@
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
 }
 
-.memory-card-back .card-symbol {
-  font-size: 26px;
+/* Card Removed state when matched */
+.memory-card.card-removed {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: rotateY(180deg) scale(0) !important;
+  pointer-events: none !important;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s !important;
+}
+
+.memory-card-back .card-symbol,
+.memory-card-back .card-symbol-emoji {
+  font-size: 28px;
+  line-height: 1;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  animation: emojiBounce 0.3s ease-out;
+}
+
+@keyframes emojiBounce {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 
 .memory-card-back .card-title {
