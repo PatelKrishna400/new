@@ -1,0 +1,379 @@
+<div class="page-view" id="pageSpin">
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+    <div class="spin-header-title-pill">
+      <span class="spin-sparkle-icon">✨</span>
+      <span>CYBER LUCKY WHEEL</span>
+    </div>
+
+    <!-- Live Ticket Balance Pill -->
+    <div class="spin-ticket-header-pill" id="spinTicketHeaderPill" onclick="handleSpinButtonClick()">
+      <span class="ticket-pill-icon">🎫</span>
+      <span class="ticket-pill-val" id="spinTicketHeaderCount">0</span>
+      <span class="ticket-add-btn">+</span>
+    </div>
+  </div>
+
+  <!-- Hidden ticket count fallback for scripts -->
+  <span id="spinTicketCountVal" style="display:none;">0</span>
+
+  <!-- ================= SUBTAB 1: LUCKY WHEEL ================= -->
+  <div class="spin-subtab-content active" id="spinSubtabContentWheel">
+    <!-- Quick Info Strip -->
+    <div class="mini-game-info-strip">
+      <div class="info-strip-chip">
+        <span class="chip-dot gold"></span>
+        <span class="chip-label">COST:</span>
+        <span class="chip-val">1 Ticket</span>
+      </div>
+      <div class="info-strip-chip">
+        <span class="chip-dot cyan"></span>
+        <span class="chip-label">SLICES:</span>
+        <span class="chip-val">8 Prizes</span>
+      </div>
+      <div class="info-strip-chip">
+        <span class="chip-dot amber"></span>
+        <span class="chip-label">JACKPOT:</span>
+        <span class="chip-val">10 Coins (10%)</span>
+      </div>
+    </div>
+
+    <!-- Spin Wheel Game Card (Full Page View) -->
+    <section class="spin-arena-card">
+    <!-- Ambient Neon Halo Glow -->
+    <div class="spin-ambient-halo"></div>
+
+    <!-- Stage Intro Header -->
+    <div class="spin-stage-intro">
+      <h3 class="spin-stage-title">⚡ Cyber Fortune Wheel</h3>
+      <p class="spin-stage-subtitle">Spin the lucky wheel to collect 👑 Crowns, win Coins, Keys &amp; Jackpot!</p>
+    </div>
+
+    <!-- Spin Wheel Stage Container (Anchors flapper pointer directly above wheel) -->
+    <div class="spin-wheel-stage-wrap">
+      <!-- Top Pointer Arrow / Mechanical Flapper -->
+      <div class="spin-pointer-arrow" id="spinPointerArrow">
+        <svg viewBox="0 0 40 48" width="40" height="48" fill="none">
+          <defs>
+            <linearGradient id="pointerBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fffbeb"/>
+              <stop offset="25%" stop-color="#fef08a"/>
+              <stop offset="65%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#b45309"/>
+            </linearGradient>
+            <filter id="pointerGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.8"/>
+            </filter>
+          </defs>
+          <!-- Needle Body -->
+          <path d="M20 46 L6 14 Q3 6 10 3 Q20 0 30 3 Q37 6 34 14 Z" fill="url(#pointerBodyGrad)" stroke="#ffffff" stroke-width="1.8" filter="url(#pointerGlow)"/>
+          <!-- Inner Bezel -->
+          <circle cx="20" cy="14" r="7" fill="#0f172a" stroke="#fef08a" stroke-width="1.5"/>
+          <!-- Ruby Gem Center -->
+          <circle cx="20" cy="14" r="4.2" fill="#ef4444"/>
+          <circle cx="18.5" cy="12.5" r="1.5" fill="#ffffff" opacity="0.8"/>
+        </svg>
+      </div>
+
+      <!-- Spin Wheel Frame with LED Chaser Bulbs -->
+      <div class="spin-wheel-frame" id="spinWheelFrame">
+        <!-- Outer LED Chaser Ring (24 bulbs) -->
+        <div class="spin-chaser-ring" id="spinChaserRing"></div>
+
+      <!-- Rotating Wheel Disc (Clean White Wedges for High Contrast) -->
+      <div class="spin-wheel-disc" id="spinWheelCircle">
+        <svg class="spin-wheel-svg" viewBox="0 0 300 300" width="100%" height="100%">
+          <defs>
+            <!-- Clean White Slices (below the logos/emojis) -->
+            <linearGradient id="sliceWhiteGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#f8fafc"/>
+              <stop offset="100%" stop-color="#f1f5f9"/>
+            </linearGradient>
+
+            <linearGradient id="sliceWhiteGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#f1f5f9"/>
+              <stop offset="100%" stop-color="#e2e8f0"/>
+            </linearGradient>
+
+            <!-- Crown Highlight Slice White Gradient (Slice 0) -->
+            <linearGradient id="sliceCrownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#fffbeb"/>
+              <stop offset="100%" stop-color="#fef3c7"/>
+            </linearGradient>
+
+            <filter id="crownGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+
+            <!-- Jackpot Golden Sheen Gradient (Slice 6) -->
+            <linearGradient id="sliceJackpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="40%" stop-color="#fffbeb"/>
+              <stop offset="100%" stop-color="#fef08a"/>
+            </linearGradient>
+
+            <filter id="jackpotGoldGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+
+          <!-- Outer Housing Circle -->
+          <circle cx="150" cy="150" r="148" fill="#030816" stroke="#fbbf24" stroke-width="3"/>
+          <circle cx="150" cy="150" r="144" fill="none" stroke="rgba(251, 191, 36, 0.5)" stroke-width="1.5"/>
+
+          <!-- 8 Exact Wedges (45 deg each) centered with 12 o'clock at 0 deg - Clean White Colors -->
+          <!-- Slice 0: 👑 Crown (0 deg / 12 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(0, 150, 150)" fill="url(#sliceCrownGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#crownGoldGlow)"/>
+
+          <!-- Slice 1: 50 Coins (45 deg / 1:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(45, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Slice 2: 1 Key (90 deg / 3 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(90, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Slice 3: 1 Card (135 deg / 4:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(135, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Slice 4: Try Again (180 deg / 6 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(180, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Slice 5: 1 Ticket (225 deg / 7:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(225, 150, 150)" fill="url(#sliceWhiteGrad1)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Slice 6: 1 Gold Coin Jackpot (270 deg / 9 o'clock) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(270, 150, 150)" fill="url(#sliceJackpotGrad)" stroke="#fde047" stroke-width="2.2" filter="url(#jackpotGoldGlow)"/>
+
+          <!-- Slice 7: 5 Diamonds (315 deg / 10:30) -->
+          <path d="M 150 150 L 95.7 18.8 A 142 142 0 0 1 204.3 18.8 Z" transform="rotate(315, 150, 150)" fill="url(#sliceWhiteGrad2)" stroke="#cbd5e1" stroke-width="1.2"/>
+
+          <!-- Divider Rays between Slices with Golden Metallic Sheen -->
+          <g stroke="#f59e0b" stroke-width="2" opacity="0.85">
+            <line x1="150" y1="150" x2="95.7" y2="18.8"/>
+            <line x1="150" y1="150" x2="204.3" y2="18.8"/>
+            <line x1="150" y1="150" x2="281.2" y2="95.7"/>
+            <line x1="150" y1="150" x2="281.2" y2="204.3"/>
+            <line x1="150" y1="150" x2="204.3" y2="281.2"/>
+            <line x1="150" y1="150" x2="95.7" y2="281.2"/>
+            <line x1="150" y1="150" x2="18.8" y2="204.3"/>
+            <line x1="150" y1="150" x2="18.8" y2="95.7"/>
+          </g>
+
+          <!-- Inner Golden Ring Divider -->
+          <circle cx="150" cy="150" r="48" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0.9"/>
+
+          <!-- Slice Icons (Vibrant Crisp Emojis over White Wedges) -->
+          <!-- Slice 0: 👑 Crown (0 deg) -->
+          <g transform="translate(150, 150) rotate(0) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">👑</text>
+          </g>
+
+          <!-- Slice 1: 50 Coins (45 deg) -->
+          <g transform="translate(150, 150) rotate(45) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
+          </g>
+
+          <!-- Slice 2: 1 Key (90 deg) -->
+          <g transform="translate(150, 150) rotate(90) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(147,51,234,0.5))">🔑</text>
+          </g>
+
+          <!-- Slice 3: 1 Card (135 deg) -->
+          <g transform="translate(150, 150) rotate(135) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(219,39,119,0.5))">🎴</text>
+          </g>
+
+          <!-- Slice 4: Try Again (180 deg) -->
+          <g transform="translate(150, 150) rotate(180) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="24" filter="drop-shadow(0 2px 6px rgba(100,116,139,0.6))">❌</text>
+          </g>
+
+          <!-- Slice 5: 1 Ticket (225 deg) -->
+          <g transform="translate(150, 150) rotate(225) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(8,145,178,0.5))">🎟️</text>
+          </g>
+
+          <!-- Slice 6: 1 Gold Coin (270 deg) -->
+          <g transform="translate(150, 150) rotate(270) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="28" filter="drop-shadow(0 2px 8px rgba(245,158,11,0.9))">🪙</text>
+          </g>
+
+          <!-- Slice 7: 5 Diamonds (315 deg) -->
+          <g transform="translate(150, 150) rotate(315) translate(0, -92)">
+            <text text-anchor="middle" dominant-baseline="central" font-size="26" filter="drop-shadow(0 2px 6px rgba(2,132,199,0.5))">💙</text>
+          </g>
+
+          <!-- Perimeter Golden Rivet Studs (8 pegs exactly placed on slice divider rays) -->
+          <g id="wheelOuterPegs" fill="#fef08a" stroke="#b45309" stroke-width="0.9">
+            <circle cx="204.0" cy="19.7" r="3.2"/>
+            <circle cx="280.3" cy="96.0" r="3.2"/>
+            <circle cx="280.3" cy="204.0" r="3.2"/>
+            <circle cx="204.0" cy="280.3" r="3.2"/>
+            <circle cx="96.0" cy="280.3" r="3.2"/>
+            <circle cx="19.7" cy="204.0" r="3.2"/>
+            <circle cx="19.7" cy="96.0" r="3.2"/>
+            <circle cx="96.0" cy="19.7" r="3.2"/>
+          </g>
+        </svg>
+      </div>
+
+
+      <!-- 3D Luxury Metallic Center Hub Button -->
+      <div class="spin-wheel-center-hub" id="spinCenterHub" onclick="handleSpinButtonClick()">
+        <div class="hub-outer-gear"></div>
+        <div class="hub-pulsing-glow"></div>
+        <div class="hub-content">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span id="spinCenterHubLabel">SPIN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- King Event Level Card (1 - 1000 Levels Wave Progression) -->
+    <div class="spin-level-display" id="spinLevelBox">
+      <div class="spin-level-header">
+        <div class="spin-level-title-group">
+          <span class="spin-level-crown-badge">👑</span>
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span class="spin-level-name" id="spinLevelTitle">👑 KING EVENT • LEVEL 1 / 1000</span>
+              <span class="spin-wave-badge crest" id="spinWaveTag">⚡ WAVE CREST</span>
+            </div>
+            <div class="spin-level-sub" id="spinLevelSub">Collect 5 👑 King Crowns to unlock Level 1 Gift!</div>
+          </div>
+        </div>
+        <div class="spin-level-gift-badge" id="spinLevelGiftBadge" onclick="showMysteryGiftPreview()">
+          <span class="gift-badge-icon">🎁</span>
+          <span class="gift-badge-text">LEVEL GIFT</span>
+        </div>
+      </div>
+
+      <div class="spin-level-progress-container">
+        <div class="spin-crown-track">
+          <div class="spin-crown-fill" id="spinCrownBarFill" style="width: 0%;"></div>
+        </div>
+        <div class="spin-crown-meta">
+          <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5 King Crowns Collected</span>
+          <span class="spin-crown-status" id="spinCrownStatusText">🎯 Crown Chance: 45% (Inverse Odds)</span>
+        </div>
+      </div>
+
+      <!-- Level Reward Preview Strip -->
+      <div class="spin-level-reward-strip" id="spinLevelRewardStrip">
+        <span style="color: #94a3b8; font-size: 10px;">🎁 Level Reward:</span>
+        <span class="spin-reward-preview-val" id="spinLevelRewardPreviewText">+10 🪙 • +100 💙 • +2 🗝️ • +3 🎫</span>
+      </div>
+    </div>
+
+    <!-- Single Unified Spin Action Button -->
+    <div class="spin-actions-wrapper">
+      <button class="spin-action-main-btn spin-mode" id="btnSpinWheel" onclick="handleSpinButtonClick()">
+        <div class="spin-btn-shine"></div>
+        <span class="spin-btn-icon" id="spinBtnIcon">🎡</span>
+        <span class="spin-btn-text" id="spinBtnText">SPIN THE WHEEL</span>
+      </button>
+      <div class="spin-odds-hint">
+        <span>★ Collect 👑 Crowns on Wheel • Unlock Mystery Gift 🎁 ★</span>
+      </div>
+    </div>
+    </section>
+  </div>
+
+  <!-- Interactive Winning Prize Popup Modal (with 2X Profit & Claim Regular Buttons) -->
+  <div class="spin-reward-backdrop" id="spinRewardBackdrop" onclick="closeSpinRewardModal(event)">
+    <div class="spin-reward-modal" id="spinRewardModal" onclick="event.stopPropagation()">
+      <div class="spin-modal-glow" id="spinModalGlow"></div>
+      
+      <!-- Top Decorative Banner Tag -->
+      <div class="spin-modal-badge winner" id="spinModalBadge">🎉 CONGRATULATIONS!</div>
+
+      <!-- Icon Stage -->
+      <div class="spin-modal-icon-wrap" id="spinModalIconWrap">
+        <span class="spin-modal-icon" id="spinModalIcon">🪙</span>
+      </div>
+
+      <!-- Prize Written Details -->
+      <h3 class="spin-modal-title" id="spinModalTitle">YOU WON 1 GOLD COIN!</h3>
+      <p class="spin-modal-subtitle" id="spinModalSubtitle">Slice prize unlocked from the Cyber Lucky Wheel!</p>
+
+      <!-- 2X Profit Highlight Banner -->
+      <div class="spin-modal-2x-preview" id="spinModal2xPreview">
+        <span class="preview-sparkle">⚡</span>
+        <span class="preview-text" id="spinModal2xText">Watch 1 ad to double this to <strong>+2 Gold Coins (2X Profit)</strong>!</span>
+      </div>
+
+      <!-- Modal Action Buttons Row -->
+      <div class="spin-modal-actions" id="spinModalActions">
+        <!-- Button 1: 2X Profit -->
+        <button class="spin-modal-btn spin-btn-2x" id="btnSpinDoubleReward" onclick="claimDoubleSpinReward()">
+          <span class="btn-2x-badge">2X PROFIT</span>
+          <span class="btn-2x-icon">🎬</span>
+          <span class="btn-2x-text" id="spinDoubleBtnText">DOUBLE TO +2 (2X)</span>
+        </button>
+
+        <!-- Button 2: Claim Regular -->
+        <button class="spin-modal-btn spin-btn-claim" id="btnSpinClaimRegular" onclick="claimRegularSpinReward()">
+          <span class="btn-claim-icon">✓</span>
+          <span class="btn-claim-text" id="spinClaimBtnText">Claim Regular (+1)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grand Mystery Gift Winning Modal (Triggered when 👑 Crown Level Goal is Reached) -->
+  <div class="spin-gift-backdrop" id="spinGiftModalBackdrop" onclick="closeMysteryGiftModal(event)">
+    <div class="spin-gift-modal" id="spinGiftModal" onclick="event.stopPropagation()">
+      <div class="spin-gift-glow"></div>
+      
+      <div class="spin-gift-badge">👑 LEVEL COMPLETE!</div>
+      
+      <div class="spin-gift-chest-wrap">
+        <div class="spin-gift-sparkles">✨</div>
+        <div class="spin-gift-chest-icon">🎁</div>
+      </div>
+
+      <h3 class="spin-gift-title" id="spinGiftTitle">MYSTERY GIFT UNLOCKED!</h3>
+      <p class="spin-gift-sub" id="spinGiftSub">You collected all 👑 crowns and unlocked the Grand Level Gift!</p>
+
+      <div class="spin-gift-rewards-grid" id="spinGiftRewardsGrid">
+        <div class="gift-reward-card gold">
+          <span class="reward-icon">🪙</span>
+          <span class="reward-val" id="spinGiftCoinsVal">+10</span>
+          <span class="reward-label">Coins</span>
+        </div>
+        <div class="gift-reward-card diamond">
+          <span class="reward-icon">💎</span>
+          <span class="reward-val" id="spinGiftDiamondsVal">+5</span>
+          <span class="reward-label">Diamonds</span>
+        </div>
+        <div class="gift-reward-card purple">
+          <span class="reward-icon">🗝️</span>
+          <span class="reward-val" id="spinGiftKeysVal">+2</span>
+          <span class="reward-label">Keys</span>
+        </div>
+        <div class="gift-reward-card cyan">
+          <span class="reward-icon">🎟️</span>
+          <span class="reward-val" id="spinGiftTicketsVal">+3</span>
+          <span class="reward-label">Tickets</span>
+        </div>
+      </div>
+
+      <button class="spin-gift-claim-btn" id="btnClaimMysteryGift" onclick="claimMysteryGiftReward()">
+        <span>🎉 CLAIM ALL GIFTS</span>
+      </button>
+    </div>
+  </div>
+</div>

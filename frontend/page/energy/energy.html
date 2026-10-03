@@ -1,0 +1,440 @@
+<div class="page-view" id="pageEnergy">
+  <!-- VIEW 1: Fuel Generator & Existing Cells -->
+  <div id="energyFuelGeneratorView">
+        <section class="energy-gauge-section">
+          <div class="gauge-wrapper" id="energyGaugeWrapper">
+            <svg class="gauge-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="gaugeCyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#06b6d4" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="82" class="gauge-track-circle" />
+              <circle cx="100" cy="100" r="82" class="gauge-progress-circle" id="gaugeProgressCircle" />
+            </svg>
+
+            <div class="gauge-inner-core" id="gaugeCore">
+              <div class="gauge-core-ring"></div>
+              <svg class="gauge-lightning" viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(34, 211, 238, 0.15)"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="ep-counter-pill" id="epCounterPill">
+            <span class="ep-badge-icon">0.00</span>
+            <span class="ep-label">EP</span>
+          </div>
+
+        </section>
+
+        <section class="energy-metrics-row">
+          <div class="metric-card timer-metric-card">
+            <div class="metric-icon-box timer-icon-box">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="13" r="8"/>
+                <path d="M12 9v4l2 2"/>
+                <path d="M5 3L2 6"/>
+                <path d="M22 6l-3-3"/>
+                <path d="M12 2v3"/>
+              </svg>
+            </div>
+            <div class="metric-text-box">
+              <span class="metric-value timer-val" id="fuelTimerVal">00h 00m</span>
+            </div>
+          </div>
+
+          <div class="metric-card rate-metric-card">
+            <div class="metric-icon-box rate-icon-box">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f43f5e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div class="metric-text-box">
+              <span class="metric-value rate-val" id="fuelRateVal">0.001 <span class="rate-unit">/ sec</span></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="fuel-section-header">
+          <div class="fuel-header-left">
+            <span class="fuel-sparkle">⚡</span>
+            <h2 class="fuel-title">Quantum Fuel Cells</h2>
+          </div>
+          <span class="fuel-header-right">⚡ High-Yield Energy Boosters</span>
+        </section>
+
+        <section class="fuel-grid fuel-vertical-stack">
+          <!-- 1. Dark Green Fuel Cell (First) -->
+          <div class="fuel-card darkgreen-fuel-card" id="fuelCardDarkGreen">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box darkgreen-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #34d399;">Dark Green Fuel</h3>
+                    <span class="fuel-cell-badge darkgreen-badge-pill" id="darkgreenCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #10b981;">+1 Min Generator Timer</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn darkgreen-btn" id="btnUseDarkGreenFuel" onclick="executeFuelButtonAction('darkgreen')">
+                  <span id="btnDarkGreenText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Green Fuel Cell (Second) -->
+          <div class="fuel-card green-fuel-card" id="fuelCardGreen">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box green-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name">Green Fuel</h3>
+                    <span class="fuel-cell-badge green-badge-pill" id="greenCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus">+5 Min Generator Timer</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn green-btn" id="btnUseGreenFuel" onclick="executeFuelButtonAction('green')">
+                  <span id="btnGreenText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Yellow Fuel Cell -->
+          <div class="fuel-card yellow-fuel-card" id="fuelCardYellow">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box yellow-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name">Yellow Fuel</h3>
+                    <span class="fuel-cell-badge yellow-badge-pill" id="yellowCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus">+15 Min Generator Timer</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn yellow-btn" id="btnYellowAd" onclick="executeFuelButtonAction('yellow')">
+                  <span id="btnYellowText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Orange Fuel Cell -->
+          <div class="fuel-card orange-fuel-card" id="fuelCardOrange">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box orange-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name">Orange Fuel</h3>
+                    <span class="fuel-cell-badge orange-badge-pill" id="orangeCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus">+30 Min Generator Timer</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn orange-btn" id="btnOrangeAd" onclick="executeFuelButtonAction('orange')">
+                  <span id="btnOrangeText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Red Fuel Cell -->
+          <div class="fuel-card red-fuel-card" id="fuelCardRed">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box red-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name">Red Fuel</h3>
+                    <span class="fuel-cell-badge red-badge-pill" id="redCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus">+0.001 EP / Sec Rate Boost</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn red-btn" id="btnRedAd" onclick="executeFuelButtonAction('red')">
+                  <span id="btnRedText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Dark Red Fuel Cell -->
+          <div class="fuel-card darkred-fuel-card" id="fuelCardDarkRed">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box darkred-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v17"/>
+                    <path d="M13 10h4a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/>
+                    <rect x="6" y="7" width="4" height="4" rx="1"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #ef4444;">Dark Red Fuel</h3>
+                    <span class="fuel-cell-badge darkred-badge-pill" id="darkredCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #f87171;">30s Generator @ 0.01 EP / Sec</p>
+                  <div class="boost-status-container" id="darkredStatusInfo" style="display: none;"></div>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn darkred-btn" id="btnUseDarkRedFuel" onclick="executeFuelButtonAction('darkred')">
+                  <span id="btnDarkRedText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Pink Boost Fuel Cell -->
+          <div class="fuel-card pink-fuel-card" id="fuelCardPink">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box pink-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f472b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #f472b6;">Pink Boost Fuel</h3>
+                    <span class="fuel-cell-badge pink-badge-pill" id="pinkCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #f472b6;">⚡ *2 Timer Speed (Consumes 2s/sec for 10 Min)</p>
+                  <div class="boost-status-container" id="pinkStatusInfo">
+                    <span class="boost-ready-badge" id="pinkStatusBadge">Ready</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn pink-btn" id="btnPinkAction" onclick="executeFuelButtonAction('pink')">
+                  <span id="btnPinkText">⚡ Use 2x Boost</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Purple Boost Fuel Cell -->
+          <div class="fuel-card purple-fuel-card" id="fuelCardPurple">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box purple-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 3v9l6.36 6.36"/>
+                    <circle cx="12" cy="12" r="2.5" fill="#c084fc"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #c084fc;">Purple Boost Fuel</h3>
+                    <span class="fuel-cell-badge purple-badge-pill" id="purpleCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #c084fc;">🔥 *5 Timer Speed (Consumes 5s/sec for 10 Min)</p>
+                  <div class="boost-status-container" id="purpleStatusInfo">
+                    <span class="boost-ready-badge" id="purpleStatusBadge">Ready</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn purple-btn" id="btnPurpleAction" onclick="executeFuelButtonAction('purple')">
+                  <span id="btnPurpleText">🔥 Use 5x Boost</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- 9. Blue Fuel Cell (30s Skip) -->
+          <div class="fuel-card blue-fuel-card" id="fuelCardBlue">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box blue-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(2, 132, 199, 0.2)"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #0284c7;">Blue Fuel</h3>
+                    <span class="fuel-cell-badge blue-badge-pill" id="blueCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #38bdf8;">⚡ 30s Generator Timer Skip</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn blue-btn" id="btnUseBlueFuel" onclick="executeFuelButtonAction('blue')">
+                  <span id="btnBlueText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10. Light Blue Fuel Cell (1 Min Skip) -->
+          <div class="fuel-card lightblue-fuel-card" id="fuelCardLightBlue">
+            <div class="fuel-card-top-row">
+              <div class="fuel-card-left">
+                <div class="fuel-icon-box lightblue-icon-box">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" fill="rgba(6, 182, 212, 0.2)"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div class="fuel-card-details">
+                  <div class="fuel-title-row">
+                    <h3 class="fuel-name" style="color: #06b6d4;">Light Blue Fuel</h3>
+                    <span class="fuel-cell-badge lightblue-badge-pill" id="lightblueCellCount">0 Cells</span>
+                  </div>
+                  <p class="fuel-timer-bonus" style="color: #22d3ee;">❄️ 1 Min Generator Timer Skip</p>
+                </div>
+              </div>
+              <div class="fuel-card-right">
+                <button class="fuel-action-btn lightblue-btn" id="btnUseLightBlueFuel" onclick="executeFuelButtonAction('lightblue')">
+                  <span id="btnLightBlueText">⚡ Use Fuel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+        <!-- Entry Tab to Sunflower Farming below all 10 fuel cards -->
+        <!-- ================================================================ -->
+        <!-- TYCOON STATIONS & MINING HUB (3 Autonomous Energy Farms)        -->
+        <!-- ================================================================ -->
+        <section class="energy-tycoon-hub-section">
+          <div class="tycoon-hub-header">
+            <div class="tycoon-hub-title-wrap">
+              <span class="tycoon-hub-sparkle">⚡</span>
+              <h2 class="tycoon-hub-title">More Games for Earn Energy</h2>
+            </div>
+            <span class="tycoon-hub-subtitle">20-Plot Mini Games &bull; 100&rarr;29⚡</span>
+          </div>
+
+          <!-- Card 1: Sunflower Solar Farm -->
+          <div class="sunflower-entry-tab-card" id="sunflowerEntryCard" onclick="switchEnergySubview('sunflower')">
+            <div class="sf-tab-bg-art"></div>
+            <div class="sf-entry-glow"></div>
+            <div class="sf-entry-left">
+              <div class="sf-entry-icon-wrap">
+                <span class="sf-entry-emoji">🌻</span>
+              </div>
+              <div class="sf-entry-text">
+                <div class="sf-entry-title-row">
+                  <h3 class="sf-entry-title">Sunflower Solar Farm</h3>
+                  <span class="sf-entry-badge">20 Lands</span>
+                </div>
+                <div class="energy-hub-reward-tag" style="color: #fbbf24; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.35);">⚡ Reward: +29 Energy / 100 🪙</div>
+                <div class="sf-entry-mini-stats">
+                  <span class="sf-mini-stat">🪙 <span id="sfEntryCoins">0</span> Coins</span>
+                  <span class="sf-mini-stat">🪣 <span id="sfEntryBaskets">0</span> Buckets</span>
+                  <span class="sf-mini-stat">⛏️ <span id="sfEntryShovels">0</span> Shovels</span>
+                </div>
+              </div>
+            </div>
+            <div class="sf-entry-right">
+              <button class="sf-entry-btn" title="Play Sunflower Solar Tycoon">
+                <span>Play ▶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Honey Bee Farm Tycoon -->
+          <div class="beefarm-entry-tab-card" id="beeFarmEntryCard" onclick="switchEnergySubview('beefarm')">
+            <div class="bf-tab-honeycomb-bg"></div>
+            <div class="bf-entry-glow"></div>
+            <div class="bf-entry-left">
+              <div class="bf-entry-icon-wrap animate-buzz-float">
+                <span class="bf-entry-emoji">🐝</span>
+              </div>
+              <div class="bf-entry-text">
+                <div class="bf-entry-title-row">
+                  <h3 class="bf-entry-title">Honey Bee Farm Tycoon</h3>
+                  <span class="bf-entry-badge">20 Hive Apiary</span>
+                </div>
+                <div class="energy-hub-reward-tag" style="color: #facc15; background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.35);">⚡ Reward: +29 Energy / 100 🍯</div>
+                <div class="bf-entry-mini-stats">
+                  <span class="bf-mini-stat">🍯 <span id="bfEntryHoney">0</span> Drops</span>
+                  <span class="bf-mini-stat">🏺 <span id="bfEntryPollen">2</span> Pollen</span>
+                  <span class="bf-mini-stat">💨 <span id="bfEntrySmoker">1</span> Smokers</span>
+                </div>
+              </div>
+            </div>
+            <div class="bf-entry-right">
+              <button class="bf-entry-btn" title="Play Honey Bee Farm Tycoon">
+                <span>Play ▶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Crystal Mining & Gem Forge Tycoon -->
+          <div class="mining-entry-tab-card" id="miningEntryCard" onclick="switchEnergySubview('mining')">
+            <div class="mining-tab-cyber-bg"></div>
+            <div class="mining-entry-glow"></div>
+            <div class="mining-entry-left">
+              <div class="mining-entry-icon-wrap animate-pulse">
+                <span class="mining-entry-emoji">🔮</span>
+              </div>
+              <div class="mining-entry-text">
+                <div class="mining-entry-title-row">
+                  <h3 class="mining-entry-title">Crystal Mining &amp; Gem Forge</h3>
+                  <span class="mining-entry-badge">20 Terraces Deep</span>
+                </div>
+                <div class="energy-hub-reward-tag" style="color: #c084fc; background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">⚡ Reward: +29 Energy / 100 🔮</div>
+                <div class="mining-entry-mini-stats">
+                  <span class="mining-mini-stat">🔮 <span id="mineEntryCrystals">0</span> Crystals</span>
+                  <span class="mining-mini-stat">🧪 <span id="mineEntryCoolant">2</span> Cryo</span>
+                  <span class="mining-mini-stat">⛏️ <span id="mineEntryPickaxe">1</span> Pickaxes</span>
+                </div>
+              </div>
+            </div>
+            <div class="mining-entry-right">
+              <button class="mining-entry-btn" title="Open Crystal Mining">
+                <span>Mine ▶</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div><!-- /#energyFuelGeneratorView -->
+</div><!-- /#pageEnergy -->

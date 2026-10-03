@@ -1,0 +1,524 @@
+<div class="page-view" id="pageMining">
+  <div class="mining-tycoon-container flex flex-col text-slate-100 pb-6">
+    <!-- Unified Compact Cyberpunk Dashboard -->
+    <div class="mine-compact-dashboard mb-3">
+      <div class="mine-dash-cyber-bg"></div>
+      <div class="mine-dash-abyss-overlay"></div>
+
+      <!-- Top Row: Back Button, Title, Sound & Guide -->
+      <div class="mine-dash-top-row">
+        <button onclick="switchPage('energy')" class="mine-dash-back-btn font-sci" title="Return to Fuel Reactor" aria-label="Back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+        <div class="mine-dash-title-wrap">
+          <span class="mine-dash-gem-icon animate-pulse">🔮</span>
+          <span class="mine-dash-title-text font-sci">Crystal Forge Tycoon</span>
+          <span id="mineActivePageBadge" class="mine-dash-page-badge font-sci">Page 1: Cavern</span>
+        </div>
+
+        <div class="mine-dash-controls">
+          <button id="mineSoundBtn" class="mine-dash-ctrl-btn" title="Toggle Sound">🔊</button>
+          <button id="mineGuideBtn" class="mine-dash-ctrl-btn" title="Mining Codex">📘</button>
+        </div>
+      </div>
+
+      <!-- Depth Status -->
+      <div class="mine-depth-row font-sci text-[10px] text-cyan-300 flex items-center justify-between px-1">
+        <span>SECTOR: ALPHA-7 &bull; DEPTH: <strong id="mineDepthIndicator" class="text-cyan-400 font-mono">150m</strong></span>
+        <span class="text-slate-400">20 CAVERN TERRACES</span>
+      </div>
+
+      <!-- Middle Row: Sleek 5-Resource Counter Pills -->
+      <div class="mine-dash-resources-row font-sci">
+        <!-- Shards -->
+        <div class="mine-res-pill pill-shard" title="Crystal Shards (+2 🔮/s from active spires)">
+          <span class="mine-res-icon">🔮</span>
+          <div class="mine-res-content">
+            <span class="mine-res-lbl">Shards</span>
+            <span id="mineShardCount" class="mine-res-val">150</span>
+          </div>
+        </div>
+
+        <!-- Plasma Energy -->
+        <div class="mine-res-pill pill-plasma" title="Plasma Energy (100 Shards = 29 Energy)">
+          <span class="mine-res-icon">⚡</span>
+          <div class="mine-res-content">
+            <span class="mine-res-lbl">Plasma</span>
+            <span id="mineEnergyCount" class="mine-res-val">0</span>
+          </div>
+        </div>
+
+        <!-- Diamonds -->
+        <div class="mine-res-pill pill-diamond" title="Diamonds for Terraces &amp; Geodes">
+          <span class="mine-res-icon">💎</span>
+          <div class="mine-res-content">
+            <span class="mine-res-lbl">Diamonds</span>
+            <span id="mineDiamondCount" class="mine-res-val">25</span>
+          </div>
+        </div>
+
+        <!-- Coolant Canisters -->
+        <div class="mine-res-pill pill-coolant" title="Cryo-Canisters (+35s thermal life)">
+          <span class="mine-res-icon">🧪</span>
+          <div class="mine-res-content">
+            <span class="mine-res-lbl">Coolant</span>
+            <span id="mineCoolantCount" class="mine-res-val">2</span>
+          </div>
+        </div>
+
+        <!-- Sonic Pickaxes -->
+        <div class="mine-res-pill pill-pickaxe" title="Sonic Pickaxes (Clears Overheated Slag)">
+          <span class="mine-res-icon">🔨</span>
+          <div class="mine-res-content">
+            <span class="mine-res-lbl">Pickaxes</span>
+            <span id="minePickaxeCount" class="mine-res-val">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: 3-Tab Segmented Switcher (Page 3 Left | Page 1 Middle | Page 2 Right) -->
+      <nav class="mine-dash-nav-tabs font-sci">
+        <button onclick="navigateMiningTab(3)" id="mineTab3" class="mine-nav-tab-item">
+          <span class="mine-tab-ico">⚡🏪</span>
+          <span class="mine-tab-txt">Forge &amp; Shop</span>
+        </button>
+        <button onclick="navigateMiningTab(1)" id="mineTab1" class="mine-nav-tab-item active-tab">
+          <span class="mine-tab-ico">🔮</span>
+          <span class="mine-tab-txt">Terraces (<span id="mineTerraceCount">1</span>/20)</span>
+        </button>
+        <button onclick="navigateMiningTab(2)" id="mineTab2" class="mine-nav-tab-item">
+          <span class="mine-tab-ico">🌊🧱</span>
+          <span class="mine-tab-txt">Geyser Wall</span>
+          <span id="mineWallBadge" class="mine-tab-badge">0</span>
+        </button>
+      </nav>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- MINING PAGE 1: 🔮 CAVERN TERRACES (20 LAND PLOTS)              -->
+    <!-- ============================================================== -->
+    <section id="minePage1" class="mine-game-page active-page flex flex-col gap-3">
+      <div class="bg-gradient-to-r from-coremetal via-cavern to-coremetal border border-cyan-500/40 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl animate-pulse">💎</span>
+          <div>
+            <h2 class="font-sci text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-1.5">
+              <span>Subterranean Crystal Terraces (20 Plots &bull; 1&times;20 Format)</span>
+              <span class="text-[9px] bg-cyan-900/60 text-cyan-300 font-mono border border-cyan-500/40 px-1.5 py-0.5 rounded-full">
+                Plot 1 Free
+              </span>
+            </h2>
+            <p class="text-[10px] text-slate-300 font-medium">
+              Active Gem Spires resonate <strong class="text-cyan-400 font-mono">+2 🔮 Shards/s</strong>! Tap spires for extra shards, stabilize with Cryo (🧪), or shatter slag (🔨).
+            </p>
+          </div>
+        </div>
+
+        <!-- Field Command Buttons -->
+        <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+          <button id="mineCoolAllBtn" class="sci-btn flex-1 sm:flex-none bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-sci text-[10px] px-2.5 py-1.5 rounded-xl border border-sky-400/50 flex items-center justify-center gap-1">
+            <span>🧪 Cool All</span>
+          </button>
+          <button id="mineMineAllSlagBtn" class="sci-btn flex-1 sm:flex-none bg-rose-700 hover:bg-rose-600 active:scale-95 text-white font-sci text-[10px] px-2.5 py-1.5 rounded-xl border border-rose-400/50 flex items-center justify-center gap-1">
+            <span>🔨 Shatter All</span>
+          </button>
+          <button onclick="navigateMiningTab(3)" class="sci-btn flex-1 sm:flex-none bg-gradient-to-r from-fuchsia-600 to-cyan-600 active:scale-95 text-white font-sci text-[10px] px-3 py-1.5 rounded-xl border border-cyan-400/50 flex items-center justify-center gap-1">
+            <span>✨ Buy Geodes</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Expansion Ribbon -->
+      <div class="bg-cavern/90 rounded-xl p-2 border border-slate-700/80 flex items-center justify-between gap-2 text-[10px]">
+        <div class="flex items-center gap-1.5">
+          <span class="text-cyan-400 font-sci font-bold">DRILL:</span>
+          <span id="mineDrillProgressText" class="text-slate-300 font-mono">1 / 20 Terraces Excavated</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-slate-400 text-[9.5px]">Next:</span>
+          <span id="mineNextTerraceBadge" class="bg-cyan-950 text-cyan-300 border border-cyan-400 font-sci text-[9.5px] px-2 py-0.5 rounded-full shadow-glow-cyan">Plot #2: 10 💎</span>
+        </div>
+      </div>
+
+      <!-- 20 Terraces List in Fixed 1*20 Format -->
+      <div id="mineTerracesContainer" class="mine-plots-1x20-grid mine-plots-2x10-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- MINING PAGE 2: 🌊 CRYO-GEYSER WALL & EXTRACTION DEPOT          -->
+    <!-- ============================================================== -->
+    <section id="minePage2" class="mine-game-page bg-gradient-to-r from-slate-900 via-coremetal to-slate-900 rounded-2xl p-3 sm:p-5 border border-sky-500/40 shadow-xl flex flex-col gap-4">
+      <div class="bg-slate-950/80 backdrop-blur rounded-xl p-3 border border-sky-500/30 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl sm:text-3xl">🌊🧱</span>
+          <div>
+            <h2 class="font-sci text-xs sm:text-sm font-black text-sky-300 flex items-center gap-1.5">
+              <span>Cryo-Geyser Wall &amp; Engineer Nora</span>
+              <span class="text-[9px] bg-sky-950 text-sky-300 font-mono border border-sky-500/50 px-1.5 py-0.2 rounded-full">Auto-Compression</span>
+            </h2>
+            <p class="text-[10px] text-slate-300 font-medium">
+              Sub-zero thermal vents discharge vapor. Engineer Nora condenses coolant into pressurized canisters (max 5 🧪)!
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div id="mineOverdriveActiveTag" class="hidden text-[10px] bg-amber-400 text-black font-sci font-black px-2 py-0.5 rounded-lg animate-pulse shadow-glow-amber">
+            ⚡ 2x VAPOR (<span id="mineOverdriveSecLeft">60</span>s)
+          </div>
+          <div class="bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-400/60 font-sci text-[10px] text-sky-300">
+            DEPOT: <span id="mineWallCrateCounter" class="text-white text-xs font-bold font-mono">0</span> / 5 🧪
+          </div>
+        </div>
+      </div>
+
+      <!-- Nora Station Presentation Stage -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-coremetal/90 rounded-xl p-3.5 border border-sky-500/30 shadow-inner">
+        <div class="md:col-span-4 flex items-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-2.5 md:pb-0 md:pr-3">
+          <div class="text-4xl animate-bounce filter drop-shadow">👩‍🔬</div>
+          <div>
+            <h3 class="font-sci text-xs sm:text-sm text-sky-200 font-bold">Engineer Nora</h3>
+            <p id="mineGeyserStatusText" class="text-[10px] text-slate-400 font-medium">Condensing thermal subterranean steam...</p>
+            <div class="text-[10px] text-amber-300 font-mono mt-0.5">
+              RATE: <span id="mineGeyserCycleRateLabel" class="text-cyan-400 font-bold">1 Canister / 4.0s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Gauge -->
+        <div class="md:col-span-5 flex flex-col gap-1.5">
+          <div class="flex justify-between text-[10px] font-sci text-slate-300">
+            <span>VAPOR PRESSURE CHARGE:</span>
+            <span id="mineGeyserPercentLabel" class="text-sky-300 font-mono font-bold">0%</span>
+          </div>
+          <div class="w-full bg-abyss rounded-full h-3 overflow-hidden border border-sky-500/40 p-0.5 shadow-inner">
+            <div id="mineGeyserProgressBar" class="bg-gradient-to-r from-sky-500 via-cyan-400 to-indigo-500 h-full w-0 rounded-full transition-all duration-100 shadow-glow-cyan"></div>
+          </div>
+          <p class="text-[9.5px] text-slate-400">
+            Infusing an active spire with coolant adds <strong class="text-sky-300 font-mono">+35s</strong> thermal life!
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="md:col-span-3 flex flex-col gap-1.5">
+          <button id="mineCollectCanistersBtn" class="sci-btn w-full bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-500 hover:to-cyan-400 active:scale-95 text-black font-sci font-black text-xs px-3 py-2.5 rounded-xl shadow-glow-cyan border border-cyan-300 flex items-center justify-center gap-1.5">
+            <span>🧪 COLLECT CRYO</span>
+            <span id="mineCrateBadgeInner" class="bg-black/30 text-white px-1.5 py-0.2 rounded-full font-mono text-[10px]">0</span>
+          </button>
+          <button onclick="navigateMiningTab(3)" class="sci-btn w-full bg-slate-800 hover:bg-slate-700 text-sky-300 font-sci text-[10px] py-1.5 rounded-lg border border-slate-600 flex items-center justify-center gap-1">
+            <span>⚡ OVERDRIVE (SHOP)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Telemetry Dashboard -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+        <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+          <div class="text-[9px] font-sci uppercase text-slate-400">INVENTORY CRYO</div>
+          <div class="text-base font-sci font-bold text-sky-300 mt-0.5" id="mineWallInvCoolant">2 🧪</div>
+        </div>
+        <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+          <div class="text-[9px] font-sci uppercase text-slate-400">BULKHEAD STORAGE</div>
+          <div class="text-base font-sci font-bold text-cyan-400 mt-0.5" id="mineWallCrateDisplay">0 / 5 🧪</div>
+        </div>
+        <div class="bg-cavern/80 rounded-xl p-2.5 border border-slate-700/80">
+          <div class="text-[9px] font-sci uppercase text-slate-400">THERMAL STABILIZATION</div>
+          <div class="text-base font-sci font-bold text-emerald-400 mt-0.5">+35s / Spire</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- MINING PAGE 3: ⚡ PLASMA FORGE & DIAMOND VAULT                  -->
+    <!-- ============================================================== -->
+    <section id="minePage3" class="mine-game-page bg-gradient-to-r from-coremetal via-slate-900 to-coremetal border border-amber-500/40 rounded-2xl p-3 sm:p-5 shadow-xl flex flex-col gap-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/30 pb-2.5">
+        <div class="flex items-center gap-2.5">
+          <div class="text-2xl sm:text-3xl">⚡💎</div>
+          <div>
+            <h2 class="font-sci text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+              <span>PLASMA RESONANCE FORGE &amp; DIAMOND VAULT</span>
+              <span class="text-[9px] bg-amber-950 text-amber-300 font-mono border border-amber-500/50 px-1.5 py-0.5 rounded-full">
+                100 🔮 = 29 ⚡
+              </span>
+            </h2>
+            <p class="text-[10px] text-slate-300 font-medium">
+              Catalyze Crystal Shards into Concentrated Plasma (100 🔮 &rarr; 29 ⚡), claim Seed Geodes, or watch 5s holographic feeds!
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="bg-fuchsia-950/80 border border-fuchsia-400/60 px-3 py-1 rounded-xl flex items-center gap-1.5 shadow-glow-violet text-xs">
+            <span>💎</span>
+            <span class="font-sci text-[10px] font-black text-fuchsia-200">
+              VAULT: <span id="mineShopDiamondCount" class="text-fuchsia-300 text-xs">25 💎</span>
+            </span>
+          </div>
+          <div class="bg-amber-950/80 border border-amber-400/60 px-2.5 py-1 rounded-xl font-sci text-[10px] text-amber-300">
+            RATIO: <span class="font-bold text-white">100 🔮 = 29 ⚡</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION A: 100 Shards -> 29 Plasma Energy Converter Core -->
+      <div id="minePlasmaForgeCore" class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-sci text-xs font-black text-amber-400 flex items-center gap-1.5">
+            <span>🔮⚡</span> SECTION A: RESONANCE PLASMA CENTRIFUGE
+          </h3>
+          <span class="text-[9.5px] font-sci text-amber-300 bg-amber-950/70 border border-amber-500/50 px-2 py-0.5 rounded-lg">
+            Exact Ratio: 100 Shards &rarr; 29 Plasma
+          </span>
+        </div>
+
+        <div class="bg-gradient-to-br from-coremetal via-cavern to-coremetal rounded-2xl p-4 border border-amber-400/60 relative overflow-hidden flex flex-col items-center text-center gap-2.5 shadow-xl">
+          <div class="relative w-16 h-16 bg-abyss border-2 border-amber-400 rounded-full flex items-center justify-center text-3xl shadow-glow-amber animate-pulse">
+            ⚡
+            <div class="absolute inset-0 border border-cyan-400 rounded-full animate-ping opacity-25"></div>
+          </div>
+          <div>
+            <h4 class="font-sci text-sm sm:text-base font-black text-amber-200">Subterranean Resonance Reactor</h4>
+            <p class="text-[10px] text-slate-300 font-medium max-w-sm mt-0.5">
+              Throw extracted raw Crystal Shards into the magnetic core. Each cycle transforms 100 🔮 Shards into 29 ⚡ Concentrated Plasma!
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
+            <button id="mineConvert100Btn" class="sci-btn flex-1 bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-sci font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl shadow-glow-amber border border-amber-300 flex items-center justify-center gap-1.5">
+              <span>🔮 THROW 100 SHARDS</span>
+              <span class="bg-black/30 text-amber-200 text-[9px] px-1.5 py-0.2 rounded-full font-mono">+29 ⚡</span>
+            </button>
+            <button id="mineConvertAllBtn" class="sci-btn flex-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-sci font-black text-[10px] sm:text-xs px-3 py-2 rounded-xl border border-amber-400/50 flex items-center justify-center gap-1">
+              <span>⚡ THROW ALL SHARDS</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+          <div class="bg-cavern/80 rounded-xl p-2.5 border border-cyan-500/30">
+            <div class="text-[9px] font-sci uppercase text-cyan-400">AVAILABLE SHARDS</div>
+            <div class="text-base font-sci font-black text-cyan-200 mt-0.5" id="mineShopShardsDisplay">150 🔮</div>
+          </div>
+          <div class="bg-cavern/80 rounded-xl p-2.5 border border-amber-500/30">
+            <div class="text-[9px] font-sci uppercase text-amber-400">READY BATCHES</div>
+            <div class="text-base font-sci font-black text-amber-300 mt-0.5" id="mineShopBatchesDisplay">1 Batch (29 ⚡)</div>
+          </div>
+          <div class="bg-cavern/80 rounded-xl p-2.5 border border-fuchsia-500/30">
+            <div class="text-[9px] font-sci uppercase text-fuchsia-400">PLASMA STORED</div>
+            <div class="text-base font-sci font-black text-fuchsia-300 mt-0.5" id="mineShopEnergyDisplay">0 ⚡</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full h-px bg-slate-800 my-0.5"></div>
+
+      <!-- SECTION B: Diamond Outpost & Rewarded Uplinks -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-sci text-xs font-black text-fuchsia-400 flex items-center gap-1.5">
+            <span>💎🛒</span> SECTION B: DIAMOND OUTPOST &amp; SPONSOR REELS
+          </h3>
+          <span class="text-[9.5px] font-sci text-fuchsia-300 bg-fuchsia-950/70 border border-fuchsia-500/50 px-2 py-0.5 rounded-lg">
+            Price Scaling: +1 💎 per Seed Geode
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <!-- Requirement 1: Seed Geode (+1 💎 Escalation OR Watch Ad) -->
+          <div class="bg-coremetal/90 rounded-xl p-3 border border-cyan-500/40 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">✨</span>
+                <div>
+                  <h4 class="font-sci text-xs font-black text-cyan-200">Raw Seed Geode</h4>
+                  <p class="text-[10px] text-slate-300 leading-snug">
+                    Starts at 1 💎. Permanently increases by +1 💎 after every diamond purchase!
+                  </p>
+                </div>
+              </div>
+              <span id="mineCurrentGeodePriceBadge" class="bg-cyan-950 text-cyan-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-cyan-500 shrink-0">
+                1 💎
+              </span>
+            </div>
+
+            <div class="flex items-center gap-1.5 pt-0.5">
+              <button id="mineBuyGeodeDiamondBtn" class="sci-btn flex-1 bg-cyan-600 hover:bg-cyan-500 active:scale-95 text-black font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                <span>THROW <span id="mineBtnGeodePrice">1</span> 💎 &rarr; PLACE ✨</span>
+              </button>
+              <button onclick="openMiningAdModal('geode')" class="sci-btn flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                <span>🎬 REEL (FREE ✨)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Requirement 2: Sonic Pickaxe (10 💎 OR Watch Ad) -->
+          <div class="bg-coremetal/90 rounded-xl p-3 border border-rose-500/40 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🔨</span>
+                <div>
+                  <h4 class="font-sci text-xs font-black text-rose-200">Heavy Sonic Pickaxe</h4>
+                  <p class="text-[10px] text-slate-300 leading-snug">
+                    Resonates to shatter overheated volcanic slag (🌋) on Page 1.
+                  </p>
+                </div>
+              </div>
+              <span class="bg-rose-950 text-rose-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-rose-500 shrink-0">
+                10 💎
+              </span>
+            </div>
+
+            <div class="flex items-center gap-1.5 pt-0.5">
+              <button id="mineBuyPickaxeDiamondBtn" class="sci-btn flex-1 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                <span>THROW 10 💎 &rarr; +1 🔨</span>
+              </button>
+              <button onclick="openMiningAdModal('pickaxe')" class="sci-btn flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+                <span>🎬 REEL (FREE 🔨)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Requirement 3: Instant Cryo-Canister (2 💎) -->
+          <div class="bg-coremetal/90 rounded-xl p-3 border border-sky-500/40 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🧪</span>
+                <div>
+                  <h4 class="font-sci text-xs font-black text-sky-200">Instant Cryo-Canister</h4>
+                  <p class="text-[10px] text-slate-300 leading-snug">
+                    Replenishes +35s thermal life to prevent spires from overheating.
+                  </p>
+                </div>
+              </div>
+              <span class="bg-sky-950 text-sky-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-sky-500 shrink-0">
+                2 💎
+              </span>
+            </div>
+            <button id="mineBuyCoolantDiamondBtn" class="sci-btn w-full bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+              <span>THROW 2 💎 &rarr; GET 1 CRYO CANISTER 🧪</span>
+            </button>
+          </div>
+
+          <!-- Requirement 4: Raw Shard Cache (5 💎 for 250 Shards) -->
+          <div class="bg-coremetal/90 rounded-xl p-3 border border-amber-500/40 flex flex-col justify-between gap-2 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🔮</span>
+                <div>
+                  <h4 class="font-sci text-xs font-black text-amber-200">Subterranean Shard Cache</h4>
+                  <p class="text-[10px] text-slate-300 leading-snug">
+                    Instantly obtain 250 raw shards for immediate plasma conversion.
+                  </p>
+                </div>
+              </div>
+              <span class="bg-amber-950 text-amber-300 text-[10px] font-sci font-black px-2 py-0.5 rounded-full border border-amber-500 shrink-0">
+                5 💎
+              </span>
+            </div>
+            <button id="mineBuyShardsDiamondBtn" class="sci-btn w-full bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-sci font-bold text-[10px] py-1.5 rounded-lg transition flex items-center justify-center gap-1">
+              <span>THROW 5 💎 &rarr; GET 250 RAW SHARDS 🔮</span>
+            </button>
+          </div>
+
+          <!-- Requirement 5: Overdrive Boost (8 💎 for 2x pump speed for 60s) -->
+          <div class="md:col-span-2 bg-gradient-to-r from-coremetal via-slate-900 to-coremetal rounded-xl p-3 border border-cyan-400/60 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">⚡</span>
+              <div>
+                <h4 class="font-sci text-xs font-black text-cyan-200">Thermal Vapor Overdrive Pump</h4>
+                <p class="text-[10px] text-slate-300">
+                  Accelerates Nora's condensers to 2x speed (1 canister every 2s) for 60s on Page 2!
+                </p>
+              </div>
+            </div>
+            <button id="mineBuyOverdriveDiamondBtn" class="sci-btn w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 active:scale-95 text-black font-sci font-black text-[10px] px-3.5 py-1.5 rounded-lg transition whitespace-nowrap shadow-glow-cyan">
+              <span>THROW 8 💎 &rarr; 2X VAPOR SPEED ⚡</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 5-Second Rewarded Sponsor Hologram Modal -->
+  <div id="mineAdReelModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-coremetal border-2 border-cyan-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-slate-100 shadow-glow-cyan">
+      <div class="bg-abyss px-3.5 py-2 border-b border-cyan-500/40 flex items-center justify-between font-sci">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[8.5px] bg-red-600 text-white font-bold px-1.5 py-0.5 rounded tracking-wider uppercase">CORP FEED</span>
+          <span id="mineAdBrandName" class="text-xs text-cyan-300">NovaMining Industrial</span>
+        </div>
+        <span id="mineAdTimerBadge" class="bg-cyan-400 text-black font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
+          ⏳ 5s
+        </span>
+      </div>
+
+      <div class="p-4 flex flex-col items-center justify-center text-center bg-cavern min-h-[170px]">
+        <div id="mineAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">💎</div>
+        <h3 id="mineAdHeadline" class="font-sci text-sm font-black text-cyan-300">Cryo-Resonance Sub-Drill</h3>
+        <p id="mineAdCatchphrase" class="text-slate-300 text-[10.5px] mt-1 max-w-xs font-medium">
+          "Unleash 400% deeper cavern resonance with zero coolant decay. Official sponsor of Deep Core 9."
+        </p>
+
+        <div class="mt-2.5 inline-flex items-center gap-1 bg-coremetal px-2.5 py-0.5 rounded-full border border-cyan-500/40 text-[10px]">
+          <span class="text-cyan-400 font-sci">UPLINK REWARD:</span>
+          <span id="mineAdRewardTag" class="font-bold text-white font-sci">1 Free Seed Geode ✨</span>
+        </div>
+
+        <div class="w-full bg-abyss h-2 rounded-full mt-3 overflow-hidden border border-slate-700">
+          <div id="mineAdProgressBar" class="bg-gradient-to-r from-cyan-400 via-sky-400 to-fuchsia-400 h-full w-0 transition-all ease-linear shadow-glow-cyan"></div>
+        </div>
+      </div>
+
+      <div class="p-2.5 bg-abyss border-t border-slate-700 flex items-center justify-between">
+        <span class="text-[9.5px] text-slate-400 font-mono">Holographic feed running...</span>
+        <button id="mineAdClaimBtn" disabled class="bg-slate-800 text-slate-500 font-sci text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
+          TRANSMITTING...
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mining Codex & Guide Modal -->
+  <div id="mineRulesModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-coremetal rounded-2xl max-w-md w-full p-4 sm:p-5 shadow-2xl border-2 border-cyan-400 relative max-h-[90vh] overflow-y-auto shadow-glow-cyan">
+      <button id="mineCloseRulesBtn" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg font-bold p-1">✕</button>
+      <h3 class="font-sci text-base font-black text-cyan-300 mb-1 flex items-center gap-1.5">
+        <span>📘</span> MINING &amp; GEM FORGE PROTOCOL
+      </h3>
+      <p class="text-[10px] text-slate-400 mb-2.5 font-mono">Subterranean Economy Manual:</p>
+
+      <div class="space-y-2 text-[10.5px] text-slate-300 leading-relaxed font-medium">
+        <div class="p-2 bg-abyss/80 rounded-xl border border-cyan-500/30">
+          <strong class="font-sci text-cyan-300 block mb-0.5">🗺️ 20 Terraces System</strong>
+          Terrace 1 is unlocked and active! Terrace 2 costs <strong>10 💎</strong>, Terrace 3 costs <strong>100 💎</strong>, scaling down through Plot 20 (up to 60,000 💎).
+        </div>
+        <div class="p-2 bg-abyss/80 rounded-xl border border-cyan-500/30">
+          <strong class="font-sci text-cyan-300 block mb-0.5">🔮 +2 Shards/Sec &amp; Thermal Decay</strong>
+          Active Gem Spires continuously resonate <strong>+2 🔮 Shards/sec</strong>! Pour Cryo-Canisters (🧪) to restore +35s thermal life. If life reaches zero, the spire overheats into fractured Volcanic Slag (🌋) requiring a Sonic Pickaxe (🔨).
+        </div>
+        <div class="p-2 bg-abyss/80 rounded-xl border border-amber-500/30">
+          <strong class="font-sci text-amber-300 block mb-0.5">⚡ Plasma Refinery (100 🔮 &rarr; 29 ⚡)</strong>
+          Throw 100 Shards into the Section A Plasma Reactor on Page 3 to synthesize 29 Units of Concentrated Plasma that recharge your main reactor!
+        </div>
+        <div class="p-2 bg-abyss/80 rounded-xl border border-sky-500/30">
+          <strong class="font-sci text-sky-300 block mb-0.5">🌊 Cryo-Geyser Wall (Page 2)</strong>
+          Engineer Nora captures sub-zero vapor into canisters (max 5 in crate). Collect them on Page 2 to replenish your terrace coolant!
+        </div>
+      </div>
+
+      <div class="mt-3 flex justify-end">
+        <button id="mineCloseRulesBtn2" class="sci-btn bg-cyan-500 hover:bg-cyan-400 text-black font-sci font-bold px-3.5 py-1.5 rounded-lg text-xs transition">
+          CONFIRM READOUT
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

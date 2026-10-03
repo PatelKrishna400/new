@@ -1,0 +1,174 @@
+<!-- PAGE: MEGA REWARDS ADD -->
+<section class="page-panel" id="page-mega-add">
+  <!-- Top Tab Switcher: Standard Categories vs User Custom Requests -->
+  <div class="mega-tabs-header">
+    <button type="button" class="mega-tab-btn active" id="tabBtnMegaStandard" onclick="switchMegaAddTab('standard')">
+      <span>🎁</span>
+      <span>Standard Mega Rewards</span>
+    </button>
+    <button type="button" class="mega-tab-btn" id="tabBtnMegaCustom" onclick="switchMegaAddTab('custom')">
+      <span>⭐</span>
+      <span>User Custom Requests</span>
+      <span class="custom-req-count-badge" id="customReqBadge">0</span>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       TAB PANE 1: STANDARD MEGA REWARDS (CATEGORY DROPDOWN + CATALOG)
+       ============================================================ -->
+  <div id="megaStandardSection">
+    <!-- Add / Edit Form -->
+    <div class="card-panel" style="display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
+        <h3 style="font-size: 17px; font-weight: 800; color: #0f172a;" id="rewardFormTitle">Add New Mega Reward</h3>
+      </div>
+
+      <!-- Category Selection with Arrow Dropdown -->
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="category-dropdown-wrap" id="categoryDropdownWrap">
+          <button type="button" class="category-select-btn" id="categoryDropdownToggle" onclick="toggleCategoryDropdown()">
+            <div class="cat-select-left">
+              <span class="cat-select-icon" id="selectedCatIcon">🎁</span>
+              <span class="cat-select-name" id="selectedCatName">Gift Card</span>
+            </div>
+            <span class="cat-select-arrow" id="catSelectArrow">▼</span>
+          </button>
+          <div class="category-dropdown-menu" id="categoryDropdownMenu">
+            <!-- Injected dynamically with standard categories -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Product Name & Tag -->
+      <div class="mega-form-row-2col">
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label">Product Name <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="inpRewardTitle" placeholder="e.g. Apple AirPods Pro 2" class="form-input" required>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Tag Badge</label>
+          <input type="text" id="inpRewardTag" placeholder="e.g. SMART TECH" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;">
+        </div>
+      </div>
+
+      <!-- 2. Buyer Star, Diamond Cost, Real Value, Offer Value -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px;">
+        <div class="form-group">
+          <label class="form-label">Buyer Star ⭐ <span style="color: #ef4444;">*</span></label>
+          <input type="number" id="inpRewardBuyerStar" step="0.1" min="1" max="5" placeholder="e.g. 4.9" class="form-input" style="color: #eab308; font-weight: 800; text-align: center;" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Diamond Cost 💎 <span style="color: #ef4444;">*</span></label>
+          <input type="number" id="inpRewardDiamonds" placeholder="e.g. 2500" class="form-input" style="color: #0284c7; font-weight: 800;" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Real Value 🏷️ <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="inpRewardRealVal" placeholder="e.g. $249" class="form-input" style="color: #64748b; font-weight: 800;" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Offer Value 💵 <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="inpRewardOfferVal" placeholder="e.g. $199" class="form-input" style="color: #059669; font-weight: 800;" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock Units 📦</label>
+          <input type="number" id="inpRewardStock" placeholder="e.g. 20" class="form-input" value="15" style="font-weight: 800;">
+        </div>
+      </div>
+
+      <!-- 3. Product Link & Image URL -->
+      <div class="mega-form-row-2col">
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Product Link 🔗 <span style="color: #ef4444;">*</span></label>
+          <input type="url" id="inpRewardLink" placeholder="https://amazon.com/dp/... or store URL" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;" required>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Image URL 🖼️ <span style="color: #ef4444;">*</span></label>
+          <input type="url" id="inpRewardImage" placeholder="https://... image link" class="form-input" style="font-family: 'JetBrains Mono', monospace; color: #0284c7;" required>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="form-label">Reward Description</label>
+        <input type="text" id="inpRewardDesc" placeholder="e.g. Exclusive high-end reward available for instant diamond redemption" class="form-input">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 4px;">
+        <button onclick="saveRewardToFirebase()" class="btn-primary" id="btnSaveReward">
+          Save Reward to Firebase
+        </button>
+        <button onclick="clearRewardForm()" class="btn-secondary">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Rewards Catalog Grid -->
+    <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px; margin-top: 18px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #0f172a;">Rewards Inventory</h3>
+          <span style="font-size: 12px; color: #64748b; font-weight: 600;" id="rewardsInventoryMeta">0 items</span>
+        </div>
+        <!-- Category Filter Pills -->
+        <div class="catalog-filter-pills" id="catalogFilterPills">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;" id="rewardsCatalogGrid">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB PANE 2: USER CUSTOM REQUESTS LIST
+       (Showing: User Name, Required, Link, Image, Why Requires)
+       ============================================================ -->
+  <div id="megaCustomSection" style="display: none;">
+    <div class="card-panel" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">⭐</span>
+            <h3 style="font-size: 18px; font-weight: 800; color: #0f172a;">User Custom Reward Requests</h3>
+          </div>
+          <p style="font-size: 12.5px; color: #64748b; margin-top: 2px;">
+            Special reward items requested by players showing required item, link, image, and why required.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div class="custom-status-filter-group">
+            <button type="button" class="btn-custom-filter active" data-custfilter="all" onclick="filterCustomRequests('all')">All</button>
+            <button type="button" class="btn-custom-filter" data-custfilter="pending" onclick="filterCustomRequests('pending')">Pending</button>
+            <button type="button" class="btn-custom-filter" data-custfilter="approved" onclick="filterCustomRequests('approved')">Approved</button>
+            <button type="button" class="btn-custom-filter" data-custfilter="rejected" onclick="filterCustomRequests('rejected')">Rejected</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Requests List / Table -->
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>User Name</th>
+              <th>Required (Item)</th>
+              <th>Link</th>
+              <th>Why Requires</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="customRequestsTableBody">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

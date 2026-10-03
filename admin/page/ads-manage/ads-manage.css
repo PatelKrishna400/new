@@ -1,0 +1,64 @@
+/* ==========================================================================
+   PAGE: ADS MANAGE STYLES (pages/ads-manage/ads-manage.css)
+   ========================================================================== */
+
+#page-ads-manage code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.ads-form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ads-form-row-4col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.ads-form-row-3col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.btn-ads-balance-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ads-balance-tab:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn-ads-balance-tab.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+@media (max-width: 640px) {
+  .ads-form-row-2col,
+  .ads-form-row-3col,
+  .ads-form-row-4col {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+}
+

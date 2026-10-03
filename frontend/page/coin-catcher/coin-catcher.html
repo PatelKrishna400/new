@@ -1,0 +1,186 @@
+<div class="page-view" id="pageCoinCatcher">
+  <!-- Top Action Nav Row -->
+  <div class="xp-top-actions-row">
+    <button class="xp-back-btn" onclick="switchPage('reward')" aria-label="Back" title="Back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+    <div class="spin-header-title-pill">
+      <span class="spin-sparkle-icon">🪙</span>
+      <span>COIN FALL</span>
+    </div>
+
+    <div class="spin-ticket-header-pill" id="catcherBoomCoinPill" onclick="startCoinCatcherGame()" title="Play for 1 💣 Boom Coin">
+      <span class="ticket-pill-icon">💣</span>
+      <span class="ticket-pill-val" id="catcherPlayerBoomCoinsVal">0</span>
+    </div>
+  </div>
+
+  <!-- Quick Info Strip -->
+  <div class="mini-game-info-strip">
+    <div class="info-strip-chip">
+      <span class="chip-dot amber"></span>
+      <span class="chip-label">COST:</span>
+      <span class="chip-val">1 💣 Boom Coin</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot gold"></span>
+      <span class="chip-label">TARGET:</span>
+      <span class="chip-val">Tap 🪙 Coins</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot red"></span>
+      <span class="chip-label">HAZARD:</span>
+      <span class="chip-val">Avoid 💣 Boom</span>
+    </div>
+    <div class="info-strip-chip">
+      <span class="chip-dot violet"></span>
+      <span class="chip-label">SPEED:</span>
+      <span class="chip-val">⚡ Increases</span>
+    </div>
+  </div>
+
+  <!-- Game Arena Card -->
+  <section class="catcher-arena-card">
+    <div class="catcher-ambient-glow"></div>
+
+    <!-- Live Performance HUD -->
+    <div class="catcher-hud-row">
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">⏱️</span>
+        <div class="hud-data">
+          <span class="hud-label">SURVIVED</span>
+          <span class="hud-val" id="catcherTimeVal">0s</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">🪙</span>
+        <div class="hud-data">
+          <span class="hud-label">BANKED</span>
+          <span class="hud-val highlight" id="catcherScoreVal">0</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">⚡</span>
+        <div class="hud-data">
+          <span class="hud-label">FALL SPEED</span>
+          <span class="hud-val" id="catcherSpeedVal">1.0x</span>
+        </div>
+      </div>
+      <div class="catcher-hud-pill">
+        <span class="hud-icon">💣</span>
+        <div class="hud-data">
+          <span class="hud-label">COST PAID</span>
+          <span class="hud-val" id="catcherCostDisplay">1 💣</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Falling Stage -->
+    <div class="catcher-stage" id="catcherStage">
+      <!-- Falling items spawn dynamically here -->
+
+      <!-- Start Overlay -->
+      <div class="catcher-start-overlay" id="catcherStartOverlay">
+        <div class="catcher-intro-content">
+          <span class="catcher-big-icon">🪙💣</span>
+          <h4 class="catcher-intro-title">Ready for Coin Fall?</h4>
+          <p class="catcher-intro-desc">
+            Tap falling coins to fill your bank! Avoid 💣 booms! Fall speed increases over time. Cash out anytime with the button below!
+          </p>
+
+          <div class="catcher-entry-badge-row">
+            <span class="catcher-entry-cost-pill">💣 Entry Cost: 1 Boom Coin</span>
+            <span class="catcher-balance-pill">Your Boom Coins: <strong id="catcherIntroBoomBal">0</strong> 💣</span>
+          </div>
+
+          <div class="flex items-center gap-2 mt-2">
+            <button class="catcher-start-btn flex-1" onclick="startCoinCatcherGame()">
+              <span>💣</span> Play (1 Boom Coin)
+            </button>
+            <button class="catcher-start-btn flex-1" onclick="claimFreeBoomCoinAd()" style="background: linear-gradient(135deg, #f97316, #ef4444); border: none;">
+              <span>🎬</span> Free 💣 (+1 Coin)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prominent Collect Button Below the Page / Stage -->
+    <div class="catcher-bottom-action-bar">
+      <button class="catcher-collect-bank-btn" id="btnCatcherCollectBank" onclick="collectAndExitCoinCatcher()" disabled>
+        <span class="collect-btn-icon">💰</span>
+        <span class="collect-btn-text" id="catcherCollectBtnText">COLLECT &amp; EXIT (0 🪙)</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Boom Hit / Try Again Modal (Watch Ad to Resume OR Exit and Forfeit) -->
+  <div class="catcher-modal-overlay" id="catcherBoomModal">
+    <div class="catcher-modal-card boom-card">
+      <div class="catcher-boom-glow"></div>
+      <div class="catcher-modal-header">
+        <div class="catcher-modal-icon boom-icon">💥</div>
+        <h3 class="catcher-modal-title">BOOM DETONATED!</h3>
+        <p class="catcher-modal-desc">
+          You tapped a boom hazard! At stake: <strong id="catcherBoomBankedText" style="color: #facc15;">0 🪙</strong>
+        </p>
+      </div>
+
+      <div class="catcher-modal-actions">
+        <button class="catcher-ad-resume-btn" onclick="resumeAfterBombAd()">
+          <span class="btn-primary-text">📺 Watch Ad to Resume Game</span>
+          <span class="btn-subtext">Keep your <span id="catcherBoomResumeCoins">0</span> 🪙 Coins &amp; continue!</span>
+        </button>
+        <button class="catcher-forfeit-exit-btn" onclick="exitAndForfeitCoins()">
+          <span>🚪 Exit Game (Forfeit Coins)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory / Banked Reward Modal -->
+  <div class="catcher-modal-overlay" id="catcherModalOverlay">
+    <div class="catcher-modal-card">
+      <div class="catcher-modal-glow"></div>
+      <div class="catcher-modal-header">
+        <div class="catcher-modal-icon" id="catcherResultIcon">💰</div>
+        <h3 class="catcher-modal-title" id="catcherResultTitle">BOUNTY SECURED!</h3>
+        <p class="catcher-modal-desc" id="catcherResultDesc">You safely cashed out your coin bank!</p>
+      </div>
+
+      <div class="catcher-stats-breakdown">
+        <div class="breakdown-row">
+          <span>Coins Banked:</span>
+          <strong id="catcherStatCoins">0 🪙</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Time Survived:</span>
+          <strong id="catcherStatTime">0s</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Peak Speed:</span>
+          <strong id="catcherStatSpeed">1.0x</strong>
+        </div>
+        <div class="breakdown-row highlight">
+          <span>Coins Claimable:</span>
+          <strong id="catcherStatReward">+0 Coins 🪙</strong>
+        </div>
+      </div>
+
+      <div class="catcher-modal-actions">
+        <button class="catcher-claim-btn" id="catcherClaimBtn" onclick="claimCoinCatcherReward(false)">
+          <span>🎁</span> Bank Coins &amp; Exit
+        </button>
+        <button class="catcher-double-ad-btn" id="catcherDoubleAdBtn" onclick="claimCoinCatcherReward(true)">
+          <span>📺</span> 2X Double Coins (Watch Ad)
+        </button>
+        <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
+          <span>🔄</span> Play Again (100 💎)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
