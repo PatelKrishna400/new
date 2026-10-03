@@ -13,7 +13,8 @@
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Fredoka+One&family=Nunito:wght@700;800;900&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -3918,6 +3919,13 @@
             <span>COIN FALL</span>
           </div>
       
+          <!-- Morning Café Puzzle Button -->
+          <button type="button" class="catcher-cafe-puzzle-btn" onclick="openMorningCafePuzzleModal()" title="Open Morning Café 2D Puzzle">
+            <span class="puzzle-btn-icon">🧩</span>
+            <span class="puzzle-btn-txt font-sci">CAFÉ PUZZLE</span>
+            <span class="puzzle-btn-badge font-mono" id="catcherPuzzlePiecesBadge">0</span>
+          </button>
+      
           <div class="spin-ticket-header-pill" id="catcherBoomCoinPill" onclick="startCoinCatcherGame()" title="Play for 1 💣 Boom Coin">
             <span class="ticket-pill-icon">💣</span>
             <span class="ticket-pill-val" id="catcherPlayerBoomCoinsVal">0</span>
@@ -3945,6 +3953,30 @@
             <span class="chip-dot violet"></span>
             <span class="chip-label">SPEED:</span>
             <span class="chip-val">⚡ Increases</span>
+          </div>
+        </div>
+      
+        <!-- Puzzle Emoji Loading & Milestone Target Progress Bar -->
+        <div class="catcher-puzzle-milestone-strip" onclick="openMorningCafePuzzleModal()" title="Tap to open Morning Café Puzzle!">
+          <div class="puzzle-milestone-top">
+            <div class="flex items-center gap-2">
+              <span class="puzzle-strip-icon">🧩</span>
+              <div class="flex flex-col text-left">
+                <span class="font-game text-xs text-amber-300 font-bold uppercase tracking-wider">PUZZLE TARGET MILESTONE</span>
+                <span class="text-[9.5px] text-slate-400">Catch fast-falling 🧩 in Coin Fall to earn pieces!</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span class="font-mono text-xs text-cyan-300 font-black" id="puzzleProgressText">0 / 20 🧩</span>
+              <span class="puzzle-reward-tag font-game text-[9px] text-amber-950 font-bold bg-amber-400 px-2 py-0.5 rounded-full mt-0.5 shadow-sm">+1 🧩 PIECE</span>
+            </div>
+          </div>
+          <div class="puzzle-loading-bar-wrap">
+            <div class="puzzle-loading-bar-fill" id="puzzleProgressBarFill" style="width: 0%;"></div>
+          </div>
+          <div class="puzzle-milestone-sub">
+            <span id="puzzleMilestoneSubText">Target: 20 🧩 • Win +1 Piece to unlock Morning Café tiles!</span>
+            <span class="open-cafe-link">Open Café Board ☕ ➔</span>
           </div>
         </div>
       
@@ -4087,6 +4119,318 @@
                 <span>🔄</span> Play Again (100 💎)
               </button>
             </div>
+          </div>
+        </div>
+      
+        <!-- ======================================================================
+             MORNING CAFÉ 2D PUZZLE GAME MODAL
+             ====================================================================== -->
+        <div class="catcher-modal-overlay cafe-puzzle-modal-overlay" id="morningCafePuzzleModal" style="display: none;">
+          <div class="cafe-puzzle-modal-container">
+            <main class="cafe-mobile-frame flex flex-col justify-between p-3.5 pb-5">
+              
+              <!-- Header -->
+              <header class="flex items-center justify-between z-10 w-full mb-1">
+                <!-- Back / Close Button -->
+                <button type="button" onclick="closeMorningCafePuzzleModal()" class="cafe-btn-2d w-10 h-10 rounded-2xl bg-[#2a2046] border-2 border-[#45376d] shadow-[0_3px_0_#140f24] flex items-center justify-center text-white cursor-pointer" title="Back to Coin Fall">
+                  <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+      
+                <!-- Center Piece Wallet Counter -->
+                <div class="flex items-center bg-[#140d24] border-2 border-[#3b2b5c] shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] rounded-full px-4 py-1 space-x-2">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-amber-950 flex items-center justify-center text-base shadow-sm">
+                    🧩
+                  </div>
+                  <span id="cafe-piece-counter" class="font-game text-xl text-yellow-300 drop-shadow min-w-[24px] text-center font-bold">0</span>
+                </div>
+      
+                <!-- Help / Instructions Button -->
+                <button type="button" onclick="openCafeSubModal('cafe-info-modal')" class="cafe-btn-2d w-10 h-10 rounded-2xl bg-[#e11d48] border-2 border-[#9f1239] shadow-[0_3px_0_#6b0b24] flex items-center justify-center text-white font-game text-lg cursor-pointer" title="Game Rules">
+                  ❓
+                </button>
+              </header>
+      
+              <!-- Title Banner -->
+              <section class="flex flex-col items-center z-10 my-1">
+                <div class="relative flex items-center justify-center w-full max-w-[340px]">
+                  <!-- Cup Badge Left -->
+                  <div class="absolute -left-2 -top-6 transform -rotate-12 z-20">
+                    <div class="w-12 h-12 p-1 bg-amber-100 rounded-2xl border-4 border-amber-950 flex items-center justify-center shadow-lg">
+                      <span class="text-2xl">☕</span>
+                    </div>
+                  </div>
+      
+                  <!-- Pin Badge Right -->
+                  <div class="absolute -right-2 -top-6 transform rotate-12 z-20">
+                    <div class="w-12 h-12 bg-white rounded-2xl border-4 border-amber-950 flex items-center justify-center shadow-lg">
+                      <span class="text-2xl">📍</span>
+                    </div>
+                  </div>
+      
+                  <!-- Ribbon Body -->
+                  <div class="cafe-ribbon-banner px-8 py-2 rounded-xl flex items-center justify-center space-x-2 border-2 border-rose-300">
+                    <span class="font-game text-sm uppercase tracking-wider text-rose-100">MORNING</span>
+                    <div class="bg-amber-100 border-2 border-amber-950 px-2 py-0.5 rounded-lg shadow-inner">
+                      <span class="font-game text-sm text-amber-950 tracking-wide font-black">CAFÉ</span>
+                    </div>
+                  </div>
+                </div>
+      
+                <h2 class="font-game text-white text-xs sm:text-sm tracking-wider uppercase mt-2.5 drop-shadow flex items-center space-x-1.5 font-bold">
+                  <span>✨</span>
+                  <span>REVEAL IMAGE TO WIN</span>
+                  <span>✨</span>
+                </h2>
+              </section>
+      
+              <!-- Rewards Section -->
+              <section class="w-full max-w-[350px] mx-auto z-10 my-1">
+                <div class="bg-[#fff9eb] border-4 border-[#8e153b] rounded-2xl p-2.5 shadow-[0_5px_0_#580822] flex items-center justify-around relative">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-amber-950 flex items-center justify-center text-xl shadow">
+                      🎯
+                    </div>
+                    <div class="text-left leading-tight">
+                      <p class="font-game text-[11px] text-amber-950 font-bold">LUCKY SPIN</p>
+                      <p class="font-game text-sm text-red-600 font-extrabold">x1</p>
+                    </div>
+                  </div>
+      
+                  <div class="w-0.5 h-8 bg-amber-200"></div>
+      
+                  <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-b from-sky-400 to-blue-600 border-2 border-amber-950 flex items-center justify-center text-xl shadow">
+                      ⚡
+                    </div>
+                    <div class="text-left leading-tight">
+                      <p class="font-game text-[11px] text-amber-950 font-bold">ENERGY</p>
+                      <p class="font-game text-sm text-blue-600 font-extrabold">+300</p>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="flex justify-center -mt-3.5 relative z-20">
+                  <div class="bg-[#18112c] border-2 border-[#8e153b] rounded-full px-5 py-1 shadow-md flex items-center space-x-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                    <span id="cafe-revealed-ratio" class="font-game text-xs text-amber-300 tracking-wider font-bold">0 / 9</span>
+                  </div>
+                </div>
+              </section>
+      
+              <!-- 3x3 SQUARE PUZZLE BOARD CONTAINER -->
+              <section class="relative w-full max-w-[340px] aspect-square mx-auto cafe-puzzle-board-container overflow-hidden my-2">
+                <!-- Hidden 2D Cafe Vector Graphic -->
+                <div id="cafe-hidden-art" class="absolute inset-0 w-full h-full select-none pointer-events-none">
+                  <svg class="w-full h-full" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="cafeMorningSky" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#fdba74" />
+                        <stop offset="50%" stop-color="#fef08a" />
+                        <stop offset="100%" stop-color="#fdba74" />
+                      </linearGradient>
+                      <linearGradient id="cafeWallGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffedd5" />
+                        <stop offset="100%" stop-color="#fed7aa" />
+                      </linearGradient>
+                      <linearGradient id="cafeCounterWood" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#b45309" />
+                        <stop offset="100%" stop-color="#78350f" />
+                      </linearGradient>
+                    </defs>
+      
+                    <!-- Wall Background -->
+                    <rect width="360" height="360" fill="url(#cafeWallGrad)" />
+      
+                    <!-- Cafe Window & Skyline -->
+                    <path d="M50 25 Q180 -15 310 25 L310 180 L50 180 Z" fill="#93c5fd" />
+                    <path d="M60 33 Q180 -5 300 33 L300 170 L60 170 Z" fill="url(#cafeMorningSky)" />
+                    <circle cx="180" cy="90" r="34" fill="#fbbf24" stroke="#f59e0b" stroke-width="4" />
+      
+                    <!-- Distant Foliage -->
+                    <path d="M60 145 Q120 120 180 140 T300 135 L300 170 L60 170 Z" fill="#4ade80" />
+                    
+                    <!-- Window Frame -->
+                    <path d="M50 25 Q180 -15 310 25 L310 180 L50 180 Z" fill="none" stroke="#451a03" stroke-width="7" />
+                    <line x1="180" y1="5" x2="180" y2="180" stroke="#451a03" stroke-width="5" />
+                    <line x1="50" y1="100" x2="310" y2="100" stroke="#451a03" stroke-width="5" />
+      
+                    <!-- Hanging Plant -->
+                    <line x1="90" y1="0" x2="95" y2="40" stroke="#71717a" stroke-width="2" />
+                    <ellipse cx="95" cy="45" rx="14" ry="7" fill="#c2410c" stroke="#431407" stroke-width="2" />
+                    <circle cx="89" cy="49" r="9" fill="#22c55e" />
+                    <circle cx="102" cy="50" r="9" fill="#16a34a" />
+      
+                    <!-- Cafe Wooden Counter -->
+                    <rect x="0" y="200" width="360" height="160" fill="url(#cafeCounterWood)" stroke="#451a03" stroke-width="4" />
+                    <rect x="0" y="192" width="360" height="16" rx="4" fill="#d97706" stroke="#78350f" stroke-width="2" />
+      
+                    <!-- Coffee Mug with Heart Foam -->
+                    <rect x="65" y="165" width="62" height="52" rx="12" fill="#e11d48" stroke="#881337" stroke-width="3.5" />
+                    <ellipse cx="96" cy="165" rx="31" ry="9" fill="#fff1f2" stroke="#881337" stroke-width="2.5" />
+                    <ellipse cx="96" cy="165" rx="25" ry="6" fill="#451a03" />
+                    <path d="M127 174 C145 174 145 200 127 200" fill="none" stroke="#e11d48" stroke-width="6" stroke-linecap="round" />
+                    <path d="M127 174 C145 174 145 200 127 200" fill="none" stroke="#881337" stroke-width="2.5" stroke-linecap="round" />
+                    <path d="M92 163 C92 160 88 158 85 162 C82 166 92 170 92 170 C92 170 102 166 99 162 C96 158 92 160 92 163 Z" fill="#ffffff" />
+                    
+                    <!-- Steam curls -->
+                    <path d="M88 148 Q84 135 90 122" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M102 148 Q108 135 104 122" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
+      
+                    <!-- Plate & Croissant -->
+                    <ellipse cx="235" cy="200" rx="64" ry="22" fill="#f8fafc" stroke="#94a3b8" stroke-width="3.5"/>
+                    <path d="M195 196 Q235 165 275 196 Q255 212 235 208 Q215 212 195 196 Z" fill="#d97706" stroke="#78350f" stroke-width="3"/>
+                    <path d="M215 189 Q235 178 255 189" fill="none" stroke="#92400e" stroke-width="3" stroke-linecap="round" />
+      
+                    <!-- Cozy Cafe Sticker Label -->
+                    <g transform="translate(105, 290)">
+                      <rect width="150" height="42" rx="14" fill="#ffffff" stroke="#8e153b" stroke-width="3" filter="drop-shadow(0 4px 0 #580822)"/>
+                      <text x="75" y="27" font-family="'Fredoka One', cursive" font-size="15" fill="#8e153b" text-anchor="middle" font-weight="bold">☕ GOOD MORNING</text>
+                    </g>
+                  </svg>
+                </div>
+      
+                <!-- SEAMLESS INTERLOCKING 2D JIGSAW PUZZLE SVG OVERLAY -->
+                <svg id="cafe-puzzle-svg-overlay" class="absolute inset-0 w-full h-full select-none" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="cafePiecePinkGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#ffdbe5" />
+                      <stop offset="100%" stop-color="#ffb8cc" />
+                    </linearGradient>
+      
+                    <!-- Board round clipping -->
+                    <clipPath id="cafeBoardClip">
+                      <rect x="0" y="0" width="360" height="360" rx="23" ry="23" />
+                    </clipPath>
+                  </defs>
+      
+                  <!-- Group with interlocking puzzle pieces -->
+                  <g id="cafe-puzzle-pieces-container" clip-path="url(#cafeBoardClip)">
+                    <!-- Generated dynamically by coin-catcher.js -->
+                  </g>
+                </svg>
+              </section>
+      
+              <!-- Footer strip -->
+              <footer class="w-full flex items-center justify-center z-10 mt-1 mb-1">
+                <div class="flex items-center space-x-2 bg-[#120a21] border-2 border-[#2f2050] shadow-md rounded-full px-5 py-1.5">
+                  <span class="text-amber-400 text-sm">🧩</span>
+                  <span class="font-game text-xs tracking-wider text-slate-300 font-bold">PIECES IN BANK:</span>
+                  <span id="cafe-footer-pieces" class="font-game text-sm text-yellow-300 tracking-wider font-extrabold">0 🧩</span>
+                </div>
+              </footer>
+            </main>
+      
+            <!-- SUB-MODAL 1: 2D SIMULATED VIDEO AD POPUP -->
+            <div id="cafe-ad-modal" class="cafe-submodal fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+              <div class="cafe-modal-2d bg-[#fffdf5] rounded-3xl max-w-sm w-full p-4 relative overflow-hidden flex flex-col items-center">
+                <div class="w-full flex items-center justify-between pb-3 border-b-2 border-slate-200">
+                  <div class="flex items-center space-x-2">
+                    <span class="bg-amber-400 text-amber-950 font-game text-[10px] px-2 py-0.5 rounded-md border border-amber-800 font-bold">
+                      ADVERTISEMENT
+                    </span>
+                    <span id="cafe-ad-timer-badge" class="font-game text-xs text-slate-600 font-bold">
+                      Reward in 5s
+                    </span>
+                  </div>
+                  <button id="cafe-ad-close-btn" disabled onclick="finishCafeAdSimulation()" class="cafe-btn-2d bg-slate-300 text-slate-500 font-game text-xs px-3 py-1 rounded-xl border border-slate-400 cursor-not-allowed">
+                    Skip in 5s
+                  </button>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full mt-2 overflow-hidden border border-slate-300">
+                  <div id="cafe-ad-progress-fill" class="bg-emerald-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
+                </div>
+                <div class="w-full bg-gradient-to-b from-sky-100 to-indigo-100 border-2 border-indigo-900 rounded-2xl p-4 my-3 text-center shadow-inner relative overflow-hidden">
+                  <div class="flex justify-center items-center space-x-3 mb-2">
+                    <div class="w-12 h-12 bg-amber-400 rounded-2xl border-2 border-amber-900 flex items-center justify-center text-3xl shadow animate-bounce">
+                      🥞
+                    </div>
+                    <div class="text-2xl animate-pulse">➡️</div>
+                    <div class="w-12 h-12 bg-rose-500 rounded-2xl border-2 border-rose-950 flex items-center justify-center text-3xl shadow">
+                      ☕
+                    </div>
+                  </div>
+                  <h4 class="font-game text-base text-indigo-950 uppercase font-bold">Chef Rush 2D</h4>
+                  <p class="font-bold text-[11px] text-indigo-800 mb-2">Cook, flip and serve cozy breakfast dishes!</p>
+                  <button type="button" class="cafe-btn-2d bg-emerald-500 text-white font-game text-xs py-1.5 px-4 rounded-xl border-2 border-emerald-950 shadow">
+                    SPONSORED DEMO 🎮
+                  </button>
+                </div>
+                <p class="font-game text-[11px] text-slate-500 uppercase tracking-wide">
+                  Watch till the end to unlock your reward!
+                </p>
+              </div>
+            </div>
+      
+            <!-- SUB-MODAL 2: OUT OF PIECES PROMPT POPUP -->
+            <div id="cafe-pieces-prompt-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+              <div class="cafe-modal-2d bg-[#fff9eb] rounded-3xl max-w-sm w-full p-5 text-center">
+                <div class="w-14 h-14 mx-auto bg-amber-400 border-3 border-amber-950 rounded-2xl flex items-center justify-center text-3xl shadow">
+                  🧩
+                </div>
+                <h3 class="font-game text-lg text-amber-950 mt-2 font-black">OUT OF PIECES!</h3>
+                <p class="font-bold text-xs text-amber-900 my-2 px-2 leading-relaxed">
+                  You need 1 puzzle piece to open this tile. Catch fast-falling 🧩 in Coin Fall, or watch a quick ad for <span class="text-emerald-700 font-extrabold">+2 FREE Puzzle Pieces</span>!
+                </p>
+                <div class="flex flex-col space-y-2 mt-3">
+                  <button onclick="closeCafeSubModal('cafe-pieces-prompt-modal'); startCafeAdRewardSequence('TOKENS');" class="cafe-btn-2d cafe-shimmer bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-game py-2.5 rounded-2xl border-2 border-emerald-950 shadow text-xs tracking-wider flex items-center justify-center space-x-2 font-bold cursor-pointer">
+                    <span>📺</span>
+                    <span>WATCH SHORT AD (+2 🧩)</span>
+                  </button>
+                  <button onclick="closeCafeSubModal('cafe-pieces-prompt-modal')" class="cafe-btn-2d bg-slate-200 hover:bg-slate-300 text-slate-700 font-game py-2 rounded-2xl border-2 border-slate-400 text-xs font-bold cursor-pointer">
+                    CANCEL
+                  </button>
+                </div>
+              </div>
+            </div>
+      
+            <!-- SUB-MODAL 3: WIN / REWARDS CLAIM MODAL -->
+            <div id="cafe-win-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+              <div class="cafe-modal-2d bg-gradient-to-b from-[#fff6ed] to-[#ffe3ec] rounded-3xl max-w-sm w-full p-5 text-center">
+                <div class="w-16 h-16 mx-auto -mt-10 bg-amber-400 border-4 border-amber-950 rounded-2xl flex items-center justify-center text-4xl shadow animate-bounce">
+                  🏆
+                </div>
+                <h3 class="font-game text-xl text-rose-950 mt-2 font-black">PUZZLE COMPLETE!</h3>
+                <p class="font-game text-xs tracking-wider text-rose-800 uppercase font-bold">You uncovered the entire Morning Café!</p>
+                <div class="bg-white border-2 border-rose-300 rounded-2xl p-3 my-3 flex justify-around items-center shadow-inner">
+                  <div class="text-center">
+                    <div class="text-2xl">🎯</div>
+                    <span class="font-game text-xs text-amber-950 block mt-1 font-bold">+1 Lucky Spin</span>
+                  </div>
+                  <div class="w-0.5 h-8 bg-rose-200"></div>
+                  <div class="text-center">
+                    <div class="text-2xl">⚡</div>
+                    <span class="font-game text-xs text-blue-900 block mt-1 font-bold">+300 Energy</span>
+                  </div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                  <button onclick="claimMorningCafeWinRewards()" class="cafe-btn-2d cafe-shimmer bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-game py-2.5 rounded-2xl border-2 border-emerald-950 shadow text-xs tracking-wider font-black cursor-pointer">
+                    CLAIM REWARDS 🎁
+                  </button>
+                  <button onclick="resetMorningCafePuzzle(); closeCafeSubModal('cafe-win-modal');" class="cafe-btn-2d bg-slate-200 hover:bg-slate-300 text-slate-800 font-game py-2 rounded-2xl border-2 border-slate-400 text-xs font-bold cursor-pointer">
+                    PLAY AGAIN 🔄
+                  </button>
+                </div>
+              </div>
+            </div>
+      
+            <!-- SUB-MODAL 4: HOW TO PLAY MODAL -->
+            <div id="cafe-info-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+              <div class="cafe-modal-2d bg-[#fff9eb] rounded-3xl max-w-sm w-full p-5 text-center">
+                <div class="text-3xl mb-1">🧩</div>
+                <h3 class="font-game text-lg text-rose-950 font-black">HOW TO PLAY</h3>
+                <div class="text-left text-xs font-bold text-slate-700 space-y-2 my-3 bg-amber-50 p-3 rounded-2xl border-2 border-amber-200">
+                  <p>📺 <b>Video Tiles:</b> Tap any tile with <b>📺</b> to watch a quick 5-second ad. Once complete, the tile reveals for free and awards +1 bonus piece!</p>
+                  <p>🧩 <b>Cost 1 Tiles:</b> Opens instantly using 1 puzzle piece from your bank.</p>
+                  <p>⚡ <b>Earn Pieces in Coin Fall:</b> Catch fast-falling 🧩 in Coin Fall to complete targets (20, 70, 130, 180...) to win puzzle pieces!</p>
+                </div>
+                <button onclick="closeCafeSubModal('cafe-info-modal')" class="cafe-btn-2d bg-rose-600 hover:bg-rose-500 text-white font-game py-2 px-6 rounded-2xl text-xs tracking-wider border-2 border-rose-950 shadow cursor-pointer font-bold">
+                  GOT IT!
+                </button>
+              </div>
+            </div>
+      
           </div>
         </div>
       </div>

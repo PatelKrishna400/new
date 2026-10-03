@@ -439,6 +439,12 @@ const gameState = {
     targetCrowns: 5,
     giftsClaimed: 0
   },
+  puzzleState: {
+    caughtFragments: 0,
+    currentMilestoneIndex: 0,
+    puzzlePieces: 0,
+    tiles: [false, false, false, false, false, false, false, false, false]
+  },
   settings: {
     soundEnabled: true,
     autoBotEnabled: false,
@@ -516,6 +522,21 @@ function loadSavedGame() {
           crowns: 0,
           targetCrowns: 5,
           giftsClaimed: 0
+        };
+      }
+      if (parsed.puzzleState) {
+        gameState.puzzleState = Object.assign({
+          caughtFragments: 0,
+          currentMilestoneIndex: 0,
+          puzzlePieces: 0,
+          tiles: [false, false, false, false, false, false, false, false, false]
+        }, parsed.puzzleState);
+      } else if (!gameState.puzzleState) {
+        gameState.puzzleState = {
+          caughtFragments: 0,
+          currentMilestoneIndex: 0,
+          puzzlePieces: 0,
+          tiles: [false, false, false, false, false, false, false, false, false]
         };
       }
       if (parsed.dailyStats) {

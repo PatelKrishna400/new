@@ -86,7 +86,8 @@ const headerContent = `<!DOCTYPE html>
   <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Fredoka+One&family=Nunito:wght@700;800;900&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
