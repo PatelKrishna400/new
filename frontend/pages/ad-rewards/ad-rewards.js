@@ -17,7 +17,20 @@ let adSimulationInterval = null;
 function startAdSimulation(fuelType, title, desc, callback) {
   activeAdRewardState = { fuelType, rewardTitle: title, rewardDesc: desc, callback };
 
-  // Directly run Monetag Rewarded Interstitial Ad (show_11677609) with interactive modal fallback
+  // Directly run Monetag Rewarded Interstitial Ad (show_10676091)
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        if (typeof callback === 'function') callback();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
+  }
+
+  // Directly run Monetag Rewarded Interstitial Ad with interactive modal fallback
   if (typeof showRewardedAd === 'function') {
     showRewardedAd(callback, { adTitle: title, adDesc: desc });
     return;

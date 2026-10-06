@@ -227,6 +227,39 @@
         }
       }, 1000);
 
+      // Monetag Zone 10676091: Rewarded Popup vs Rewarded Interstitial
+      if (typeof window.show_10676091 === 'function') {
+        try {
+          const isPop = options.isPopup || options.type === 'pop';
+          if (isPop) {
+            console.log('🎬 Invoking Monetag Rewarded Popup show_10676091("pop")...');
+            window.show_10676091('pop').then(() => {
+              // user watch ad till the end or close it in interstitial format
+              // your code to reward user for rewarded format
+              console.log('✅ Monetag Rewarded Popup completed successfully!');
+              executeReward();
+              if (adModalEl) adModalEl.style.display = 'none';
+            }).catch(e => {
+              // user get error during playing ad
+              console.warn('⚠️ Monetag popup ad notice/error, simulation fallback active:', e);
+            });
+          } else {
+            console.log('🎬 Invoking Monetag Rewarded Interstitial show_10676091()...');
+            window.show_10676091().then(() => {
+              // User reward function executed after the user watches the ad
+              console.log('✅ Monetag Rewarded Interstitial completed successfully!');
+              executeReward();
+              if (adModalEl) adModalEl.style.display = 'none';
+            }).catch(e => {
+              // user get error during playing ad
+              console.warn('⚠️ Monetag rewarded interstitial notice/error, simulation fallback active:', e);
+            });
+          }
+        } catch (e) {
+          console.warn('⚠️ Exception calling show_10676091:', e);
+        }
+      }
+
       // Concurrently attempt official Monetag SDK invocation with strict timeout protection
       if (typeof window.show_11677609 === 'function') {
         try {
@@ -253,6 +286,40 @@
   window.watchRewardedAd = showRewardedAd;
   window.startAdSimulation = function(type, title, desc, callback) {
     showRewardedAd(callback, { adTitle: title, adDesc: desc });
+  };
+
+  // In-App Interstitial Ad Trigger for Shop Page (Zone: 10676091)
+  window.triggerShopInAppInterstitial = function() {
+    try {
+      if (typeof window.show_10676091 === 'function') {
+        window.show_10676091({
+          type: 'inApp',
+          inAppSettings: {
+            frequency: 2,
+            capping: 0.1,
+            interval: 30,
+            timeout: 5,
+            everyPage: false
+          }
+        });
+      } else if (typeof window.show_10676091 === 'undefined') {
+        window.show_10676091 = function(opts) {
+          (window.show_10676091.q = window.show_10676091.q || []).push(opts);
+        };
+        window.show_10676091({
+          type: 'inApp',
+          inAppSettings: {
+            frequency: 2,
+            capping: 0.1,
+            interval: 30,
+            timeout: 5,
+            everyPage: false
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('⚠️ Error triggering show_10676091 in-app interstitial:', err);
+    }
   };
 
   // Pre-create modal when DOM is ready

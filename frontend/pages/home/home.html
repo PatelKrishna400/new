@@ -66,7 +66,92 @@
       </div>
     </section>
 
-    <!-- 2. MIDDLE: Imperial Mega Rewards Feature Card (Home Navigation) -->
+    <!-- 2. SPINNER TAB: BIG PRIZE SPINNER (Uses 🎡 Spinner Coin, Win 1, 2, 5 Diamonds, 4 Gifts, or Try Again) -->
+    <section class="home-big-prize-spinner-card" id="homeBigPrizeSpinnerSection">
+      <!-- Glows & Shimmers -->
+      <div class="hbp-card-glow"></div>
+      <div class="hbp-shimmer-sweep"></div>
+
+      <!-- Header: Title, Live Status, Spin Coins Pill -->
+      <div class="hbp-header-row">
+        <div class="hbp-header-left">
+          <div class="hbp-badge-box">
+            <span class="hbp-wheel-icon">🎡</span>
+            <div class="hbp-sparkle-dot s1">✦</div>
+            <div class="hbp-sparkle-dot s2">✨</div>
+          </div>
+          <div class="hbp-heading-group">
+            <div class="hbp-top-meta-pills">
+              <span class="hbp-pill-tag">💎 JACKPOT EVENT</span>
+              <span class="hbp-live-pill">
+                <span class="hbp-pulse-dot"></span>
+                <span>ACTIVE</span>
+              </span>
+            </div>
+            <h3 class="hbp-main-heading font-sci">BIG PRIZE SPINNER</h3>
+            <p class="hbp-sub-heading">Use 1 🎡 Spin Coin to win Diamonds &amp; Gifts!</p>
+          </div>
+        </div>
+
+        <div class="hbp-header-right">
+          <!-- Spinner Coins Balance Badge -->
+          <div class="hbp-spin-coins-pill" title="Your Spin Coins (Tap to get more in Sunflower Exchange)" onclick="switchPage('sunflower'); setTimeout(() => { if (typeof navigateSunflowerPage === 'function') navigateSunflowerPage(5); }, 200);">
+            <span class="hbp-spin-coin-sym">🎡</span>
+            <div class="hbp-spin-coins-info">
+              <span class="hbp-spin-coins-lbl">COINS</span>
+              <span class="hbp-spin-coins-val font-black font-mono" id="hbpSpinCoinsCount">0</span>
+            </div>
+            <span class="hbp-spin-coins-plus" title="Get more in Sunflower Exchange">+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wheel Stage & Container -->
+      <div class="hbp-wheel-stage">
+        <!-- Top Pointer Needle -->
+        <div class="hbp-wheel-pointer-wrap">
+          <div class="hbp-wheel-pointer">▼</div>
+        </div>
+
+        <!-- Rotating Wheel Canvas & Slices -->
+        <div class="hbp-wheel-disk-outer" id="hbpWheelDiskOuter">
+          <canvas id="hbpWheelCanvas" width="300" height="300" class="hbp-wheel-canvas"></canvas>
+          
+          <!-- Center Hub Action Button -->
+          <button type="button" class="hbp-center-spin-btn" id="hbpCenterSpinBtn" onclick="spinBigPrizeWheel(event)" title="Spin the Wheel (1 🎡)">
+            <span class="hbp-btn-icon">🎡</span>
+            <span class="hbp-btn-text font-sci">SPIN</span>
+            <span class="hbp-btn-cost font-mono">1 🎡</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Prize Legend / Slices Info Grid (1, 2, 5 Diamonds, 4 Gifts, Try Again) -->
+      <div class="hbp-prizes-preview-grid">
+        <div class="hbp-prize-chip diamond"><span class="chip-ico">💎</span> 1 Diamond</div>
+        <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 1 (⚡500)</div>
+        <div class="hbp-prize-chip diamond"><span class="chip-ico">💎</span> 2 Diamonds</div>
+        <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 2 (🪣5+🪏1)</div>
+        <div class="hbp-prize-chip diamond jackpot"><span class="chip-ico">💎</span> 5 Diamonds</div>
+        <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 3 (🌻2.5K)</div>
+        <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 4 (🪣10+💎1)</div>
+        <div class="hbp-prize-chip try-again"><span class="chip-ico">❌</span> Try Again</div>
+      </div>
+
+      <!-- Result Banner Modal / Toast -->
+      <div class="hbp-result-banner" id="hbpResultBanner" style="display: none;">
+        <div class="hbp-result-content">
+          <span class="hbp-result-emoji" id="hbpResultEmoji">🎉</span>
+          <div class="hbp-result-texts">
+            <span class="hbp-result-title font-sci" id="hbpResultTitle">YOU WON!</span>
+            <span class="hbp-result-desc" id="hbpResultDesc">5 Diamonds added to your balance!</span>
+          </div>
+          <button type="button" class="hbp-result-claim-btn font-sci" onclick="dismissHbpResultBanner()">CLAIM</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MEGA REWARD TAB: Imperial Mega Rewards Feature Card (Home Navigation) -->
     <section class="home-leaderboard-tab-card home-mega-reward-card" id="homeMegaRewardSection" onclick="switchPage('megaReward')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('megaReward');}" role="button" tabindex="0" title="Tap to open Mega Rewards Vault">
       <div class="hlb-card-glow hmr-glow"></div>
       <div class="hlb-shimmer-sweep"></div>
@@ -127,7 +212,7 @@
       </div>
     </section>
 
-    <!-- 3. BOTTOM: QUANTUM DIAMOND GENERATOR SHOWCASE -->
+    <!-- 4. DAIMOND GENRATRE TAB: QUANTUM DIAMOND GENERATOR SHOWCASE -->
     <section class="diamond-generator-home-section" id="diamondGenHomeSection">
       <div class="dgh-card-glow"></div>
       

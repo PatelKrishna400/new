@@ -160,8 +160,6 @@ function claimCurrentStreakDay() {
       gameState.energyGenerator.fuelCells.orange = (gameState.energyGenerator.fuelCells.orange || 0) + todayCfg.orange;
     }
 
-        }
-
     // Award Diamonds
     if (todayCfg.diamonds) {
       gameState.player.diamonds = (gameState.player.diamonds || 0) + todayCfg.diamonds;
@@ -225,6 +223,19 @@ function claimCurrentStreakDay() {
       window.firebaseSync.saveToCloudImmediate();
     }
   };
+
+  // Rewarded Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        executeStreakReward();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
+  }
 
   if (typeof showRewardedAd === 'function') {
     showRewardedAd(executeStreakReward);

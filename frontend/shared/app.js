@@ -33,11 +33,9 @@ function getPageMap() {
       energy: DOM.pageEnergy,
       tasks: DOM.pageTasks,
       profile: DOM.pageProfile,
-      xp: DOM.pageXP,
       reward: DOM.pageReward,
       rewards: DOM.pageReward,
       wallet: DOM.pageReward,
-      goal: DOM.pageGoal,
       streak: DOM.pageStreak,
       adRewards: document.getElementById('pageAdRewards') || DOM.pageAdRewards,
       'ad-rewards': document.getElementById('pageAdRewards') || DOM.pageAdRewards,
@@ -66,6 +64,9 @@ function getPageMap() {
       coinCatcher: document.getElementById('pageCoinCatcher'),
       'coin-catcher': document.getElementById('pageCoinCatcher'),
       sunflower: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      land: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      water: document.getElementById('pageSunflower') || DOM.pageSunflower,
+      garden: document.getElementById('pageSunflower') || DOM.pageSunflower,
       crystal: document.getElementById('pageSunflower') || DOM.pageSunflower,
       'crystal-mining': document.getElementById('pageSunflower') || DOM.pageSunflower,
       crystalMining: document.getElementById('pageSunflower') || DOM.pageSunflower,
@@ -124,6 +125,9 @@ const PAGE_FILE_MAP = {
   'coinCatcher': 'coin-catcher',
   'coin-catcher': 'coin-catcher',
   'sunflower': 'sunflower',
+  'land': 'sunflower',
+  'water': 'sunflower',
+  'garden': 'sunflower',
   'crystal': 'sunflower',
   'crystal-mining': 'sunflower',
   'crystalMining': 'sunflower',
@@ -140,7 +144,7 @@ const PAGE_FILE_MAP = {
   'diamondGenerator': 'diamond-generator'
 };
 
-const _loadedPageScripts = new Set(['home', 'energy']);
+const _loadedPageScripts = new Set(['home', 'energy', 'diamond-generator', 'sunflower']);
 const _loadingPagePromises = new Map();
 
 function ensurePageLoaded(pageName) {
@@ -334,14 +338,8 @@ function switchPage(pageName) {
       if (typeof renderTasksList === 'function') renderTasksList();
     } else if (targetPage === 'profile') {
       if (typeof updateProfileUI === 'function') updateProfileUI();
-    } else if (targetPage === 'xp') {
-      if (typeof renderLevelsList === 'function') renderLevelsList();
-      if (typeof updateXpViewUI === 'function') updateXpViewUI();
     } else if (targetPage === 'reward' || targetPage === 'rewards' || targetPage === 'wallet') {
       if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-    } else if (targetPage === 'goal') {
-      if (typeof renderGoalsList === 'function') renderGoalsList();
-      if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
     } else if (targetPage === 'streak') {
       if (typeof renderStreakView === 'function') renderStreakView();
       if (typeof startStreakTimer === 'function') startStreakTimer();
@@ -479,14 +477,8 @@ function updateUI(full = false) {
   if (curTab === 'profile' || full) {
     if (typeof updateProfileUI === 'function') updateProfileUI();
   }
-  if (curTab === 'xp' || full) {
-    if (typeof updateXpViewUI === 'function') updateXpViewUI();
-  }
   if (curTab === 'reward' || curTab === 'rewards' || curTab === 'wallet' || full) {
     if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-  }
-  if (curTab === 'goal' || full) {
-    if (typeof updateGoalViewUI === 'function') updateGoalViewUI();
   }
   if (curTab === 'spin' || full) {
     if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
@@ -601,18 +593,6 @@ function initEvents() {
     triggerTelegramHaptic('selection');
     switchPage('streak');
   });
-  if (DOM.xpCard) {
-    DOM.xpCard.addEventListener('click', () => {
-      triggerTelegramHaptic('selection');
-      switchPage('xp');
-    });
-  }
-  if (DOM.goalCard) {
-    DOM.goalCard.addEventListener('click', () => {
-      triggerTelegramHaptic('selection');
-      switchPage('goal');
-    });
-  }
 
   DOM.navButtons.forEach(btn => {
     btn.addEventListener('click', () => {

@@ -83,11 +83,13 @@ const headerContent = `<!DOCTYPE html>
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Monetag Rewarded Interstitial SDK (Zone: 11677609) -->
-  <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
+  <script async src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
+  <!-- Monetag In-App Interstitial SDK (Zone: 10676091) -->
+  <script async src="https://libtl.com/sdk.js" data-zone="10676091" data-sdk="show_10676091"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Fredoka+One&family=Nunito:wght@700;800;900&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -440,10 +442,11 @@ const footerContent = `
   <!-- Shared Core State -->
   <script src="shared/state.js"></script>
 
-  <!-- Critical Initial Modules (Home, Energy Reactor & Diamond Generator) -->
+  <!-- Critical Initial Modules (Home, Energy Reactor, Diamond Generator & Sunflower) -->
   <script src="pages/home/home.js"></script>
   <script src="pages/energy/energy.js"></script>
   <script src="pages/diamond-generator/diamond-generator.js"></script>
+  <script src="pages/sunflower/sunflower.js"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
   <script src="shared/app.js"></script>

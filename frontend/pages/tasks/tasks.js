@@ -1617,6 +1617,19 @@ function claimDailyTaskReward(taskId, event) {
     }, 420);
   };
 
+  // Rewarded Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        executeClaim();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
+  }
+
   if (typeof showRewardedAd === 'function') {
     showRewardedAd(executeClaim);
   } else {

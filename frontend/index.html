@@ -10,11 +10,13 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Monetag Rewarded Interstitial SDK (Zone: 11677609) -->
-  <script src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
+  <script async src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
+  <!-- Monetag In-App Interstitial SDK (Zone: 10676091) -->
+  <script async src="https://libtl.com/sdk.js" data-zone="10676091" data-sdk="show_10676091"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Fredoka+One&family=Nunito:wght@700;800;900&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Tailwind CSS (Scoped without preflight reset) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -323,7 +325,92 @@
             </div>
           </section>
       
-          <!-- 2. MIDDLE: Imperial Mega Rewards Feature Card (Home Navigation) -->
+          <!-- 2. SPINNER TAB: BIG PRIZE SPINNER (Uses 🎡 Spinner Coin, Win 1, 2, 5 Diamonds, 4 Gifts, or Try Again) -->
+          <section class="home-big-prize-spinner-card" id="homeBigPrizeSpinnerSection">
+            <!-- Glows & Shimmers -->
+            <div class="hbp-card-glow"></div>
+            <div class="hbp-shimmer-sweep"></div>
+      
+            <!-- Header: Title, Live Status, Spin Coins Pill -->
+            <div class="hbp-header-row">
+              <div class="hbp-header-left">
+                <div class="hbp-badge-box">
+                  <span class="hbp-wheel-icon">🎡</span>
+                  <div class="hbp-sparkle-dot s1">✦</div>
+                  <div class="hbp-sparkle-dot s2">✨</div>
+                </div>
+                <div class="hbp-heading-group">
+                  <div class="hbp-top-meta-pills">
+                    <span class="hbp-pill-tag">💎 JACKPOT EVENT</span>
+                    <span class="hbp-live-pill">
+                      <span class="hbp-pulse-dot"></span>
+                      <span>ACTIVE</span>
+                    </span>
+                  </div>
+                  <h3 class="hbp-main-heading font-sci">BIG PRIZE SPINNER</h3>
+                  <p class="hbp-sub-heading">Use 1 🎡 Spin Coin to win Diamonds &amp; Gifts!</p>
+                </div>
+              </div>
+      
+              <div class="hbp-header-right">
+                <!-- Spinner Coins Balance Badge -->
+                <div class="hbp-spin-coins-pill" title="Your Spin Coins (Tap to get more in Sunflower Exchange)" onclick="switchPage('sunflower'); setTimeout(() => { if (typeof navigateSunflowerPage === 'function') navigateSunflowerPage(5); }, 200);">
+                  <span class="hbp-spin-coin-sym">🎡</span>
+                  <div class="hbp-spin-coins-info">
+                    <span class="hbp-spin-coins-lbl">COINS</span>
+                    <span class="hbp-spin-coins-val font-black font-mono" id="hbpSpinCoinsCount">0</span>
+                  </div>
+                  <span class="hbp-spin-coins-plus" title="Get more in Sunflower Exchange">+</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Wheel Stage & Container -->
+            <div class="hbp-wheel-stage">
+              <!-- Top Pointer Needle -->
+              <div class="hbp-wheel-pointer-wrap">
+                <div class="hbp-wheel-pointer">▼</div>
+              </div>
+      
+              <!-- Rotating Wheel Canvas & Slices -->
+              <div class="hbp-wheel-disk-outer" id="hbpWheelDiskOuter">
+                <canvas id="hbpWheelCanvas" width="300" height="300" class="hbp-wheel-canvas"></canvas>
+                
+                <!-- Center Hub Action Button -->
+                <button type="button" class="hbp-center-spin-btn" id="hbpCenterSpinBtn" onclick="spinBigPrizeWheel(event)" title="Spin the Wheel (1 🎡)">
+                  <span class="hbp-btn-icon">🎡</span>
+                  <span class="hbp-btn-text font-sci">SPIN</span>
+                  <span class="hbp-btn-cost font-mono">1 🎡</span>
+                </button>
+              </div>
+            </div>
+      
+            <!-- Prize Legend / Slices Info Grid (1, 2, 5 Diamonds, 4 Gifts, Try Again) -->
+            <div class="hbp-prizes-preview-grid">
+              <div class="hbp-prize-chip diamond"><span class="chip-ico">💎</span> 1 Diamond</div>
+              <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 1 (⚡500)</div>
+              <div class="hbp-prize-chip diamond"><span class="chip-ico">💎</span> 2 Diamonds</div>
+              <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 2 (🪣5+🪏1)</div>
+              <div class="hbp-prize-chip diamond jackpot"><span class="chip-ico">💎</span> 5 Diamonds</div>
+              <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 3 (🌻2.5K)</div>
+              <div class="hbp-prize-chip gift"><span class="chip-ico">🎁</span> Gift 4 (🪣10+💎1)</div>
+              <div class="hbp-prize-chip try-again"><span class="chip-ico">❌</span> Try Again</div>
+            </div>
+      
+            <!-- Result Banner Modal / Toast -->
+            <div class="hbp-result-banner" id="hbpResultBanner" style="display: none;">
+              <div class="hbp-result-content">
+                <span class="hbp-result-emoji" id="hbpResultEmoji">🎉</span>
+                <div class="hbp-result-texts">
+                  <span class="hbp-result-title font-sci" id="hbpResultTitle">YOU WON!</span>
+                  <span class="hbp-result-desc" id="hbpResultDesc">5 Diamonds added to your balance!</span>
+                </div>
+                <button type="button" class="hbp-result-claim-btn font-sci" onclick="dismissHbpResultBanner()">CLAIM</button>
+              </div>
+            </div>
+          </section>
+      
+          <!-- 3. MEGA REWARD TAB: Imperial Mega Rewards Feature Card (Home Navigation) -->
           <section class="home-leaderboard-tab-card home-mega-reward-card" id="homeMegaRewardSection" onclick="switchPage('megaReward')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPage('megaReward');}" role="button" tabindex="0" title="Tap to open Mega Rewards Vault">
             <div class="hlb-card-glow hmr-glow"></div>
             <div class="hlb-shimmer-sweep"></div>
@@ -384,7 +471,7 @@
             </div>
           </section>
       
-          <!-- 3. BOTTOM: QUANTUM DIAMOND GENERATOR SHOWCASE -->
+          <!-- 4. DAIMOND GENRATRE TAB: QUANTUM DIAMOND GENERATOR SHOWCASE -->
           <section class="diamond-generator-home-section" id="diamondGenHomeSection">
             <div class="dgh-card-glow"></div>
             
@@ -2772,24 +2859,7 @@
       
         <!-- ================= SUBTAB 1: LUCKY WHEEL ================= -->
         <div class="spin-subtab-content active" id="spinSubtabContentWheel">
-          <!-- Quick Info Strip -->
-          <div class="mini-game-info-strip">
-            <div class="info-strip-chip">
-              <span class="chip-dot gold"></span>
-              <span class="chip-label">COST:</span>
-              <span class="chip-val">1 Ticket</span>
-            </div>
-            <div class="info-strip-chip">
-              <span class="chip-dot cyan"></span>
-              <span class="chip-label">SLICES:</span>
-              <span class="chip-val">8 Prizes</span>
-            </div>
-            <div class="info-strip-chip">
-              <span class="chip-dot amber"></span>
-              <span class="chip-label">JACKPOT:</span>
-              <span class="chip-val">10 Coins (10%)</span>
-            </div>
-          </div>
+      
       
           <!-- Spin Wheel Game Card (Full Page View) -->
           <section class="spin-arena-card">
@@ -3003,7 +3073,6 @@
               </div>
               <div class="spin-crown-meta-row">
                 <span class="spin-crown-count" id="spinCrownCountText">👑 0 / 5</span>
-                <span class="spin-reward-emoji-preview" id="spinLevelRewardPreviewText">🎁 🪙 +10 • 🗝️ +2 • 🎟️ +3</span>
               </div>
             </div>
           </div>
@@ -4700,32 +4769,27 @@
           </div>
       
           <!-- Sticky Live Resource Balances: Coins, Buckets, Shovels, Seeds & Firebase Cloud Status -->
+          <!-- Sticky Live Resource Balances: Coins, Seeds, Buckets, Shovels (Guaranteed No Horizontal Scroll) -->
           <div class="sf-sticky-resources">
             <!-- 1. 🌻 Sunflower Coin Balance -->
-            <div class="sf-hdr-pill pill-amber" title="Sunflower Coins">
+            <div class="sf-hdr-pill pill-amber" onclick="navigateSunflowerPage(5)" title="Sunflower Coins: Tap to open Exchange">
               <span class="sf-hdr-ico">🌻</span>
-              <span id="sfStickyCoins" class="sf-hdr-val font-mono font-black">150</span>
+              <span id="sfStickyCoins" class="sf-hdr-val font-black">0</span>
             </div>
             <!-- 2. 🌱 Seeds in Inventory -->
-            <div class="sf-hdr-pill pill-emerald" title="Sunflower Plants / Seeds in Inventory">
+            <div class="sf-hdr-pill pill-emerald" onclick="navigateSunflowerPage(3)" title="Plant Seeds: Tap to open Shop">
               <span class="sf-hdr-ico">🌱</span>
-              <span id="sfStickySeeds" class="sf-hdr-val font-mono font-black">3</span>
+              <span id="sfStickySeeds" class="sf-hdr-val font-black">3</span>
             </div>
             <!-- 3. 🪣 Bucket Balance -->
-            <div class="sf-hdr-pill pill-blue" title="Water Buckets (+10s Hydration)">
+            <div class="sf-hdr-pill pill-blue" onclick="navigateSunflowerPage(2)" title="Water Buckets: Tap to open Water Wells">
               <span class="sf-hdr-ico">🪣</span>
-              <span id="sfStickyBaskets" class="sf-hdr-val font-mono font-black">2</span>
+              <span id="sfStickyBaskets" class="sf-hdr-val font-black">2</span>
             </div>
             <!-- 4. 🪏 Shovel Balance -->
-            <div class="sf-hdr-pill pill-stone" title="Garden Shovels (Clear Dead Sunflowers)">
+            <div class="sf-hdr-pill pill-stone" onclick="navigateSunflowerPage(3)" title="Shovels: Tap to open Shop">
               <span class="sf-hdr-ico">🪏</span>
-              <span id="sfStickyShovels" class="sf-hdr-val font-mono font-black">1</span>
-            </div>
-            
-            <!-- 6. ☁️ Firebase Cloud Sync Indicator -->
-            <div class="sf-hdr-pill pill-firebase" id="sfStickyFirebase" title="Firebase Realtime Database Status">
-              <span class="sf-cloud-dot online" id="sfFbDot">●</span>
-              <span id="sfFbLabel" class="text-[9.5px] font-bold">Cloud Synced</span>
+              <span id="sfStickyShovels" class="sf-hdr-val font-black">1</span>
             </div>
           </div>
         </header>
@@ -4752,11 +4816,14 @@
                 <span id="sfPlotsSummaryLabel" class="text-amber-300 text-xs font-bold bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-700/60 font-mono">
                   1 of 20 Lands Unlocked
                 </span>
+                <span id="sfLandWorkersSummaryBadge" class="text-emerald-300 text-xs font-bold bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700/60 font-mono">
+                  👷 0/20 Managers
+                </span>
               </div>
             </div>
       
             <!-- Quick Action & Upgrade Multiplier Tool Strip (Only visible on Lands/Garden tab) -->
-            <div class="sf-garden-tools-strip my-1">
+            <div class="sf-garden-tools-strip my-1 flex flex-wrap items-center justify-between gap-2">
               <div class="sf-tools-left">
                 <!-- Circular Multiplier Toggle Switch (Tap to cycle 1x → 10x → 100x → MAX) -->
                 <button id="sfMultToggleCircleBtn" onclick="toggleSfUpgradeMultiplier(event)" class="sf-mult-circle-toggle-btn" data-mult="1" title="Tap to toggle Buy Multiplier (1x → 10x → 100x → MAX)" aria-label="Toggle Buy Multiplier">
@@ -4771,6 +4838,14 @@
                 </div>
               </div>
       
+              <div class="flex items-center gap-1.5 ml-auto">
+                <button onclick="autoAssignAllLandWorkers(event)" class="sf-quick-tool-btn amber" title="Auto-assign available managers to lands">
+                  <span>⚡ Auto-Assign</span>
+                </button>
+                <button onclick="navigateSunflowerPage(4); switchSunflowerWorkerSubtab('farming');" class="sf-quick-tool-btn emerald" title="Go to Workers HQ to hire more managers">
+                  <span>👷 Hire</span>
+                </button>
+              </div>
             </div>
       
             <!-- 20 Plots List in Fixed 1*20 Format -->
@@ -5022,21 +5097,72 @@
       
             <!-- TAB 1: FARMING WORKERS (Harvesters, Planters, Botanists) -->
             <div class="flex flex-col gap-3" id="sfWorkerSectionFarming">
-              <!-- Worker 1: Dave the Solar Harvester -->
-              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-md">
+              <!-- Worker 1: Land Automation Manager (Repeatable / Assignable to 20 Lands) -->
+              <div class="sf-worker-card bg-stone-950/80 rounded-xl p-3.5 border-2 border-amber-500/60 flex flex-col justify-between gap-3 shadow-lg">
                 <div class="flex items-start justify-between">
                   <div class="flex items-center gap-2.5">
-                    <div class="w-10 h-10 rounded-full bg-amber-900/60 border border-amber-400 flex items-center justify-center text-xl">🌻</div>
+                    <div class="w-11 h-11 rounded-full bg-amber-900/70 border-2 border-amber-400 flex items-center justify-center text-2xl shadow">👷🌾</div>
                     <div>
-                      <h4 class="text-xs font-black text-amber-300">Dave &bull; Solar Harvester</h4>
-                      <p class="text-[10px] text-stone-300">Automatically collects coins from Lands 1 to 5!</p>
+                      <h4 class="text-xs font-black text-amber-300 flex items-center gap-1.5">
+                        <span>Land Automation Manager</span>
+                        <span class="text-[9px] bg-amber-950 text-amber-300 font-mono border border-amber-500/40 px-1.5 py-0.2 rounded-full">Core Automator</span>
+                      </h4>
+                      <p class="text-[10px] text-stone-300">
+                        Assign to any of the 20 Lands on Page 1! Automatically feeds water (hydrates plant lifetime) and collects harvest coins continuously!
+                      </p>
                     </div>
                   </div>
-                  <span id="sfWorkerBadgeDave" class="text-[9px] bg-stone-800 text-stone-400 font-bold px-2 py-0.5 rounded-full border border-stone-700">Not Hired</span>
+                  <span id="sfLandWorkerBadge" class="text-[9.5px] bg-amber-950 text-amber-300 font-mono font-bold px-2 py-0.5 rounded-full border border-amber-500/50">
+                    <span id="sfLandWorkersHiredCount">0</span> / 20 Hired
+                  </span>
                 </div>
-                <button id="sfHireWorkerDaveBtn" onclick="hireSunflowerWorker('dave')" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition">
-                  <span>Hire Dave &bull; 1,500 ☀️ Coins (or 25 💎)</span>
-                </button>
+      
+                <!-- Land Manager Allocation Status -->
+                <div class="grid grid-cols-3 gap-2 bg-stone-900/90 rounded-lg p-2 border border-amber-800/40 text-center text-xs">
+                  <div class="flex flex-col">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Total Hired</span>
+                    <span id="sfLandWorkerStatHired" class="font-mono font-black text-amber-300 text-sm">0</span>
+                  </div>
+                  <div class="flex flex-col border-x border-stone-800">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Assigned</span>
+                    <span id="sfLandWorkerStatAssigned" class="font-mono font-black text-emerald-400 text-sm">0</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[9px] text-stone-400 uppercase font-bold">Idle (Available)</span>
+                    <span id="sfLandWorkerStatIdle" class="font-mono font-black text-amber-300 text-sm">0</span>
+                  </div>
+                </div>
+      
+                <!-- Buy Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button id="sfBuyLandWorkerCoinBtn" onclick="hireLandWorker('coins')" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 active:scale-95 text-stone-950 font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                    <span>Hire Manager &bull; 250 ☀️ Coins</span>
+                  </button>
+                  <button id="sfBuyLandWorkerDiaBtn" onclick="hireLandWorker('diamonds')" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-95 text-white font-black text-xs py-2 rounded-xl shadow transition flex items-center justify-center gap-1">
+                    <span>Hire Manager &bull; 5 💎</span>
+                  </button>
+                </div>
+      
+                <!-- Quick Assignment Actions -->
+                <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-stone-800/80">
+                  <button onclick="autoAssignAllLandWorkers(event)" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[10.5px] py-1.5 px-2 rounded-lg transition border border-emerald-500/40 flex items-center justify-center gap-1">
+                    <span>⚡ Auto-Assign Idle Managers to Lands</span>
+                  </button>
+                  <button onclick="navigateSunflowerPage(1)" class="bg-stone-800 hover:bg-stone-700 text-amber-300 font-bold text-[10.5px] py-1.5 px-3 rounded-lg transition border border-stone-700 flex items-center justify-center gap-1">
+                    <span>🌾 Open 20 Lands Page &rarr;</span>
+                  </button>
+                </div>
+      
+                <!-- 20 Lands Quick Assign Mini Matrix -->
+                <div class="flex flex-col gap-1.5 bg-stone-900/60 p-2 rounded-lg border border-stone-800">
+                  <div class="flex items-center justify-between text-[10px] text-stone-400">
+                    <span class="font-bold text-stone-300">Quick Land Assignments (Lands 1 to 20):</span>
+                    <span class="text-[9px] text-amber-400 font-mono">Click to toggle assignment</span>
+                  </div>
+                  <div id="sfLandWorkerMiniGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-1">
+                    <!-- Dynamically populated by updateWorkersUI() -->
+                  </div>
+                </div>
               </div>
       
               <!-- Worker 2: Elena the Sun Botanist -->
@@ -5203,20 +5329,87 @@
           <!-- SF PAGE 5: 🔋 SUNFLOWER FUEL & ENERGY EXCHANGE                  -->
           <!-- ============================================================== -->
           <section id="sfPage5" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
-            <!-- Exchange Header Switcher: Fuel Cells Shop vs Solar Converter -->
-            <div class="sf-exchange-tabs-nav flex items-center gap-2 p-1 bg-stone-950/80 rounded-xl border border-amber-500/40">
-              <button class="sf-exchange-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 active" id="sfExchTabFuel" onclick="switchSunflowerExchangeSubtab('fuel')">
-                <span>🔋</span>
-                <span>Fuel Cells Shop</span>
+            <!-- Exchange Header Switcher: Spin Coins vs Fuel Cells vs Solar Converter -->
+            <div class="sf-exchange-tabs-nav flex items-center gap-1.5 p-1 bg-stone-950/80 rounded-xl border border-amber-500/40">
+              <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1 active" id="sfExchTabSpin" onclick="switchSunflowerExchangeSubtab('spin')">
+                <span>🎡</span>
+                <span>Spin Coins (1 Qa ☀️)</span>
               </button>
-              <button class="sf-exchange-tab-btn flex-1 py-2 px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5" id="sfExchTabEnergy" onclick="switchSunflowerExchangeSubtab('energy')">
+              <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabFuel" onclick="switchSunflowerExchangeSubtab('fuel')">
+                <span>🔋</span>
+                <span>Fuel Cells</span>
+              </button>
+              <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabEnergy" onclick="switchSunflowerExchangeSubtab('energy')">
                 <span>⚡</span>
                 <span>Solar Refinery (29⚡)</span>
               </button>
             </div>
       
+            <!-- SUBTAB 0: 🎡 LUCKY SPIN COIN EXCHANGE (1 Qa ☀️ = 1 🎡 Spin Coin) -->
+            <div class="flex flex-col gap-3.5" id="sfExchangeSectionSpin">
+              <!-- Top Section Header Matching Luxury Design -->
+              <div class="sf-fuel-shop-header flex items-center justify-between border-b border-amber-500/40 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl animate-spin-slow">🎡</span>
+                  <div>
+                    <h3 class="text-xs sm:text-sm font-black text-amber-300 tracking-tight flex items-center gap-1.5">
+                      <span>🎡 Lucky Spin Coin Exchange</span>
+                      <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-500/50">1 Qa ☀️ = 1 🎡</span>
+                    </h3>
+                    <p class="text-[10.5px] text-stone-300">Convert harvested Sunflower Coins into Lucky Spin Wheel tickets (🎡 Spin Coins)!</p>
+                  </div>
+                </div>
+                <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-400 bg-amber-950/90 border border-amber-500/50 px-2 py-0.8 rounded-lg shadow">LUCKY SPINS</span>
+              </div>
+      
+              <!-- Live Balances & Conversion Hero Card -->
+              <div class="bg-gradient-to-br from-amber-950/60 via-stone-900/90 to-yellow-950/50 rounded-2xl p-4 border border-amber-500/40 shadow-xl flex flex-col gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center text-xs">
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+                    <span class="text-stone-400 text-[10px] block font-bold uppercase tracking-wider">Your Sunflower Coins</span>
+                    <span id="sfSpinExchCoinsDisplay" class="font-mono font-black text-amber-300 text-sm sm:text-base mt-0.5">0 ☀️</span>
+                  </div>
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+                    <span class="text-stone-400 text-[10px] block font-bold uppercase tracking-wider">Base Exchange Rate</span>
+                    <span class="font-mono font-black text-yellow-300 text-sm sm:text-base mt-0.5">1 🎡 = 1 Qa ☀️</span>
+                    <span class="text-[9px] text-stone-400">(1,000,000,000,000,000 ☀️)</span>
+                  </div>
+                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+                    <span class="text-stone-400 text-[10px] block font-bold uppercase tracking-wider">Your Spin Coins</span>
+                    <span id="sfSpinExchOwnedDisplay" class="font-mono font-black text-cyan-300 text-sm sm:text-base mt-0.5">0 🎡</span>
+                    <span class="text-[9px] text-emerald-400 font-bold">Ready to Spin!</span>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Batch Quantity Quick Buttons (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000) -->
+              <div class="flex flex-col gap-2.5 bg-stone-950/70 p-3.5 rounded-2xl border border-stone-800">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-amber-200 flex items-center gap-1.5">
+                    <span>⚡ Fast Batch Exchange Packages:</span>
+                  </span>
+                  <span class="text-[10px] text-stone-400 font-mono">1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 🎡</span>
+                </div>
+      
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="sfSpinBatchButtonsContainer">
+                  <!-- Dynamically populated by renderSunflowerSpinExchange() -->
+                </div>
+      
+                <!-- Quick MAX & Back to Lands Bar -->
+                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-stone-800/80 mt-1">
+                  <button onclick="exchangeSfCoinsForSpin('max', event)" class="flex-1 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 active:scale-95 text-stone-950 font-black text-xs py-2.5 px-3 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5 border border-yellow-300/40">
+                    <span>🚀 Exchange MAX Possible</span>
+                    <span id="sfSpinMaxPossibleLabel" class="bg-stone-950/20 px-2 py-0.5 rounded-full text-[10px] font-mono font-black text-stone-950">0 🎡</span>
+                  </button>
+                  <button onclick="navigateSunflowerPage(1)" class="bg-stone-800 hover:bg-stone-700 text-amber-300 font-bold text-xs py-2.5 px-4 rounded-xl transition border border-stone-700 flex items-center justify-center gap-1">
+                    <span>🌾 Back to Lands &rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+      
             <!-- SUBTAB 1: 🔋 ENERGY FUEL CELL SHOP (Styled exactly after screenshot) -->
-            <div class="flex flex-col gap-3" id="sfExchangeSectionFuel">
+            <div class="flex flex-col gap-3 hidden" id="sfExchangeSectionFuel">
               <!-- Top Section Header Matching Screenshot -->
               <div class="sf-fuel-shop-header flex items-center justify-between border-b border-cyan-900/40 pb-2.5">
                 <div class="flex items-center gap-2">
@@ -7035,10 +7228,11 @@
   <!-- Shared Core State -->
   <script src="shared/state.js"></script>
 
-  <!-- Critical Initial Modules (Home, Energy Reactor & Diamond Generator) -->
+  <!-- Critical Initial Modules (Home, Energy Reactor, Diamond Generator & Sunflower) -->
   <script src="pages/home/home.js"></script>
   <script src="pages/energy/energy.js"></script>
   <script src="pages/diamond-generator/diamond-generator.js"></script>
+  <script src="pages/sunflower/sunflower.js"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
   <script src="shared/app.js"></script>

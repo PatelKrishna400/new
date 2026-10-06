@@ -374,11 +374,15 @@ window.triggerMineCrystalClick = function(terraceId, event) {
   }
 };
 
-window.handleMineTerraceAction = function(terraceId, event) {
-  const terrace = mineState.terraces.find(t => t.id === terraceId);
-  if (!terrace) return;
+function renderMineTerraces() {
+  const container = document.getElementById('mineTerracesContainer');
+  if (!container || !mineState.terraces) return;
+  container.innerHTML = '';
 
-  if (!terrace.unlocked) {
+  mineState.terraces.forEach(terrace => {
+    const card = document.createElement('div');
+    card.id = `mine-terrace-${terrace.id}`;
+    if (!terrace.unlocked) {
       card.className = "mine-terrace-locked rounded-xl p-3 flex items-center justify-between gap-3 relative text-slate-300 border border-slate-700/60 shadow-md";
       card.innerHTML = `
         <div class="flex items-center gap-3">

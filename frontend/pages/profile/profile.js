@@ -565,6 +565,26 @@ window.claimPassItemViaAd = function(itemType) {
     return;
   }
 
+  // In-App Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091({
+        type: 'inApp',
+        inAppSettings: {
+          frequency: 2,
+          capping: 0.1,
+          interval: 30,
+          timeout: 5,
+          everyPage: false
+        }
+      });
+    } catch (e) {
+      console.warn('show_10676091 error:', e);
+    }
+  } else if (typeof window.triggerShopInAppInterstitial === 'function') {
+    window.triggerShopInAppInterstitial();
+  }
+
   const doReward = () => {
     if (!gameState.player.passAdCooldowns) {
       gameState.player.passAdCooldowns = {};
@@ -2039,6 +2059,19 @@ window.startReelGiftAdFlow = function() {
     sfx.playTapSound(1.2);
   }
 
+  // Rewarded Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        openReelGiftStudioModal();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
+  }
+
   // Use the universal rewarded ad service (Monetag live ad or failsafe countdown)
   if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(() => {
@@ -2737,6 +2770,19 @@ window.activateQuantumBlueTapsWithAd = function() {
     sfx.playTapSound(1.2);
   }
 
+  // Rewarded Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        activateQuantumBlueTaps(50, 0, 'Ad Reward');
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
+  }
+
   if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(() => {
       activateQuantumBlueTaps(50, 0, 'Ad Reward');
@@ -2814,6 +2860,29 @@ window.synthesizeGoldToBlueInTab = function() {
 window.watchAdForBlueCoins = function() {
   if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
     sfx.playTapSound(1.2);
+  }
+
+  // Rewarded Interstitial
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        gameState.player.diamonds = (gameState.player.diamonds || 0) + 50;
+        if (gameState.player.blueCoins !== undefined) {
+          gameState.player.blueCoins = gameState.player.diamonds;
+        }
+        if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+          sfx.playLevelUpSound();
+        }
+        showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
+        updateBlueTabUI();
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
   }
 
   if (typeof window.showRewardedAd === 'function') {

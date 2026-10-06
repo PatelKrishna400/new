@@ -366,6 +366,23 @@
   }
 
   window.claimFreeBrainCoinAd = function() {
+    // Rewarded Popup
+    if (typeof show_10676091 === 'function') {
+      try {
+        show_10676091('pop').then(() => {
+          // user watch ad till the end or close it in interstitial format
+          // your code to reward user for rewarded format
+          grantBrainCoin();
+        }).catch(e => {
+          // user get error during playing ad
+          // do nothing or whatever you want
+          console.warn('show_10676091 pop error:', e);
+        });
+      } catch (e) {
+        console.warn('show_10676091 error:', e);
+      }
+    }
+
     if (typeof window.showRewardedAd === 'function') {
       window.showRewardedAd(grantBrainCoin, {
         adTitle: 'Free Brain Coin Sponsor Ad',

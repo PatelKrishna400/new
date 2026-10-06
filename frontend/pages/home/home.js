@@ -613,6 +613,11 @@ function updateHomeUI() {
   if (typeof updateDiamondGeneratorUI === 'function') {
     updateDiamondGeneratorUI();
   }
+
+  // Update Big Prize Spinner on Home
+  if (typeof updateBigPrizeSpinnerUI === 'function') {
+    updateBigPrizeSpinnerUI();
+  }
 }
 
 // ==========================================================================
@@ -2430,5 +2435,339 @@ function switchHomeLeaderboardTab(tab) {
   }
 }
 window.switchHomeLeaderboardTab = switchHomeLeaderboardTab;
+
+/* ==========================================================================
+   BIG PRIZE SPINNER (Uses 1 🎡 Spinner Coin, Win 1, 2, 5 Diamonds, 4 Gifts, or Try Again)
+   ========================================================================== */
+const HBP_WHEEL_SLICES = [
+  { id: 'd1', label: '1 Diamond', icon: '💎', sub: '1 💎', color: '#0284c7', textColor: '#ffffff' },
+  { id: 'g1', label: 'Gift 1', icon: '🎁', sub: '⚡ 500', color: '#d97706', textColor: '#ffffff' },
+  { id: 'd2', label: '2 Diamonds', icon: '💎', sub: '2 💎', color: '#0ea5e9', textColor: '#ffffff' },
+  { id: 'g2', label: 'Gift 2', icon: '🎁', sub: '🪣5+🪏1', color: '#059669', textColor: '#ffffff' },
+  { id: 'd5', label: '5 Diamonds', icon: '💎', sub: '5 💎', color: '#7c3aed', textColor: '#ffffff' },
+  { id: 'g3', label: 'Gift 3', icon: '🎁', sub: '🌻 2.5K', color: '#e11d48', textColor: '#ffffff' },
+  { id: 'g4', label: 'Gift 4', icon: '🎁', sub: '🪣10+💎1', color: '#9333ea', textColor: '#ffffff' },
+  { id: 'try', label: 'Try Again', icon: '❌', sub: 'AGAIN', color: '#475569', textColor: '#e2e8f0' }
+];
+
+let hbpCurrentAngle = 0;
+let hbpIsSpinning = false;
+let hbpAnimId = null;
+
+function getHbpAvailableCoins() {
+  if (typeof gameState !== 'undefined' && gameState.player) {
+    if (typeof gameState.player.chestTickets === 'number' && gameState.player.chestTickets > 0) {
+      return gameState.player.chestTickets;
+    }
+    if (typeof gameState.player.spinCoins === 'number' && gameState.player.spinCoins > 0) {
+      return gameState.player.spinCoins;
+    }
+  }
+  return 0;
+}
+
+function updateBigPrizeSpinnerUI() {
+  const countEl = document.getElementById('hbpSpinCoinsCount');
+  const coins = getHbpAvailableCoins();
+  if (countEl) {
+    countEl.innerText = coins.toLocaleString();
+  }
+  const spinBtn = document.getElementById('hbpCenterSpinBtn');
+  if (spinBtn) {
+    spinBtn.disabled = hbpIsSpinning;
+  }
+  drawBigPrizeWheel(hbpCurrentAngle);
+}
+window.updateBigPrizeSpinnerUI = updateBigPrizeSpinnerUI;
+
+function drawBigPrizeWheel(angle = 0) {
+  const canvas = document.getElementById('hbpWheelCanvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = cx - 12;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const numSlices = HBP_WHEEL_SLICES.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+
+  // 1. Draw 8 Slices
+  for (let i = 0; i < numSlices; i++) {
+    const slice = HBP_WHEEL_SLICES[i];
+    const startAngle = i * sliceAngle;
+    const endAngle = startAngle + sliceAngle;
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, radius, startAngle, endAngle);
+    ctx.closePath();
+
+    // Radial gradient for rich jewel tone
+    const radGrad = ctx.createRadialGradient(0, 0, 20, 0, 0, radius);
+    radGrad.addColorStop(0, slice.color);
+    radGrad.addColorStop(0.85, slice.color);
+    radGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = radGrad;
+    ctx.fill();
+
+    // Slice Border divider
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.stroke();
+
+    // 2. Draw Slice Icon & Text
+    ctx.save();
+    const midAngle = startAngle + sliceAngle / 2;
+    ctx.rotate(midAngle);
+
+    // Text & icon position
+    const textRadius = radius * 0.68;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Emoji icon
+    ctx.font = '22px "Segoe UI Emoji", sans-serif';
+    ctx.fillText(slice.icon, textRadius, -8);
+
+    // Subtext label
+    ctx.font = 'bold 11px "JetBrains Mono", monospace';
+    ctx.fillStyle = slice.textColor;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowBlur = 4;
+    ctx.fillText(slice.sub, textRadius, 14);
+
+    ctx.restore();
+  }
+
+  // 3. Draw Outer Golden Ring with Accent Pegs
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = '#f59e0b';
+  ctx.stroke();
+
+  // Outer border pins / lights
+  const numPegs = 24;
+  for (let p = 0; p < numPegs; p++) {
+    const pegAngle = (p * 2 * Math.PI) / numPegs;
+    const px = Math.cos(pegAngle) * (radius - 1);
+    const py = Math.sin(pegAngle) * (radius - 1);
+
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, 2 * Math.PI);
+    ctx.fillStyle = (p % 2 === 0) ? '#fef08a' : '#ffffff';
+    ctx.shadowColor = '#fde047';
+    ctx.shadowBlur = 4;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.restore();
+}
+window.drawBigPrizeWheel = drawBigPrizeWheel;
+
+function spinBigPrizeWheel(event = null) {
+  if (hbpIsSpinning) return;
+
+  const currentCoins = getHbpAvailableCoins();
+  if (currentCoins < 1) {
+    if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('warning');
+    const posX = event ? event.clientX : window.innerWidth / 2;
+    const posY = event ? event.clientY : window.innerHeight / 2;
+    
+    // Spawn float notification & prompt
+    if (typeof spawnHomeFloatingText === 'function') {
+      spawnHomeFloatingText('⚠️ Need 1 🎡 Spin Coin! Get in Sunflower Exchange', posX, posY, 'text-amber-400');
+    } else {
+      alert('⚠️ Need 1 🎡 Spin Coin!\n\nExchange ☀️ Sunflower Coins for 🎡 Spin Coins in Sunflower Valley -> Exchange tab!');
+    }
+    return;
+  }
+
+  // Deduct 1 Spin Coin
+  if (typeof gameState !== 'undefined' && gameState.player) {
+    const current = (gameState.player.chestTickets || gameState.player.spinCoins || 1);
+    gameState.player.chestTickets = Math.max(0, current - 1);
+    gameState.player.spinCoins = gameState.player.chestTickets;
+  }
+
+  hbpIsSpinning = true;
+  updateBigPrizeSpinnerUI();
+  if (typeof saveGame === 'function') saveGame();
+
+  // Audio start tone
+  if (typeof playSoundEffect === 'function') playSoundEffect('click');
+
+  // Pick winning slice
+  // Slices: 0: 1 Diam, 1: Gift 1, 2: 2 Diam, 3: Gift 2, 4: 5 Diam, 5: Gift 3, 6: Gift 4, 7: Try Again
+  const winningIndex = Math.floor(Math.random() * HBP_WHEEL_SLICES.length);
+  const winningSlice = HBP_WHEEL_SLICES[winningIndex];
+
+  // Mathematical target calculation
+  const numSlices = HBP_WHEEL_SLICES.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+  const topPointerAngle = 1.5 * Math.PI; // 270 deg / Top of circle
+
+  // Center of winning slice relative to start
+  const winningSliceCenter = (winningIndex + 0.5) * sliceAngle;
+
+  // Base rotation so slice center is at top pointer
+  let baseTargetAngle = (topPointerAngle - winningSliceCenter);
+  while (baseTargetAngle < 0) baseTargetAngle += 2 * Math.PI;
+
+  // Add 5 to 7 full rotations for excitement
+  const fullSpins = 6;
+  const currentNormalized = hbpCurrentAngle % (2 * Math.PI);
+  const targetAngle = hbpCurrentAngle + (2 * Math.PI * fullSpins) + ((baseTargetAngle - currentNormalized + 2 * Math.PI) % (2 * Math.PI));
+
+  const startAngle = hbpCurrentAngle;
+  const totalChange = targetAngle - startAngle;
+  const duration = 4200; // 4.2 seconds smooth spin
+  const startTime = performance.now();
+
+  function animateSpin(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / duration);
+
+    // Easing: Cubic ease-out
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    hbpCurrentAngle = startAngle + (totalChange * easeOut);
+
+    drawBigPrizeWheel(hbpCurrentAngle);
+
+    if (progress < 1) {
+      hbpAnimId = requestAnimationFrame(animateSpin);
+    } else {
+      hbpCurrentAngle = targetAngle;
+      drawBigPrizeWheel(hbpCurrentAngle);
+      hbpIsSpinning = false;
+      updateBigPrizeSpinnerUI();
+
+      // Handle win outcome
+      handleHbpWheelOutcome(winningSlice);
+    }
+  }
+
+  hbpAnimId = requestAnimationFrame(animateSpin);
+}
+window.spinBigPrizeWheel = spinBigPrizeWheel;
+
+function handleHbpWheelOutcome(slice) {
+  let resultTitle = 'YOU WON!';
+  let resultDesc = '';
+  let emoji = slice.icon;
+
+  if (slice.type === 'diamond') {
+    const amt = slice.amount || 1;
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + amt;
+    }
+    resultTitle = amt >= 5 ? '🌟 JACKPOT! 5 DIAMONDS!' : `💎 ${amt} DIAMOND${amt > 1 ? 'S' : ''}!`;
+    resultDesc = `+${amt} 💎 Diamond${amt > 1 ? 's' : ''} added directly to your vault balance!`;
+    emoji = '💎';
+  } else if (slice.type === 'gift') {
+    if (slice.giftId === 1) {
+      // Gift 1: +500 Energy
+      if (typeof gameState !== 'undefined' && gameState.reactor) {
+        const maxE = gameState.reactor.maxEnergy || 1000;
+        gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + 500);
+      }
+      resultTitle = '🎁 GIFT 1: ENERGY PACK!';
+      resultDesc = '+500 ⚡ Quantum Energy instantly recharged into your reactor!';
+      emoji = '⚡';
+    } else if (slice.giftId === 2) {
+      // Gift 2: +5 Buckets + 1 Shovel
+      if (typeof sunflowerState !== 'undefined') {
+        sunflowerState.baskets = (sunflowerState.baskets || 0) + 5;
+        sunflowerState.shovels = (sunflowerState.shovels || 0) + 1;
+      }
+      resultTitle = '🎁 GIFT 2: WATER BUNDLE!';
+      resultDesc = '+5 🪣 Water Buckets and +1 🪏 Garden Shovel added to Sunflower Valley!';
+      emoji = '🪣';
+    } else if (slice.giftId === 3) {
+      // Gift 3: +2,500 Sunflower Coins
+      if (typeof sunflowerState !== 'undefined') {
+        sunflowerState.coins = (sunflowerState.coins || 0) + 2500;
+      }
+      resultTitle = '🎁 GIFT 3: GOLDEN HARVEST!';
+      resultDesc = '+2,500 🌻 Sunflower Coins added to your Valley!';
+      emoji = '🌻';
+    } else if (slice.giftId === 4) {
+      // Gift 4: +10 Buckets + 1 Diamond
+      if (typeof sunflowerState !== 'undefined') {
+        sunflowerState.baskets = (sunflowerState.baskets || 0) + 10;
+      }
+      if (typeof gameState !== 'undefined' && gameState.player) {
+        gameState.player.diamonds = (gameState.player.diamonds || 0) + 1;
+      }
+      resultTitle = '🎁 GIFT 4: MYSTERY CHEST!';
+      resultDesc = '+10 🪣 Water Buckets and +1 💎 Diamond awarded to you!';
+      emoji = '🎁';
+    }
+  } else {
+    // Try Again
+    resultTitle = 'TRY AGAIN! ❌';
+    resultDesc = 'Almost there! Spin again with 1 🎡 Spin Coin to win Diamonds & Gifts!';
+    emoji = '💫';
+  }
+
+  // Celebratory effects
+  if (slice.type !== 'try_again') {
+    if (typeof confetti === 'function') {
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+    if (typeof playSoundEffect === 'function') playSoundEffect('levelup');
+  }
+
+  // Show banner
+  const banner = document.getElementById('hbpResultBanner');
+  const tEl = document.getElementById('hbpResultTitle');
+  const dEl = document.getElementById('hbpResultDesc');
+  const eEl = document.getElementById('hbpResultEmoji');
+
+  if (banner && tEl && dEl) {
+    tEl.innerText = resultTitle;
+    dEl.innerText = resultDesc;
+    if (eEl) eEl.innerText = emoji;
+    banner.style.display = 'block';
+  }
+
+  // Save changes
+  if (typeof saveGame === 'function') saveGame();
+  if (typeof saveSunflowerStateDebounced === 'function') saveSunflowerStateDebounced();
+  if (typeof updateUI === 'function') updateUI();
+}
+
+function dismissHbpResultBanner() {
+  const banner = document.getElementById('hbpResultBanner');
+  if (banner) banner.style.display = 'none';
+}
+window.dismissHbpResultBanner = dismissHbpResultBanner;
+
+// Initialize on DOM load and resize
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    updateBigPrizeSpinnerUI();
+  }, 200);
+});
+window.addEventListener('resize', () => {
+  drawBigPrizeWheel(hbpCurrentAngle);
+});
+
 
 
