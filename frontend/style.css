@@ -176,6 +176,56 @@ html, body {
   touch-action: manipulation;
 }
 
+/* ==========================================================================
+   GLOBAL UNIFIED TYPOGRAPHY (ALL PAGES & FULL GAME)
+   - ALL Headings: Fixed to 'Fredoka', 'Nunito', sans-serif
+   - ALL Other / Body Text: Fixed to 'Plus Jakarta Sans', sans-serif
+   - Stats / Code / Numbers: Fixed to 'JetBrains Mono', monospace
+   ========================================================================== */
+
+/* 1. All Headings Fixed Font Style across All Pages */
+h1, h2, h3, h4, h5, h6,
+.font-heading,
+.font-sci,
+.font-tech,
+.font-fredoka,
+[class*="-heading"],
+[class*="-title"],
+[class*="__heading"],
+[class*="__title"],
+.sheet-title,
+.splash-title,
+.notif-title,
+.modal-title,
+.card-title,
+.section-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif !important;
+  letter-spacing: 0.2px;
+}
+
+/* 2. All Body & General Text Fixed Font Style */
+body, p, span, a, button, input, select, textarea, label,
+.font-body,
+.font-sans,
+[class*="-text"],
+[class*="-desc"],
+[class*="-label"],
+[class*="-sub"],
+[class*="-btn"],
+[class*="-badge"],
+[class*="-pill"] {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 3. Numbers, Monospace & Live Timers */
+.font-mono,
+[class*="-mono"],
+[class*="-timer"],
+[class*="-val"],
+[class*="-rate"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
 /* Ambient Atmosphere */
 .ambient-glow {
   position: fixed;
@@ -2485,6 +2535,15 @@ body.full-page-game-active div[id^="page"].active {
    PAGE VIEW 1: HOME STYLES (3D TACTILE GRAPHICS ENGINE)
    ========================================================================== */
 
+#pageHome {
+  padding-bottom: 20px !important;
+}
+
+.home-reactor-container {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 .stat-card {
   position: relative;
   background: linear-gradient(180deg, rgba(20, 42, 92, 0.9) 0%, rgba(8, 20, 48, 0.96) 60%, rgba(4, 12, 32, 0.99) 100%);
@@ -3791,7 +3850,7 @@ body.full-page-game-active div[id^="page"].active {
   min-height: max-content !important;
   position: relative !important;
   margin-top: 14px !important;
-  margin-bottom: 24px !important;
+  margin-bottom: 14px !important;
   padding: 13px 15px !important;
   background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%) !important;
   border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
@@ -5103,26 +5162,44 @@ body.full-page-game-active div[id^="page"].active {
 /* Minimal Diamond Generator Home Showcase Card */
 .diamond-generator-home-section {
   position: relative;
-  background: linear-gradient(180deg, rgba(8, 20, 42, 0.95) 0%, rgba(4, 10, 24, 0.98) 100%);
-  border: 1.5px solid rgba(0, 240, 255, 0.35);
-  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   padding: 14px 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 2px 0 rgba(254, 240, 138, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.7),
+    0 6px 0 #78350f,
+    0 14px 30px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(245, 158, 11, 0.2) !important;
   overflow: hidden;
-  margin-top: 10px;
+  margin: 0 0 14px 0 !important;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.14s ease, border-color 0.14s ease;
+}
+
+.diamond-generator-home-section:hover {
+  border-color: #fbbf24 !important;
+  box-shadow: 
+    inset 0 2.5px 0 rgba(254, 240, 138, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.7),
+    0 8px 0 #78350f,
+    0 18px 36px rgba(0, 0, 0, 0.8),
+    0 0 32px rgba(245, 158, 11, 0.35) !important;
 }
 
 .dgh-card-glow {
   position: absolute;
-  top: -20px;
-  left: 20%;
-  width: 180px;
-  height: 80px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
-  filter: blur(16px);
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.2) 0%, rgba(139, 92, 246, 0.1) 45%, transparent 75%);
+  filter: blur(20px);
   pointer-events: none;
 }
 
@@ -5141,7 +5218,7 @@ body.full-page-game-active div[id^="page"].active {
 
 .dgh-gem-icon {
   font-size: 26px;
-  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.8));
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));
 }
 
 .dgh-title-group {
@@ -5153,24 +5230,24 @@ body.full-page-game-active div[id^="page"].active {
 .dgh-main-title {
   font-size: 13px;
   font-weight: 900;
-  color: #e0f2fe;
+  color: #fef08a;
   letter-spacing: 0.8px;
 }
 
 .dgh-rate-text {
   font-size: 11px;
   font-weight: 800;
-  color: #38bdf8;
+  color: #fbbf24;
 }
 
 .dgh-status-badge {
   font-size: 10px;
   font-weight: 800;
-  color: #34d399;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #fde047;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.55);
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 9999px;
   white-space: nowrap;
 }
 
@@ -5183,15 +5260,20 @@ body.full-page-game-active div[id^="page"].active {
 .dgh-start-btn {
   padding: 10px !important;
   font-size: 11px !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 55%, #d97706 100%) !important;
+  color: #0f172a !important;
+  font-weight: 900 !important;
+  border: 1px solid #fef08a !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35) !important;
 }
 
 .dgh-open-console-btn {
   padding: 10px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.9) 0%, rgba(18, 30, 60, 0.95) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
   font-size: 10.5px;
   font-weight: 800;
   cursor: pointer;
@@ -5203,8 +5285,8 @@ body.full-page-game-active div[id^="page"].active {
 }
 
 .dgh-open-console-btn:hover {
-  background: rgba(56, 189, 248, 0.2);
-  border-color: #38bdf8;
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #fbbf24;
   color: #ffffff;
 }
 
@@ -5216,25 +5298,27 @@ body.full-page-game-active div[id^="page"].active {
    HOME PAGE: IMPERIAL MEGA REWARDS CARD (HOMEPAGE NAVIGATION STYLE)
    ========================================================================== */
 .home-mega-reward-card {
-  margin-top: 4px !important;
-  margin-bottom: 20px !important;
-  background: linear-gradient(135deg, rgba(45, 20, 50, 0.96) 0%, rgba(24, 15, 40, 0.98) 55%, rgba(35, 18, 55, 0.96) 100%) !important;
-  border: 1.5px solid rgba(236, 72, 153, 0.5) !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
   overflow: hidden !important;
   box-shadow: 
-    inset 0 2px 0 rgba(244, 114, 182, 0.35),
+    inset 0 2px 0 rgba(254, 240, 138, 0.4),
     inset 0 -3px 0 rgba(0, 0, 0, 0.7),
-    0 6px 0 #701a75,
-    0 14px 28px rgba(0, 0, 0, 0.7) !important;
+    0 6px 0 #78350f,
+    0 14px 30px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(245, 158, 11, 0.2) !important;
 }
 
 .home-mega-reward-card:hover {
-  border-color: #f472b6 !important;
+  border-color: #fbbf24 !important;
   box-shadow: 
-    inset 0 2.5px 0 rgba(244, 114, 182, 0.5),
+    inset 0 2.5px 0 rgba(254, 240, 138, 0.55),
     inset 0 -3px 0 rgba(0, 0, 0, 0.7),
-    0 8px 0 #701a75,
-    0 18px 36px rgba(0, 0, 0, 0.75) !important;
+    0 8px 0 #78350f,
+    0 18px 36px rgba(0, 0, 0, 0.8),
+    0 0 32px rgba(245, 158, 11, 0.35) !important;
 }
 
 .home-mega-reward-card .hlb-card-glow,
@@ -5280,28 +5364,43 @@ body.full-page-game-active div[id^="page"].active {
    ========================================================================== */
 .home-big-prize-spinner-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.92) 50%, rgba(15, 23, 42, 0.98) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.45);
-  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   padding: 16px;
-  margin: 12px 0;
+  margin: 0 0 14px 0 !important;
   box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.55),
-    0 0 24px rgba(245, 158, 11, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    inset 0 2px 0 rgba(254, 240, 138, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.7),
+    0 6px 0 #78350f,
+    0 14px 30px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(245, 158, 11, 0.2) !important;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.14s ease, border-color 0.14s ease;
+}
+
+.home-big-prize-spinner-card:hover {
+  border-color: #fbbf24 !important;
+  box-shadow: 
+    inset 0 2.5px 0 rgba(254, 240, 138, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.7),
+    0 8px 0 #78350f,
+    0 18px 36px rgba(0, 0, 0, 0.8),
+    0 0 32px rgba(245, 158, 11, 0.35) !important;
 }
 
 .hbp-card-glow {
   position: absolute;
-  top: -40%;
-  left: 20%;
-  width: 60%;
-  height: 80%;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, rgba(99, 102, 241, 0.1) 60%, transparent 80%);
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.22) 0%, rgba(139, 92, 246, 0.12) 45%, transparent 75%);
   pointer-events: none;
   filter: blur(28px);
 }
@@ -9434,6 +9533,187 @@ body.full-page-game-active div[id^="page"].active {
   }
 }
 
+/* ==========================================================================
+   30-DAY TASKS: 3x10 RECTANGLE CARDS GRID & MODAL
+   ========================================================================== */
+.tasks-streak-strip {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  margin-bottom: 8px;
+}
+
+.thirty-day-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.thirty-day-card {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 82px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.thirty-day-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+}
+
+.thirty-day-card.active-day {
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.thirty-day-card.completed-day {
+  border-color: #10b981;
+  background: rgba(6, 78, 59, 0.25);
+}
+
+.thirty-day-card.locked-day {
+  opacity: 0.6;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.4);
+  cursor: not-allowed;
+}
+
+.thirty-day-num {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fcd34d;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.thirty-day-status-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.thirty-day-status-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.thirty-day-status-pill.active {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde047;
+  border: 1px solid #d97706;
+}
+
+.thirty-day-status-pill.locked {
+  background: rgba(75, 85, 99, 0.2);
+  color: #94a3b8;
+  border: 1px solid #4b5563;
+}
+
+/* Day Detail Modal */
+.day-detail-modal {
+  background: #090e1a;
+  border: 2px solid rgba(245, 158, 11, 0.5);
+  border-radius: 24px 24px 0 0;
+  max-width: 480px;
+  width: 100%;
+  padding: 16px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+  animation: slideUpModal 0.25s ease-out;
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.day-task-row {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-task-row.task-completed {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(6, 78, 59, 0.15);
+}
+
+.day-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.day-task-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.day-task-prog {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-family: ui-monospace, monospace;
+}
+
+.day-task-claim-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #1c1917;
+  font-weight: 900;
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.day-task-claim-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.day-task-claim-btn.claimed {
+  background: rgba(75, 85, 99, 0.3);
+  color: #94a3b8;
+  cursor: default;
+  pointer-events: none;
+}
+
 
 
 
@@ -13232,6 +13512,122 @@ body.full-page-game-active div[id^="page"].active {
 
 .profile-badge-item.unlocked .badge-status-tag {
   color: #10b981;
+}
+
+/* Featured Rectangular Shop Hourly Coins Ad Card */
+.shop-hourly-coins-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 12px 0 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(245, 158, 11, 0.15);
+  overflow: hidden;
+}
+
+.hourly-card-art-glow {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hourly-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hourly-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.hourly-coin-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
+  border-radius: 12px;
+  padding: 6px 10px;
+  min-width: 48px;
+}
+
+.hourly-coin-badge .coin-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.hourly-coin-badge .coin-badge-val {
+  font-size: 11px;
+  font-weight: 900;
+  color: #f59e0b;
+  margin-top: 2px;
+}
+
+.hourly-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hourly-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fbbf24;
+  margin: 0;
+  letter-spacing: 0.4px;
+}
+
+.hourly-desc {
+  font-size: 10.5px;
+  color: #cbd5e1;
+  margin: 2px 0 0 0;
+  line-height: 1.25;
+}
+
+.btn-claim-hourly-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #0f172a;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn-claim-hourly-coin:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-claim-hourly-coin:disabled {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 
@@ -23545,6 +23941,11 @@ body.full-page-game-active div[id^="page"].active {
 /* ==========================================================================
    PINNED STICKY TOP HEADER BAR ("STAY HEADING BAR")
    ========================================================================== */
+#pageSunflower {
+  padding-top: 8px !important;
+  padding-bottom: 96px !important;
+}
+
 .sf-sticky-header-bar {
   position: sticky;
   top: 0;
@@ -23554,15 +23955,22 @@ body.full-page-game-active div[id^="page"].active {
   opacity: 1 !important;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 8px 12px;
-  background: #ffffff !important;
-  border-bottom: 2px solid #fef3c7;
-  box-shadow: 0 4px 16px rgba(180, 83, 9, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
-  margin: 0 0 8px 0;
+  gap: 8px;
+  min-height: 50px !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, rgba(28, 25, 23, 0.96) 0%, rgba(18, 15, 13, 0.98) 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.45) !important;
+  border-radius: 18px !important;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(245, 158, 11, 0.15),
+    inset 0 1px 0 rgba(254, 240, 138, 0.2) !important;
+  margin: 4px 0 12px 0 !important;
   width: 100%;
-  box-sizing: border-box;
-  overflow: hidden !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
 }
 
 .sf-sticky-left {
@@ -23578,23 +23986,23 @@ body.full-page-game-active div[id^="page"].active {
   min-width: 32px;
   min-height: 32px;
   border-radius: 50% !important;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.15) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+  color: #fde047 !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 !important;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
 }
 
 .sf-sticky-back-btn:hover {
-  background: #fef08a;
+  background: rgba(245, 158, 11, 0.3) !important;
   transform: scale(1.06);
-  border-color: #d97706;
+  border-color: #f59e0b !important;
 }
 
 .sf-sticky-back-btn:active {
@@ -23623,7 +24031,7 @@ body.full-page-game-active div[id^="page"].active {
   font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
   font-size: 13.5px;
   font-weight: 800;
-  color: #78350f;
+  color: #fde047 !important;
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
@@ -23722,16 +24130,56 @@ body.full-page-game-active div[id^="page"].active {
   color: #bae6fd;
 }
 
+/* 5. 🪙 Gold Coins: Royal Treasury Aureolin Gold */
+.sf-hdr-pill.pill-gold {
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border: 1.5px solid #fbbf24;
+  color: #fef08a;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.35), inset 0 1px 0 rgba(254, 240, 138, 0.4);
+}
+
+/* 6. 💎 Diamonds: Radiant Cyan Crystal Glow */
+.sf-hdr-pill.pill-diamond {
+  background: linear-gradient(135deg, #0e7490 0%, #083344 100%);
+  border: 1.5px solid #22d3ee;
+  color: #cffafe;
+  box-shadow: 0 2px 8px rgba(34, 211, 238, 0.35), inset 0 1px 0 rgba(207, 250, 254, 0.4);
+}
+
 .sf-hdr-pill.pill-firebase {
   background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
   border: 1.5px solid #f59e0b;
   color: #fde68a;
 }
 
+/* Milestone Ad Upgrade Button: Vibrant Pulsing Gradient */
+.sf-sketch-up-btn.sf-ad-upgrade-btn,
+.sf-card-btn.sf-btn-upgrade.sf-ad-upgrade-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #f59e0b 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #f472b6 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  animation: sfAdBtnPulse 2s ease-in-out infinite !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+}
+
+@keyframes sfAdBtnPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+  }
+}
+
 /* Mobile Responsiveness: Eliminate all horizontal scrolling across all phone widths */
-@media (max-width: 520px) {
+@media (max-width: 375px) {
   .sf-sticky-title-text {
-    display: none !important; /* Hide text on mobile so all 4 pills fit seamlessly in one line without horizontal scrolling */
+    display: none !important;
   }
 }
 
@@ -24303,17 +24751,41 @@ body.full-page-game-active div[id^="page"].active {
 }
 
 .sf-progress-bar-fill {
+  position: relative;
   height: 100%;
   border-radius: 9999px;
-  transition: width 0.1s linear;
+  transition: none;
+  will-change: width;
+  background-size: 16px 16px, 100% 100% !important;
+  animation: sfLoadingBarMove 0.8s linear infinite;
 }
 
 .sf-progress-bar-fill.emerald {
-  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  background-color: #10b981;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
 .sf-progress-bar-fill.amber {
-  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
+  background-color: #f59e0b;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.sf-progress-bar-fill.cyan {
+  background-color: #06b6d4;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+}
+
+.sf-progress-bar-fill.ready {
+  animation: sfLoadingBarMove 0.6s linear infinite, barReadyGlow 1.2s infinite ease-in-out !important;
 }
 
 /* Rectangular Card Action Buttons */
@@ -25374,30 +25846,74 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   position: relative;
   width: 100%;
   height: 24px;
-  background: #e2e8f0;
-  border: 1.5px solid #cbd5e1;
+  background: #0f172a;
+  border: 1.5px solid #334155;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
 }
 
 .sf-loading-bar-fill {
+  position: relative;
   height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #facc15 100%);
+  min-width: 0%;
+  background-color: #10b981;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  background-size: 24px 24px, 100% 100%;
   border-radius: 10px;
-  transition: width 0.15s linear;
+  transition: none;
+  will-change: width;
+  animation: sfLoadingBarMove 0.8s linear infinite;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+.sf-loading-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 5px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(52, 211, 153, 0.9);
+  opacity: 0.95;
 }
 
 .sf-loading-bar-fill.ready {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #10b981 100%);
-  animation: barReadyGlow 1.2s infinite ease-in-out;
+  background-color: #f59e0b;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%);
+  background-size: 24px 24px, 100% 100%;
+  animation: sfLoadingBarMove 0.6s linear infinite, barReadyGlow 1.2s infinite ease-in-out;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.7);
+}
+
+.sf-loading-bar-fill.ready::after {
+  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(253, 224, 71, 0.9);
+}
+
+@keyframes sfLoadingBarMove {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 24px 0, 0 0;
+  }
 }
 
 @keyframes barReadyGlow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.15); }
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(253, 224, 71, 0.95);
+  }
 }
 
 .sf-loading-bar-text {
@@ -25408,12 +25924,12 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   justify-content: center;
   font-size: 11px;
   font-weight: 900;
-  font-family: 'JetBrains Mono', monospace;
-  color: #0f172a;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+  font-family: 'JetBrains Mono', monospace !important;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.85);
   pointer-events: none;
   z-index: 2;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
 
 /* Life meter info line */
@@ -25963,6 +26479,196 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* ==========================================================================
+   LAND MANAGERS PAGE (MANAGE LAND BY LAND VERTICAL STACK)
+   ========================================================================== */
+.sf-mgr-info-strip {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.sf-managers-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.sf-mgr-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: inset 0 1.5px 0 rgba(254, 240, 138, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.sf-mgr-card.active-contract {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: inset 0 1.5px 0 rgba(167, 243, 208, 0.35), 0 0 16px rgba(16, 185, 129, 0.25);
+}
+
+.sf-mgr-card.locked {
+  opacity: 0.92;
+  border-color: rgba(100, 116, 139, 0.45);
+}
+
+.sf-mgr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sf-mgr-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-mgr-avatar-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  border: 1px solid #fde047;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.sf-mgr-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sf-mgr-name {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sf-mgr-sub {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.sf-mgr-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.sf-mgr-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  color: #34d399;
+}
+
+.sf-mgr-status-badge.expired {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+
+.sf-mgr-status-badge.locked {
+  background: rgba(71, 85, 105, 0.3);
+  border: 1px solid rgba(100, 116, 139, 0.5);
+  color: #94a3b8;
+}
+
+.sf-mgr-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sf-mgr-unlock-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #38bdf8;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 9px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-unlock-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.sf-mgr-coin-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  border: 1px solid #fde047;
+  border-radius: 10px;
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-coin-btn:hover {
+  filter: brightness(1.15);
+}
+
+.sf-mgr-ad-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-ad-btn:hover {
+  filter: brightness(1.15);
+}
+
 @keyframes spinSlow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -26183,7 +26889,7 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
   gap: 6px;
 }
 
@@ -26200,6 +26906,7 @@ body.page-sunflower-active .sf-bottom-menu-bar {
 .pill-honey   { border-color: #f59e0b; }
 .pill-energy  { border-color: #eab308; }
 .pill-diamond { border-color: #06b6d4; }
+.pill-gold    { border-color: #eab308; }
 .pill-pollen  { border-color: #f43f5e; }
 .pill-smoker  { border-color: #78716c; }
 
@@ -26611,6 +27318,312 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   letter-spacing: 0.2px;
 }
 
+/* ==========================================================================
+   STICKY TOP HEADER BAR FOR HONEY BEE FARM
+   ========================================================================== */
+.bee-sticky-header-bar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 2px solid rgba(245, 158, 11, 0.5);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.bee-sticky-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.bee-sticky-back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1.5px solid #f59e0b;
+  color: #fcd34d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bee-sticky-back-btn:hover {
+  background: rgba(245, 158, 11, 0.4);
+  transform: scale(1.05);
+}
+
+.bee-sticky-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bee-sticky-title-icon {
+  font-size: 20px;
+}
+
+.bee-sticky-title-text {
+  font-size: 13px;
+  color: #fcd34d;
+  letter-spacing: -0.2px;
+}
+
+.bee-sticky-resources {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.bee-hdr-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bee-hdr-pill:hover {
+  transform: translateY(-1px);
+  border-color: #f59e0b;
+}
+
+.bee-hdr-ico {
+  font-size: 13px;
+}
+
+.bee-hdr-val {
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* 1x20 / 2x10 Plots Grid */
+.bee-plots-1x20-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .bee-plots-1x20-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* ==========================================================================
+   20 APIARY MANAGERS VERTICAL STACK
+   ========================================================================== */
+.bee-managers-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.bee-mgr-card {
+  background: rgba(12, 18, 30, 0.95);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.bee-mgr-card.active-contract {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.2);
+}
+
+.bee-mgr-card.locked {
+  opacity: 0.75;
+  border-style: dashed;
+  border-color: rgba(120, 53, 15, 0.5);
+}
+
+.bee-mgr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bee-mgr-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bee-mgr-avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.bee-mgr-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.bee-mgr-name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fcd34d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bee-mgr-sub {
+  font-size: 9.5px;
+  color: #d1d5db;
+}
+
+.bee-mgr-status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.bee-mgr-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.bee-mgr-status-badge.expired {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid #dc2626;
+}
+
+.bee-mgr-status-badge.locked {
+  background: rgba(75, 85, 99, 0.3);
+  color: #9ca3af;
+  border: 1px solid #4b5563;
+}
+
+.bee-mgr-actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.bee-mgr-unlock-btn {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #1c1917;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bee-mgr-unlock-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.bee-mgr-diamond-btn,
+.bee-mgr-ad-btn,
+.bee-mgr-coin-btn {
+  padding: 7px 4px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.bee-mgr-diamond-btn {
+  background: rgba(6, 182, 212, 0.25);
+  color: #67e8f9;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+}
+
+.bee-mgr-ad-btn {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+}
+
+.bee-mgr-coin-btn {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fde047;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.bee-mgr-diamond-btn:hover,
+.bee-mgr-ad-btn:hover,
+.bee-mgr-coin-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
+/* ==========================================================================
+   EXCHANGE TABS NAV & BUTTONS
+   ========================================================================== */
+.bee-exchange-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bee-exchange-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d1d5db;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.bee-exchange-tab-btn.active {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+  border-color: #f59e0b;
+}
+
 
 /* --- PAGE: MINING --- */
 /* ==========================================================================
@@ -26762,12 +27775,12 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   letter-spacing: 0.5px;
 }
 
-/* 5-Resource HUD Counter Pills */
+/* HUD Counter Pills */
 .mine-dash-resources-row {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
   gap: 6px;
 }
 
@@ -26784,6 +27797,7 @@ body.page-beefarm-active .bee-bottom-menu-bar {
 .pill-shard   { border-color: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.2); }
 .pill-plasma  { border-color: #ffaa00; box-shadow: 0 0 8px rgba(255, 170, 0, 0.2); }
 .pill-diamond { border-color: #bd00ff; box-shadow: 0 0 8px rgba(189, 0, 255, 0.2); }
+.pill-gold    { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.2); }
 .pill-coolant { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); }
 .pill-pickaxe { border-color: #f43f5e; box-shadow: 0 0 8px rgba(244, 63, 94, 0.2); }
 
@@ -26966,6 +27980,600 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   60% { transform: translate(-2px, -2px); }
   80% { transform: translate(2px, 1px); }
 }
+
+/* ==========================================================================
+   STICKY TOP HEADER BAR FOR CRYSTAL MINING
+   ========================================================================== */
+.mine-sticky-header-bar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 15, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 2px solid rgba(0, 240, 255, 0.5);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.mine-sticky-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mine-sticky-back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.15);
+  border: 1.5px solid #00f0ff;
+  color: #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mine-sticky-back-btn:hover {
+  background: rgba(0, 240, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.mine-sticky-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mine-sticky-title-icon {
+  font-size: 20px;
+}
+
+.mine-sticky-title-text {
+  font-size: 13px;
+  color: #00f0ff;
+  letter-spacing: -0.2px;
+}
+
+.mine-sticky-resources {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.mine-hdr-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mine-hdr-pill:hover {
+  transform: translateY(-1px);
+  border-color: #00f0ff;
+}
+
+.mine-hdr-ico {
+  font-size: 13px;
+}
+
+.mine-hdr-val {
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* 1x20 Plots Grid */
+.mine-plots-1x20-grid,
+.mine-wells-1x20-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .mine-plots-1x20-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Multiplier button */
+.mine-mult-circle-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 70%, #0369a1 100%);
+  border: 2px solid #38bdf8;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(2, 132, 199, 0.4);
+  transition: transform 0.2s;
+  padding: 0;
+}
+
+.mine-mult-circle-toggle-btn:active {
+  transform: scale(0.92);
+}
+
+.mine-mult-circle-badge {
+  font-size: 7px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.mine-mult-circle-val {
+  font-size: 11px;
+  font-weight: 900;
+  font-family: ui-monospace, monospace;
+}
+
+.mine-garden-cps-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #38bdf8;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+/* 20 DRILL OPERATORS / MANAGERS VERTICAL STACK */
+.mine-managers-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.mine-mgr-card {
+  background: rgba(10, 18, 35, 0.95);
+  border: 1.5px solid rgba(0, 240, 255, 0.35);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.mine-mgr-card.active-contract {
+  border-color: #00f0ff;
+  background: linear-gradient(135deg, rgba(10, 30, 50, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.25);
+}
+
+.mine-mgr-card.locked {
+  opacity: 0.75;
+  border-style: dashed;
+  border-color: rgba(71, 85, 105, 0.6);
+}
+
+.mine-mgr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mine-mgr-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mine-mgr-avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mine-mgr-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.mine-mgr-name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mine-mgr-sub {
+  font-size: 9.5px;
+  color: #cbd5e1;
+}
+
+.mine-mgr-status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.mine-mgr-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.mine-mgr-status-badge.expired {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid #dc2626;
+}
+
+.mine-mgr-status-badge.locked {
+  background: rgba(75, 85, 99, 0.3);
+  color: #9ca3af;
+  border: 1px solid #4b5563;
+}
+
+.mine-mgr-actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mine-mgr-unlock-btn {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mine-mgr-diamond-btn,
+.mine-mgr-ad-btn,
+.mine-mgr-coin-btn {
+  padding: 7px 4px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mine-mgr-diamond-btn {
+  background: rgba(6, 182, 212, 0.25);
+  color: #67e8f9;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+}
+
+.mine-mgr-ad-btn {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+}
+
+.mine-mgr-coin-btn {
+  background: rgba(2, 132, 199, 0.25);
+  color: #38bdf8;
+  border: 1px solid rgba(2, 132, 199, 0.5);
+}
+
+.mine-mgr-diamond-btn:hover,
+.mine-mgr-ad-btn:hover,
+.mine-mgr-coin-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
+/* Bottom Menu Bar for Crystal Mining */
+.mine-bottom-menu-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px + max(0px, env(safe-area-inset-bottom)));
+  margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
+  width: calc(100% - 24px);
+  max-width: 440px;
+  background: #0f172a !important;
+  border: 2px solid #00f0ff !important;
+  border-radius: 32px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px max(0px, env(safe-area-inset-bottom)) 8px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35);
+  z-index: 120;
+}
+
+#pageMining.active .mine-bottom-menu-bar,
+body.page-mining-active .mine-bottom-menu-bar {
+  display: flex !important;
+}
+
+.mine-menu-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  color: #94a3b8;
+  outline: none;
+  transition: all 0.15s;
+}
+
+.mine-menu-tab-btn.active {
+  color: #00f0ff;
+  font-weight: 800;
+  transform: translateY(-2px);
+}
+
+.mine-menu-tab-btn.center-play-btn {
+  position: relative;
+  top: -14px;
+}
+
+.mine-menu-tab-btn.center-play-btn .center-play-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 60%, #0f172a 100%);
+  border: 3px solid #00f0ff;
+  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.mine-menu-ico {
+  font-size: 16px;
+}
+
+.mine-menu-txt {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Exchange Tabs */
+.mine-exchange-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mine-exchange-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mine-exchange-tab-btn.active {
+  background: rgba(0, 240, 255, 0.2);
+  color: #00f0ff;
+  border-color: #00f0ff;
+}
+
+/* ==========================================================================
+   20 DRILL OPERATOR / MINING MANAGERS VERTICAL STACK
+   ========================================================================== */
+.mine-managers-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.mine-mgr-card {
+  background: rgba(12, 18, 30, 0.95);
+  border: 1.5px solid rgba(6, 182, 212, 0.35);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.mine-mgr-card.active-contract {
+  border-color: #00f0ff;
+  background: linear-gradient(135deg, rgba(8, 30, 50, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.2);
+}
+
+.mine-mgr-card.locked {
+  opacity: 0.75;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.5);
+}
+
+.mine-mgr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mine-mgr-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mine-mgr-avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mine-mgr-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.mine-mgr-name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #67e8f9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mine-mgr-sub {
+  font-size: 9.5px;
+  color: #cbd5e1;
+}
+
+.mine-mgr-status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.mine-mgr-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.mine-mgr-status-badge.expired {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid #dc2626;
+}
+
+.mine-mgr-status-badge.locked {
+  background: rgba(75, 85, 99, 0.3);
+  color: #9ca3af;
+  border: 1px solid #4b5563;
+}
+
+.mine-mgr-actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mine-mgr-unlock-btn {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #38bdf8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mine-mgr-unlock-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.mine-mgr-diamond-btn,
+.mine-mgr-ad-btn,
+.mine-mgr-coin-btn {
+  padding: 7px 4px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mine-mgr-diamond-btn {
+  background: rgba(6, 182, 212, 0.25);
+  color: #67e8f9;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+}
+
+.mine-mgr-ad-btn {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+}
+
+.mine-mgr-coin-btn {
+  background: rgba(2, 132, 199, 0.25);
+  color: #7dd3fc;
+  border: 1px solid rgba(2, 132, 199, 0.5);
+}
+
+.mine-mgr-diamond-btn:hover,
+.mine-mgr-ad-btn:hover,
+.mine-mgr-coin-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
 
 
 /* --- PAGE: DIAMOND-GENERATOR --- */
@@ -27993,5 +29601,121 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
   cursor: pointer;
+}
+
+/* Quantum Generator Manager Card */
+.dg-manager-card {
+  margin: 12px 14px;
+  background: linear-gradient(180deg, rgba(14, 28, 54, 0.95) 0%, rgba(6, 14, 30, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.35);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 240, 255, 0.05);
+}
+
+.dg-manager-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.dg-manager-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dg-manager-icon {
+  font-size: 26px;
+  background: rgba(0, 240, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.dg-manager-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.dg-manager-sub {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+}
+
+.dg-manager-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.dg-manager-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.dg-manager-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dg-manager-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.dg-info-lbl {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.dg-info-val {
+  color: #00f0ff;
+  font-weight: 800;
+}
+
+.dg-manager-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dg-btn-mgr-hire {
+  padding: 10px 8px;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.3) 0%, rgba(14, 165, 233, 0.4) 100%);
+  border: 1.5px solid #0284c7;
+  color: #e0f2fe;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dg-btn-mgr-hire.ad {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.35) 100%);
+  border-color: #10b981;
+  color: #d1fae5;
+}
+
+.dg-btn-mgr-hire:active {
+  transform: scale(0.97);
 }
 

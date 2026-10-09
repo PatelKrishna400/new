@@ -257,7 +257,7 @@ class FirebaseSyncService {
           const cloudResetVer = cloudData.resetVersion || 0;
           const cloudUpdatedAt = cloudData.updatedAt || 0;
           const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
-          const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6;
+          const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7;
 
           if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
             console.log('🔄 Cloud player record is from prior season/version. Resetting player to Level 0, zero balances, and new event timers!');
@@ -393,7 +393,7 @@ class FirebaseSyncService {
       const cloudResetVer = cloudData.resetVersion || 0;
       const cloudUpdatedAt = cloudData.updatedAt || 0;
       const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
-      const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6;
+      const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7;
 
       if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
         console.log('🔄 Remote cloud player record is older than Global Zero Reset. Enforcing fresh zero state!');
@@ -1020,7 +1020,7 @@ class FirebaseSyncService {
         coins: Number(gameState.player.coins || 0),
         diamondWins: Number(gameState.player.diamondWins || gameState.player.diamondWinsCount || 0),
         energyTaps: Number(gameState.reactor.energyTaps || 0),
-        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 6,
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7,
         lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
       };
       this.database.ref(`leaderboard/${this.userId}`).set(leaderboardPayload).catch(() => {});

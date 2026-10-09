@@ -2440,15 +2440,28 @@ window.switchHomeLeaderboardTab = switchHomeLeaderboardTab;
    BIG PRIZE SPINNER (Uses 1 🎡 Spinner Coin, Win 1, 2, 5 Diamonds, 4 Gifts, or Try Again)
    ========================================================================== */
 const HBP_WHEEL_SLICES = [
-  { id: 'd1', label: '1 Diamond', icon: '💎', sub: '1 💎', color: '#0284c7', textColor: '#ffffff' },
-  { id: 'g1', label: 'Gift 1', icon: '🎁', sub: '⚡ 500', color: '#d97706', textColor: '#ffffff' },
-  { id: 'd2', label: '2 Diamonds', icon: '💎', sub: '2 💎', color: '#0ea5e9', textColor: '#ffffff' },
-  { id: 'g2', label: 'Gift 2', icon: '🎁', sub: '🪣5+🪏1', color: '#059669', textColor: '#ffffff' },
-  { id: 'd5', label: '5 Diamonds', icon: '💎', sub: '5 💎', color: '#7c3aed', textColor: '#ffffff' },
-  { id: 'g3', label: 'Gift 3', icon: '🎁', sub: '🌻 2.5K', color: '#e11d48', textColor: '#ffffff' },
-  { id: 'g4', label: 'Gift 4', icon: '🎁', sub: '🪣10+💎1', color: '#9333ea', textColor: '#ffffff' },
-  { id: 'try', label: 'Try Again', icon: '❌', sub: 'AGAIN', color: '#475569', textColor: '#e2e8f0' }
+  { id: 'try', type: 'try_again', label: 'Try Again', icon: '❌', sub: 'Again', color: '#475569', textColor: '#e2e8f0' },
+  { id: 'g1', type: 'gift', giftId: 1, label: 'Gift 1', icon: '🎁', sub: 'Gift 1', color: '#d97706', textColor: '#ffffff' },
+  { id: 'd1', type: 'diamond', amount: 1, label: '1 Diamond', icon: '💎', sub: '1 💎', color: '#0284c7', textColor: '#ffffff' },
+  { id: 'g2', type: 'gift', giftId: 2, label: 'Gift 2', icon: '🎁', sub: 'Gift 2', color: '#059669', textColor: '#ffffff' },
+  { id: 'd2', type: 'diamond', amount: 2, label: '2 Diamonds', icon: '💎', sub: '2 💎', color: '#0ea5e9', textColor: '#ffffff' },
+  { id: 'g3', type: 'gift', giftId: 3, label: 'Gift 3', icon: '🎁', sub: 'Gift 3', color: '#e11d48', textColor: '#ffffff' },
+  { id: 'd5', type: 'diamond', amount: 5, label: '5 Diamonds', icon: '💎', sub: '5 💎', color: '#7c3aed', textColor: '#ffffff' },
+  { id: 'g4', type: 'gift', giftId: 4, label: 'Gift 4', icon: '🎁', sub: 'Gift 4', color: '#9333ea', textColor: '#ffffff' }
 ];
+
+// Winning probabilities: Try again 28%, Gift 1 17%, 1 Diamond 10%, Gift 2 17%, 2 Diamonds 5%, Gift 3 17%, 5 Diamonds 1%, Gift 4 5%
+function getHbpWinningSliceIndex() {
+  const r = Math.random() * 100;
+  if (r < 28) return 0;       // Try Again: 28%
+  if (r < 28 + 17) return 1;  // Gift 1: 17%
+  if (r < 45 + 10) return 2;  // 1 Diamond: 10%
+  if (r < 55 + 17) return 3;  // Gift 2: 17%
+  if (r < 72 + 5) return 4;   // 2 Diamonds: 5%
+  if (r < 77 + 17) return 5;  // Gift 3: 17%
+  if (r < 94 + 1) return 6;   // 5 Diamonds: 1%
+  return 7;                   // Gift 4: 5%
+}
 
 let hbpCurrentAngle = 0;
 let hbpIsSpinning = false;
@@ -2536,13 +2549,15 @@ function drawBigPrizeWheel(angle = 0) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Emoji icon
-    ctx.font = '22px "Segoe UI Emoji", sans-serif';
+    // Emoji icon sizing
+    ctx.font = '22px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+    ctx.shadowBlur = 3;
     ctx.fillText(slice.icon, textRadius, -8);
 
-    // Subtext label
+    // Subtext label (hidden reward value for gifts, showing clean label)
     ctx.font = 'bold 11px "JetBrains Mono", monospace';
-    ctx.fillStyle = slice.textColor;
+    ctx.fillStyle = slice.textColor || '#ffffff';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
     ctx.shadowBlur = 4;
     ctx.fillText(slice.sub, textRadius, 14);
@@ -2603,15 +2618,17 @@ function spinBigPrizeWheel(event = null) {
   }
 
   hbpIsSpinning = true;
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('spin_wheel', 1);
+  }
   updateBigPrizeSpinnerUI();
   if (typeof saveGame === 'function') saveGame();
 
   // Audio start tone
   if (typeof playSoundEffect === 'function') playSoundEffect('click');
 
-  // Pick winning slice
-  // Slices: 0: 1 Diam, 1: Gift 1, 2: 2 Diam, 3: Gift 2, 4: 5 Diam, 5: Gift 3, 6: Gift 4, 7: Try Again
-  const winningIndex = Math.floor(Math.random() * HBP_WHEEL_SLICES.length);
+  // Pick winning slice using exact configured probabilities
+  const winningIndex = getHbpWinningSliceIndex();
   const winningSlice = HBP_WHEEL_SLICES[winningIndex];
 
   // Mathematical target calculation
@@ -2678,42 +2695,91 @@ function handleHbpWheelOutcome(slice) {
     emoji = '💎';
   } else if (slice.type === 'gift') {
     if (slice.giftId === 1) {
-      // Gift 1: +500 Energy
-      if (typeof gameState !== 'undefined' && gameState.reactor) {
-        const maxE = gameState.reactor.maxEnergy || 1000;
-        gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + 500);
+      // Gift 1: Any one of (1 key, 1 ticket, 1 card, 10 egg, 1 boom, 3 brain)
+      const options = ['key', 'ticket', 'card', 'egg', 'boom', 'brain'];
+      const pick = options[Math.floor(Math.random() * options.length)];
+      if (typeof gameState !== 'undefined' && gameState.player) {
+        if (pick === 'key') {
+          gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 1;
+          resultDesc = '+1 🔑 Mystery Chest Key added!';
+        } else if (pick === 'ticket') {
+          gameState.player.chestTickets = (gameState.player.chestTickets || 0) + 1;
+          gameState.player.spinCoins = gameState.player.chestTickets;
+          resultDesc = '+1 🎫 Lucky Spin Ticket added!';
+        } else if (pick === 'card') {
+          gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1;
+          resultDesc = '+1 🎴 Scratch Card added!';
+        } else if (pick === 'egg') {
+          gameState.player.eggs = (gameState.player.eggs || 0) + 10;
+          resultDesc = '+10 🥚 Eggs added!';
+        } else if (pick === 'boom') {
+          gameState.player.boomCoins = (gameState.player.boomCoins || 0) + 1;
+          resultDesc = '+1 💣 Boom Coin added!';
+        } else {
+          gameState.player.brainCoins = (gameState.player.brainCoins || 0) + 3;
+          resultDesc = '+3 🧠 Brain Coins added!';
+        }
       }
-      resultTitle = '🎁 GIFT 1: ENERGY PACK!';
-      resultDesc = '+500 ⚡ Quantum Energy instantly recharged into your reactor!';
-      emoji = '⚡';
+      resultTitle = '🎁 GIFT 1 UNLOCKED!';
+      emoji = '🎁';
     } else if (slice.giftId === 2) {
-      // Gift 2: +5 Buckets + 1 Shovel
-      if (typeof sunflowerState !== 'undefined') {
-        sunflowerState.baskets = (sunflowerState.baskets || 0) + 5;
-        sunflowerState.shovels = (sunflowerState.shovels || 0) + 1;
+      // Gift 2: Any one of (dark green fuel 1, green fuel 1, yellow fuel 1, 10 energy)
+      const options = ['darkgreen', 'green', 'yellow', 'energy'];
+      const pick = options[Math.floor(Math.random() * options.length)];
+      if (typeof gameState !== 'undefined') {
+        if (!gameState.energyGenerator) gameState.energyGenerator = {};
+        if (!gameState.energyGenerator.fuelCells) gameState.energyGenerator.fuelCells = {};
+        if (pick === 'darkgreen') {
+          gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + 1;
+          resultDesc = '+1 🌿 Dark Green Fuel cell added to Reactor!';
+        } else if (pick === 'green') {
+          gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + 1;
+          resultDesc = '+1 ⚡ Green Fuel cell added to Reactor!';
+        } else if (pick === 'yellow') {
+          gameState.energyGenerator.fuelCells.yellow = (gameState.energyGenerator.fuelCells.yellow || 0) + 1;
+          resultDesc = '+1 ⚡ Yellow Fuel cell added to Reactor!';
+        } else {
+          const maxE = (gameState.reactor && gameState.reactor.maxEnergy) || 1000;
+          if (gameState.reactor) {
+            gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + 10);
+          }
+          resultDesc = '+10 ⚡ Energy added to Reactor!';
+        }
       }
-      resultTitle = '🎁 GIFT 2: WATER BUNDLE!';
-      resultDesc = '+5 🪣 Water Buckets and +1 🪏 Garden Shovel added to Sunflower Valley!';
-      emoji = '🪣';
+      resultTitle = '🎁 GIFT 2 UNLOCKED!';
+      emoji = '🔋';
     } else if (slice.giftId === 3) {
-      // Gift 3: +2,500 Sunflower Coins
-      if (typeof sunflowerState !== 'undefined') {
-        sunflowerState.coins = (sunflowerState.coins || 0) + 2500;
+      // Gift 3: Any one of (100 sunflower coins, 10 water bucket, 1 shovel, 1 plant)
+      const options = ['sunflower', 'bucket', 'shovel', 'plant'];
+      const pick = options[Math.floor(Math.random() * options.length)];
+      if (pick === 'sunflower') {
+        if (typeof sunflowerState !== 'undefined') sunflowerState.coins = (sunflowerState.coins || 0) + 100;
+        if (typeof gameState !== 'undefined' && gameState.sunflower) gameState.sunflower.coins = (gameState.sunflower.coins || 0) + 100;
+        if (typeof gameState !== 'undefined' && gameState.player) gameState.player.sunflowerCoins = (gameState.player.sunflowerCoins || 0) + 100;
+        resultDesc = '+100 🌻 Sunflower Coins added!';
+      } else if (pick === 'bucket') {
+        if (typeof sunflowerState !== 'undefined') sunflowerState.baskets = (sunflowerState.baskets || 0) + 10;
+        if (typeof gameState !== 'undefined' && gameState.sunflower) gameState.sunflower.buckets = (gameState.sunflower.buckets || 0) + 10;
+        resultDesc = '+10 🪣 Water Buckets added!';
+      } else if (pick === 'shovel') {
+        if (typeof sunflowerState !== 'undefined') sunflowerState.shovels = (sunflowerState.shovels || 0) + 1;
+        if (typeof gameState !== 'undefined' && gameState.sunflower) gameState.sunflower.shovels = (gameState.sunflower.shovels || 0) + 1;
+        resultDesc = '+1 🪏 Garden Shovel added!';
+      } else {
+        if (typeof sunflowerState !== 'undefined') sunflowerState.seeds = (sunflowerState.seeds || 0) + 1;
+        if (typeof gameState !== 'undefined' && gameState.sunflower) gameState.sunflower.seeds = (gameState.sunflower.seeds || 0) + 1;
+        resultDesc = '+1 🌱 Sunflower Plant / Seed added!';
       }
-      resultTitle = '🎁 GIFT 3: GOLDEN HARVEST!';
-      resultDesc = '+2,500 🌻 Sunflower Coins added to your Valley!';
+      resultTitle = '🎁 GIFT 3 UNLOCKED!';
       emoji = '🌻';
     } else if (slice.giftId === 4) {
-      // Gift 4: +10 Buckets + 1 Diamond
-      if (typeof sunflowerState !== 'undefined') {
-        sunflowerState.baskets = (sunflowerState.baskets || 0) + 10;
-      }
+      // Gift 4: 10 coin
       if (typeof gameState !== 'undefined' && gameState.player) {
-        gameState.player.diamonds = (gameState.player.diamonds || 0) + 1;
+        gameState.player.coins = (gameState.player.coins || 0) + 10;
       }
-      resultTitle = '🎁 GIFT 4: MYSTERY CHEST!';
-      resultDesc = '+10 🪣 Water Buckets and +1 💎 Diamond awarded to you!';
-      emoji = '🎁';
+      resultTitle = '🎁 GIFT 4: 10 COINS!';
+      resultDesc = '+10 🪙 Gold Coins added directly to your balance!';
+      emoji = '🪙';
     }
   } else {
     // Try Again

@@ -235,6 +235,9 @@ function handleFuelAction(fuelType) {
     const statKey = 'fuel_' + fuelType;
     gameState.dailyStats[statKey] = (gameState.dailyStats[statKey] || 0) + 1;
   }
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('fuel_' + fuelType, 1);
+  }
 
   if (fuelType === 'green') {
     gameState.energyGenerator.remainingSeconds += (5 * 60); // +5 Minutes

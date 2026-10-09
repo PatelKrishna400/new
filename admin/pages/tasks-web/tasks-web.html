@@ -203,6 +203,36 @@
     <div class="tasks-grid-container" id="monthlyTasksContainer">
       <!-- Injected dynamically via JS -->
     </div>
+
+    <!-- 30-DAY DAILY TASKS SYSTEM OVERVIEW & SETTINGS -->
+    <div class="minimal-card" style="margin-top: 20px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1.5px solid #f1f5f9;">
+        <div>
+          <h3 class="minimal-title">🗓️ 30-Day Daily Tasks System (3x10 Grid)</h3>
+          <p class="minimal-subtitle">Days 1–30 structure with 10 quests per day, +10 Gold Coins per task (Ad watch), and 10,000 💎 day completion bonus.</p>
+        </div>
+        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 800; font-size: 11px; padding: 4px 8px; border-radius: 6px;">30 Days Active</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 12px;">
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <strong style="color: #0f172a; display: block; margin-bottom: 4px;">🪙 Task Reward</strong>
+          <span style="color: #64748b;">+10 Gold Coins per task (Claimed strictly via Rewarded Ad).</span>
+        </div>
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <strong style="color: #0f172a; display: block; margin-bottom: 4px;">💎 Day 10/10 Completion</strong>
+          <span style="color: #64748b;">Completing all 10 tasks in a day awards +10,000 Diamonds!</span>
+        </div>
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <strong style="color: #0f172a; display: block; margin-bottom: 4px;">👑 Mega Reward Request</strong>
+          <span style="color: #64748b;">Completing Day 30 unlocks the Mega Reward Request submission.</span>
+        </div>
+        <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <strong style="color: #0f172a; display: block; margin-bottom: 4px;">🔥 Streak Recovery</strong>
+          <span style="color: #64748b;">Missing a day triggers broken streak modal: continue with Ad or 100 💎.</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: ADD NEW TELEGRAM TASK -->
@@ -246,20 +276,23 @@
       <div style="display: flex; flex-direction: column; gap: 12px;">
         <div class="minimal-form-group">
           <label class="minimal-form-label">Quest Title</label>
-          <input type="text" id="inpNewWebTitle" class="minimal-input" placeholder="e.g. Visit Crypto Portal & Find Code">
+          <input type="text" id="inpNewWebTitle" class="minimal-input" placeholder="e.g. Diskwala Sponsor Portal Quest">
         </div>
         <div class="minimal-form-group">
           <label class="minimal-form-label">Quest Description</label>
-          <textarea id="inpNewWebDesc" rows="2" class="minimal-input" placeholder="Visit sponsor website, browse for timer, and find the secret code."></textarea>
+          <textarea id="inpNewWebDesc" rows="2" class="minimal-input" placeholder="Unlock with coins, visit sponsor link, and find the 4-digit code."></textarea>
         </div>
         <div class="minimal-form-group">
-          <label class="minimal-form-label">Target Website URL</label>
-          <input type="url" id="inpNewWebUrl" class="minimal-input" placeholder="https://example.com/sponsor">
+          <label class="minimal-form-label">Target Website URL (Diskwala Sponsor Link)</label>
+          <input type="url" id="inpNewWebUrl" class="minimal-input" value="https://diskwala.com/sponsor-quest" placeholder="https://diskwala.com/sponsor-quest">
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="minimal-form-group">
-            <label class="minimal-form-label">Secret Verification PIN (optional)</label>
-            <input type="text" id="inpNewWebPin" class="minimal-input" placeholder="e.g. 7894">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="minimal-form-label">Secret PIN (4-Digit)</label>
+              <button type="button" onclick="genNewWebPin()" style="background: none; border: none; color: #0284c7; font-size: 11px; font-weight: 800; cursor: pointer;">🎲 Random PIN</button>
+            </div>
+            <input type="text" maxlength="4" id="inpNewWebPin" class="minimal-input" value="4821" placeholder="e.g. 4821" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; letter-spacing: 2px;">
           </div>
           <div class="minimal-form-group">
             <label class="minimal-form-label">Browsing Timer (Seconds ⏱️)</label>
@@ -268,7 +301,13 @@
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="minimal-form-group">
-            <label class="minimal-form-label">Entry Cost (Coins 🪙)</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="minimal-form-label">Entry Cost (Coins 🪙)</label>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" onclick="document.getElementById('inpNewWebCoins').value=1000" style="padding: 1px 5px; font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; border-radius: 4px; cursor: pointer;">1K</button>
+                <button type="button" onclick="document.getElementById('inpNewWebCoins').value=10000" style="padding: 1px 5px; font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; border-radius: 4px; cursor: pointer;">10K</button>
+              </div>
+            </div>
             <input type="number" id="inpNewWebCoins" class="minimal-input" value="1000" min="0">
           </div>
           <div class="minimal-form-group">
@@ -278,7 +317,7 @@
         </div>
         <div class="minimal-form-group">
           <label class="minimal-form-label">Tag Badge</label>
-          <input type="text" id="inpNewWebTag" class="minimal-input" value="SPONSOR QUEST" placeholder="e.g. SPONSOR QUEST">
+          <input type="text" id="inpNewWebTag" class="minimal-input" value="DISKWALA SPONSOR" placeholder="e.g. DISKWALA SPONSOR">
         </div>
       </div>
 

@@ -253,9 +253,11 @@ function switchPage(pageName) {
   const bottomNavEl = document.querySelector('.bottom-nav') || (typeof DOM !== 'undefined' ? DOM.bottomNav : null);
   const sfBottomMenuBar = document.getElementById('sfBottomMenuBar');
   const beeBottomMenuBar = document.getElementById('beeBottomMenuBar');
-  const isSunflowerGame = (pageName === 'sunflower' || pageName === 'land' || pageName === 'water' || pageName === 'crystal' || pageName === 'crystal-mining' || pageName === 'crystalMining' || pageName === 'stone' || pageName === 'flower');
-  const isBeeFarmGame = (pageName === 'bee-farm' || pageName === 'beefarm');
-  const FULL_GAME_PAGES = new Set(['memoryMatch', 'memory-match', 'scratch', 'spin', 'chest', 'egg', 'coinCatcher', 'coin-catcher', 'mining']);
+  const mineBottomMenuBar = document.getElementById('mineBottomMenuBar');
+  const isSunflowerGame = (pageName === 'sunflower' || pageName === 'land' || pageName === 'water' || pageName === 'stone');
+  const isBeeFarmGame = (pageName === 'bee-farm' || pageName === 'beefarm' || pageName === 'flower');
+  const isMiningGame = (pageName === 'mining' || pageName === 'crystal-mining' || pageName === 'crystalMining' || pageName === 'crystal');
+  const FULL_GAME_PAGES = new Set(['memoryMatch', 'memory-match', 'scratch', 'spin', 'chest', 'egg', 'coinCatcher', 'coin-catcher']);
   const isFullPageGame = FULL_GAME_PAGES.has(pageName);
 
   if (bottomNavEl) {
@@ -263,8 +265,9 @@ function switchPage(pageName) {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'flex';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
+      if (mineBottomMenuBar) mineBottomMenuBar.style.display = 'none';
       document.body.classList.add('page-sunflower-active');
-      document.body.classList.remove('page-beefarm-active', 'full-page-game-active');
+      document.body.classList.remove('page-beefarm-active', 'page-mining-active', 'full-page-game-active');
       if ((pageName === 'water' || pageName === 'stone') && typeof navigateSunflowerPage === 'function') {
         setTimeout(() => navigateSunflowerPage(2), 20);
       } else if (typeof navigateSunflowerPage === 'function') {
@@ -274,19 +277,34 @@ function switchPage(pageName) {
       bottomNavEl.style.display = 'none';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'flex';
+      if (mineBottomMenuBar) mineBottomMenuBar.style.display = 'none';
       document.body.classList.add('page-beefarm-active');
-      document.body.classList.remove('page-sunflower-active', 'full-page-game-active');
+      document.body.classList.remove('page-sunflower-active', 'page-mining-active', 'full-page-game-active');
+      if (typeof navigateBeePage === 'function') {
+        setTimeout(() => navigateBeePage(1), 20);
+      }
+    } else if (isMiningGame) {
+      bottomNavEl.style.display = 'none';
+      if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
+      if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
+      if (mineBottomMenuBar) mineBottomMenuBar.style.display = 'flex';
+      document.body.classList.add('page-mining-active');
+      document.body.classList.remove('page-sunflower-active', 'page-beefarm-active', 'full-page-game-active');
+      if (typeof navigateMiningPage === 'function') {
+        setTimeout(() => navigateMiningPage(1), 20);
+      }
     } else {
       // Menu bar stays in page at bottom for all pages and games
       bottomNavEl.style.display = 'flex';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
+      if (mineBottomMenuBar) mineBottomMenuBar.style.display = 'none';
       if (isFullPageGame) {
         document.body.classList.add('full-page-game-active');
       } else {
         document.body.classList.remove('full-page-game-active');
       }
-      document.body.classList.remove('page-sunflower-active', 'page-beefarm-active');
+      document.body.classList.remove('page-sunflower-active', 'page-beefarm-active', 'page-mining-active');
     }
   }
 
@@ -424,7 +442,7 @@ let _cachedDiamondEls = null;
 
 function getCoinElements() {
   if (!_cachedCoinEls || _cachedCoinEls.length === 0) {
-    _cachedCoinEls = document.querySelectorAll('#coinCounter, #headerCoinBalance, #shopCoinVal, #rewardCoinsBal, #profileCoinBalance');
+    _cachedCoinEls = document.querySelectorAll('#coinCounter, #headerCoinBalance, #shopCoinVal, #rewardCoinsBal, #profileCoinBalance, .coin-val');
   }
   return _cachedCoinEls;
 }
@@ -444,6 +462,10 @@ let _lastFormattedCoins = null;
 let _lastFormattedDiamonds = null;
 
 function updateUI(full = false) {
+  if (full) {
+    _cachedCoinEls = null;
+    _cachedDiamondEls = null;
+  }
   // Sync Header & Page Balance Badges across all pages
   const formattedCoins = formatNumber(gameState.player.coins || 0);
   const formattedDiamonds = formatNumber(gameState.player.diamonds || 0);

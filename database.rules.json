@@ -79,6 +79,17 @@
       ".read": true,
       ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
     },
+    "ads_analytics": {
+      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
+      "directClicks": {
+        ".write": "auth != null",
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "monetagViews": {
+        ".write": "auth != null",
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      }
+    },
     "ads_config": {
       ".read": true,
       ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"

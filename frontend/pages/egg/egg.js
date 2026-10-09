@@ -160,6 +160,9 @@ function hatchEggCell(index) {
   // Daily Stats tracking
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) gameState.dailyStats.eggs = (gameState.dailyStats.eggs || 0) + 1;
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('use_egg', 1);
+  }
 
   renderEggPageContent();
 

@@ -175,6 +175,56 @@ html, body {
   touch-action: manipulation;
 }
 
+/* ==========================================================================
+   GLOBAL UNIFIED TYPOGRAPHY (ALL PAGES & FULL GAME)
+   - ALL Headings: Fixed to 'Fredoka', 'Nunito', sans-serif
+   - ALL Other / Body Text: Fixed to 'Plus Jakarta Sans', sans-serif
+   - Stats / Code / Numbers: Fixed to 'JetBrains Mono', monospace
+   ========================================================================== */
+
+/* 1. All Headings Fixed Font Style across All Pages */
+h1, h2, h3, h4, h5, h6,
+.font-heading,
+.font-sci,
+.font-tech,
+.font-fredoka,
+[class*="-heading"],
+[class*="-title"],
+[class*="__heading"],
+[class*="__title"],
+.sheet-title,
+.splash-title,
+.notif-title,
+.modal-title,
+.card-title,
+.section-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif !important;
+  letter-spacing: 0.2px;
+}
+
+/* 2. All Body & General Text Fixed Font Style */
+body, p, span, a, button, input, select, textarea, label,
+.font-body,
+.font-sans,
+[class*="-text"],
+[class*="-desc"],
+[class*="-label"],
+[class*="-sub"],
+[class*="-btn"],
+[class*="-badge"],
+[class*="-pill"] {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 3. Numbers, Monospace & Live Timers */
+.font-mono,
+[class*="-mono"],
+[class*="-timer"],
+[class*="-val"],
+[class*="-rate"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
 /* Ambient Atmosphere */
 .ambient-glow {
   position: fixed;

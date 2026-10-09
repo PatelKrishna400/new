@@ -332,5 +332,176 @@
       </form>
     </div>
   </div>
+
+  <!-- MODAL: EDIT PLAYER & ALL BALANCES / EVENT LEVELS (DIRECT REAL-TIME FIREBASE SYNC) -->
+  <div class="modal-overlay" id="editPlayerModal" onclick="closeEditPlayerModal()" style="display: none;">
+    <div class="modal-card minimal-card" onclick="event.stopPropagation()" style="max-width: 680px; max-height: 92vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">✏️</span>
+          <div>
+            <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;" id="editModalPlayerTitle">Edit Player Balances &amp; Events</h3>
+            <span style="font-size: 11px; color: #64748b; font-family: 'JetBrains Mono', monospace;" id="editModalPlayerUid">UID: -</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeEditPlayerModal()" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="saveEditedPlayerToFirebase(event)" style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="hidden" id="editInpUid">
+
+        <!-- Section 1: Account Info & Level -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
+          <h4 style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">👤 Core Account &amp; Level</h4>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #334155;">Username</label>
+              <input type="text" id="editInpUsername" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #334155;">Status</label>
+              <select id="editInpStatus" class="form-input">
+                <option value="active">Active</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #0284c7;">Level</label>
+              <input type="number" id="editInpLevel" min="1" max="5000" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #a855f7;">XP</label>
+              <input type="number" id="editInpXp" min="0" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Core Currencies & Energy -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
+          <h4 style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">💰 Primary Currencies &amp; Energy</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #ca8a04;">Coins 🪙 (Gold)</label>
+              <input type="number" id="editInpCoins" min="0" class="form-input" style="font-weight: 700; color: #b45309;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #0891b2;">Diamonds 💎</label>
+              <input type="number" id="editInpDiamonds" min="0" class="form-input" style="font-weight: 700; color: #0891b2;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #eab308;">Energy ⚡</label>
+              <input type="number" id="editInpEnergy" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10.5px; font-weight: 700; color: #ea580c;">Tap Power 💥</label>
+              <input type="number" id="editInpTapPower" min="1" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Chests, Tickets, Cards & Coins -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
+          <h4 style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">🗝️ Keys, Tickets, Cards &amp; Rare Coins</h4>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #7c3aed;">Keys 🗝️</label>
+              <input type="number" id="editInpKeys" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #2563eb;">Tickets 🎫</label>
+              <input type="number" id="editInpTickets" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #e11d48;">Cards 🎴</label>
+              <input type="number" id="editInpCards" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #059669;">Eggs 🥚</label>
+              <input type="number" id="editInpEggs" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #dc2626;">Boom 💣</label>
+              <input type="number" id="editInpBoom" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #db2777;">Brain 🧠</label>
+              <input type="number" id="editInpBrain" min="0" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Sunflower Valley Event -->
+        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 10px; padding: 12px;">
+          <h4 style="font-size: 11px; font-weight: 800; color: #b45309; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">🌻 Sunflower Valley Event Resources</h4>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #b45309;">SF Coins 🌻</label>
+              <input type="number" id="editInpSfCoins" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #15803d;">Seeds 🌱</label>
+              <input type="number" id="editInpSfSeeds" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #0284c7;">Buckets 🪣</label>
+              <input type="number" id="editInpSfBuckets" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #78350f;">Shovels 🪏</label>
+              <input type="number" id="editInpSfShovels" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 10px; font-weight: 700; color: #ca8a04;">Prestige 👑</label>
+              <input type="number" id="editInpSfPrestige" min="1" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Other Events (Bee Farm & Mining) -->
+        <div style="background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 10px; padding: 12px;">
+          <h4 style="font-size: 11px; font-weight: 800; color: #0369a1; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">🐝 Bee Farm &amp; ⛏️ Mining Event Resources</h4>
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #b45309;">Honey 🍯</label>
+              <input type="number" id="editInpHoney" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #15803d;">Larvae 🐛</label>
+              <input type="number" id="editInpLarvae" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #ec4899;">Pollen 🌸</label>
+              <input type="number" id="editInpPollen" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #0284c7;">Shards 💎</label>
+              <input type="number" id="editInpMiningShards" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #9333ea;">Plasma 🔮</label>
+              <input type="number" id="editInpMiningPlasma" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #06b6d4;">Coolant ❄️</label>
+              <input type="number" id="editInpMiningCoolant" min="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 9.5px; font-weight: 700; color: #d97706;">Pickaxes ⛏️</label>
+              <input type="number" id="editInpMiningPickaxes" min="0" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px; font-size: 11.5px; color: #065f46;">
+          ⚡ <strong>Live Real-Time Save:</strong> Clicking Save will update Firebase Realtime Database at <code>/players/${uid}</code> immediately. All changes take effect live for the player!
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" class="btn-secondary" onclick="closeEditPlayerModal()">Cancel</button>
+          <button type="submit" class="btn-primary" id="btnSubmitEditPlayer">💾 Save All Changes to Firebase</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </section>
 

@@ -17,23 +17,38 @@ let adSimulationInterval = null;
 function startAdSimulation(fuelType, title, desc, callback) {
   activeAdRewardState = { fuelType, rewardTitle: title, rewardDesc: desc, callback };
 
-  // Directly run Monetag Rewarded Interstitial Ad (show_10676091)
-  if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        if (typeof callback === 'function') callback();
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
-  }
+  // Directly run Monetag Rewarded Ad with single-reward guard (prevents double credit)
+  // NOTE: showRewardedAd() itself already invokes Monetag SDKs internally,
+  // so calling show_10676091 here AND showRewardedAd would fire callback twice.
+  let _adRewardClaimed = false;
+  const _onceCallback = () => {
+    if (_adRewardClaimed) return;
+    _adRewardClaimed = true;
+    if (typeof callback === 'function') callback();
+  };
 
   // Directly run Monetag Rewarded Interstitial Ad with interactive modal fallback
   if (typeof showRewardedAd === 'function') {
-    showRewardedAd(callback, { adTitle: title, adDesc: desc });
+    showRewardedAd(_onceCallback, { adTitle: title, adDesc: desc });
     return;
+  }
+
+  // Fallback: direct Monetag SDK only when unified service is unavailable
+  if (typeof show_10676091 === 'function') {
+    try {
+      show_10676091().then(() => {
+        _onceCallback();
+      }).catch(e => {
+        console.warn('show_10676091 error:', e);
+      });
+      // Wait for SDK promise — do NOT continue to legacy simulation below
+      // unless SDK function is genuinely missing. Return here and let the
+      // modal fallback timer below still run as visual backup is handled
+      // by showRewardedAd path above. If SDK hangs, user can still collect
+      // via the simulated timer UI.
+    } catch (e) {
+      console.warn('show_10676091 call error:', e);
+    }
   }
 
   switchPage('adRewards');

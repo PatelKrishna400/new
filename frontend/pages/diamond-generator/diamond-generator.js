@@ -569,11 +569,114 @@ function saveAllState() {
 }
 
 // ==========================================================================
+// QUANTUM ENERGY AUTOMATION MANAGER (AUTO CONSUME 100 ENERGY & OFFLINE)
+// ==========================================================================
+function isDgManagerActive() {
+  const dg = ensureDiamondGenState();
+  return !!(dg && dg.managerEndTime && Date.now() < dg.managerEndTime);
+}
+
+function hireDgManager(method) {
+  const dg = ensureDiamondGenState();
+  if (!dg) return;
+  const now = Date.now();
+  const currentEnd = Math.max(now, dg.managerEndTime || 0);
+
+  if (method === 'diamond') {
+    const cost = 10;
+    const currentDiamonds = (window.gameState && window.gameState.player && window.gameState.player.diamonds) || 0;
+    if (currentDiamonds < cost) {
+      if (typeof showFloatingToast === 'function') showFloatingToast(`⚠️ Need ${cost} 💎 to hire manager! (Have: ${currentDiamonds} 💎)`);
+      return;
+    }
+    window.gameState.player.diamonds -= cost;
+    dg.managerEndTime = currentEnd + (24 * 3600 * 1000); // +24 hours
+    saveAllState();
+    updateDiamondGeneratorUI();
+    if (typeof showFloatingToast === 'function') showFloatingToast('🤖 Quantum Manager Hired for 24 Hours! Auto-generating diamonds from energy!');
+  } else if (method === 'ad') {
+    const triggerReward = () => {
+      dg.managerEndTime = currentEnd + (2 * 3600 * 1000); // +2 hours
+      saveAllState();
+      updateDiamondGeneratorUI();
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Manager extended by +2 Hours via Ad! Auto-generating diamonds from energy!');
+    };
+    if (typeof showMonetagRewardedAd === 'function') {
+      showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+    } else triggerReward();
+  }
+}
+
+function checkAndAutoRunManagerCycle() {
+  const dg = ensureDiamondGenState();
+  if (!dg || dg.isRunning) return;
+  if (!isDgManagerActive()) return;
+
+  const currentEnergy = Math.floor(window.gameState?.reactor?.currentEnergy || 0);
+  const cost = getDiamondGenEnergyCost();
+  if (currentEnergy >= cost) {
+    window.gameState.reactor.currentEnergy -= cost;
+    dg.isRunning = true;
+    dg.status = 'generating';
+    dg.cycleProgress = 0;
+    dg.generationStartTime = Date.now();
+    dg.claimed = false;
+    saveAllState();
+    updateDiamondGeneratorUI();
+    updateDiamondGeneratorRealtime();
+  }
+}
+
+function processDiamondOfflineManager() {
+  const dg = ensureDiamondGenState();
+  if (!dg || !window.gameState || !window.gameState.reactor) return;
+  const now = Date.now();
+  const managerEndTime = dg.managerEndTime || 0;
+  if (now > managerEndTime && (dg.lastManagerCheckTime || 0) >= managerEndTime) return;
+
+  const lastCheck = dg.lastManagerCheckTime || dg.generationStartTime || (now - 1000);
+  dg.lastManagerCheckTime = now;
+  if (lastCheck >= now) return;
+
+  const activeEnd = Math.min(now, managerEndTime);
+  const activeSeconds = Math.max(0, (activeEnd - lastCheck) / 1000);
+  if (activeSeconds <= 0) return;
+
+  const cycleDuration = getDiamondCycleDuration();
+  const possibleCycles = Math.floor(activeSeconds / cycleDuration);
+  if (possibleCycles <= 0) return;
+
+  const curEnergy = window.gameState.reactor.currentEnergy || 0;
+  const energyCycles = Math.floor(curEnergy / 100);
+  const cyclesToRun = Math.min(possibleCycles, energyCycles);
+
+  if (cyclesToRun > 0) {
+    const energyConsumed = cyclesToRun * 100;
+    window.gameState.reactor.currentEnergy -= energyConsumed;
+
+    const outputPerCycle = getDiamondsPerCycle();
+    const totalGain = Number((cyclesToRun * outputPerCycle).toFixed(8));
+
+    dg.totalProduced = Number(((dg.totalProduced || 0) + totalGain).toFixed(8));
+    window.gameState.player.diamonds = Number(((window.gameState.player.diamonds || 0) + totalGain).toFixed(8));
+    depositDiamondToPiggyBank(totalGain, 'manager_offline');
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🤖 Quantum Manager ran ${cyclesToRun} cycles offline! +${formatDiamondDisplay(totalGain)} 💎 earned!`);
+    }
+    saveAllState();
+  }
+}
+
+// ==========================================================================
 // PERSISTENT GENERATOR TICK LOOP
 // ==========================================================================
 function startDiamondGeneratorLoop() {
   if (_dgProductionInterval) clearInterval(_dgProductionInterval);
   _dgLastTickTime = Date.now();
+
+  // Process offline progress on start
+  processDiamondOfflineManager();
 
   _dgProductionInterval = setInterval(() => {
     const now = Date.now();
@@ -614,6 +717,11 @@ function startDiamondGeneratorLoop() {
           if (!window.gameState.player.diamondWins) window.gameState.player.diamondWins = 0;
           window.gameState.player.diamondWins += 1;
 
+          // Record 30-day task progress: Generate diamond 2 times
+          if (typeof window.recordTaskEvent === 'function') {
+            window.recordTaskEvent('diamond_gen', 1);
+          }
+
           // Also record in Piggy Bank for history / vault storage
           depositDiamondToPiggyBank(outputPerCycle, 'diamond_generator');
 
@@ -632,6 +740,11 @@ function startDiamondGeneratorLoop() {
           if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
             sfx.playLevelUpSound();
           }
+
+          // If manager is active and has 100 energy, auto start next cycle!
+          if (isDgManagerActive()) {
+            checkAndAutoRunManagerCycle();
+          }
         } else {
           dg.isRunning = false;
           dg.generationStartTime = 0;
@@ -639,6 +752,9 @@ function startDiamondGeneratorLoop() {
           dg.status = 'ready';
         }
       }
+    } else if (isDgManagerActive()) {
+      // Idle generator with active manager: auto-start next cycle
+      checkAndAutoRunManagerCycle();
     }
 
     updateDiamondGeneratorRealtime();
@@ -903,6 +1019,24 @@ function updateDiamondGeneratorUI() {
     }
   }
 
+  // Sync Quantum Automation Manager UI
+  const mgrBadge = document.getElementById('dgManagerStatusBadge');
+  const mgrTimer = document.getElementById('dgManagerTimerVal');
+  if (mgrBadge && mgrTimer) {
+    if (isDgManagerActive()) {
+      mgrBadge.textContent = 'ACTIVE';
+      mgrBadge.classList.add('active');
+      const remMs = Math.max(0, (dg.managerEndTime || 0) - Date.now());
+      const remH = Math.floor(remMs / 3600000);
+      const remM = Math.floor((remMs % 3600000) / 60000);
+      mgrTimer.textContent = `${remH}h ${remM < 10 ? '0' : ''}${remM}m remaining`;
+    } else {
+      mgrBadge.textContent = 'INACTIVE';
+      mgrBadge.classList.remove('active');
+      mgrTimer.textContent = '0h 00m (Hire to automate)';
+    }
+  }
+
   // Update Home Card if present
   const dgeRate = document.getElementById('dgeHomeRateVal');
   if (dgeRate) dgeRate.textContent = `+${formatDiamondDisplay(rate)} 💎 / ${cycleDur.toFixed(2)}s`;
@@ -977,6 +1111,15 @@ window.watchSpeedMilestoneAd = watchSpeedMilestoneAd;
 window.switchDgCostTab = switchDgCostTab;
 window.updateDiamondGeneratorUI = updateDiamondGeneratorUI;
 window.updateDiamondGeneratorRealtime = updateDiamondGeneratorRealtime;
+window.formatDiamondDisplay = formatDiamondDisplay;
+window.getDiamondsPerCycle = getDiamondsPerCycle;
+window.getDiamondCycleDuration = getDiamondCycleDuration;
+window.collectPiggyBankDiamonds = collectPiggyBankDiamonds;
+window.extendPiggyBankWithAd = extendPiggyBankWithAd;
+window.togglePiggyRecords = togglePiggyRecords;
+window.hireDgManager = hireDgManager;
+window.isDgManagerActive = isDgManagerActive;
+window.processDiamondOfflineManager = processDiamondOfflineManager;
 window.formatDiamondDisplay = formatDiamondDisplay;
 window.getDiamondsPerCycle = getDiamondsPerCycle;
 window.getDiamondCycleDuration = getDiamondCycleDuration;

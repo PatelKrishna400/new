@@ -1023,3 +1023,119 @@
   border-radius: 12px;
   cursor: pointer;
 }
+
+/* Quantum Generator Manager Card */
+.dg-manager-card {
+  margin: 12px 14px;
+  background: linear-gradient(180deg, rgba(14, 28, 54, 0.95) 0%, rgba(6, 14, 30, 0.98) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.35);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 240, 255, 0.05);
+}
+
+.dg-manager-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.dg-manager-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dg-manager-icon {
+  font-size: 26px;
+  background: rgba(0, 240, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.dg-manager-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.dg-manager-sub {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+}
+
+.dg-manager-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.dg-manager-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.dg-manager-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dg-manager-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.dg-info-lbl {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.dg-info-val {
+  color: #00f0ff;
+  font-weight: 800;
+}
+
+.dg-manager-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dg-btn-mgr-hire {
+  padding: 10px 8px;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.3) 0%, rgba(14, 165, 233, 0.4) 100%);
+  border: 1.5px solid #0284c7;
+  color: #e0f2fe;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dg-btn-mgr-hire.ad {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.35) 100%);
+  border-color: #10b981;
+  color: #d1fae5;
+}
+
+.dg-btn-mgr-hire:active {
+  transform: scale(0.97);
+}

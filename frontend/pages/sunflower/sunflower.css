@@ -326,6 +326,11 @@
 /* ==========================================================================
    PINNED STICKY TOP HEADER BAR ("STAY HEADING BAR")
    ========================================================================== */
+#pageSunflower {
+  padding-top: 8px !important;
+  padding-bottom: 96px !important;
+}
+
 .sf-sticky-header-bar {
   position: sticky;
   top: 0;
@@ -335,15 +340,22 @@
   opacity: 1 !important;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 8px 12px;
-  background: #ffffff !important;
-  border-bottom: 2px solid #fef3c7;
-  box-shadow: 0 4px 16px rgba(180, 83, 9, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
-  margin: 0 0 8px 0;
+  gap: 8px;
+  min-height: 50px !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, rgba(28, 25, 23, 0.96) 0%, rgba(18, 15, 13, 0.98) 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.45) !important;
+  border-radius: 18px !important;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(245, 158, 11, 0.15),
+    inset 0 1px 0 rgba(254, 240, 138, 0.2) !important;
+  margin: 4px 0 12px 0 !important;
   width: 100%;
-  box-sizing: border-box;
-  overflow: hidden !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
 }
 
 .sf-sticky-left {
@@ -359,23 +371,23 @@
   min-width: 32px;
   min-height: 32px;
   border-radius: 50% !important;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.15) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+  color: #fde047 !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 !important;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
 }
 
 .sf-sticky-back-btn:hover {
-  background: #fef08a;
+  background: rgba(245, 158, 11, 0.3) !important;
   transform: scale(1.06);
-  border-color: #d97706;
+  border-color: #f59e0b !important;
 }
 
 .sf-sticky-back-btn:active {
@@ -404,7 +416,7 @@
   font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
   font-size: 13.5px;
   font-weight: 800;
-  color: #78350f;
+  color: #fde047 !important;
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
@@ -503,16 +515,56 @@
   color: #bae6fd;
 }
 
+/* 5. 🪙 Gold Coins: Royal Treasury Aureolin Gold */
+.sf-hdr-pill.pill-gold {
+  background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+  border: 1.5px solid #fbbf24;
+  color: #fef08a;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.35), inset 0 1px 0 rgba(254, 240, 138, 0.4);
+}
+
+/* 6. 💎 Diamonds: Radiant Cyan Crystal Glow */
+.sf-hdr-pill.pill-diamond {
+  background: linear-gradient(135deg, #0e7490 0%, #083344 100%);
+  border: 1.5px solid #22d3ee;
+  color: #cffafe;
+  box-shadow: 0 2px 8px rgba(34, 211, 238, 0.35), inset 0 1px 0 rgba(207, 250, 254, 0.4);
+}
+
 .sf-hdr-pill.pill-firebase {
   background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
   border: 1.5px solid #f59e0b;
   color: #fde68a;
 }
 
+/* Milestone Ad Upgrade Button: Vibrant Pulsing Gradient */
+.sf-sketch-up-btn.sf-ad-upgrade-btn,
+.sf-card-btn.sf-btn-upgrade.sf-ad-upgrade-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #f59e0b 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #f472b6 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  animation: sfAdBtnPulse 2s ease-in-out infinite !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+}
+
+@keyframes sfAdBtnPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+  }
+}
+
 /* Mobile Responsiveness: Eliminate all horizontal scrolling across all phone widths */
-@media (max-width: 520px) {
+@media (max-width: 375px) {
   .sf-sticky-title-text {
-    display: none !important; /* Hide text on mobile so all 4 pills fit seamlessly in one line without horizontal scrolling */
+    display: none !important;
   }
 }
 
@@ -1084,17 +1136,41 @@
 }
 
 .sf-progress-bar-fill {
+  position: relative;
   height: 100%;
   border-radius: 9999px;
-  transition: width 0.1s linear;
+  transition: none;
+  will-change: width;
+  background-size: 16px 16px, 100% 100% !important;
+  animation: sfLoadingBarMove 0.8s linear infinite;
 }
 
 .sf-progress-bar-fill.emerald {
-  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  background-color: #10b981;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
 .sf-progress-bar-fill.amber {
-  background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%);
+  background-color: #f59e0b;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.sf-progress-bar-fill.cyan {
+  background-color: #06b6d4;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+}
+
+.sf-progress-bar-fill.ready {
+  animation: sfLoadingBarMove 0.6s linear infinite, barReadyGlow 1.2s infinite ease-in-out !important;
 }
 
 /* Rectangular Card Action Buttons */
@@ -2155,30 +2231,74 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   position: relative;
   width: 100%;
   height: 24px;
-  background: #e2e8f0;
-  border: 1.5px solid #cbd5e1;
+  background: #0f172a;
+  border: 1.5px solid #334155;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
 }
 
 .sf-loading-bar-fill {
+  position: relative;
   height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #facc15 100%);
+  min-width: 0%;
+  background-color: #10b981;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  background-size: 24px 24px, 100% 100%;
   border-radius: 10px;
-  transition: width 0.15s linear;
+  transition: none;
+  will-change: width;
+  animation: sfLoadingBarMove 0.8s linear infinite;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+.sf-loading-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 5px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(52, 211, 153, 0.9);
+  opacity: 0.95;
 }
 
 .sf-loading-bar-fill.ready {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #10b981 100%);
-  animation: barReadyGlow 1.2s infinite ease-in-out;
+  background-color: #f59e0b;
+  background-image: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 75%, transparent),
+    linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%);
+  background-size: 24px 24px, 100% 100%;
+  animation: sfLoadingBarMove 0.6s linear infinite, barReadyGlow 1.2s infinite ease-in-out;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.7);
+}
+
+.sf-loading-bar-fill.ready::after {
+  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(253, 224, 71, 0.9);
+}
+
+@keyframes sfLoadingBarMove {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 24px 0, 0 0;
+  }
 }
 
 @keyframes barReadyGlow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.15); }
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(253, 224, 71, 0.95);
+  }
 }
 
 .sf-loading-bar-text {
@@ -2189,12 +2309,12 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   justify-content: center;
   font-size: 11px;
   font-weight: 900;
-  font-family: 'JetBrains Mono', monospace;
-  color: #0f172a;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+  font-family: 'JetBrains Mono', monospace !important;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.85);
   pointer-events: none;
   z-index: 2;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
 
 /* Life meter info line */
@@ -2742,6 +2862,196 @@ body.page-sunflower-active .sf-bottom-menu-bar {
   font-weight: 800;
   color: #fde047;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ==========================================================================
+   LAND MANAGERS PAGE (MANAGE LAND BY LAND VERTICAL STACK)
+   ========================================================================== */
+.sf-mgr-info-strip {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.sf-managers-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.sf-mgr-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(32, 22, 58, 0.96) 0%, rgba(13, 20, 44, 0.98) 55%, rgba(18, 30, 60, 0.96) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: inset 0 1.5px 0 rgba(254, 240, 138, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.sf-mgr-card.active-contract {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: inset 0 1.5px 0 rgba(167, 243, 208, 0.35), 0 0 16px rgba(16, 185, 129, 0.25);
+}
+
+.sf-mgr-card.locked {
+  opacity: 0.92;
+  border-color: rgba(100, 116, 139, 0.45);
+}
+
+.sf-mgr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sf-mgr-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-mgr-avatar-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  border: 1px solid #fde047;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.sf-mgr-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sf-mgr-name {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sf-mgr-sub {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.sf-mgr-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.sf-mgr-status-badge.active {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  color: #34d399;
+}
+
+.sf-mgr-status-badge.expired {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+
+.sf-mgr-status-badge.locked {
+  background: rgba(71, 85, 105, 0.3);
+  border: 1px solid rgba(100, 116, 139, 0.5);
+  color: #94a3b8;
+}
+
+.sf-mgr-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sf-mgr-unlock-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #38bdf8;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 9px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-unlock-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.sf-mgr-coin-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  border: 1px solid #fde047;
+  border-radius: 10px;
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-coin-btn:hover {
+  filter: brightness(1.15);
+}
+
+.sf-mgr-ad-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+  transition: all 0.15s ease;
+}
+
+.sf-mgr-ad-btn:hover {
+  filter: brightness(1.15);
 }
 
 @keyframes spinSlow {

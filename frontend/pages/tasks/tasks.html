@@ -1,207 +1,138 @@
 <div class="page-view" id="pageTasks">
+  <!-- Minimal Top Subtabs Header -->
   <div class="tasks-tab-header">
     <button class="task-subtab-btn active" id="subtabDaily" onclick="switchTaskSubtab('daily')">
-      <svg class="subtab-icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 9 12 22 22 9 12 2"/>
-      </svg>
-      <span class="subtab-text">Diamond Win</span>
-      <span class="subtab-badge-pill" id="dailyBadgeCount">17</span>
-    </button>
-
-    <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
-      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-      <span class="subtab-text">Telegram</span>
-      <span class="subtab-badge-pill" id="telegramBadgeCount">3</span>
+      <span class="text-base">📅</span>
+      <span class="subtab-text font-black">30-Day Quests</span>
+      <span class="subtab-badge-pill" id="dailyBadgeCount">Day 1</span>
     </button>
 
     <button class="task-subtab-btn" id="subtabWebsite" onclick="switchTaskSubtab('website')">
-      <svg class="subtab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-      </svg>
-      <span class="subtab-text">Website Task</span>
-      <span class="subtab-badge-pill" id="websiteBadgeCount">3</span>
+      <span class="text-base">🌐</span>
+      <span class="subtab-text font-black">Website Tasks</span>
+      <span class="subtab-badge-pill" id="websiteBadgeCount">Diskwala</span>
     </button>
   </div>
 
-  <!-- 30-Day Diamond Win Competition Cycle Live Banner -->
-  <div class="tasks-monthly-banner" id="monthlyCompetitionBanner">
-    <div class="monthly-banner-left">
-      <span class="monthly-banner-icon">💎</span>
-      <div class="monthly-banner-text">
-        <span class="monthly-banner-title">DIAMOND WIN COMPETITION CYCLE</span>
-        <span class="monthly-banner-subtitle">Complete quests to win Diamonds before cycle ends</span>
+  <!-- 30-Day Streak Live Status Bar (Timer Removed, Calendar Streak Based) -->
+  <div class="tasks-streak-strip" id="dailyStreakStrip">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl animate-pulse">🔥</span>
+      <div>
+        <div class="text-xs font-black text-amber-300 flex items-center gap-1.5">
+          <span>Streak: <strong id="streakCountDisplay" class="text-white font-mono">1 Day</strong></span>
+          <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.2 rounded border border-emerald-600">Active</span>
+        </div>
       </div>
     </div>
-    <div class="monthly-banner-timer-badge">
-      <span class="monthly-timer-dot"></span>
-      <span id="monthlyCompetitionTimer">29d 23h 59m 59s</span>
+    <div class="text-right">
+      <span class="text-[10px] font-mono font-black text-amber-400 bg-stone-900/90 border border-amber-500/40 px-2 py-1 rounded-lg">
+        Day <span id="currentActiveDayNum">1</span> / 30
+      </span>
     </div>
   </div>
 
-  <!-- Website Task Full Page Note Banner (How-To Steps Removed) -->
-  <div class="tasks-web-guide-banner" id="websiteGuideBanner" style="display: none;">
-    <div class="web-guide-notes-card">
-      <div class="web-notes-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="web-notes-icon">📌</span>
-          <strong class="web-notes-title">WEBSITE QUEST NOTE &amp; RULES</strong>
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span class="web-guide-badge">🌐 SPONSOR MISSIONS</span>
-          <span class="web-guide-reward-pill">+100 Diamonds 💎</span>
-        </div>
-      </div>
-      <ul class="web-notes-list">
-        <li><strong>🪙 1,000 Coins Entry:</strong> 1,000 Coins are consumed to unlock the quest and activate site access.</li>
-        <li><strong>🌐 Confidential Link:</strong> Tap "Open" to visit the sponsor destination. The link URL is kept strictly confidential.</li>
-        <li><strong>🔍 Secret 4-Digit PIN:</strong> Browse the partner website carefully to find the hidden 4-digit code.</li>
-        <li><strong>⚠️ Single Verification Attempt:</strong> You have only 1 attempt. Entering an incorrect PIN eliminates the task and forfeits rewards!</li>
-        <li><strong>💎 Diamond Reward:</strong> Entering the correct 4-digit code in "Verification" awards +100 Diamonds instantly.</li>
-      </ul>
+  <!-- Main Tasks Content Container -->
+  <div class="tasks-scroll-container pb-4" id="tasksListContainer">
+    <!-- SUBTAB 1: 30-DAY RECTANGLE CARDS GRID (3*10 CARDS FORM) -->
+    <div id="thirtyDayGridContainer" class="thirty-day-grid-layout">
+      <!-- Dynamically rendered by renderThirtyDayCards() in tasks.js -->
+    </div>
+
+    <!-- SUBTAB 2: WEBSITE TASKS CONTAINER -->
+    <div id="websiteTasksListContainer" class="flex flex-col gap-3 hidden">
+      <!-- Dynamically rendered by renderWebsiteTasks() in tasks.js -->
     </div>
   </div>
 
-  <div class="tasks-scroll-container" id="tasksListContainer"></div>
-
-  <!-- Task Notes Pop-Up Modal (Interactive Sheet) -->
-  <div class="task-notes-backdrop" id="taskNotesBackdrop" onclick="closeTaskNotesPopup(event)">
-    <div class="task-notes-modal" id="taskNotesModal" onclick="event.stopPropagation()">
+  <!-- Day 10-Task Detail Modal / Sheet -->
+  <div class="task-notes-backdrop" id="dayDetailModalBackdrop" onclick="closeDayDetailModal(event)">
+    <div class="day-detail-modal" id="dayDetailModal" onclick="event.stopPropagation()">
       <div class="task-notes-handle"></div>
 
-      <!-- Header -->
-      <div class="task-notes-header">
-        <div class="task-notes-icon-wrapper" id="taskNotesIconWrap">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
-            <circle cx="12" cy="12" r="10"/>
-          </svg>
+      <!-- Day Modal Header -->
+      <div class="day-modal-header flex items-center justify-between border-b border-stone-800 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl" id="dayModalEmoji">📅</span>
+          <div>
+            <h3 class="text-xs sm:text-sm font-black text-amber-300" id="dayModalTitle">Day 1 Quests (10 Tasks)</h3>
+            <span class="text-[9.5px] text-stone-400 font-mono" id="dayModalSubtitle">Each task: +10 🪙 (Watch Ad to claim) &bull; Finish all for 10,000 💎</span>
+          </div>
         </div>
-        <div class="task-notes-meta">
-          <span class="task-notes-subtag" id="taskNotesSubtag">MONTHLY QUEST</span>
-          <h3 class="task-notes-title" id="taskNotesTitle">Task Title</h3>
-        </div>
-        <button class="task-notes-close-btn" onclick="closeTaskNotesPopup()" aria-label="Close notes">&times;</button>
+        <button class="w-7 h-7 rounded-full bg-stone-800 text-stone-300 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-stone-700" onclick="closeDayDetailModal()">&times;</button>
       </div>
 
-      <!-- Liquid Progress Meter in Modal -->
-      <div class="task-notes-progress-box">
-        <div class="task-notes-prog-label-row">
-          <span class="task-notes-prog-lbl">Quest Completion</span>
-          <span class="task-notes-prog-val" id="taskNotesProgVal">0 / 0 (0%)</span>
+      <!-- Day Progress Track -->
+      <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 my-2 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-stone-300">Day Progress:</span>
+          <span class="text-xs font-mono font-black text-amber-300" id="dayTasksProgressLabel">0 / 10 Completed</span>
         </div>
-        <div class="task-notes-prog-track">
-          <div class="task-notes-prog-liquid" id="taskNotesProgLiquid" style="width: 0%;">
-            <div class="task-notes-prog-wave"></div>
-          </div>
+        <div class="bg-cyan-950 border border-cyan-500/40 px-2 py-0.5 rounded text-[10px] font-mono font-bold text-cyan-300">
+          Reward: 10,000 💎
         </div>
       </div>
 
-      <!-- Body / Notes Card -->
-      <div class="task-notes-body">
-        <div class="task-notes-section">
-          <div class="task-notes-section-head">
-            <span class="section-icon">📝</span>
-            <span class="section-title">Task Notes & Instructions</span>
-          </div>
-          <p class="task-notes-desc" id="taskNotesDesc">Complete quest objectives to earn your reward.</p>
-        </div>
-
-        <div class="task-notes-reward-card">
-          <div class="reward-card-left">
-            <div class="reward-gift-box">
-              <span class="reward-gift-icon" id="taskNotesRewardIcon">🎴</span>
-            </div>
-            <div class="reward-text-col">
-              <span class="reward-title-lbl">Guaranteed Reward</span>
-              <span class="reward-val-highlight" id="taskNotesRewardVal">1 Scratch Card</span>
-            </div>
-          </div>
-          <span class="reward-ready-tag" id="taskNotesStatusTag">IN PROGRESS</span>
-        </div>
-      </div>
-
-      <!-- Action Button Area -->
-      <div class="task-notes-actions" id="taskNotesActions">
-        <!-- Injected dynamically: Go to Quest / Claim 🎴 -->
+      <!-- 10 Tasks Vertical Stack -->
+      <div class="day-tasks-vertical-list flex flex-col gap-2 overflow-y-auto max-h-[60vh] pr-1" id="dayTasksVerticalList">
+        <!-- Injected dynamically by renderDayTasksList() -->
       </div>
     </div>
   </div>
 
-  <!-- Website Task 4-Digit Code Verification Modal -->
+  <!-- Broken Streak Notice Popup Modal -->
+  <div class="task-notes-backdrop" id="brokenStreakModal" style="display: none;">
+    <div class="bg-stone-950 border-2 border-rose-500/70 rounded-3xl max-w-sm w-full p-4 text-white shadow-2xl flex flex-col items-center text-center gap-2.5 animate-scale-up">
+      <div class="text-3xl animate-bounce">💔🔥</div>
+      <h3 class="text-sm font-black text-rose-400">Streak Broken!</h3>
+      <p class="text-xs text-stone-300">
+        Repair streak to continue 30-Day Quests:
+      </p>
+
+      <div class="w-full flex flex-col gap-2 pt-1">
+        <button onclick="repairDailyStreakWithAd()" class="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 text-white font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+          <span>🎬 Watch Ad to Continue</span>
+        </button>
+        <button onclick="repairDailyStreakWithDiamonds()" class="w-full bg-cyan-700 hover:bg-cyan-600 text-cyan-100 font-black text-xs py-2.5 rounded-xl border border-cyan-500/50 shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+          <span>💎 Use 100 Diamonds</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website Task 4-Digit PIN Code Modal -->
   <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)">
     <div class="web-code-modal" id="webCodeModal" onclick="event.stopPropagation()">
       <div class="web-code-header">
         <div class="web-code-icon-badge">🌐</div>
         <div class="web-code-header-text">
-          <span class="web-code-subtag" id="webModalSubtag">WEBSITE QUEST VERIFICATION</span>
-          <h3 class="web-code-title" id="webModalTitle">Tap Empire Web Quest</h3>
+          <span class="web-code-subtag" id="webModalSubtag">DISKWALA VERIFICATION</span>
+          <h3 class="web-code-title" id="webModalTitle">Website Quest</h3>
         </div>
         <button class="web-code-close-btn" onclick="closeWebCodeModal()">&times;</button>
       </div>
 
       <div class="web-code-body">
-        <div class="web-code-instruction-box">
-          <div class="web-inst-row">
-            <span class="web-inst-step">1</span>
-            <span>Visit the opened website link in your browser.</span>
-          </div>
-          <div class="web-inst-row">
-            <span class="web-inst-step">2</span>
-            <span>Find the <strong>4-digit secret code</strong> provided on the website.</span>
-          </div>
-          <div class="web-inst-row">
-            <span class="web-inst-step">3</span>
-            <span>Enter the 4-digit PIN below to claim your <strong>Diamonds 💎</strong>!</span>
-          </div>
+        <div class="text-xs text-stone-300 text-center mb-1">
+          Enter 4-digit code from Diskwala link:
         </div>
 
-        <div class="web-code-reward-banner">
-          <span class="web-reward-label">Quest Reward:</span>
-          <span class="web-reward-amount" id="webModalRewardText">+100 Diamonds 💎</span>
-        </div>
-
-        <div class="web-pin-container">
-          <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric" autocomplete="one-time-code">
+        <div class="web-pin-container my-3">
+          <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric">
           <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
           <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
           <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
         </div>
 
-        <div class="web-code-warning-notice">
-          ⚠️ <span>Note: If code is incorrect, task will be removed and you must try again later!</span>
-        </div>
-
         <div class="web-code-modal-actions">
           <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn" onclick="revisitWebsiteTaskUrl()">
-            <span>🔗 Revisit Web</span>
+            <span>🔗 Open Link</span>
           </button>
           <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn" onclick="submitWebsiteCodeVerification()">
-            <span>Verify & Claim 💎</span>
+            <span>🎬 Verify &amp; Claim (Watch Ad)</span>
           </button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Website Task Verification Outcome Result Popup (Win Diamonds or Wrong Code Try Again) -->
-  <div class="web-result-modal-backdrop" id="webResultModalBackdrop" onclick="closeWebResultModal(event)">
-    <div class="web-result-modal" id="webResultModal" onclick="event.stopPropagation()">
-      <div class="web-result-glow" id="webResultGlow"></div>
-      <div class="web-result-icon" id="webResultIcon">💎</div>
-      <h3 class="web-result-title" id="webResultTitle">Quest Completed!</h3>
-      <p class="web-result-desc" id="webResultDesc">You cracked the 4-digit code and won Diamonds!</p>
-
-      <div class="web-result-reward-badge" id="webResultRewardBadge">
-        <span id="webResultRewardVal">+100 Diamonds 💎</span>
-      </div>
-
-      <button type="button" class="web-result-confirm-btn" id="webResultConfirmBtn" onclick="closeWebResultModal()">
-        <span>Continue</span>
-      </button>
     </div>
   </div>
 

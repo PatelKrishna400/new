@@ -471,8 +471,8 @@ const gameState = {
   autoBotInterval: null,
 };
 
-// LocalStorage Key (Bumped to V6 for Global Fresh Zero Restart)
-const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V6';
+// LocalStorage Key (Bumped to V7 to match GAME_RESET_VERSION=7 Global Fresh Zero Restart)
+const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V7';
 
 // Load & Save
 function loadSavedGame() {
@@ -483,6 +483,7 @@ function loadSavedGame() {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V3');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
+    localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
   } catch (e) {}
 
   const saved = localStorage.getItem(STORAGE_KEY);

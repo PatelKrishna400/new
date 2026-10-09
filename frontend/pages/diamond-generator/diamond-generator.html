@@ -99,6 +99,37 @@
     </section>
 
     <!-- ============================================================
+         QUANTUM ENERGY AUTOMATION MANAGER (AUTO CONSUME 100 ENERGY)
+         ============================================================ -->
+    <section class="dg-manager-card" id="dgManagerCard">
+      <div class="dg-manager-hdr">
+        <div class="dg-manager-title-wrap">
+          <span class="dg-manager-icon">🤖</span>
+          <div>
+            <h3 class="dg-manager-title font-sci">QUANTUM AUTOMATION MANAGER</h3>
+            <p class="dg-manager-sub">Auto-feeds 100 ⚡ Energy to generate diamonds continuously (Works offline!)</p>
+          </div>
+        </div>
+        <span class="dg-manager-status-badge font-mono" id="dgManagerStatusBadge">INACTIVE</span>
+      </div>
+      
+      <div class="dg-manager-body">
+        <div class="dg-manager-info-row">
+          <span class="dg-info-lbl">Manager Active Time:</span>
+          <span class="dg-info-val font-mono" id="dgManagerTimerVal">0h 00m remaining</span>
+        </div>
+        <div class="dg-manager-actions">
+          <button type="button" class="dg-btn-mgr-hire" id="btnHireDgManagerDia" onclick="hireDgManager('diamond')">
+            <span>💎 Hire / Extend (10 💎 / 24h)</span>
+          </button>
+          <button type="button" class="dg-btn-mgr-hire ad" id="btnHireDgManagerAd" onclick="hireDgManager('ad')">
+            <span>🎬 Watch Ad (+2h Free Manager)</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
          PIGGY BANK / DIAMOND STORAGE (30-DAY RETENTION & AD EXTENSION)
          ============================================================ -->
     <section class="dg-piggy-section" id="dgPiggyBankCard">
@@ -134,11 +165,6 @@
         <button type="button" class="piggy-extend-btn font-sci" id="btnExtendPiggyAd" onclick="extendPiggyBankWithAd()">
           <span>🎬 EXTEND +1 DAY (AD)</span>
         </button>
-      </div>
-
-      <!-- Notice when collect button is locked (< 1 Diamond) -->
-      <div id="piggyCollectNotice" class="piggy-collect-notice" style="display: none;">
-        Collect button appears when at least 1.0 💎 is accumulated in Piggy Bank. Complete 5 Website Tasks to collect.
       </div>
 
       <!-- Generation Records Collapsible -->

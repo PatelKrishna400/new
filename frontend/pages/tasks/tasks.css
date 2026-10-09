@@ -1846,4 +1846,185 @@
   }
 }
 
+/* ==========================================================================
+   30-DAY TASKS: 3x10 RECTANGLE CARDS GRID & MODAL
+   ========================================================================== */
+.tasks-streak-strip {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  margin-bottom: 8px;
+}
+
+.thirty-day-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.thirty-day-card {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 82px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.thirty-day-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+}
+
+.thirty-day-card.active-day {
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.thirty-day-card.completed-day {
+  border-color: #10b981;
+  background: rgba(6, 78, 59, 0.25);
+}
+
+.thirty-day-card.locked-day {
+  opacity: 0.6;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.4);
+  cursor: not-allowed;
+}
+
+.thirty-day-num {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fcd34d;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.thirty-day-status-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.thirty-day-status-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.thirty-day-status-pill.active {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde047;
+  border: 1px solid #d97706;
+}
+
+.thirty-day-status-pill.locked {
+  background: rgba(75, 85, 99, 0.2);
+  color: #94a3b8;
+  border: 1px solid #4b5563;
+}
+
+/* Day Detail Modal */
+.day-detail-modal {
+  background: #090e1a;
+  border: 2px solid rgba(245, 158, 11, 0.5);
+  border-radius: 24px 24px 0 0;
+  max-width: 480px;
+  width: 100%;
+  padding: 16px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+  animation: slideUpModal 0.25s ease-out;
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.day-task-row {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-task-row.task-completed {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(6, 78, 59, 0.15);
+}
+
+.day-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.day-task-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.day-task-prog {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-family: ui-monospace, monospace;
+}
+
+.day-task-claim-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #1c1917;
+  font-weight: 900;
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.day-task-claim-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.day-task-claim-btn.claimed {
+  background: rgba(75, 85, 99, 0.3);
+  color: #94a3b8;
+  cursor: default;
+  pointer-events: none;
+}
+
 

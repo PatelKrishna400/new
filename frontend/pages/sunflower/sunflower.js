@@ -63,53 +63,11 @@ const SF_WELL_UNLOCK_COSTS = [
   50000   // Well 20: 50000 💎
 ];
 
-// 20 Wells Base Starting Cycle Times (Well 1: 30s base)
-const SF_WELL_BASE_TIMES = [
-  30,       // Well 1: 30s (Exact user specification!)
-  10,       // Well 2: 10s
-  20,       // Well 3: 20s
-  35,       // Well 4: 35s
-  60,       // Well 5: 1m
-  90,       // Well 6: 1.5m
-  120,      // Well 7: 2m
-  180,      // Well 8: 3m
-  240,      // Well 9: 4m
-  300,      // Well 10: 5m
-  420,      // Well 11: 7m
-  600,      // Well 12: 10m
-  900,      // Well 13: 15m
-  1200,     // Well 14: 20m
-  1800,     // Well 15: 30m
-  2700,     // Well 16: 45m
-  3600,     // Well 17: 1h
-  5400,     // Well 18: 1.5h
-  7200,     // Well 19: 2h
-  10800     // Well 20: 3h
-];
+// 20 Wells Base Starting Cycle Times (Well 1: 500s, Well 2: 1000s, ... Well 20: 10000s)
+const SF_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 500);
 
-// 20 Wells Base Basket Production per Cycle (Well 1: 1 basket)
-const SF_WELL_BASE_BASKETS = [
-  1,        // Well 1: 1 basket (Exact user specification!)
-  2,        // Well 2: 2 baskets
-  3,        // Well 3: 3 baskets
-  5,        // Well 4: 5 baskets
-  8,        // Well 5: 8 baskets
-  12,       // Well 6: 12 baskets
-  16,       // Well 7: 16 baskets
-  22,       // Well 8: 22 baskets
-  30,       // Well 9: 30 baskets
-  40,       // Well 10: 40 baskets
-  55,       // Well 11: 55 baskets
-  75,       // Well 12: 75 baskets
-  100,      // Well 13: 100 baskets
-  140,      // Well 14: 140 baskets
-  200,      // Well 15: 200 baskets
-  300,      // Well 16: 300 baskets
-  450,      // Well 17: 450 baskets
-  700,      // Well 18: 700 baskets
-  1000,     // Well 19: 1000 baskets
-  1500      // Well 20: 1500 baskets
-];
+// 20 Wells Base Basket Production per Cycle (Well 1 to 20 starting at 1 bucket at Level 1)
+const SF_WELL_BASE_BASKETS = Array.from({ length: 20 }, () => 1);
 
 const SF_WELL_NAMES = [
   "Mountain Spring Well #1",
@@ -324,6 +282,14 @@ function getSfPlotWaterBonus(plotIndex) {
   return SF_LAND_WATER_BONUS[plotIndex] || 10;
 }
 
+// 🪣 Water Buckets Required per Watering:
+// Increases +1 after every 5 levels (Lv 1-5 = 1 bucket for 10s, Lv 6-10 = 2 buckets for 10s, Lv 11-15 = 3 buckets, etc.)
+function getSfPlotRequiredBuckets(level) {
+  const L = Math.max(1, level || 1);
+  return Math.floor((L - 1) / 5) + 1;
+}
+window.getSfPlotRequiredBuckets = getSfPlotRequiredBuckets;
+
 function createDefaultSfPlots() {
   const plots = [];
   for (let i = 1; i <= 20; i++) {
@@ -532,6 +498,9 @@ function loadInitialSunflowerState() {
         if (!parsed.workers) {
           parsed.workers = { walter: false, dave: false, elena: false, leo: false, barney: false, chloe: false };
         }
+        if (!Array.isArray(parsed.managers) || parsed.managers.length !== 20) {
+          parsed.managers = createDefaultSfManagers();
+        }
         if (!parsed.upgradeMultiplier) parsed.upgradeMultiplier = 1;
         return parsed;
       }
@@ -559,6 +528,7 @@ function loadInitialSunflowerState() {
       leo: false,    // Farming Worker: auto-harvests lands 11-20 + 2x speed
       barney: false  // Farming Worker: auto-plants seeds into empty plots
     },
+    managers: createDefaultSfManagers(),
     cistern: {
       basketsInCrate: 0,
       maxCrateCapacity: 999999999,
@@ -572,7 +542,25 @@ function loadInitialSunflowerState() {
   };
 }
 
+function createDefaultSfManagers() {
+  const managers = [];
+  const avatars = ['👷‍♂️', '👩‍🌾', '🧑‍🌾', '👨‍🌾', '👷‍♀️', '🕵️‍♂️', '🧑‍🔧', '🌱', '🌻', '🚜', '🧑‍💼', '👩‍💼', '👨‍🔬', '👩‍🔬', '🧙‍♂️', '🧚‍♀️', '🤖', '🦊', '🐻', '👑'];
+  for (let i = 1; i <= 20; i++) {
+    managers.push({
+      landId: i,
+      unlocked: false,
+      activeTimer: 0,
+      hireCount: 0,
+      avatar: avatars[(i - 1) % avatars.length]
+    });
+  }
+  return managers;
+}
+
 const sunflowerState = loadInitialSunflowerState();
+if (!Array.isArray(sunflowerState.managers) || sunflowerState.managers.length !== 20) {
+  sunflowerState.managers = createDefaultSfManagers();
+}
 if (sunflowerState.cistern) sunflowerState.cistern.maxCrateCapacity = 999999999;
 if (Array.isArray(sunflowerState.wells)) {
   sunflowerState.wells.forEach(w => { w.maxStorage = 999999999; });
@@ -752,12 +740,26 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
   let totalCost = 0;
   let curL = currentLevel;
 
+  // Milestone ad checkpoint: at Lv 5, 10, 15... watch ad to unlock the next level!
+  if (currentLevel % 5 === 0 && currentLevel < 5000) {
+    return {
+      levelsToAdd: 1,
+      totalCost: 0,
+      targetLevel: Math.min(5000, currentLevel + 1),
+      isAdUpgrade: true
+    };
+  }
+
   let targetLevels = 1;
   if (multMode === 10) targetLevels = 10;
   else if (multMode === 100) targetLevels = 100;
   else if (multMode === 'max') targetLevels = 5000;
 
   while (curL < 5000 && levelsToAdd < targetLevels) {
+    // If the next level is a milestone (e.g. 5, 10, 15...), pause there so player can watch ad
+    if (curL > currentLevel && curL % 5 === 0) {
+      break;
+    }
     const cost = getSfPlotUpgradeCost(plotIndex, curL);
     if (cost === Infinity) break;
     if (multMode === 'max' && totalCost + cost > playerCoins && levelsToAdd > 0) {
@@ -777,7 +779,8 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
   return {
     levelsToAdd: Math.max(1, levelsToAdd),
     totalCost,
-    targetLevel: Math.min(5000, currentLevel + levelsToAdd)
+    targetLevel: Math.min(5000, currentLevel + levelsToAdd),
+    isAdUpgrade: false
   };
 }
 
@@ -786,31 +789,35 @@ function getSfMultiUpgradeInfo(plotIndex, currentLevel, multMode, playerCoins) {
    ========================================================================== */
 
 function getSfWellCycleTime(wellIndex, level) {
-  const baseTime = SF_WELL_BASE_TIMES[wellIndex] || 30;
+  const baseTime = (wellIndex + 1) * 500;
   const L = Math.min(5000, Math.max(1, level || 1));
-  if (L >= 5000) return 0.05;
+  if (L <= 1) return baseTime;
+  if (L >= 5000) return 1.0;
 
-  let time = baseTime * Math.pow(0.05 / baseTime, (L - 1) / 4999);
+  // Decrease from baseTime (e.g. 500s) down to 1s at Level 5000
+  let time = baseTime - ((baseTime - 1) * ((L - 1) / 4999));
 
   // Walter Aquifer Grandmaster speed boost (+25% speed => time / 1.25)
   if (sunflowerState && sunflowerState.workers && sunflowerState.workers.walter) {
     time = time / 1.25;
   }
-  return Math.max(0.05, time);
+  return Math.max(1.0, Math.round(time * 10) / 10);
 }
 
 function getSfWellBasketsPerCycle(wellIndex, level) {
-  const baseBaskets = SF_WELL_BASE_BASKETS[wellIndex] || 1;
   const L = Math.min(5000, Math.max(1, level || 1));
-  if (L === 1) return baseBaskets;
-  return Math.floor(baseBaskets * (1 + (L - 1) * 0.1));
+  const maxBaskets = 100 + (wellIndex * 150); // Well 1: 100, Well 2: 250, Well 3: 400...
+  if (L <= 1) return 1;
+  if (L >= 5000) return maxBaskets;
+  return Math.max(1, Math.round(1 + ((maxBaskets - 1) * ((L - 1) / 4999))));
 }
 
 function getSfWellUpgradeCost(wellIndex, level) {
   const L = Math.min(5000, Math.max(1, level || 1));
   if (L >= 5000) return Infinity;
   const baseCoins = (wellIndex + 1) * 25;
-  return Math.round(baseCoins * Math.pow(1.05, L - 1));
+  // Smooth progressive polynomial curve (Level 1 to 5000) without float overflow
+  return Math.max(10, Math.round(baseCoins * (1 + (L * 0.5) + Math.pow(L, 1.25))));
 }
 
 function getSfWellMultiUpgradeInfo(wellIndex, currentLevel, multMode, playerCoins) {
@@ -818,12 +825,26 @@ function getSfWellMultiUpgradeInfo(wellIndex, currentLevel, multMode, playerCoin
   let totalCost = 0;
   let curL = currentLevel;
 
+  // Milestone ad checkpoint: at Lv 5, 10, 15... watch ad to unlock the next level!
+  if (currentLevel % 5 === 0 && currentLevel < 5000) {
+    return {
+      levelsToAdd: 1,
+      totalCost: 0,
+      targetLevel: Math.min(5000, currentLevel + 1),
+      isAdUpgrade: true
+    };
+  }
+
   let targetLevels = 1;
   if (multMode === 10) targetLevels = 10;
   else if (multMode === 100) targetLevels = 100;
   else if (multMode === 'max') targetLevels = 5000;
 
   while (curL < 5000 && levelsToAdd < targetLevels) {
+    // If the next level is a milestone (e.g. 5, 10, 15...), pause there so player can watch ad
+    if (curL > currentLevel && curL % 5 === 0) {
+      break;
+    }
     const cost = getSfWellUpgradeCost(wellIndex, curL);
     if (cost === Infinity) break;
     if (multMode === 'max' && totalCost + cost > playerCoins && levelsToAdd > 0) {
@@ -843,7 +864,8 @@ function getSfWellMultiUpgradeInfo(wellIndex, currentLevel, multMode, playerCoin
   return {
     levelsToAdd: Math.max(1, levelsToAdd),
     totalCost,
-    targetLevel: Math.min(5000, currentLevel + levelsToAdd)
+    targetLevel: Math.min(5000, currentLevel + levelsToAdd),
+    isAdUpgrade: false
   };
 }
 
@@ -1069,7 +1091,7 @@ window.navigateSunflowerPage = function(pageNum) {
 
   if (pageNum === 1) renderSunflowerPlots();
   if (pageNum === 2) renderSunflowerWells();
-  if (pageNum === 4) updateWorkersUI();
+  if (pageNum === 4) renderSunflowerManagers();
   if (pageNum === 5) {
     renderSunflowerSpinExchange();
     renderSunflowerFuelShopCards();
@@ -1215,6 +1237,7 @@ window.waterSfPlot = function(plotId, event = null) {
 
   const maxCap = getSfPlotMaxLifeLimit(plotIndex, plot.level);
   const bonus = getSfPlotWaterBonus(plotIndex);
+  const reqBuckets = getSfPlotRequiredBuckets(plot.level);
 
   if (plot.lifeTimer >= maxCap) {
     const posX = event ? event.clientX : window.innerWidth / 2;
@@ -1223,13 +1246,13 @@ window.waterSfPlot = function(plotId, event = null) {
     return;
   }
 
-  if (sunflowerState.baskets > 0) {
-    sunflowerState.baskets -= 1;
+  if ((sunflowerState.baskets || 0) >= reqBuckets) {
+    sunflowerState.baskets -= reqBuckets;
     plot.lifeTimer = Math.min(maxCap, (plot.lifeTimer || 0) + bonus);
     sunflowerAudio.playWaterSplash();
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`+${bonus}s Solar Life! (Cap: ${maxCap}s) 🪣`, posX, posY, 'text-cyan-400 font-bold');
+    spawnSfFloat(`-${reqBuckets} 🪣 Used! +${bonus}s Solar Life! (Cap: ${maxCap}s) 🌻`, posX, posY, 'text-cyan-400 font-bold');
 
     saveSunflowerStateDebounced();
     updateStickyHeaderAndMiniStats();
@@ -1237,43 +1260,109 @@ window.waterSfPlot = function(plotId, event = null) {
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat('No Buckets! Collect at Water Well (Page 2) or Shop (Page 3) 💧', posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${reqBuckets} 🪣 Water Buckets! (Have: ${sunflowerState.baskets || 0}) Collect at Water Well (Page 2) or Shop (Page 3) 💧`, posX, posY, 'text-red-400');
   }
 };
 
-// 4. Upgrade Land Level (Increases life limit cap & boosts coin output)
+// 4a. Upgrade Land Level with Sponsored Rewarded Ad (Every 5 Levels Milestone: 5, 10, 15, 20...)
+window.upgradeSfPlotWithAd = function(plotId, event = null) {
+  const plotIndex = plotId - 1;
+  const plot = sunflowerState.plots[plotIndex];
+  if (!plot || !plot.unlocked || plot.level >= 5000) return;
+
+  const doAdUpgrade = () => {
+    plot.level = Math.min(5000, plot.level + 1);
+    plot.productionTime = getSfPlotCycleTime(plotIndex, plot.level);
+    plot.coinProduction = getSfPlotCoinsPerCycle(plotIndex, plot.level);
+    plot.upgradeCost = getSfPlotUpgradeCost(plotIndex, plot.level);
+    const newCap = getSfPlotMaxLifeLimit(plotIndex, plot.level);
+
+    sunflowerAudio.playUpgradeChime();
+    if (typeof window.recordTaskEvent === 'function') {
+      window.recordTaskEvent('sunflower_upgrade', 1);
+    }
+    const posX = event ? event.clientX : window.innerWidth / 2;
+    const posY = event ? event.clientY : window.innerHeight / 2;
+    spawnSfFloat(`🎉 Milestone Unlocked: Land #${plot.id} Lv. ${plot.level}! (Life Cap: ${newCap}s) 🌻`, posX, posY, 'text-emerald-400 font-black');
+
+    renderSunflowerPlots();
+    updateStickyHeaderAndMiniStats();
+    saveSunflowerStateDebounced();
+  };
+
+  if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doAdUpgrade, {
+      adTitle: `Land #${plot.id} Milestone Lv.${plot.level + 1}`,
+      adDesc: `Watch a short sponsor video to upgrade Land #${plot.id} past milestone Level ${plot.level}!`
+    });
+  } else {
+    doAdUpgrade();
+  }
+};
+
+// 4b. Upgrade Land Level (Increases life limit cap & boosts coin output)
 window.upgradeSfPlot = function(plotId, event = null) {
   const plotIndex = plotId - 1;
   const plot = sunflowerState.plots[plotIndex];
   if (!plot || !plot.unlocked || plot.level >= 5000) return;
 
+  // Milestone ad checkpoint: each 5 levels (Lv 5, 10, 15, 20...) watch ad to advance!
+  if (plot.level % 5 === 0) {
+    window.upgradeSfPlotWithAd(plotId, event);
+    return;
+  }
+
   const mult = sunflowerState.upgradeMultiplier || 1;
-  const info = getSfMultiUpgradeInfo(plotIndex, plot.level, mult, sunflowerState.coins);
+  const playerSfCoins = sunflowerState.coins || 0;
+  const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
+  const availableCoins = Math.max(playerSfCoins, playerGoldCoins);
 
-  if (sunflowerState.coins >= info.totalCost) {
+  const info = getSfMultiUpgradeInfo(plotIndex, plot.level, mult, availableCoins);
+
+  if (info.isAdUpgrade) {
+    window.upgradeSfPlotWithAd(plotId, event);
+    return;
+  }
+
+  // Deduct cost from Sunflower Coins or Gold Coins
+  if (playerSfCoins >= info.totalCost) {
     sunflowerState.coins -= info.totalCost;
-    plot.level = info.targetLevel;
-
-    const newCycleTime = getSfPlotCycleTime(plotIndex, plot.level);
-    plot.productionTime = newCycleTime;
-    plot.coinProduction = getSfPlotCoinsPerCycle(plotIndex, plot.level);
-    plot.upgradeCost = getSfPlotUpgradeCost(plotIndex, plot.level);
-
-    const newCap = getSfPlotMaxLifeLimit(plotIndex, plot.level);
-
-    sunflowerAudio.playUpgradeChime();
-    const posX = event ? event.clientX : window.innerWidth / 2;
-    const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level}! (Life Cap: ${newCap}s) 🌻`, posX, posY, 'text-yellow-400 font-bold');
-
-    updateSinglePlotUI(plotId);
-    updateStickyHeaderAndMiniStats();
-    saveSunflowerStateDebounced();
+  } else if (playerGoldCoins >= info.totalCost) {
+    window.gameState.player.coins -= info.totalCost;
+    if (typeof window.updateUI === 'function') window.updateUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+  } else if (playerSfCoins + playerGoldCoins >= info.totalCost) {
+    const rem = info.totalCost - playerSfCoins;
+    sunflowerState.coins = 0;
+    window.gameState.player.coins -= rem;
+    if (typeof window.updateUI === 'function') window.updateUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`Need ${formatNumber(info.totalCost)} 🌻 Coins!`, posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 🎬`, posX, posY, 'text-red-400');
+    return;
   }
+
+  const oldLvl = plot.level;
+  plot.level = info.targetLevel;
+  plot.productionTime = getSfPlotCycleTime(plotIndex, plot.level);
+  plot.coinProduction = getSfPlotCoinsPerCycle(plotIndex, plot.level);
+  plot.upgradeCost = getSfPlotUpgradeCost(plotIndex, plot.level);
+  const newCap = getSfPlotMaxLifeLimit(plotIndex, plot.level);
+
+  if (typeof window.recordTaskEvent === 'function') {
+    window.recordTaskEvent('sunflower_upgrade', Math.max(1, info.targetLevel - oldLvl));
+  }
+
+  sunflowerAudio.playUpgradeChime();
+  const posX = event ? event.clientX : window.innerWidth / 2;
+  const posY = event ? event.clientY : window.innerHeight / 2;
+  spawnSfFloat(`▲ Land #${plot.id} Lv. ${plot.level}! (Life Cap: ${newCap}s) 🌻`, posX, posY, 'text-yellow-400 font-bold');
+
+  renderSunflowerPlots();
+  updateStickyHeaderAndMiniStats();
+  saveSunflowerStateDebounced();
 };
 
 // 5. Shovel Dead Flower (Clears plot -> Install new plant -> Restart Level 1)
@@ -1532,6 +1621,9 @@ window.buySunflowerItem = function(itemType, count = 1, currency = 'coins') {
   } else {
     if (sunflowerState.diamonds >= priceDiamonds) {
       sunflowerState.diamonds -= priceDiamonds;
+      if (typeof recordTaskEvent === 'function') {
+        recordTaskEvent('shop_diamond', priceDiamonds);
+      }
       if (itemType === 'seed') sunflowerState.seeds = (sunflowerState.seeds || 0) + count;
       else if (itemType === 'basket') sunflowerState.baskets = (sunflowerState.baskets || 0) + count;
       else if (itemType === 'shovel') sunflowerState.shovels = (sunflowerState.shovels || 0) + count;
@@ -1584,7 +1676,234 @@ window.hireSunflowerWorker = function(workerKey) {
 
   saveSunflowerStateDebounced();
   updateStickyHeaderAndMiniStats();
+  if (typeof renderSunflowerManagers === 'function') renderSunflowerManagers();
   updateWorkersUI();
+};
+
+/* ==========================================================================
+   LAND MANAGERS SYSTEM (1 MANAGER = 1 LAND FIXED AUTOMATION)
+   - Vertical stack of rectangle cards
+   - Unlock: 300 💎
+   - 1 Day use: 500, 1000, 1500, 2000... ☀️ OR 1 Ad
+   ========================================================================== */
+function formatContractDuration(seconds) {
+  if (seconds <= 0) return '00:00:00';
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  if (hrs > 0) {
+    return `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+  }
+  return `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+}
+
+function renderSunflowerManagers() {
+  const listEl = document.getElementById('sfManagersVerticalList');
+  if (!listEl) return;
+
+  if (!Array.isArray(sunflowerState.managers) || sunflowerState.managers.length !== 20) {
+    sunflowerState.managers = createDefaultSfManagers();
+  }
+
+  const activeCount = sunflowerState.managers.filter(m => m.unlocked && m.activeTimer > 0).length;
+  const countBadge = document.getElementById('sfManagersSummaryLabel');
+  if (countBadge) countBadge.innerText = `${activeCount} / 20 Active`;
+
+  let html = '';
+  sunflowerState.managers.forEach(mgr => {
+    const plot = sunflowerState.plots ? sunflowerState.plots[mgr.landId - 1] : null;
+    const isPlotUnlocked = plot && plot.unlocked;
+    const isActive = mgr.unlocked && mgr.activeTimer > 0;
+    const nextCoinCost = (mgr.hireCount + 1) * 500;
+
+    html += `
+      <div class="sf-mgr-card ${isActive ? 'active-contract' : (mgr.unlocked ? '' : 'locked')}" id="sfMgrCard-${mgr.landId}">
+        <div class="sf-mgr-card-top">
+          <div class="sf-mgr-info-left">
+            <div class="sf-mgr-avatar-box">
+              <span>${mgr.avatar || '👷‍♂️'}</span>
+            </div>
+            <div class="sf-mgr-title-box">
+              <div class="sf-mgr-name">
+                <span>Land #${mgr.landId} Manager</span>
+                <span class="text-[9px] bg-amber-950/80 text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-700/60 font-mono">Fixed</span>
+              </div>
+              <div class="sf-mgr-sub">
+                <span>${isPlotUnlocked ? `Manages Land #${mgr.landId} Only • Auto-Water 🪣 &amp; Auto-Collect 🧺` : `⚠️ Unlock Land #${mgr.landId} in Garden first`}</span>
+              </div>
+            </div>
+          </div>
+          <div class="sf-mgr-status-badge ${!mgr.unlocked ? 'locked' : (isActive ? 'active' : 'expired')}" id="sfMgrStatusBadge-${mgr.landId}">
+            ${!mgr.unlocked ? '🔒 LOCKED' : (isActive ? `⚡ ${formatContractDuration(mgr.activeTimer)}` : '⏳ EXPIRED')}
+          </div>
+        </div>
+
+        <div class="sf-mgr-actions-row" id="sfMgrActionsRow-${mgr.landId}">
+          ${!mgr.unlocked ? `
+            <button class="sf-mgr-unlock-btn" onclick="unlockLandManager(${mgr.landId}, event)" title="Unlock Manager Slot (Costs 300 💎)">
+              <span>💎 Hire New Manager (300 💎)</span>
+            </button>
+          ` : `
+            <button class="sf-mgr-diamond-btn bg-cyan-700/80 hover:bg-cyan-600 text-cyan-200 font-bold text-xs py-2 px-2 rounded-xl transition flex items-center justify-center gap-1 border border-cyan-500/40" onclick="hireLandManagerDiamonds(${mgr.landId}, event)" title="Extend Manager by 24 Hours for 10 Diamonds (Max 100h)">
+              <span>💎 10 💎 (+24h)</span>
+            </button>
+            <button class="sf-mgr-ad-btn" onclick="hireLandManagerAd(${mgr.landId}, event)" title="Extend Manager by 10 Hours via Ad (Max 100h)">
+              <span>🎬 Ad (+10h)</span>
+            </button>
+            <button class="sf-mgr-coin-btn" onclick="hireLandManagerCoins(${mgr.landId}, event)" title="Extend 1 Day for Coins (Max 100h)">
+              <span>☀️ 1 Day (${formatNumber(nextCoinCost)} ☀️)</span>
+            </button>
+          `}
+        </div>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
+}
+window.renderSunflowerManagers = renderSunflowerManagers;
+
+function updateSunflowerManagersLiveTimers() {
+  if (sunflowerState.currentPage !== 4) return;
+  if (!Array.isArray(sunflowerState.managers)) return;
+
+  sunflowerState.managers.forEach(mgr => {
+    const badge = document.getElementById(`sfMgrStatusBadge-${mgr.landId}`);
+    if (badge && mgr.unlocked) {
+      if (mgr.activeTimer > 0) {
+        badge.className = 'sf-mgr-status-badge active';
+        badge.innerText = `⚡ ${formatContractDuration(mgr.activeTimer)}`;
+      } else {
+        badge.className = 'sf-mgr-status-badge expired';
+        badge.innerText = '⏳ EXPIRED';
+      }
+    }
+  });
+
+  const activeCount = sunflowerState.managers.filter(m => m.unlocked && m.activeTimer > 0).length;
+  const countBadge = document.getElementById('sfManagersSummaryLabel');
+  if (countBadge) countBadge.innerText = `${activeCount} / 20 Active`;
+}
+window.updateSunflowerManagersLiveTimers = updateSunflowerManagersLiveTimers;
+
+window.unlockLandManager = function(landId, event) {
+  if (event) event.stopPropagation();
+  const mgr = sunflowerState.managers ? sunflowerState.managers.find(m => m.landId === landId) : null;
+  if (!mgr) return;
+
+  const currentDiamonds = typeof sunflowerState.diamonds === 'number' ? sunflowerState.diamonds : 0;
+  if (currentDiamonds < 300) {
+    sunflowerAudio.playWitherSound();
+    spawnSfFloat(`❌ Need 300 💎! You have ${currentDiamonds} 💎`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+    return;
+  }
+
+  // Deduct 300 diamonds
+  sunflowerState.diamonds = currentDiamonds - 300;
+  mgr.unlocked = true;
+  mgr.activeTimer = Math.min(360000, 86400); // 1 full day (24 hours, max 100 hours)
+  sunflowerState.landWorkersCount = (sunflowerState.landWorkersCount || 0) + 1;
+
+  sunflowerAudio.playUnlockChime();
+  spawnSfFloat(`🎉 Hired Manager #${landId} for 300 💎! Active for 24h (Max 100h Cap)!`, window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400 font-bold');
+
+  saveSunflowerStateDebounced();
+  updateStickyHeaderAndMiniStats();
+  renderSunflowerManagers();
+};
+
+window.hireLandManagerDiamonds = function(landId, event) {
+  if (event) event.stopPropagation();
+  const mgr = sunflowerState.managers ? sunflowerState.managers.find(m => m.landId === landId) : null;
+  if (!mgr || !mgr.unlocked) return;
+
+  const MAX_LIMIT = 360000; // 100 hours in seconds
+  if ((mgr.activeTimer || 0) >= MAX_LIMIT) {
+    if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+    spawnSfFloat(`⚠️ Manager #${landId} is already at the maximum 100 Hours limit!`, window.innerWidth / 2, window.innerHeight / 2, 'text-amber-400 font-bold');
+    return;
+  }
+
+  const currentDiamonds = typeof sunflowerState.diamonds === 'number' ? sunflowerState.diamonds : 0;
+  if (currentDiamonds < 10) {
+    if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+    spawnSfFloat(`❌ Need 10 💎! You have ${currentDiamonds} 💎`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+    return;
+  }
+
+  sunflowerState.diamonds -= 10;
+  mgr.activeTimer = Math.min(MAX_LIMIT, (mgr.activeTimer > 0 ? mgr.activeTimer : 0) + 86400); // +24 hours
+
+  if (sunflowerAudio && sunflowerAudio.playSolarChime) sunflowerAudio.playSolarChime();
+  spawnSfFloat(`💎 Manager #${landId} extended +24 Hours! (Max 100h limit)`, window.innerWidth / 2, window.innerHeight / 2, 'text-cyan-300 font-bold');
+
+  saveSunflowerStateDebounced();
+  updateStickyHeaderAndMiniStats();
+  renderSunflowerManagers();
+};
+
+window.hireLandManagerCoins = function(landId, event) {
+  if (event) event.stopPropagation();
+  const mgr = sunflowerState.managers ? sunflowerState.managers.find(m => m.landId === landId) : null;
+  if (!mgr || !mgr.unlocked) return;
+
+  const MAX_LIMIT = 360000; // 100 hours in seconds
+  if ((mgr.activeTimer || 0) >= MAX_LIMIT) {
+    if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+    spawnSfFloat(`⚠️ Manager #${landId} is already at the maximum 100 Hours limit!`, window.innerWidth / 2, window.innerHeight / 2, 'text-amber-400 font-bold');
+    return;
+  }
+
+  const cost = (mgr.hireCount + 1) * 500;
+  if ((sunflowerState.coins || 0) < cost) {
+    sunflowerAudio.playWitherSound();
+    spawnSfFloat(`❌ Need ${formatNumber(cost)} ☀️ Coins!`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+    return;
+  }
+
+  sunflowerState.coins -= cost;
+  mgr.hireCount++;
+  mgr.activeTimer = Math.min(MAX_LIMIT, (mgr.activeTimer > 0 ? mgr.activeTimer : 0) + 86400);
+
+  sunflowerAudio.playSolarChime();
+  spawnSfFloat(`⚡ Manager #${landId} active +24 Hours! (Max 100h limit)`, window.innerWidth / 2, window.innerHeight / 2, 'text-amber-400 font-bold');
+
+  saveSunflowerStateDebounced();
+  updateStickyHeaderAndMiniStats();
+  renderSunflowerManagers();
+};
+
+window.hireLandManagerAd = function(landId, event) {
+  if (event) event.stopPropagation();
+  const mgr = sunflowerState.managers ? sunflowerState.managers.find(m => m.landId === landId) : null;
+  if (!mgr || !mgr.unlocked) return;
+
+  const MAX_LIMIT = 360000; // 100 hours in seconds
+  if ((mgr.activeTimer || 0) >= MAX_LIMIT) {
+    if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+    spawnSfFloat(`⚠️ Manager #${landId} is already at the maximum 100 Hours limit!`, window.innerWidth / 2, window.innerHeight / 2, 'text-amber-400 font-bold');
+    return;
+  }
+
+  const onAdCompleted = function(success) {
+    if (success !== false) {
+      mgr.activeTimer = Math.min(MAX_LIMIT, (mgr.activeTimer > 0 ? mgr.activeTimer : 0) + 36000); // +10 hours
+      sunflowerAudio.playSolarChime();
+      spawnSfFloat(`🎬 Manager #${landId} extended +10 Hours! (Max 100h limit)`, window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400 font-bold');
+      saveSunflowerStateDebounced();
+      updateStickyHeaderAndMiniStats();
+      renderSunflowerManagers();
+    }
+  };
+
+  if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(onAdCompleted, {
+      adTitle: `Manager #${landId} (+10 Hours Contract)`,
+      adDesc: `Watch a short sponsor video to extend Land #${landId} Manager by 10 Hours!`
+    });
+  } else {
+    onAdCompleted(true);
+  }
 };
 
 function updateWorkersUI() {
@@ -1719,8 +2038,8 @@ function clickWaterCoin(wellId, event = null) {
   const well = sunflowerState.wells[wellIndex];
   if (!well || !well.unlocked) return;
 
-  const posX = event ? event.clientX : window.innerWidth / 2;
-  const posY = event ? event.clientY : window.innerHeight / 2;
+  const posX = event && event.clientX ? event.clientX : window.innerWidth / 2;
+  const posY = event && event.clientY ? event.clientY : window.innerHeight / 2;
 
   // Add click ripple / animation to the coin element
   const coinEl = document.getElementById(`sfWaterCoin-${wellId}`);
@@ -1731,35 +2050,19 @@ function clickWaterCoin(wellId, event = null) {
     setTimeout(() => coinEl.classList.remove('coin-pressed'), 180);
   }
 
-  let collectedAny = false;
-
-  // 1. If stored baskets exist, collect them!
   const stored = well.storedBaskets || 0;
   if (stored > 0) {
     sunflowerState.baskets = (sunflowerState.baskets || 0) + stored;
     well.storedBaskets = 0;
-    collectedAny = true;
     sunflowerAudio.playWaterSplash();
     spawnSfFloat(`+${stored} Water Baskets Collected! 🧺`, posX, posY, 'text-cyan-300 font-black');
-  }
-
-  // 2. If well has a manager hired, manager is already auto-pumping
-  if (well.hasWorker) {
-    well.isProducing = true;
-    if (!collectedAny) {
-      sunflowerAudio.playTone(720, 'sine', 0.1, 0.08);
-      spawnSfFloat(`👷 Manager Active: Auto-pumping water!`, posX, posY, 'text-emerald-300 font-bold');
-    }
   } else {
-    // 3. Manual well without manager: click provides a pump boost!
-    well.isProducing = true;
-    if (!collectedAny) {
-      well.timer = Math.max(0.1, well.timer - 1.0);
-      sunflowerAudio.playWaterSplash();
-      spawnSfFloat(`🌊 Pump Boost (-1s)! (${Math.ceil(well.timer)}s left)`, posX, posY, 'text-cyan-300 font-bold');
-    }
+    well.timer = Math.max(0.1, (well.timer || 1) - 1.0);
+    sunflowerAudio.playWaterSplash();
+    spawnSfFloat(`🌊 Pump Boost (-1s)! (${Math.ceil(well.timer)}s left)`, posX, posY, 'text-cyan-300 font-bold');
   }
 
+  well.isProducing = true;
   saveSunflowerStateDebounced();
   updateStickyHeaderAndMiniStats();
   updateSingleWellUI(wellId);
@@ -2136,37 +2439,97 @@ window.unlockSfWell = function(wellId, event = null) {
   }
 };
 
-// 9. Upgrade Well Level with Coins
+// 9a. Upgrade Well Level with Sponsored Rewarded Ad (Every 5 Levels Milestone: 5, 10, 15, 20...)
+window.upgradeSfWellWithAd = function(wellId, event = null) {
+  const wellIndex = wellId - 1;
+  const well = sunflowerState.wells[wellIndex];
+  if (!well || !well.unlocked || well.level >= 5000) return;
+
+  const doAdUpgrade = () => {
+    well.level = Math.min(5000, well.level + 1);
+    well.productionTime = getSfWellCycleTime(wellIndex, well.level);
+    well.basketProduction = getSfWellBasketsPerCycle(wellIndex, well.level);
+    well.upgradeCost = getSfWellUpgradeCost(wellIndex, well.level);
+    well.timer = Math.min(well.timer, well.productionTime);
+
+    sunflowerAudio.playUpgradeChime();
+    const posX = event ? event.clientX : window.innerWidth / 2;
+    const posY = event ? event.clientY : window.innerHeight / 2;
+    spawnSfFloat(`🎬 Well #${well.id} Milestone Lv. ${well.level} Unlocked! (+Speed & Output) 💧`, posX, posY, 'text-cyan-300 font-bold');
+
+    renderSunflowerWells();
+    updateStickyHeaderAndMiniStats();
+    saveSunflowerStateDebounced();
+  };
+
+  if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doAdUpgrade, {
+      adTitle: `Well #${well.id} Milestone Lv.${well.level + 1}`,
+      adDesc: `Watch a short sponsor video to upgrade Well #${well.id} past milestone Level ${well.level}!`
+    });
+  } else {
+    doAdUpgrade();
+  }
+};
+
+// 9b. Upgrade Well Level with Coins
 window.upgradeSfWell = function(wellId, event = null) {
   const wellIndex = wellId - 1;
   const well = sunflowerState.wells[wellIndex];
   if (!well || !well.unlocked || well.level >= 5000) return;
 
+  // Milestone ad checkpoint: each 5 levels (Lv 5, 10, 15, 20...) watch ad to advance!
+  if (well.level % 5 === 0) {
+    window.upgradeSfWellWithAd(wellId, event);
+    return;
+  }
+
   const mult = sunflowerState.upgradeMultiplier || 1;
-  const info = getSfWellMultiUpgradeInfo(wellIndex, well.level, mult, sunflowerState.coins);
+  const playerSfCoins = sunflowerState.coins || 0;
+  const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
+  const availableCoins = Math.max(playerSfCoins, playerGoldCoins);
 
-  if (sunflowerState.coins >= info.totalCost) {
+  const info = getSfWellMultiUpgradeInfo(wellIndex, well.level, mult, availableCoins);
+
+  if (info.isAdUpgrade) {
+    window.upgradeSfWellWithAd(wellId, event);
+    return;
+  }
+
+  if (playerSfCoins >= info.totalCost) {
     sunflowerState.coins -= info.totalCost;
-    well.level = info.targetLevel;
-
-    well.productionTime = getSfWellCycleTime(wellIndex, well.level);
-    well.basketProduction = getSfWellBasketsPerCycle(wellIndex, well.level);
-    well.upgradeCost = getSfWellUpgradeCost(wellIndex, well.level);
-    well.maxStorage = Infinity;
-
-    sunflowerAudio.playUpgradeChime();
-    const posX = event ? event.clientX : window.innerWidth / 2;
-    const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`▲ Well #${well.id} Lv. ${well.level}! (+Speed & Basket Output)`, posX, posY, 'text-cyan-300');
-
-    updateSingleWellUI(wellId);
-    updateStickyHeaderAndMiniStats();
-    saveSunflowerStateDebounced();
+  } else if (playerGoldCoins >= info.totalCost) {
+    window.gameState.player.coins -= info.totalCost;
+    if (typeof window.updateUI === 'function') window.updateUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+  } else if (playerSfCoins + playerGoldCoins >= info.totalCost) {
+    const rem = info.totalCost - playerSfCoins;
+    sunflowerState.coins = 0;
+    window.gameState.player.coins -= rem;
+    if (typeof window.updateUI === 'function') window.updateUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`Need ${formatNumber(info.totalCost)} 🌻 Coins!`, posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 🎬`, posX, posY, 'text-red-400');
+    return;
   }
+
+  well.level = info.targetLevel;
+  well.productionTime = getSfWellCycleTime(wellIndex, well.level);
+  well.basketProduction = getSfWellBasketsPerCycle(wellIndex, well.level);
+  well.upgradeCost = getSfWellUpgradeCost(wellIndex, well.level);
+  well.timer = Math.min(well.timer, well.productionTime);
+  well.maxStorage = Infinity;
+
+  sunflowerAudio.playUpgradeChime();
+  const posX = event ? event.clientX : window.innerWidth / 2;
+  const posY = event ? event.clientY : window.innerHeight / 2;
+  spawnSfFloat(`▲ Well #${well.id} Lv. ${well.level}! (+Speed & Basket Output)`, posX, posY, 'text-cyan-300 font-bold');
+
+  renderSunflowerWells();
+  updateStickyHeaderAndMiniStats();
+  saveSunflowerStateDebounced();
 };
 
 // 10. Render All 20 Wells in Fixed 1*20 Format
@@ -2294,28 +2657,18 @@ function renderSunflowerWells() {
       <!-- Dual Action Buttons: Collect/Start/Assign & Level Upgrade -->
       <div class="sf-card-dual-actions grid grid-cols-2 gap-1.5 pt-1">
         <div id="sfWellWorkerSlot-${well.id}">
-          ${well.hasWorker ? `
-            <button onclick="unassignWellWorker(${well.id}, event)" class="sf-card-btn sf-btn-well-automated w-full" title="Manager is active! Click to recall">
-              <span>👷 Manager Active (Recall)</span>
-            </button>
-          ` : (stored > 0 ? `
-            <button onclick="collectWellBaskets(${well.id}, event)" class="sf-card-btn sf-btn-well-collect w-full" title="Collect stored water baskets">
-              <span>🧺 Collect (${stored} 🧺)</span>
-            </button>
-          ` : (idleWorkers > 0 ? `
-            <button onclick="assignWellWorker(${well.id}, event)" class="sf-card-btn sf-btn-well-assign w-full" title="Assign an idle well manager">
-              <span>👷 Assign Manager (${idleWorkers})</span>
-            </button>
-          ` : `
-            <button onclick="hireWellWorker('coins')" class="sf-card-btn sf-btn-well-assign w-full" title="Hire a Well Manager (250 ☀️)">
-              <span>🛒 Hire Manager (250 ☀️)</span>
-            </button>
-          `))}
+          <button onclick="collectWellBaskets(${well.id}, event)" id="sfWellCollectBtn-${well.id}" class="sf-card-btn sf-btn-well-collect ${stored > 0 ? 'active-ready' : ''} w-full" title="Collect stored water baskets">
+            <span>🧺 Collect ${stored > 0 ? `(${stored} 🧺)` : ''}</span>
+          </button>
         </div>
 
-        <button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade ${well.level >= 5000 ? 'disabled' : (!canAfford ? 'disabled' : '')}">
-          <span>${well.level >= 5000 ? '★ MAX' : `▲ Lv.${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} ☀️)`}</span>
-        </button>
+        ${well.level >= 5000
+          ? `<button id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade disabled" disabled><span>★ MAX</span></button>`
+          : (well.level % 5 === 0
+              ? `<button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade sf-ad-upgrade-btn" title="Watch sponsor video to upgrade well level"><span>🎬 Watch Ad (Lv.${well.level + 1})</span></button>`
+              : `<button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade ${!canAfford ? 'disabled' : ''}"><span>▲ Lv.${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} ☀️)</span></button>`
+            )
+        }
       </div>
     `;
 
@@ -2336,10 +2689,17 @@ function updateSingleWellUI(wellId, full = true) {
   if (!well || !well.unlocked) return;
 
   const cycleTime = getSfWellCycleTime(wellIndex, well.level);
+  const basketsPerCycle = getSfWellBasketsPerCycle(wellIndex, well.level);
   const isProducing = true;
   const stored = well.storedBaskets || 0;
   const progress = Math.max(0, Math.min(1, 1 - (well.timer / cycleTime)));
   const wellSecLeft = Math.ceil(Math.max(0, well.timer));
+
+  const lvBadgeEl = document.getElementById(`sfWellLvBadge-${wellId}`);
+  if (lvBadgeEl) lvBadgeEl.innerText = `Lv. ${well.level}/5000`;
+
+  const outEl = document.getElementById(`sfWellOut-${wellId}`);
+  if (outEl) outEl.innerText = `+${formatNumber(basketsPerCycle)} 🧺 Baskets`;
 
   const timeEl = document.getElementById(`sfWellTime-${wellId}`);
   if (timeEl) {
@@ -2402,43 +2762,40 @@ function updateSingleWellUI(wellId, full = true) {
 
     const workerSlot = document.getElementById(`sfWellWorkerSlot-${wellId}`);
     if (workerSlot) {
-      const idleWorkers = getIdleWellWorkersCount();
-      if (well.hasWorker) {
-        workerSlot.innerHTML = `
-          <button onclick="unassignWellWorker(${wellId}, event)" class="sf-card-btn sf-btn-well-automated w-full" title="Manager is active! Click to recall">
-            <span>👷 Manager Active (Recall)</span>
-          </button>
-        `;
-      } else if (stored > 0) {
-        workerSlot.innerHTML = `
-          <button onclick="collectWellBaskets(${wellId}, event)" class="sf-card-btn sf-btn-well-collect w-full" title="Collect stored water baskets">
-            <span>🧺 Collect (${stored} 🧺)</span>
-          </button>
-        `;
-      } else if (idleWorkers > 0) {
-        workerSlot.innerHTML = `
-          <button onclick="assignWellWorker(${wellId}, event)" class="sf-card-btn sf-btn-well-assign w-full" title="Assign an idle well manager">
-            <span>👷 Assign Manager (${idleWorkers})</span>
-          </button>
-        `;
+      const collBtn = document.getElementById(`sfWellCollectBtn-${wellId}`);
+      if (collBtn) {
+        if (stored > 0) {
+          collBtn.classList.add('active-ready');
+          collBtn.innerHTML = `<span>🧺 Collect (${stored} 🧺)</span>`;
+        } else {
+          collBtn.classList.remove('active-ready');
+          collBtn.innerHTML = `<span>🧺 Collect</span>`;
+        }
       } else {
         workerSlot.innerHTML = `
-          <button onclick="hireWellWorker('coins')" class="sf-card-btn sf-btn-well-assign w-full" title="Hire a Well Manager (250 ☀️)">
-            <span>🛒 Hire Manager (250 ☀️)</span>
+          <button onclick="collectWellBaskets(${wellId}, event)" id="sfWellCollectBtn-${wellId}" class="sf-card-btn sf-btn-well-collect ${stored > 0 ? 'active-ready' : ''} w-full" title="Collect stored water baskets">
+            <span>🧺 Collect ${stored > 0 ? `(${stored} 🧺)` : ''}</span>
           </button>
         `;
       }
     }
 
     const mult = sunflowerState.upgradeMultiplier || 1;
-    const upInfo = getSfWellMultiUpgradeInfo(wellIndex, well.level, mult, sunflowerState.coins);
-    const canAfford = sunflowerState.coins >= upInfo.totalCost && well.level < 5000;
+    const playerSfCoins = sunflowerState.coins || 0;
+    const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
+    const availableCoins = Math.max(playerSfCoins, playerGoldCoins);
+    const upInfo = getSfWellMultiUpgradeInfo(wellIndex, well.level, mult, availableCoins);
+    const canAfford = availableCoins >= upInfo.totalCost && well.level < 5000;
     const upBtn = document.getElementById(`sfWellUpBtn-${wellId}`);
     if (upBtn) {
       if (well.level >= 5000) {
         upBtn.className = "sf-card-btn sf-btn-upgrade disabled";
         upBtn.disabled = true;
         upBtn.innerHTML = "<span>★ MAX</span>";
+      } else if (well.level % 5 === 0) {
+        upBtn.disabled = false;
+        upBtn.className = "sf-card-btn sf-btn-upgrade sf-ad-upgrade-btn";
+        upBtn.innerHTML = `<span>🎬 Watch Ad (Lv.${well.level + 1})</span>`;
       } else {
         upBtn.disabled = false;
         upBtn.className = `sf-card-btn sf-btn-upgrade ${!canAfford ? 'disabled' : ''}`;
@@ -2457,7 +2814,7 @@ function getSfPlotVisualLifecycle(level) {
     return {
       stage: 'Seedling',
       badge: 'Young Bloom',
-      emoji: '🌱🌻',
+      emoji: '🌻',
       title: 'Young Sunflower',
       badgeClass: 'young'
     };
@@ -2503,6 +2860,56 @@ function getSfPlotVisualLifecycle(level) {
     };
   }
 }
+
+
+/* ==========================================================================
+   DIRECT LAND HARVEST COLLECT (Fixed instant collection without errors)
+   ========================================================================== */
+window.collectPlotHarvest = function(plotId, event = null) {
+  const plotIndex = plotId - 1;
+  const plot = sunflowerState.plots[plotIndex];
+  if (!plot || !plot.unlocked) return;
+
+  const posX = event && event.clientX ? event.clientX : window.innerWidth / 2;
+  const posY = event && event.clientY ? event.clientY : window.innerHeight / 2;
+
+  if (plot.plantStatus === 'growing') {
+    const secLeft = Math.ceil(Math.max(0, plot.growthTimer || 0));
+    sunflowerAudio.playTone(400, 'sine', 0.1, 0.05);
+    spawnSfFloat(`⏳ Baby plant is growing! (${secLeft}s left)`, posX, posY, 'text-emerald-400 font-bold');
+    return;
+  }
+
+  if (plot.plantStatus === 'dead') {
+    sunflowerAudio.playTone(200, 'sawtooth', 0.15, 0.08);
+    spawnSfFloat(`🥀 Flower is dead! Use shovel 🪏 to clear and replant.`, posX, posY, 'text-rose-400 font-bold');
+    return;
+  }
+
+  if (plot.plantStatus !== 'alive') {
+    spawnSfFloat(`🌱 Empty land! Plant a seed first.`, posX, posY, 'text-amber-300 font-bold');
+    return;
+  }
+
+  const uncollected = plot.uncollectedCoins || 0;
+  if (uncollected > 0) {
+    sunflowerState.coins = (sunflowerState.coins || 0) + uncollected;
+    plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + uncollected;
+    plot.uncollectedCoins = 0;
+    plot.readyToCollect = false;
+
+    sunflowerAudio.playCoin();
+    spawnSfFloat(`+${formatNumber(uncollected)} 🌻 Harvest Collected!`, posX, posY, 'text-yellow-400 font-black');
+
+    saveSunflowerStateDebounced();
+    updateStickyHeaderAndMiniStats();
+    updateSinglePlotUI(plotId);
+  } else {
+    const secLeft = Math.ceil(Math.max(0, plot.timer || 0));
+    sunflowerAudio.playTone(520, 'sine', 0.08, 0.04);
+    spawnSfFloat(`⏳ Growing sunflower... next harvest in ${secLeft}s!`, posX, posY, 'text-amber-300 font-medium');
+  }
+};
 
 /* ==========================================================================
    COLLECT MODAL & 2X PROFIT AD WATCH
@@ -2555,7 +2962,9 @@ window.confirmSfCollect = function(isWatchAd) {
 
   const cycleTime = getSfPlotCycleTime(plotIndex, plot.level);
   const coinsPerCycle = getSfPlotCoinsPerCycle(plotIndex, plot.level);
-  const baseProfit = (plot.uncollectedCoins && plot.uncollectedCoins > 0) ? plot.uncollectedCoins : coinsPerCycle;
+  const uncoll = (plot.uncollectedCoins && plot.uncollectedCoins > 0) ? plot.uncollectedCoins : coinsPerCycle;
+  const boosterMult = (typeof getActiveSunflowerProfitMultiplier === 'function') ? getActiveSunflowerProfitMultiplier() : 1;
+  const baseProfit = uncoll * boosterMult;
 
   if (isWatchAd) {
     const doDoubleClaim = () => {
@@ -2567,7 +2976,7 @@ window.confirmSfCollect = function(isWatchAd) {
       plot.timer = cycleTime;
 
       sunflowerAudio.playCoin();
-      spawnSfFloat(`🎉 2X HARVEST PROFIT: +${formatNumber(doubleProfit)} 🌻!`, window.innerWidth / 2, window.innerHeight / 2, 'text-yellow-400 font-black');
+      spawnSfFloat(`🎉 2X HARVEST PROFIT: +${formatNumber(doubleProfit)} 🌻!${boosterMult > 1 ? ` (${boosterMult}X Boost Active)` : ''}`, window.innerWidth / 2, window.innerHeight / 2, 'text-yellow-400 font-black');
 
       closeSfCollectModal();
       saveSunflowerStateDebounced();
@@ -2579,12 +2988,8 @@ window.confirmSfCollect = function(isWatchAd) {
     if (typeof show_10676091 === 'function') {
       try {
         show_10676091('pop').then(() => {
-          // user watch ad till the end or close it in interstitial format
-          // your code to reward user for rewarded format
           doDoubleClaim();
         }).catch(e => {
-          // user get error during playing ad
-          // do nothing or whatever you want
           console.warn('show_10676091 pop error:', e);
         });
       } catch (e) {
@@ -2601,7 +3006,7 @@ window.confirmSfCollect = function(isWatchAd) {
       doDoubleClaim();
     }
   } else {
-    // Normal 1X collection
+    // Normal collection with active booster multiplier applied
     sunflowerState.coins += baseProfit;
     plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + baseProfit;
     plot.readyToCollect = false;
@@ -2609,7 +3014,7 @@ window.confirmSfCollect = function(isWatchAd) {
     plot.timer = cycleTime;
 
     sunflowerAudio.playCoin();
-    spawnSfFloat(`+${formatNumber(baseProfit)} 🌻 Harvest Collected!`, window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400');
+    spawnSfFloat(`+${formatNumber(baseProfit)} 🌻 Harvest Collected!${boosterMult > 1 ? ` (${boosterMult}X Boost)` : ''}`, window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400');
 
     closeSfCollectModal();
     saveSunflowerStateDebounced();
@@ -2640,14 +3045,7 @@ function renderSunflowerPlots() {
     }
 
     const isAutomated = Boolean(plot.hasWorker);
-    const mgrBtnHtml = `
-      <button onclick="toggleLandWorkerAssignment(${plot.id}, event)"
-              id="sfPlotManagerBtn-${plot.id}"
-              class="sf-plot-manager-badge ${plot.hasWorker ? 'assigned' : (idleLandWorkers > 0 ? 'unassigned' : 'hire-prompt')}"
-              title="${plot.hasWorker ? '👷 Manager Active: Auto-waters & auto-collects coins! Click to recall.' : (idleLandWorkers > 0 ? 'Click to assign an idle Land Manager!' : 'Click to hire a Land Manager (250 ☀️)')}">
-        <span>${plot.hasWorker ? '👷 Manager Active' : (idleLandWorkers > 0 ? '+ Assign Manager' : '+ Hire Manager')}</span>
-      </button>
-    `;
+    const mgrBtnHtml = '';
 
     // 1. LOCKED PLOT
     if (!plot.unlocked) {
@@ -2773,7 +3171,7 @@ function renderSunflowerPlots() {
       tile.innerHTML = `
         <div class="sf-sketch-square stage-dead" onclick="shovelSfPlot(${plot.id}, event)" title="Click with shovel to clear">
           <div class="sf-sketch-square-art">🥀</div>
-          <span class="sf-sketch-square-badge dead">Withered</span>
+          <span class="sf-sketch-square-badge dead">Dead Flower</span>
           <span class="text-[9px] font-bold text-rose-800 mt-1">🪏 Clear</span>
         </div>
         <div class="sf-sketch-right">
@@ -2809,7 +3207,7 @@ function renderSunflowerPlots() {
     const waterBonus = getSfPlotWaterBonus(idx);
     const art = getSfPlotVisualLifecycle(plot.level);
 
-    const progressPct = plot.readyToCollect ? 100 : Math.max(0, Math.min(100, (1 - (plot.timer / cycleTime)) * 100));
+    const progressPct = Math.max(0, Math.min(100, (1 - ((plot.timer || 0) / cycleTime)) * 100));
 
     tile.className = `sf-plot-tile sf-sketch-card alive ${isAutomated ? 'automated' : ''}`;
     tile.innerHTML = `
@@ -2817,7 +3215,7 @@ function renderSunflowerPlots() {
       <div class="sf-sketch-square stage-alive">
         <div class="sf-sketch-square-art">${art.emoji}</div>
         <span class="sf-sketch-square-badge alive">${art.badge}</span>
-        <span class="text-[9px] font-bold text-amber-900 mt-1">Lv. ${plot.level}</span>
+        <span class="text-[9px] font-bold text-amber-900 mt-1" id="sfPlotSquareLvTag-${plot.id}">Lv. ${plot.level}</span>
       </div>
 
       <!-- RIGHT: SKETCH CONTENT -->
@@ -2831,9 +3229,13 @@ function renderSunflowerPlots() {
 
           <div class="sf-sketch-lv-col">
             <span class="sf-sketch-lv-tag" id="sfPlotLvTag-${plot.id}">Lv ${plot.level}</span>
-            <button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn ${plot.level >= 5000 ? 'disabled' : (!canAfford ? 'disabled' : '')}" title="Upgrade land level">
-              <span>${plot.level >= 5000 ? 'MAX' : `Upgrade (${formatNumber(upInfo.totalCost)} ☀️)`}</span>
-            </button>
+            ${plot.level >= 5000
+              ? `<button id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn disabled" disabled><span>MAX</span></button>`
+              : (plot.level % 5 === 0
+                  ? `<button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn sf-ad-upgrade-btn" title="Watch sponsor video to upgrade land level"><span>🎬 Watch Ad (Lv.${plot.level + 1})</span></button>`
+                  : `<button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn ${!canAfford ? 'disabled' : ''}" title="Upgrade land level"><span>Upgrade (${formatNumber(upInfo.totalCost)} ☀️)</span></button>`
+                )
+            }
             <span class="sf-sketch-rate" id="sfPlotRateTag-${plot.id}">+${formatNumber(coinsPerCycle)} 🌻</span>
           </div>
         </div>
@@ -2854,10 +3256,10 @@ function renderSunflowerPlots() {
 
         <!-- BOTTOM ROW: DUAL BUTTONS [ WATER ] & [ COLLECT ] -->
         <div class="sf-sketch-bottom">
-          <button onclick="waterSfPlot(${plot.id}, event)" class="sf-btn-sketch-action sf-btn-sketch-water" title="Water flower to extend life (+${waterBonus}s)">
-            <span>🪣 Water (+${waterBonus}s)</span>
+          <button onclick="waterSfPlot(${plot.id}, event)" id="sfPlotWaterBtn-${plot.id}" class="sf-btn-sketch-action sf-btn-sketch-water" title="Water flower to extend life (+${waterBonus}s)">
+            <span>🪣 Water (${getSfPlotRequiredBuckets(plot.level) > 1 ? `${getSfPlotRequiredBuckets(plot.level)}🪣 ` : ''}+${waterBonus}s)</span>
           </button>
-          <button onclick="openSfCollectModal(${plot.id}, event)" id="sfPlotCollectBtn-${plot.id}" class="sf-btn-sketch-action sf-btn-sketch-collect ${(plot.uncollectedCoins || 0) > 0 ? 'active-ready' : 'disabled'}" ${(plot.uncollectedCoins || 0) <= 0 ? 'disabled' : ''} title="Collect ready coins (Watch Ad for 2X Profit!)">
+          <button onclick="collectPlotHarvest(${plot.id}, event)" id="sfPlotCollectBtn-${plot.id}" class="sf-btn-sketch-action sf-btn-sketch-collect ${(plot.uncollectedCoins || 0) > 0 ? 'active-ready' : ''}" title="Collect harvested coins">
             <span>🧺 Collect ${(plot.uncollectedCoins || 0) > 0 ? `(${formatNumber(plot.uncollectedCoins)})` : ''}</span>
           </button>
         </div>
@@ -2882,22 +3284,7 @@ function updateSinglePlotUI(plotId) {
 
   // Manager badge update
   const mgrBtn = document.getElementById(`sfPlotManagerBtn-${plotId}`);
-  if (mgrBtn) {
-    const idleLand = getIdleLandWorkersCount();
-    if (plot.hasWorker) {
-      mgrBtn.className = "sf-plot-manager-badge assigned";
-      mgrBtn.title = "👷 Manager Active: Auto-waters & auto-collects coins! Click to recall.";
-      mgrBtn.innerHTML = "<span>👷 Manager Active</span>";
-    } else if (idleLand > 0) {
-      mgrBtn.className = "sf-plot-manager-badge unassigned";
-      mgrBtn.title = "Click to assign an idle Land Manager!";
-      mgrBtn.innerHTML = "<span>+ Assign Manager</span>";
-    } else {
-      mgrBtn.className = "sf-plot-manager-badge hire-prompt";
-      mgrBtn.title = "Click to hire a Land Manager (250 ☀️)";
-      mgrBtn.innerHTML = "<span>+ Hire Manager</span>";
-    }
-  }
+  if (mgrBtn) mgrBtn.remove();
 
   if (plot.plantStatus === 'growing') {
     const growthTime = Math.max(0, plot.growthTimer || 0);
@@ -2918,9 +3305,17 @@ function updateSinglePlotUI(plotId) {
   const cycleTime = getSfPlotCycleTime(plotIndex, plot.level);
   const coinsPerCycle = getSfPlotCoinsPerCycle(plotIndex, plot.level);
   const mult = sunflowerState.upgradeMultiplier || 1;
-  const upInfo = getSfMultiUpgradeInfo(plotIndex, plot.level, mult, sunflowerState.coins);
-  const canAfford = sunflowerState.coins >= upInfo.totalCost && plot.level < 5000;
+  const playerSfCoins = sunflowerState.coins || 0;
+  const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
+  const availableCoins = Math.max(playerSfCoins, playerGoldCoins);
+  const upInfo = getSfMultiUpgradeInfo(plotIndex, plot.level, mult, availableCoins);
+  const canAfford = availableCoins >= upInfo.totalCost && plot.level < 5000;
   const maxCap = getSfPlotMaxLifeLimit(plotIndex, plot.level);
+  const waterBonus = getSfPlotWaterBonus(plotIndex);
+  const reqBuckets = getSfPlotRequiredBuckets(plot.level);
+
+  const sqLvEl = document.getElementById(`sfPlotSquareLvTag-${plotId}`);
+  if (sqLvEl) sqLvEl.innerText = `Lv. ${plot.level}`;
 
   const lvEl = document.getElementById(`sfPlotLvTag-${plotId}`);
   if (lvEl) lvEl.innerText = `Lv ${plot.level}`;
@@ -2933,6 +3328,12 @@ function updateSinglePlotUI(plotId) {
 
   const lifeEl = document.getElementById(`sfPlotLifeText-${plotId}`);
   if (lifeEl) lifeEl.innerText = `${Math.ceil(plot.lifeTimer || 0)}s`;
+
+  // Water button update
+  const waterBtn = document.getElementById(`sfPlotWaterBtn-${plotId}`);
+  if (waterBtn) {
+    waterBtn.innerHTML = `<span>🪣 Water (${reqBuckets > 1 ? `${reqBuckets}🪣 ` : ''}+${waterBonus}s)</span>`;
+  }
 
   // Loading bar & live countdown timer update
   const barFill = document.getElementById(`sfPlotBarFill-${plotId}`);
@@ -2961,16 +3362,14 @@ function updateSinglePlotUI(plotId) {
   }
 
   if (collectBtn) {
+    collectBtn.disabled = false;
+    collectBtn.classList.remove("disabled");
     if (uncollected > 0) {
-      collectBtn.disabled = false;
-      collectBtn.classList.remove('disabled');
-      collectBtn.classList.add('active-ready');
-      collectBtn.innerHTML = `<span>🧺 Collect (${formatNumber(uncollected)})</span>`;
+      collectBtn.classList.add("active-ready");
+      collectBtn.innerHTML = "<span>🧺 Collect (" + formatNumber(uncollected) + ")</span>";
     } else {
-      collectBtn.disabled = true;
-      collectBtn.classList.add('disabled');
-      collectBtn.classList.remove('active-ready');
-      collectBtn.innerHTML = `<span>🧺 Collect</span>`;
+      collectBtn.classList.remove("active-ready");
+      collectBtn.innerHTML = "<span>🧺 Collect</span>";
     }
   }
 
@@ -2981,6 +3380,10 @@ function updateSinglePlotUI(plotId) {
       upBtn.className = "sf-sketch-up-btn disabled";
       upBtn.disabled = true;
       upBtn.innerHTML = `<span>MAX</span>`;
+    } else if (plot.level % 5 === 0) {
+      upBtn.disabled = false;
+      upBtn.className = "sf-sketch-up-btn sf-ad-upgrade-btn";
+      upBtn.innerHTML = `<span>🎬 Watch Ad (Lv.${plot.level + 1})</span>`;
     } else {
       upBtn.disabled = false;
       upBtn.className = `sf-sketch-up-btn ${!canAfford ? 'disabled' : ''}`;
@@ -3069,26 +3472,42 @@ function sunflowerMainLoop(now) {
     sunflowerState.cistern.boostTimerRemaining = Math.max(0, sunflowerState.cistern.boostTimerRemaining - dt);
   }
 
+  // Advance 20 Dedicated Land Managers (Countdown active contracts)
+  if (Array.isArray(sunflowerState.managers)) {
+    sunflowerState.managers.forEach(mgr => {
+      if (mgr.unlocked && mgr.activeTimer > 0) {
+        mgr.activeTimer = Math.max(0, mgr.activeTimer - dt);
+      }
+    });
+  }
+
   // 2. Advance All 20 Lands
   sunflowerState.plots.forEach((plot, idx) => {
     if (!plot.unlocked) return;
 
-    // LAND MANAGER AUTOMATION: Per-Land Automation Manager (Only Water Feed & Coin Collect)
-    if (plot.hasWorker) {
+    // DEDICATED LAND MANAGER: 1 Manager for 1 Land (Fixed to Land idx + 1)
+    const landMgr = Array.isArray(sunflowerState.managers) ? sunflowerState.managers[idx] : null;
+    const isMgrActive = (landMgr && landMgr.unlocked && landMgr.activeTimer > 0) || plot.hasWorker;
+
+    if (isMgrActive) {
       // 1. AUTOMATIC WATER FEED: Hydrate plant to maintain lifetime before it dies
-      if (plot.plantStatus === 'alive' && (sunflowerState.baskets || 0) > 0) {
-        const maxCap = getSfPlotMaxLifeLimit(idx, plot.level);
-        const waterBonus = getSfPlotWaterBonus(idx);
-        // Feed water whenever life drops below 75% of max capacity
-        if (plot.lifeTimer < (maxCap * 0.75)) {
-          sunflowerState.baskets -= 1;
-          plot.lifeTimer = Math.min(maxCap, (plot.lifeTimer || 0) + waterBonus);
+      if (plot.plantStatus === 'alive') {
+        const reqBuckets = getSfPlotRequiredBuckets(plot.level);
+        if ((sunflowerState.baskets || 0) >= reqBuckets) {
+          const maxCap = getSfPlotMaxLifeLimit(idx, plot.level);
+          const waterBonus = getSfPlotWaterBonus(idx);
+          // Feed water whenever life drops below 75% of max capacity
+          if (plot.lifeTimer < (maxCap * 0.75)) {
+            sunflowerState.baskets -= reqBuckets;
+            plot.lifeTimer = Math.min(maxCap, (plot.lifeTimer || 0) + waterBonus);
+          }
         }
       }
 
       // 2. AUTOMATIC HARVEST COIN COLLECTION: Instantly sweep ready coins into player balance
       if (plot.plantStatus === 'alive' && (plot.uncollectedCoins || 0) > 0) {
-        const harvestCoins = plot.uncollectedCoins;
+        const boosterMult = (typeof getActiveSunflowerProfitMultiplier === 'function') ? getActiveSunflowerProfitMultiplier() : 1;
+        const harvestCoins = plot.uncollectedCoins * boosterMult;
         sunflowerState.coins = (sunflowerState.coins || 0) + harvestCoins;
         plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + harvestCoins;
         plot.uncollectedCoins = 0;
@@ -3157,23 +3576,14 @@ function sunflowerMainLoop(now) {
 
       // Flower dies when lifetime runs out
       if (plot.lifeTimer <= 0) {
-        if ((sunflowerState.baskets || 0) > 0) {
-          // Auto-hydrate from inventory buckets to prevent flower death
-          sunflowerState.baskets -= 1;
-          plot.lifeTimer = waterBonus;
-        } else if (plot.hasWorker) {
-          // Dedicated Manager keeps flower hydrated
-          plot.lifeTimer = 15;
-        } else {
-          plot.lifeTimer = 0;
-          plot.plantStatus = 'dead';
-          plot.isWithered = true;
-          plot.readyToCollect = false;
-          sunflowerAudio.playTone(180, 'sawtooth', 0.25, 0.1);
-          spawnSfFloat(`🥀 Land #${plot.id} Sunflower expired! Use shovel 🪏 to clear`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400');
-          sfNeedRerender = true;
-          return;
-        }
+        plot.lifeTimer = 0;
+        plot.plantStatus = 'dead';
+        plot.isWithered = true;
+        plot.readyToCollect = false;
+        sunflowerAudio.playTone(180, 'sawtooth', 0.25, 0.1);
+        spawnSfFloat(`🥀 Land #${plot.id} Sunflower expired! Use shovel 🪏 to clear`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+        sfNeedRerender = true;
+        return;
       }
 
       // Coin Generation Timer (Loading Bar value generates flower time until full)
@@ -3201,8 +3611,9 @@ function sunflowerMainLoop(now) {
         }
 
         // Dedicated Land Manager auto-collects immediately upon cycle completion!
-        if (plot.hasWorker && (plot.uncollectedCoins || 0) > 0) {
-          const harvestCoins = plot.uncollectedCoins;
+        if ((isMgrActive || plot.hasWorker) && (plot.uncollectedCoins || 0) > 0) {
+          const boosterMult = (typeof getActiveSunflowerProfitMultiplier === 'function') ? getActiveSunflowerProfitMultiplier() : 1;
+          const harvestCoins = plot.uncollectedCoins * boosterMult;
           sunflowerState.coins = (sunflowerState.coins || 0) + harvestCoins;
           plot.totalCoinsGenerated = (plot.totalCoinsGenerated || 0) + harvestCoins;
           plot.uncollectedCoins = 0;
@@ -3231,6 +3642,7 @@ function sunflowerMainLoop(now) {
     if (rateEl) rateEl.innerText = formatNumber(gardenTotalCps);
     updateStickyHeaderAndMiniStats();
     updateLiveUpgradeButtons();
+    updateSunflowerManagersLiveTimers();
   }
 
   sfAnimationId = requestAnimationFrame(sunflowerMainLoop);
@@ -3289,11 +3701,21 @@ function updateLiveUpgradeButtons() {
 
 function updateStickyHeaderAndMiniStats() {
   const sCoins = document.getElementById('sfStickyCoins');
+  const sGold = document.getElementById('sfStickyGoldCoins');
+  const sDiamonds = document.getElementById('sfStickyDiamonds');
   const sSeeds = document.getElementById('sfStickySeeds');
   const sBaskets = document.getElementById('sfStickyBaskets');
   const sShovels = document.getElementById('sfStickyShovels');
   
-  if (sCoins) sCoins.innerText = formatNumber(Math.floor(sunflowerState.coins));
+  if (sCoins) sCoins.innerText = formatNumber(Math.floor(sunflowerState.coins || 0));
+  if (sGold) {
+    const g = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
+    sGold.innerText = typeof formatNumber === 'function' ? formatNumber(g) : g;
+  }
+  if (sDiamonds) {
+    const d = sunflowerState.diamonds;
+    sDiamonds.innerText = typeof formatNumber === 'function' ? formatNumber(d || 0) : (d || 0);
+  }
   if (sSeeds) sSeeds.innerText = sunflowerState.seeds || 0;
   if (sBaskets) sBaskets.innerText = sunflowerState.baskets || 0;
   if (sShovels) sShovels.innerText = sunflowerState.shovels || 0;
@@ -3311,6 +3733,10 @@ function updateStickyHeaderAndMiniStats() {
   if (spDiam) {
     const d = sunflowerState.diamonds;
     spDiam.innerText = (typeof d === 'number' && d > 0 && d < 1 ? d.toFixed(6) : (d || 0)) + ' 💎';
+  }
+
+  if (typeof updateSunflowerBoosterUI === 'function') {
+    updateSunflowerBoosterUI();
   }
 
   // Land Page 1 Live Counters
@@ -3531,7 +3957,6 @@ window.SF_SPIN_BASE_COST = SF_SPIN_BASE_COST;
 window.SF_SPIN_BATCHES = SF_SPIN_BATCHES;
 
 function renderSunflowerSpinExchange() {
-  const container = document.getElementById('sfSpinBatchButtonsContainer');
   const coinsDisplay = document.getElementById('sfSpinExchCoinsDisplay');
   const ownedDisplay = document.getElementById('sfSpinExchOwnedDisplay');
   const maxLabel = document.getElementById('sfSpinMaxPossibleLabel');
@@ -3550,30 +3975,160 @@ function renderSunflowerSpinExchange() {
     maxLabel.innerText = `${maxAfford.toLocaleString()} 🎡`;
   }
 
-  if (!container) return;
+  const selectedCount = sunflowerState.selectedSpinCount || 1;
+  const totalCost = selectedCount * SF_SPIN_BASE_COST;
+  const canAfford = currentCoins >= totalCost;
 
-  let html = '';
-  SF_SPIN_BATCHES.forEach(b => {
-    const totalCost = b * SF_SPIN_BASE_COST;
-    const canAfford = currentCoins >= totalCost;
-    const costText = typeof formatNumber === 'function' ? formatNumber(totalCost) : totalCost.toLocaleString();
+  const ticketsLabel = document.getElementById('sfSpinPackageTicketsLabel');
+  const costLabel = document.getElementById('sfSpinPackageCostLabel');
+  const rawCostLabel = document.getElementById('sfSpinPackageRawCost');
+  const selectedCountEl = document.getElementById('sfSpinSelectedCount');
+  const actionBtn = document.getElementById('sfSpinExchangeSelectedBtn');
 
-    html += `
-      <button onclick="exchangeSfCoinsForSpin(${b}, event)" class="sf-spin-batch-card ${canAfford ? 'affordable' : 'locked'}" title="Exchange ${b} 🎡 Spin Coins for ${costText} ☀️ Coins">
-        <div class="sf-spin-batch-top">
-          <span class="sf-spin-batch-icon">🎡</span>
-          <span class="sf-spin-batch-amt">+${b.toLocaleString()}</span>
-        </div>
-        <div class="sf-spin-batch-bottom">
-          <span class="sf-spin-batch-cost">☀️ ${costText}</span>
-        </div>
-      </button>
-    `;
-  });
-
-  container.innerHTML = html;
+  if (ticketsLabel) ticketsLabel.innerText = `${selectedCount} 🎡 Spin Coin${selectedCount > 1 ? 's' : ''}`;
+  if (costLabel) costLabel.innerText = `${typeof formatNumber === 'function' ? formatNumber(totalCost) : totalCost.toLocaleString()} ☀️`;
+  if (rawCostLabel) rawCostLabel.innerText = `(${totalCost.toLocaleString()} ☀️)`;
+  if (selectedCountEl) selectedCountEl.innerText = `${selectedCount}`;
+  if (actionBtn) {
+    if (canAfford) {
+      actionBtn.classList.remove('opacity-60', 'grayscale');
+    } else {
+      actionBtn.classList.add('opacity-60');
+    }
+  }
 }
 window.renderSunflowerSpinExchange = renderSunflowerSpinExchange;
+
+window.stepSunflowerSpinPackage = function(delta) {
+  let count = sunflowerState.selectedSpinCount || 1;
+  count += delta;
+  if (count < 1) count = 1;
+  if (count > 1000) count = 1000;
+  sunflowerState.selectedSpinCount = count;
+  if (sunflowerAudio && sunflowerAudio.playTone) sunflowerAudio.playTone(500 + count * 20, 'sine', 0.08, 0.05);
+  renderSunflowerSpinExchange();
+};
+
+window.exchangeCurrentSfSpinPackage = function(event) {
+  const count = sunflowerState.selectedSpinCount || 1;
+  exchangeSfCoinsForSpin(count, event);
+};
+
+/* ==========================================================================
+   👑 PRESTIGE SUNFLOWER TO GOLD COIN EXCHANGE (RESTARTS AT LEVEL 1)
+   ========================================================================== */
+function getSunflowerPrestigeInfo() {
+  const level = sunflowerState.prestigeLevel || 1;
+  let cost = 100;
+  let reward = 10;
+  if (level === 1) {
+    cost = 100;
+    reward = 10;
+  } else if (level === 2) {
+    cost = 1000;
+    reward = 200;
+  } else {
+    cost = (level - 1) * 1000;
+    reward = (level - 1) * 200;
+  }
+  return { level, cost, reward };
+}
+window.getSunflowerPrestigeInfo = getSunflowerPrestigeInfo;
+
+function renderSunflowerPrestigeUI() {
+  const info = getSunflowerPrestigeInfo();
+  const currentCoins = (sunflowerState && sunflowerState.coins) || 0;
+  const canAfford = currentCoins >= info.cost;
+
+  const tierBadge = document.getElementById('sfPrestigeTierBadge');
+  const titleEl = document.getElementById('sfPrestigeCardTitle');
+  const reqEl = document.getElementById('sfPrestigeReqCoins');
+  const rewardEl = document.getElementById('sfPrestigeRewardCoins');
+  const userCoinsEl = document.getElementById('sfPrestigeUserCoinsDisplay');
+  const costEl = document.getElementById('sfPrestigeCostDisplay');
+  const gainEl = document.getElementById('sfPrestigeRewardDisplay');
+  const actionBtn = document.getElementById('sfPrestigeActionBtn');
+
+  if (tierBadge) tierBadge.innerText = `Tier ${info.level}`;
+  if (titleEl) titleEl.innerText = `Tier ${info.level} Prestige Exchange`;
+  if (reqEl) reqEl.innerText = `${formatNumber(info.cost)} ☀️`;
+  if (rewardEl) rewardEl.innerText = `+${formatNumber(info.reward)} 🪙 Gold Coins`;
+  if (userCoinsEl) userCoinsEl.innerText = `${formatNumber(Math.floor(currentCoins))} ☀️`;
+  if (costEl) costEl.innerText = `${formatNumber(info.cost)} ☀️`;
+  if (gainEl) gainEl.innerText = `+${formatNumber(info.reward)} 🪙`;
+  if (actionBtn) {
+    if (canAfford) {
+      actionBtn.classList.remove('opacity-50', 'grayscale');
+    } else {
+      actionBtn.classList.add('opacity-50');
+    }
+  }
+}
+window.renderSunflowerPrestigeUI = renderSunflowerPrestigeUI;
+
+window.executeSunflowerPrestige = function(event) {
+  const info = getSunflowerPrestigeInfo();
+  const currentCoins = (sunflowerState && sunflowerState.coins) || 0;
+
+  if (currentCoins < info.cost) {
+    if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+    const needed = info.cost - currentCoins;
+    spawnSfFloat(`❌ Need ${formatNumber(info.cost)} ☀️ Coins! (Short ${formatNumber(needed)})`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+    return;
+  }
+
+  // Deduct Sunflower Coins
+  sunflowerState.coins -= info.cost;
+
+  // Award Gold Coins to player
+  if (typeof gameState === 'undefined') window.gameState = {};
+  if (!gameState.player) gameState.player = {};
+  gameState.player.coins = (gameState.player.coins || 0) + info.reward;
+
+  // Advance prestige level
+  sunflowerState.prestigeLevel = (sunflowerState.prestigeLevel || 1) + 1;
+
+  // Restart full Sunflower Valley from Level 1
+  if (Array.isArray(sunflowerState.plots)) {
+    sunflowerState.plots.forEach((p, idx) => {
+      p.level = 1;
+      p.plantStatus = (p.id === 1 ? 'growing' : 'empty');
+      p.growthTimer = (p.id === 1 ? 60.0 : 0);
+      p.growthDuration = 60.0;
+      p.lifeTimer = 0;
+      p.timer = getSfPlotCycleTime(idx, 1);
+      p.readyToCollect = false;
+      p.uncollectedCoins = 0;
+      p.isWithered = false;
+      p.productionTime = getSfPlotCycleTime(idx, 1);
+      p.coinProduction = getSfPlotCoinsPerCycle(idx, 1);
+      p.upgradeCost = getSfPlotUpgradeCost(idx, 1);
+    });
+  }
+
+  if (Array.isArray(sunflowerState.wells)) {
+    sunflowerState.wells.forEach((w, idx) => {
+      w.level = 1;
+      w.timer = SF_WELL_BASE_TIMES[idx];
+      w.productionTime = SF_WELL_BASE_TIMES[idx];
+      w.storedBaskets = 0;
+      w.isProducing = false;
+      w.basketProduction = SF_WELL_BASE_BASKETS[idx];
+      w.upgradeCost = getSfWellUpgradeCost(idx, 1);
+    });
+  }
+
+  if (sunflowerAudio && sunflowerAudio.playUnlockChime) sunflowerAudio.playUnlockChime();
+  spawnSfFloat(`👑 Prestige Complete! +${formatNumber(info.reward)} 🪙 Gold Coins! Valley restarted at Level 1!`, window.innerWidth / 2, window.innerHeight / 2 - 20, 'text-yellow-300 font-black text-sm');
+
+  saveSunflowerStateDebounced();
+  if (typeof saveGameState === 'function') saveGameState();
+  if (typeof window.updateUI === 'function') window.updateUI();
+  updateStickyHeaderAndMiniStats();
+  renderSunflowerPlots();
+  renderSunflowerWells();
+  renderSunflowerPrestigeUI();
+};
 
 function exchangeSfCoinsForSpin(amount, event = null) {
   if (typeof sunflowerState === 'undefined') return;
@@ -3647,16 +4202,20 @@ window.switchSunflowerExchangeSubtab = function(subtab) {
   const spinSec = document.getElementById('sfExchangeSectionSpin');
   const fuelSec = document.getElementById('sfExchangeSectionFuel');
   const energySec = document.getElementById('sfExchangeSectionEnergy');
+  const prestigeSec = document.getElementById('sfExchangeSectionPrestige');
   const spinBtn = document.getElementById('sfExchTabSpin');
   const fuelBtn = document.getElementById('sfExchTabFuel');
   const energyBtn = document.getElementById('sfExchTabEnergy');
+  const prestigeBtn = document.getElementById('sfExchTabPrestige');
 
   if (spinSec) spinSec.classList.add('hidden');
   if (fuelSec) fuelSec.classList.add('hidden');
   if (energySec) energySec.classList.add('hidden');
+  if (prestigeSec) prestigeSec.classList.add('hidden');
   if (spinBtn) spinBtn.classList.remove('active');
   if (fuelBtn) fuelBtn.classList.remove('active');
   if (energyBtn) energyBtn.classList.remove('active');
+  if (prestigeBtn) prestigeBtn.classList.remove('active');
 
   if (subtab === 'spin') {
     if (spinSec) spinSec.classList.remove('hidden');
@@ -3670,10 +4229,63 @@ window.switchSunflowerExchangeSubtab = function(subtab) {
     } else if (typeof window.renderSunflowerFuelShopCards === 'function') {
       window.renderSunflowerFuelShopCards();
     }
+  } else if (subtab === 'prestige') {
+    if (prestigeSec) prestigeSec.classList.remove('hidden');
+    if (prestigeBtn) prestigeBtn.classList.add('active');
+    renderSunflowerPrestigeUI();
   } else {
     if (energySec) energySec.classList.remove('hidden');
     if (energyBtn) energyBtn.classList.add('active');
   }
+};
+
+function renderSunflowerPrestigeUI() {
+  const tier = (sunflowerState.prestigeLevel || 0) + 1;
+  const cost = tier === 1 ? 100 : tier * 1000;
+  const reward = tier === 1 ? 10 : tier * 200;
+
+  const cardTitle = document.getElementById('sfPrestigeCardTitle');
+  if (cardTitle) cardTitle.innerText = `Tier ${tier} Prestige Exchange`;
+  const reqCoins = document.getElementById('sfPrestigeCostDisplay');
+  if (reqCoins) reqCoins.innerText = `${typeof formatNumber === 'function' ? formatNumber(cost) : cost} ☀️`;
+  const rewardCoins = document.getElementById('sfPrestigeRewardDisplay');
+  if (rewardCoins) rewardCoins.innerText = `+${reward} 🪙`;
+  const userCoins = document.getElementById('sfPrestigeUserCoinsDisplay');
+  if (userCoins) userCoins.innerText = `${typeof formatNumber === 'function' ? formatNumber(sunflowerState.coins || 0) : Math.floor(sunflowerState.coins || 0)} ☀️`;
+}
+window.renderSunflowerPrestigeUI = renderSunflowerPrestigeUI;
+
+window.executeSunflowerPrestige = function(event) {
+  if (event) event.stopPropagation();
+  const tier = (sunflowerState.prestigeLevel || 0) + 1;
+  const cost = tier === 1 ? 100 : tier * 1000;
+  const reward = tier === 1 ? 10 : tier * 200;
+
+  if ((sunflowerState.coins || 0) < cost) {
+    alert(`Need ${typeof formatNumber === 'function' ? formatNumber(cost) : cost} ☀️ Sunflower Coins!`);
+    return;
+  }
+
+  sunflowerState.coins -= cost;
+  sunflowerState.prestigeLevel = tier;
+  if (typeof gameState !== 'undefined' && gameState.player) {
+    gameState.player.coins = (gameState.player.coins || 0) + reward;
+    if (typeof window.updateUI === 'function') window.updateUI();
+  }
+
+  // Reset lands and water wells
+  sunflowerState.plots = createDefaultPlots();
+  sunflowerState.wells = createDefaultWells();
+
+  // Record task event for Daily Task 5! (Task 5: Sunflower game change a gold coin)
+  if (typeof window.recordTaskEvent === 'function') {
+    window.recordTaskEvent('sunflower_prestige', 1);
+  }
+
+  alert(`👑 Prestige Successful! +${reward} 🪙 Gold Coins Claimed! Sunflower Valley restarted from Level 1.`);
+  navigateSunflowerPage(1);
+  updateStickyHeaderAndMiniStats();
+  saveSunflowerStateDebounced();
 };
 
 function renderSunflowerFuelShopCards() {
@@ -3897,8 +4509,8 @@ window.openSunflowerAdModal = function(itemType) {
       sunflowerState.seeds = (sunflowerState.seeds || 0) + 1;
       spawnSfFloat('+1 Free 🌱 Baby Plant Claimed!', window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400 font-black');
     } else if (itemType === 'basket' || itemType === 'bucket') {
-      sunflowerState.baskets = (sunflowerState.baskets || 0) + 1;
-      spawnSfFloat('+1 Free 🪣 Water Bucket Claimed!', window.innerWidth / 2, window.innerHeight / 2, 'text-cyan-400 font-black');
+      sunflowerState.baskets = (sunflowerState.baskets || 0) + 5; // 5 buckets per user request
+      spawnSfFloat('+5 Free 🪣 Water Buckets Claimed!', window.innerWidth / 2, window.innerHeight / 2, 'text-cyan-400 font-black');
     } else if (itemType === 'shovel') {
       sunflowerState.shovels = (sunflowerState.shovels || 0) + 1;
       spawnSfFloat('+1 Free 🪏 Garden Shovel Claimed!', window.innerWidth / 2, window.innerHeight / 2, 'text-orange-400 font-black');
@@ -3917,6 +4529,103 @@ window.openSunflowerAdModal = function(itemType) {
     doReward();
   }
 };
+
+/* ==========================================================================
+   SUNFLOWER SHOP PURCHASES & 20-MINUTE HARVEST PROFIT BOOSTERS
+   ========================================================================== */
+window.buySunflowerItem = function(itemType, count, currency) {
+  if (typeof gameState === 'undefined' || !gameState.player) return;
+  let cost = 0;
+  if (itemType === 'seed' || itemType === 'plant') {
+    cost = 200; // 200 gold coins
+    if ((gameState.player.coins || 0) < cost) {
+      if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+      spawnSfFloat(`❌ Need 200 🪙 Gold Coins! (Have: ${Math.floor(gameState.player.coins || 0)})`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+      return;
+    }
+    gameState.player.coins -= cost;
+    sunflowerState.seeds = (sunflowerState.seeds || 0) + (count || 1);
+    spawnSfFloat(`+${count || 1} 🌱 Baby Plant Seed Purchased! (-200 🪙)`, window.innerWidth / 2, window.innerHeight / 2, 'text-emerald-400 font-black');
+  } else if (itemType === 'basket' || itemType === 'bucket') {
+    cost = 250; // 250 gold coins for 10 buckets
+    if ((gameState.player.coins || 0) < cost) {
+      if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+      spawnSfFloat(`❌ Need 250 🪙 Gold Coins! (Have: ${Math.floor(gameState.player.coins || 0)})`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+      return;
+    }
+    gameState.player.coins -= cost;
+    sunflowerState.baskets = (sunflowerState.baskets || 0) + (count || 10);
+    spawnSfFloat(`+${count || 10} 🪣 Water Buckets Purchased! (-250 🪙)`, window.innerWidth / 2, window.innerHeight / 2, 'text-cyan-400 font-black');
+  } else if (itemType === 'shovel') {
+    cost = 200; // 200 gold coins
+    if ((gameState.player.coins || 0) < cost) {
+      if (sunflowerAudio && sunflowerAudio.playWitherSound) sunflowerAudio.playWitherSound();
+      spawnSfFloat(`❌ Need 200 🪙 Gold Coins! (Have: ${Math.floor(gameState.player.coins || 0)})`, window.innerWidth / 2, window.innerHeight / 2, 'text-rose-400 font-bold');
+      return;
+    }
+    gameState.player.coins -= cost;
+    sunflowerState.shovels = (sunflowerState.shovels || 0) + (count || 1);
+    spawnSfFloat(`+${count || 1} 🪏 Garden Shovel Purchased! (-200 🪙)`, window.innerWidth / 2, window.innerHeight / 2, 'text-orange-400 font-black');
+  }
+  if (sunflowerAudio && sunflowerAudio.playCoin) sunflowerAudio.playCoin();
+  if (typeof window.updateUI === 'function') window.updateUI();
+  if (typeof window.saveGame === 'function') window.saveGame(true);
+  saveSunflowerStateDebounced();
+  updateStickyHeaderAndMiniStats();
+};
+
+window.activateSunflowerProfitBooster = function(multiplier) {
+  const doActivate = () => {
+    // Mutually exclusive: overwrite existing booster so only 1 is active at a time
+    sunflowerState.activeBooster = {
+      multiplier: Number(multiplier) || 2,
+      expiresAt: Date.now() + 20 * 60 * 1000 // 20 minutes duration
+    };
+    if (sunflowerAudio && sunflowerAudio.playSolarChime) sunflowerAudio.playSolarChime();
+    spawnSfFloat(`⚡ ${multiplier}X HARVEST PROFIT ACTIVATED! (20 Minutes)`, window.innerWidth / 2, window.innerHeight / 2, 'text-yellow-400 font-black text-sm');
+    saveSunflowerStateDebounced();
+    updateSunflowerBoosterUI();
+  };
+
+  if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doActivate, {
+      adTitle: `${multiplier}X Harvest Profit Booster`,
+      adDesc: `Watch this sponsored video to boost all harvest coins by ${multiplier}X for 20 Minutes!`
+    });
+  } else {
+    doActivate();
+  }
+};
+
+window.getActiveSunflowerProfitMultiplier = function() {
+  if (sunflowerState && sunflowerState.activeBooster && sunflowerState.activeBooster.expiresAt > Date.now()) {
+    return Number(sunflowerState.activeBooster.multiplier) || 1;
+  }
+  return 1;
+};
+
+function updateSunflowerBoosterUI() {
+  const badge = document.getElementById('sfBoosterActiveBadge');
+  if (!badge) return;
+  if (sunflowerState && sunflowerState.activeBooster && sunflowerState.activeBooster.expiresAt > Date.now()) {
+    const remMs = sunflowerState.activeBooster.expiresAt - Date.now();
+    const remMins = Math.floor(remMs / 60000);
+    const remSecs = Math.floor((remMs % 60000) / 1000);
+    badge.className = "bg-amber-950 text-amber-300 text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border border-amber-500/50 animate-pulse";
+    badge.innerText = `⚡ ${sunflowerState.activeBooster.multiplier}X ACTIVE (${remMins}m ${String(remSecs).padStart(2, '0')}s)`;
+  } else {
+    badge.className = "bg-stone-800 text-stone-400 text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border border-stone-700";
+    badge.innerText = "No Active Booster";
+  }
+}
+window.updateSunflowerBoosterUI = updateSunflowerBoosterUI;
+
+// Exports
+window.getSunflowerPrestigeInfo = getSunflowerPrestigeInfo;
+window.renderSunflowerPrestigeUI = renderSunflowerPrestigeUI;
+window.executeSunflowerPrestige = executeSunflowerPrestige;
+window.stepSunflowerSpinPackage = stepSunflowerSpinPackage;
+window.exchangeCurrentSfSpinPackage = exchangeCurrentSfSpinPackage;
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initSunflowerTycoonGame);

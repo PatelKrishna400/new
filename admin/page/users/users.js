@@ -957,3 +957,265 @@ function saveNewPlayerToFirebase(event) {
 }
 window.saveNewPlayerToFirebase = saveNewPlayerToFirebase;
 
+/* ==========================================================================
+   EDIT PLAYER MODAL & ALL BALANCES / EVENT RESOURCES FIREBASE CONTROLLER
+   ========================================================================== */
+function openEditPlayerModal(uid) {
+  if (!uid) return;
+  const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+  const u = users.find(user => user.uid === uid);
+  if (!u) {
+    alert('Player not found in local cache: ' + uid);
+    return;
+  }
+
+  const raw = u.raw || {};
+  const pl = raw.player || raw || {};
+  const reactor = raw.reactor || {};
+  const sf = raw.sunflowerState || pl.sunflowerState || {};
+  const bee = raw.beeState || pl.beeState || {};
+  const mining = raw.miningState || pl.miningState || {};
+
+  // Populate title & UID
+  const titleEl = document.getElementById('editModalPlayerTitle');
+  const uidSubEl = document.getElementById('editModalPlayerUid');
+  const uidInp = document.getElementById('editInpUid');
+
+  if (titleEl) titleEl.textContent = `Edit Player: ${u.username || u.name || 'Player'}`;
+  if (uidSubEl) uidSubEl.textContent = `UID: ${u.uid}`;
+  if (uidInp) uidInp.value = u.uid;
+
+  // Helpers
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = (val !== undefined && val !== null) ? val : 0;
+  };
+
+  const usernameInp = document.getElementById('editInpUsername');
+  const statusInp = document.getElementById('editInpStatus');
+  if (usernameInp) usernameInp.value = u.username || u.name || '';
+  if (statusInp) statusInp.value = (u.status || 'active').toLowerCase();
+
+  setVal('editInpLevel', u.level || pl.level || 1);
+  setVal('editInpXp', u.xp || pl.xp || 0);
+
+  // Section 2: Currencies
+  setVal('editInpCoins', u.coins !== undefined ? u.coins : (pl.coins || 0));
+  setVal('editInpDiamonds', u.diamonds !== undefined ? u.diamonds : (pl.diamonds || 0));
+  setVal('editInpEnergy', reactor.currentEnergy !== undefined ? reactor.currentEnergy : (u.currentEnergy || 0));
+  setVal('editInpTapPower', reactor.tapPower !== undefined ? reactor.tapPower : (u.tapPower || 1));
+
+  // Section 3: Chests & items
+  setVal('editInpKeys', u.chestKeys !== undefined ? u.chestKeys : (pl.chestKeys || 0));
+  setVal('editInpTickets', u.chestTickets !== undefined ? u.chestTickets : (pl.chestTickets || 0));
+  setVal('editInpCards', u.scratchCards !== undefined ? u.scratchCards : (pl.scratchCards || 0));
+  setVal('editInpEggs', u.eggs !== undefined ? u.eggs : (pl.eggs || 0));
+  setVal('editInpBoom', pl.boomCoins !== undefined ? pl.boomCoins : (pl.boom || 0));
+  setVal('editInpBrain', pl.brainCoins !== undefined ? pl.brainCoins : (pl.brain || 0));
+
+  // Section 4: Sunflower Valley
+  setVal('editInpSfCoins', sf.coins !== undefined ? sf.coins : 0);
+  setVal('editInpSfSeeds', sf.seeds !== undefined ? sf.seeds : 3);
+  setVal('editInpSfBuckets', sf.baskets !== undefined ? sf.baskets : (sf.buckets || 2));
+  setVal('editInpSfShovels', sf.shovels !== undefined ? sf.shovels : 1);
+  setVal('editInpSfPrestige', sf.prestigeLevel !== undefined ? sf.prestigeLevel : 1);
+
+  // Section 5: Bee & Mining
+  setVal('editInpHoney', bee.honey !== undefined ? bee.honey : (pl.honey || 0));
+  setVal('editInpLarvae', bee.larvae !== undefined ? bee.larvae : (pl.larvae || 0));
+  setVal('editInpPollen', bee.pollen !== undefined ? bee.pollen : (pl.pollen || 0));
+
+  setVal('editInpMiningShards', mining.shards !== undefined ? mining.shards : (pl.miningShards || 0));
+  setVal('editInpMiningPlasma', mining.plasma !== undefined ? mining.plasma : (pl.miningPlasma || 0));
+  setVal('editInpMiningCoolant', mining.coolant !== undefined ? mining.coolant : (pl.miningCoolant || 0));
+  setVal('editInpMiningPickaxes', mining.pickaxes !== undefined ? mining.pickaxes : (pl.pickaxes || 0));
+
+  const modal = document.getElementById('editPlayerModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+  }
+}
+window.openEditPlayerModal = openEditPlayerModal;
+window.handleEditPlayerClick = openEditPlayerModal;
+
+function closeEditPlayerModal() {
+  const modal = document.getElementById('editPlayerModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
+}
+window.closeEditPlayerModal = closeEditPlayerModal;
+
+function saveEditedPlayerToFirebase(event) {
+  if (event) event.preventDefault();
+
+  const uid = document.getElementById('editInpUid')?.value;
+  if (!uid) {
+    alert('Missing user UID');
+    return;
+  }
+
+  const db = window.getDb ? window.getDb() : null;
+  if (!db) {
+    alert('Firebase is not connected. Please check configuration.');
+    return;
+  }
+
+  const getNum = (id, def = 0) => {
+    const el = document.getElementById(id);
+    return el ? (Number(el.value) || def) : def;
+  };
+  const getStr = (id, def = '') => {
+    const el = document.getElementById(id);
+    return el ? (el.value.trim() || def) : def;
+  };
+
+  const username = getStr('editInpUsername', 'Player');
+  const status = getStr('editInpStatus', 'active');
+  const level = getNum('editInpLevel', 1);
+  const xp = getNum('editInpXp', 0);
+
+  const coins = getNum('editInpCoins', 0);
+  const diamonds = getNum('editInpDiamonds', 0);
+  const energy = getNum('editInpEnergy', 0);
+  const tapPower = getNum('editInpTapPower', 1);
+
+  const keys = getNum('editInpKeys', 0);
+  const tickets = getNum('editInpTickets', 0);
+  const cards = getNum('editInpCards', 0);
+  const eggs = getNum('editInpEggs', 0);
+  const boom = getNum('editInpBoom', 0);
+  const brain = getNum('editInpBrain', 0);
+
+  const sfCoins = getNum('editInpSfCoins', 0);
+  const sfSeeds = getNum('editInpSfSeeds', 0);
+  const sfBuckets = getNum('editInpSfBuckets', 0);
+  const sfShovels = getNum('editInpSfShovels', 0);
+  const sfPrestige = getNum('editInpSfPrestige', 1);
+
+  const honey = getNum('editInpHoney', 0);
+  const larvae = getNum('editInpLarvae', 0);
+  const pollen = getNum('editInpPollen', 0);
+
+  const miningShards = getNum('editInpMiningShards', 0);
+  const miningPlasma = getNum('editInpMiningPlasma', 0);
+  const miningCoolant = getNum('editInpMiningCoolant', 0);
+  const miningPickaxes = getNum('editInpMiningPickaxes', 0);
+
+  const updates = {
+    'player/username': username,
+    'player/name': username,
+    'player/status': status,
+    'player/level': level,
+    'player/xp': xp,
+    'player/coins': coins,
+    'player/diamonds': diamonds,
+    'player/chestKeys': keys,
+    'player/chestTickets': tickets,
+    'player/scratchCards': cards,
+    'player/eggs': eggs,
+    'player/boomCoins': boom,
+    'player/brainCoins': brain,
+    'player/currentEnergy': energy,
+    'player/tapPower': tapPower,
+
+    'reactor/currentEnergy': energy,
+    'reactor/tapPower': tapPower,
+
+    'sunflowerState/coins': sfCoins,
+    'sunflowerState/seeds': sfSeeds,
+    'sunflowerState/baskets': sfBuckets,
+    'sunflowerState/shovels': sfShovels,
+    'sunflowerState/prestigeLevel': sfPrestige,
+
+    'beeState/honey': honey,
+    'beeState/larvae': larvae,
+    'beeState/pollen': pollen,
+
+    'miningState/shards': miningShards,
+    'miningState/plasma': miningPlasma,
+    'miningState/coolant': miningCoolant,
+    'miningState/pickaxes': miningPickaxes,
+
+    'coins': coins,
+    'diamonds': diamonds,
+    'level': level,
+    'status': status,
+    'updatedAt': Date.now()
+  };
+
+  const btn = document.getElementById('btnSubmitEditPlayer');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Saving to Firebase...';
+  }
+
+  db.ref('/players/' + uid).update(updates)
+    .then(() => {
+      // Also update /users node if exists
+      db.ref('/users/' + uid).update({
+        username,
+        status,
+        coins,
+        diamonds,
+        level,
+        updatedAt: Date.now()
+      }).catch(() => {});
+
+      closeEditPlayerModal();
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '💾 Save All Changes to Firebase';
+      }
+
+      // Update local state immediately
+      const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
+      const userIdx = users.findIndex(u => u.uid === uid);
+      if (userIdx !== -1) {
+        users[userIdx].username = username;
+        users[userIdx].status = status;
+        users[userIdx].level = level;
+        users[userIdx].xp = xp;
+        users[userIdx].coins = coins;
+        users[userIdx].diamonds = diamonds;
+        users[userIdx].chestKeys = keys;
+        users[userIdx].chestTickets = tickets;
+        users[userIdx].scratchCards = cards;
+        users[userIdx].eggs = eggs;
+        renderUsersTable();
+      }
+
+      if (typeof showAdminToast === 'function') {
+        showAdminToast(`Player ${username} updated successfully in Firebase!`, 'success');
+      } else {
+        alert(`✅ Player "${username}" updated successfully in Firebase!`);
+      }
+
+      if (window.activeDetailsUid === uid && typeof viewUserDetails === 'function') {
+        viewUserDetails(uid);
+      }
+    })
+    .catch(err => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '💾 Save All Changes to Firebase';
+      }
+      alert('Firebase update error: ' + err.message);
+    });
+}
+window.saveEditedPlayerToFirebase = saveEditedPlayerToFirebase;
+
+// Wire up the button in the details modal
+document.addEventListener('DOMContentLoaded', () => {
+  const btnEdit = document.getElementById('btnEditFromDetails');
+  if (btnEdit) {
+    btnEdit.addEventListener('click', () => {
+      if (window.activeDetailsUid) {
+        openEditPlayerModal(window.activeDetailsUid);
+      }
+    });
+  }
+});
+

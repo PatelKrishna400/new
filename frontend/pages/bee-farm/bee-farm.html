@@ -1,137 +1,68 @@
 <div class="page-view" id="pageBeeFarm">
-  <!-- Atmospheric Scenic Landscape Stage for Honey Bee Farm (Background Canvas Layer) -->
-  <div class="bee-tab-scenic-stage" id="beeTabScenicStage" aria-hidden="true">
-    <div class="bee-stage-artwork" id="beeStageArtwork"></div>
-    <div class="bee-stage-sunbeam"></div>
-    <div class="bee-stage-ambient-glow"></div>
-    <div class="bee-stage-vignette"></div>
-  </div>
-
-  <div class="beefarm-tycoon-container flex flex-col text-amber-950 pb-24">
-    <!-- Unified Compact Hero Dashboard -->
-    <div class="bee-compact-dashboard mb-3">
-      <div class="bee-dash-art-bg"></div>
-      <div class="bee-dash-honeycomb-bg"></div>
-      <div class="bee-dash-amber-overlay"></div>
-
-      <!-- Top Row: Back Button, Title, Sound & Guide -->
-      <div class="bee-dash-top-row">
-        <button onclick="switchPage('energy')" class="bee-dash-back-btn" title="Return to Fuel Reactor" aria-label="Back">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-          </button>
-
-        <div class="bee-dash-title-wrap">
-          <span class="bee-dash-bee-icon animate-buzz-float">🐝</span>
-          <span class="bee-dash-title-text">Honey Bee Farm Tycoon</span>
-          <span id="beeActivePageBadge" class="bee-dash-page-badge">Page 1: Apiary</span>
-        </div>
-
-        <div class="bee-dash-controls">
-          <button id="beeSoundBtn" class="bee-dash-ctrl-btn" title="Toggle Sound">🔊</button>
-          <button id="beeGuideBtn" class="bee-dash-ctrl-btn" title="Game Guide">📖</button>
-        </div>
+  <!-- Pinned Sticky Top Header Bar -->
+  <header class="bee-sticky-header-bar" id="beeStickyHeader">
+    <div class="bee-sticky-left">
+      <button onclick="switchPage('energy')" class="bee-sticky-back-btn" title="Back to Energy" aria-label="Back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="bee-sticky-title-wrap">
+        <span class="bee-sticky-title-icon">🐝</span>
+        <span class="bee-sticky-title-text font-black">Honey Bee Farm</span>
       </div>
-
-      <!-- Middle Row: Sleek 6-Resource Counter Pills -->
-      <div class="bee-dash-resources-row">
-        <!-- 1. Honey Drops -->
-        <div class="bee-res-pill pill-honey" title="Honey Drops (Primary currency from active hives)">
-          <span class="bee-res-icon">🍯</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Honey</span>
-            <span id="beeHoneyCount" class="bee-res-val font-mono font-black">150</span>
-          </div>
-        </div>
-
-        <!-- 2. Queen Larvae -->
-        <div class="bee-res-pill pill-larva" title="Queen Larvae (Install to start new hive colonies)">
-          <span class="bee-res-icon">🐝</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Larvae</span>
-            <span id="beeLarvaeCount" class="bee-res-val font-mono font-black">3</span>
-          </div>
-        </div>
-
-        <!-- 3. Pollen Pots -->
-        <div class="bee-res-pill pill-pollen" title="Pollen Pots (+10s hive life from Flower Meadows)">
-          <span class="bee-res-icon">🏺</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Pollen</span>
-            <span id="beePollenCount" class="bee-res-val font-mono font-black">2</span>
-          </div>
-        </div>
-
-        <!-- 4. Smokers -->
-        <div class="bee-res-pill pill-smoker" title="Hive Smokers to clear dormant/expired hives">
-          <span class="bee-res-icon">💨</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Smokers</span>
-            <span id="beeSmokerCount" class="bee-res-val font-mono font-black">1</span>
-          </div>
-        </div>
-
-        <!-- 5. Diamonds -->
-        <div class="bee-res-pill pill-diamond" title="Diamonds for Hives, Meadows &amp; Workers">
-          <span class="bee-res-icon">💎</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Diamonds</span>
-            <span id="beeDiamondCount" class="bee-res-val font-mono font-black">25</span>
-          </div>
-        </div>
-
-        <!-- 6. Royal Jelly Energy -->
-        <div class="bee-res-pill pill-energy" title="Royal Jelly Energy (100 Honey = 29 Energy)">
-          <span class="bee-res-icon">⚡</span>
-          <div class="bee-res-content">
-            <span class="bee-res-lbl">Energy</span>
-            <span id="beeEnergyCount" class="bee-res-val font-mono font-black">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Row: 5-Tab Segmented Switcher in Hero Dashboard -->
-      <nav class="bee-dash-nav-tabs" id="beeDashNavTabs">
-        <button onclick="navigateBeePage(1)" id="beeTab1" class="bee-nav-tab-item active-tab" title="20 Apiary Hives">
-          <span class="bee-tab-ico">🐝</span>
-          <span class="bee-tab-txt">Apiary (<span id="beeLandCount">1</span>/20)</span>
-        </button>
-        <button onclick="navigateBeePage(2)" id="beeTab2" class="bee-nav-tab-item" title="20 Flower Collecting Meadows">
-          <span class="bee-tab-ico">🌸</span>
-          <span class="bee-tab-txt">Flowers (<span id="beeFlowerCount">1</span>/20)</span>
-        </button>
-        <button onclick="navigateBeePage(3)" id="beeTab3" class="bee-nav-tab-item" title="Apiary Store">
-          <span class="bee-tab-ico">🏪</span>
-          <span class="bee-tab-txt">Shop</span>
-        </button>
-        <button onclick="navigateBeePage(4)" id="beeTab4" class="bee-nav-tab-item" title="Forager &amp; Colony Workers">
-          <span class="bee-tab-ico">👷</span>
-          <span class="bee-tab-txt">Workers</span>
-        </button>
-        <button onclick="navigateBeePage(5)" id="beeTab5" class="bee-nav-tab-item" title="Convert 100 Honey to 29 Energy">
-          <span class="bee-tab-ico">⚡</span>
-          <span class="bee-tab-txt">29⚡ Exch</span>
-        </button>
-      </nav>
     </div>
+
+    <!-- Sticky Live Resource Balances: Honey, Gold Coins, Diamonds, Larvae, Flowers, Smokers -->
+    <div class="bee-sticky-resources">
+      <!-- 1. 🍯 Honey Balance -->
+      <div class="bee-hdr-pill pill-amber" onclick="navigateBeePage(5)" title="Honey: Tap to open Exchange">
+        <span class="bee-hdr-ico">🍯</span>
+        <span id="beeStickyHoney" class="bee-hdr-val font-black">0</span>
+      </div>
+      <!-- 2. 🪙 Gold Coin Balance -->
+      <div class="bee-hdr-pill pill-gold" onclick="switchPage('home')" title="Gold Coins: Main Game Balance">
+        <span class="bee-hdr-ico">🪙</span>
+        <span id="beeStickyGoldCoins" class="bee-hdr-val font-black coin-val">0</span>
+      </div>
+      <!-- 3. 💎 Diamond Balance -->
+      <div class="bee-hdr-pill pill-diamond" onclick="navigateBeePage(3)" title="Diamonds: Tap to open Shop">
+        <span class="bee-hdr-ico">💎</span>
+        <span id="beeStickyDiamonds" class="bee-hdr-val font-black diamond-val">0</span>
+      </div>
+      <!-- 4. 🐛 Larvae in Inventory -->
+      <div class="bee-hdr-pill pill-emerald" onclick="navigateBeePage(3)" title="Larvae: Tap to open Shop">
+        <span class="bee-hdr-ico">🐛</span>
+        <span id="beeStickyLarvae" class="bee-hdr-val font-black">3</span>
+      </div>
+      <!-- 5. 🌸 Flower Balance -->
+      <div class="bee-hdr-pill pill-rose" onclick="navigateBeePage(2)" title="Flowers: Tap to open Meadows">
+        <span class="bee-hdr-ico">🌸</span>
+        <span id="beeStickyFlowers" class="bee-hdr-val font-black">2</span>
+      </div>
+      <!-- 6. 💨 Smoker Balance -->
+      <div class="bee-hdr-pill pill-stone" onclick="navigateBeePage(3)" title="Smokers: Tap to open Shop">
+        <span class="bee-hdr-ico">💨</span>
+        <span id="beeStickySmokers" class="bee-hdr-val font-black">1</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="beefarm-tycoon-container flex flex-col text-amber-950 pb-6">
 
     <!-- ============================================================== -->
     <!-- BEE PAGE 1: 🐝 20 APIARY HIVES (FIXED 1*20 FORMAT)              -->
     <!-- ============================================================== -->
     <section id="beePage1" class="bee-game-page active-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-amber-500/50 shadow-xl flex flex-col gap-3">
-      <!-- Hive Valley Header -->
+      <!-- Apiary Header -->
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-2xl animate-buzz-float">🐝</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-              <span>Apiary Hive Groves (20 Hives &bull; 1&times;20 Format)</span>
+              <span>Apiary Groves (20 Hives)</span>
               <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Hive 1 Free</span>
             </h2>
-            <p class="text-[10.5px] text-stone-300 font-medium">
-              Upgrade each Hive from <strong class="text-amber-300">Level 1 &rarr; 5000</strong>! Speed drops to <strong class="text-amber-300">0.001s</strong> &amp; honey output scales up!
-            </p>
           </div>
         </div>
 
@@ -142,9 +73,9 @@
         </div>
       </div>
 
-      <!-- Quick Action & Multiplier Tool Strip (Only visible on Apiary/Hives tab) -->
-      <div class="bee-garden-tools-strip my-1">
-        <div class="bee-tools-left">
+      <!-- Quick Action & Multiplier Tool Strip -->
+      <div class="bee-garden-tools-strip my-1 flex flex-wrap items-center justify-between gap-2">
+        <div class="bee-tools-left flex items-center gap-2">
           <!-- Circular Multiplier Toggle Switch (Tap to cycle 1x → 10x → 100x → MAX) -->
           <button id="beeMultToggleCircleBtn" onclick="toggleBeeUpgradeMultiplier(event)" class="bee-mult-circle-toggle-btn" data-mult="1" title="Tap to toggle Buy Multiplier (1x → 10x → 100x → MAX)" aria-label="Toggle Buy Multiplier">
             <span class="bee-mult-circle-badge">BUY</span>
@@ -153,475 +84,401 @@
 
           <div class="bee-garden-cps-badge">
             <span class="text-amber-500 font-bold">⚡ Total:</span>
-            <span id="beeTotalIncomeRate" class="font-mono font-black text-amber-700">0.0</span>
-            <span class="text-amber-600 text-[10px]">🍯/s</span>
+            <span id="beeTotalIncomeRate" class="font-mono font-black text-amber-300">0.0</span>
+            <span class="text-amber-400 text-[10px]">🍯/s</span>
           </div>
-        </div>
-
-        <div class="bee-tools-right">
-          <button id="beePlaceAllBtn" onclick="placeAllBeeHives(event)" class="bee-quick-tool-btn amber" title="Install larvae into all empty hives">
-            <span>🐝 Place All</span>
-          </button>
-          <button id="beeNourishAllBtn" onclick="nourishAllBeeHives(event)" class="bee-quick-tool-btn rose" title="Nourish all active hives with pollen (+10s life)">
-            <span>🏺 Nourish All</span>
-          </button>
-          <button id="beeSmokeAllBtn" onclick="smokeAllBeeHives(event)" class="bee-quick-tool-btn stone" title="Clear all dead hives with smokers">
-            <span>💨 Smoke All</span>
-          </button>
-          <button id="beeSoundToggleBtn" onclick="toggleBeeAudioMute()" class="bee-sound-toggle-btn" title="Toggle Sound">🔊</button>
         </div>
       </div>
 
-      <!-- 20 Plots List in Fixed 1*20 Format -->
+      <!-- 20 Plots List in Fixed 1*20 / 2*10 Format -->
       <div id="beePlotsContainer" class="bee-plots-1x20-grid">
         <!-- Rendered dynamically by renderBeePlots() in bee-farm.js -->
       </div>
     </section>
 
     <!-- ============================================================== -->
-    <!-- BEE PAGE 2: 🌸 20 FLOWER COLLECTING MEADOWS (FIXED 1*20 FORMAT) -->
+    <!-- BEE PAGE 2: 🌸 20 FLOWER MEADOWS (FIXED 1*20 FORMAT)            -->
     <!-- ============================================================== -->
     <section id="beePage2" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-rose-500/50 text-white shadow-xl flex flex-col gap-3 hidden">
-      <!-- Flower Meadows Header matching Lands Header -->
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-rose-900/40 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🌸</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-rose-300 flex items-center gap-1.5">
-              <span>Flower Nectar Meadows (20 Blossoms &bull; 1&times;20 Format)</span>
-              <span class="text-[9px] bg-rose-950 text-rose-300 font-bold px-1.5 py-0.5 rounded-full border border-rose-700">Meadow 1 Free (5s)</span>
+              <span>Flower Meadows (20 Fields)</span>
+              <span class="text-[9px] bg-rose-950 text-rose-300 font-bold px-1.5 py-0.5 rounded-full border border-rose-700">Meadow 1 Free</span>
             </h2>
-            <p class="text-[10.5px] text-stone-300 font-medium">
-              Each Flower Meadow blossoms every <strong class="text-rose-300">5 seconds</strong> yielding <strong class="text-rose-300">1 Pollen Pot 🏺</strong>! Collect manually or assign Forager Workers!
-            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="beeCollectAllFlowersBtn" onclick="collectAllFlowersPollen(event)" class="bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-lg active:scale-95 transition flex items-center gap-1.5 border border-rose-400">
-            <span>🌸 Collect All Pollen Pots</span>
-            <span id="beeCollectAllBadge" class="bg-rose-950/80 text-rose-200 px-1.5 py-0.2 rounded-full font-mono text-[10px]">0 🏺</span>
-          </button>
-          <span id="beeFlowersSummaryLabel" class="text-rose-300 text-xs font-bold bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-700/60 font-mono">
+          <span id="beeWellsSummaryLabel" class="text-rose-300 text-xs font-bold bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-700/60 font-mono">
             1 of 20 Meadows Unlocked
           </span>
         </div>
       </div>
 
-      <!-- 20 Flower Meadows List in Fixed 1*20 Format -->
-      <div id="beeFlowersContainer" class="bee-wells-1x20-grid">
-        <!-- Rendered dynamically by renderBeeFlowers() in bee-farm.js -->
+      <!-- 20 Meadows List -->
+      <div id="beeWellsContainer" class="bee-wells-1x20-grid">
+        <!-- Rendered dynamically by renderBeeWells() in bee-farm.js -->
       </div>
     </section>
 
     <!-- ============================================================== -->
-    <!-- BEE PAGE 3: 🏪 APIARY SUPPLY SHOP                             -->
+    <!-- BEE PAGE 3: 🏪 APIARY SHOP                                     -->
     <!-- ============================================================== -->
-    <section id="beePage3" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-400/50 text-white shadow-xl flex flex-col gap-4 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-2.5">
+    <section id="beePage3" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
         <div class="flex items-center gap-2.5">
-          <span class="text-2xl sm:text-3xl">🏪💎</span>
+          <div class="text-2xl sm:text-3xl">🏪💎</div>
+          <div>
+            <h2 class="text-xs sm:text-sm font-black text-amber-400 flex items-center gap-1.5">
+              <span>Apiary Store &amp; Supplies</span>
+              <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-1.5 py-0.5 rounded-full border border-amber-500/40">Official</span>
+            </h2>
+          </div>
+        </div>
+
+        <div class="bg-amber-950/80 border border-amber-500/40 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs">
+          <span>💎</span>
+          <span class="text-amber-200 font-extrabold text-[10px]">
+            Vault: <span id="beeShopDiamondCount" class="text-amber-400 font-black">25 💎</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Items Grid -->
+      <div class="flex flex-col gap-3">
+        <!-- Item 1: Queen Larva -->
+        <div class="bg-stone-950/80 rounded-xl p-3.5 border border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-3xl">🐛</span>
+              <div>
+                <h4 class="text-xs font-black text-amber-300">Queen Larva</h4>
+                <div class="text-[9.5px] text-emerald-400 font-mono mt-0.5 font-bold">
+                  In Inventory: <span id="beeShopLarvaCount">3</span> 🐛 Owned
+                </div>
+              </div>
+            </div>
+            <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
+              200 🪙 / 1 💎
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button onclick="buyBeeItem('larva', 1, 'gold')" class="bg-amber-600 hover:bg-amber-500 active:scale-95 text-stone-950 font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🪙 Buy 1 🐛 (200 Coins)</span>
+            </button>
+            <button onclick="openBeeAdModal('larva')" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🎬 Watch Ad (+1 Free 🐛)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 2: Fresh Flowers (10 for 250 Coins or 5 for Ad) -->
+        <div class="bg-stone-950/80 rounded-xl p-3.5 border border-rose-500/40 flex flex-col justify-between gap-2.5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-3xl">🌸</span>
+              <div>
+                <h4 class="text-xs font-black text-rose-300">Fresh Flowers (10-Pack)</h4>
+                <div class="text-[9.5px] text-rose-400 font-mono mt-0.5 font-bold">
+                  In Inventory: <span id="beeShopFlowerCount">2</span> 🌸 Owned &bull; Adds +10s Hive Life
+                </div>
+              </div>
+            </div>
+            <span class="bg-rose-950 text-rose-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-rose-500/40">
+              250 🪙
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button onclick="buyBeeItem('flower', 10, 'gold')" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🪙 Buy 10 🌸 (250 Coins)</span>
+            </button>
+            <button onclick="openBeeAdModal('flower')" class="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🎬 Watch Ad (+5 Free 🌸)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 3: Hive Smoker -->
+        <div class="bg-stone-950/80 rounded-xl p-3.5 border border-stone-700 flex flex-col justify-between gap-2.5 shadow-sm">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-3xl">💨</span>
+              <div>
+                <h4 class="text-xs font-black text-stone-200">Hive Smoker</h4>
+                <div class="text-[9.5px] text-stone-300 font-mono mt-0.5 font-bold">
+                  In Inventory: <span id="beeShopSmokerCount">1</span> 💨 Owned &bull; Clears Dormant Hives
+                </div>
+              </div>
+            </div>
+            <span class="bg-stone-800 text-stone-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-stone-600">
+              200 🪙
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button onclick="buyBeeItem('smoker', 1, 'gold')" class="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🪙 Buy 1 💨 (200 Coins)</span>
+            </button>
+            <button onclick="openBeeAdModal('smoker')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
+              <span>🎬 Watch Ad (+1 Free 💨)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 4: 20-Minute Honey Profit Multipliers (*2, *5, *10 - Mutually Exclusive) -->
+        <div class="bg-stone-950/90 rounded-xl p-3.5 border border-amber-500/50 flex flex-col gap-3 shadow-md">
+          <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl animate-pulse">⚡</span>
+              <div>
+                <h4 class="text-xs font-black text-amber-300">Honey Profit Multipliers (20 Minutes)</h4>
+              </div>
+            </div>
+            <span id="beeBoosterActiveBadge" class="bg-stone-800 text-stone-400 text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border border-stone-700">No Active Booster</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="activateBeeProfitBooster(2)" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:brightness-110 active:scale-95 text-stone-950 font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-yellow-400">
+              <span class="text-sm">⚡ 2X PROFIT</span>
+              <span class="text-[9.5px] text-stone-900 font-bold">🎬 Watch Ad (20 Min)</span>
+            </button>
+            <button onclick="activateBeeProfitBooster(5)" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-emerald-400">
+              <span class="text-sm">🔥 5X PROFIT</span>
+              <span class="text-[9.5px] text-emerald-100 font-bold">🎬 Watch Ad (20 Min)</span>
+            </button>
+            <button onclick="activateBeeProfitBooster(10)" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-purple-400">
+              <span class="text-sm">👑 10X PROFIT</span>
+              <span class="text-[9.5px] text-purple-100 font-bold">🎬 Watch Ad (20 Min)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- BEE PAGE 4: 👷 APIARY MANAGERS (MANAGE HIVE BY HIVE)           -->
+    <!-- ============================================================== -->
+    <section id="beePage4" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-3 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">👷</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-              <span>Apiary Store &amp; Diamond Vault</span>
-              <span class="text-[9px] bg-amber-950 text-amber-300 font-mono font-bold px-1.5 py-0.5 rounded-full border border-amber-700">Official Supplies</span>
+              <span>Apiary Managers (20 Hives)</span>
+              <span class="text-[9px] bg-amber-950 text-amber-300 font-bold px-1.5 py-0.5 rounded-full border border-amber-700">1 Manager = 1 Hive</span>
             </h2>
-            <p class="text-[10px] text-stone-300">
-              Stock up on Queen Larvae, Pollen Pots, and Smokers with Honey Drops or Diamonds!
-            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="bg-amber-950/80 border border-amber-600/60 px-3 py-1 rounded-xl flex items-center gap-1.5 text-xs">
-            <span>💎</span>
-            <span class="text-stone-300 font-bold text-[10.5px]">Diamonds:</span>
-            <span id="beeShopDiamondCount" class="text-cyan-300 font-black font-mono">25</span>
-          </div>
+          <span id="beeManagersSummaryLabel" class="text-amber-300 text-xs font-bold bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-700/60 font-mono">
+            0 / 20 Active
+          </span>
         </div>
       </div>
 
-      <!-- Inventory Shop Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <!-- Item 1: Queen Bee Larvae -->
-        <div class="bg-stone-800/80 rounded-xl p-3.5 border border-amber-500/30 flex flex-col justify-between gap-3 shadow-md">
-          <div class="flex items-start gap-2.5">
-            <span class="text-3xl">🐝</span>
-            <div>
-              <h4 class="text-xs sm:text-sm font-black text-amber-300">Queen Bee Larvae</h4>
-              <p class="text-[10px] text-stone-300 mt-0.5">
-                Place into empty hive boxes to start a new 30s incubation cycle &amp; begin at <strong>Level 1</strong>!
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <div class="flex items-center justify-between text-[10px] text-stone-400">
-              <span>Owned in Bag:</span>
-              <span id="beeShopLarvaeOwned" class="font-bold text-amber-300 font-mono">3 🐝</span>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
-              <button onclick="buyBeeItem('larva', 1, 'honey')" class="bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (50 🍯)</span>
-              </button>
-              <button onclick="buyBeeItem('larva', 1, 'diamonds')" class="bg-cyan-700 hover:bg-cyan-600 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (1 💎)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Item 2: Pollen Pots -->
-        <div class="bg-stone-800/80 rounded-xl p-3.5 border border-rose-500/30 flex flex-col justify-between gap-3 shadow-md">
-          <div class="flex items-start gap-2.5">
-            <span class="text-3xl">🏺</span>
-            <div>
-              <h4 class="text-xs sm:text-sm font-black text-rose-300">Pollen Pots</h4>
-              <p class="text-[10px] text-stone-300 mt-0.5">
-                Nourish active honeycombs to add <strong>+10s lifetime</strong>! Produced at Flower Meadows (Page 2).
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <div class="flex items-center justify-between text-[10px] text-stone-400">
-              <span>Owned in Bag:</span>
-              <span id="beeShopPollenOwned" class="font-bold text-rose-300 font-mono">2 🏺</span>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
-              <button onclick="buyBeeItem('pollen', 1, 'honey')" class="bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (20 🍯)</span>
-              </button>
-              <button onclick="buyBeeItem('pollen', 1, 'diamonds')" class="bg-cyan-700 hover:bg-cyan-600 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (1 💎)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Item 3: Apiary Smokers -->
-        <div class="bg-stone-800/80 rounded-xl p-3.5 border border-stone-500/30 flex flex-col justify-between gap-3 shadow-md">
-          <div class="flex items-start gap-2.5">
-            <span class="text-3xl">💨</span>
-            <div>
-              <h4 class="text-xs sm:text-sm font-black text-stone-300">Apiary Smokers</h4>
-              <p class="text-[10px] text-stone-300 mt-0.5">
-                Clear dormant or expired hives (🕸️) to free up the plot and install a fresh colony!
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <div class="flex items-center justify-between text-[10px] text-stone-400">
-              <span>Owned in Bag:</span>
-              <span id="beeShopSmokersOwned" class="font-bold text-stone-200 font-mono">1 💨</span>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
-              <button onclick="buyBeeItem('smoker', 1, 'honey')" class="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (50 🍯)</span>
-              </button>
-              <button onclick="buyBeeItem('smoker', 1, 'diamonds')" class="bg-cyan-700 hover:bg-cyan-600 active:scale-95 text-white font-bold text-[10px] py-2 rounded-lg transition flex items-center justify-center gap-1 shadow">
-                <span>Buy 1 (3 💎)</span>
-              </button>
-            </div>
-          </div>
+      <!-- Quick Info Strip -->
+      <div class="bee-mgr-info-strip bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-wrap items-center justify-between gap-2 text-[10.5px]">
+        <div class="flex items-center gap-2 text-stone-300">
+          <span>💎 Unlock Slot: <strong class="text-amber-300 font-mono">300 💎</strong></span>
+          <span>•</span>
+          <span>🍯 1-Day: <strong class="text-amber-300 font-mono">500, 1000... 🍯</strong> or <strong class="text-emerald-400">1 Ad 🎬</strong> (Max 100h)</span>
         </div>
       </div>
 
-      <!-- Sponsor Reel Banner Card -->
-      <div class="bg-amber-950/40 rounded-xl p-3.5 border border-amber-500/40 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl animate-bounce">🎬</span>
-          <div>
-            <h4 class="text-xs sm:text-sm font-black text-amber-300">HoneyNectar Sponsor Reel</h4>
-            <p class="text-[10.5px] text-stone-300">Watch a quick 5s sponsor clip to receive a FREE Queen Larva or Pollen Pot!</p>
-          </div>
-        </div>
-        <button onclick="openBeeAdModal('larva')" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg transition whitespace-nowrap">
-          <span>🎬 Watch 5s Clip (FREE 🐝)</span>
+      <!-- 20 Managers List in Vertical Stack -->
+      <div id="beeManagersVerticalList" class="bee-managers-vertical-stack flex flex-col gap-2.5">
+        <!-- Rendered dynamically by renderBeeManagers() -->
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- BEE PAGE 5: 🔋 HONEY EXCHANGE & PRESTIGE                       -->
+    <!-- ============================================================== -->
+    <section id="beePage5" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
+      <!-- Exchange Header Switcher -->
+      <div class="bee-exchange-tabs-nav flex items-center gap-1.5 p-1 bg-stone-950/80 rounded-xl border border-amber-500/40">
+        <button class="bee-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1 active" id="beeExchTabSpin" onclick="switchBeeExchangeSubtab('spin')">
+          <span>🎡</span>
+          <span>Spin Coins (1 Qa 🍯)</span>
+        </button>
+        <button class="bee-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="beeExchTabEnergy" onclick="switchBeeExchangeSubtab('energy')">
+          <span>⚡</span>
+          <span>Royal Refinery (29⚡)</span>
+        </button>
+        <button class="bee-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="beeExchTabPrestige" onclick="switchBeeExchangeSubtab('prestige')">
+          <span>👑</span>
+          <span>Prestige (🍯 ➔ 🪙)</span>
         </button>
       </div>
-    </section>
 
-    <!-- ============================================================== -->
-    <!-- BEE PAGE 4: 👷 WORKERS & MANAGERS HQ                          -->
-    <!-- ============================================================== -->
-    <section id="beePage4" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-emerald-500/50 text-white shadow-xl flex flex-col gap-4 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-900/40 pb-2.5">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl sm:text-3xl">👷🌸</span>
-          <div>
-            <h2 class="text-xs sm:text-sm font-black text-emerald-300 flex items-center gap-1.5">
-              <span>Apiary Workforce &amp; Foragers HQ</span>
-              <span class="text-[9px] bg-emerald-950 text-emerald-300 font-mono font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Automation</span>
-            </h2>
-            <p class="text-[10px] text-stone-300">
-              Hire Flower Forager Workers to automate your 20 Flower Meadows, or recruit specialist Colony Managers!
-            </p>
-          </div>
-        </div>
-
-        <!-- Worker Subtabs -->
-        <div class="flex items-center gap-1 bg-stone-800 p-1 rounded-xl border border-stone-700">
-          <button id="beeWorkerTabFlower" onclick="switchBeeWorkerSubtab('flower')" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-emerald-600 text-white">
-            <span>🌸 Flower Foragers</span>
-          </button>
-          <button id="beeWorkerTabColony" onclick="switchBeeWorkerSubtab('colony')" class="px-3 py-1 rounded-lg text-xs font-bold transition text-stone-400 hover:text-white">
-            <span>🐝 Colony Managers</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- SUBTAB 1: FLOWER FORAGER WORKERS (AUTOMATION FOR 20 FLOWER MEADOWS) -->
-      <div id="beeWorkerSubtabFlowerContent" class="flex flex-col gap-3">
-        <!-- Hire Worker Hero Card -->
-        <div class="bg-gradient-to-r from-emerald-950/80 to-stone-900 rounded-xl p-3.5 border border-emerald-500/40 flex flex-wrap items-center justify-between gap-3 shadow-lg">
-          <div class="flex items-center gap-3">
-            <span class="text-3xl sm:text-4xl animate-bounce-gentle">👩‍🌾</span>
+      <!-- SUBTAB 0: 🎡 LUCKY SPIN COIN EXCHANGE (1 Qa 🍯 = 1 🎡 Spin Coin) -->
+      <div class="flex flex-col gap-3.5" id="beeExchangeSectionSpin">
+        <div class="flex items-center justify-between border-b border-amber-500/40 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl animate-spin-slow">🎡</span>
             <div>
-              <h3 class="text-sm font-black text-emerald-300 flex items-center gap-2">
-                <span>Flower Forager Worker</span>
-                <span class="text-[9.5px] bg-emerald-900 text-emerald-200 px-2 py-0.5 rounded-full border border-emerald-600">Auto-Harvesting</span>
+              <h3 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                <span>Lucky Spin Coin Exchange</span>
+                <span class="text-[9px] bg-amber-950 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-500/50">1 Qa 🍯 = 1 🎡</span>
               </h3>
-              <p class="text-[10px] text-stone-300 mt-0.5">
-                Assign to any unlocked Flower Meadow. The worker will automatically harvest <strong>1 Pollen Pot 🏺 every 5 seconds</strong> into your inventory!
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <div class="text-right">
-              <div class="text-[10px] text-stone-400">Total Hired: <strong id="beeTotalWorkersCount" class="text-emerald-300 font-mono">0</strong></div>
-              <div class="text-[10px] text-stone-400">Assigned: <strong id="beeAssignedWorkersCount" class="text-rose-300 font-mono">0</strong> | Idle: <strong id="beeIdleWorkersCount" class="text-amber-300 font-mono">0</strong></div>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="hireBeeFlowerWorker('honey')" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-[10.5px] px-3 py-2 rounded-xl transition shadow flex items-center gap-1">
-                <span>Hire (250 🍯)</span>
-              </button>
-              <button onclick="hireBeeFlowerWorker('diamonds')" class="bg-cyan-700 hover:bg-cyan-600 active:scale-95 text-white font-black text-[10.5px] px-3 py-2 rounded-xl transition shadow flex items-center gap-1">
-                <span>Hire (5 💎)</span>
-              </button>
             </div>
           </div>
         </div>
 
-        <!-- 20 Flower Meadows Assignment Grid -->
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-              <span>🌸</span> 20 Flower Meadows Assignment Board
-            </h4>
-            <span class="text-[10px] text-stone-400">Assign idle workers to automate harvesting</span>
-          </div>
-
-          <div id="beeWorkerAssignmentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-            <!-- Rendered dynamically by renderBeeWorkerAssignments() in bee-farm.js -->
-          </div>
-        </div>
-      </div>
-
-      <!-- SUBTAB 2: COLONY MANAGERS -->
-      <div id="beeWorkerSubtabColonyContent" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- Manager 1: Beekeeper Walter -->
-        <div class="bg-stone-800/80 rounded-xl p-3 border border-amber-500/30 flex items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5">
-            <span class="text-3xl">👨‍🌾</span>
-            <div>
-              <h4 class="text-xs font-black text-amber-300">Beekeeper Walter</h4>
-              <p class="text-[10px] text-stone-300">Boosts Flower Meadow blooming speed by +25%!</p>
+        <!-- Live Balances Hero Card -->
+        <div class="bg-gradient-to-br from-amber-950/60 via-stone-900/90 to-yellow-950/50 rounded-2xl p-4 border border-amber-500/40 shadow-xl flex flex-col gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center text-xs">
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Your Honey</span>
+              <span id="beeSpinExchCoinsDisplay" class="font-mono font-black text-amber-300 text-sm sm:text-base mt-0.5">0 🍯</span>
+            </div>
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Base Rate</span>
+              <span class="font-mono font-black text-yellow-300 text-sm sm:text-base mt-0.5">1 🎡 = 1 Qa 🍯</span>
+            </div>
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-col items-center justify-center">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Your Spin Coins</span>
+              <span id="beeSpinExchOwnedDisplay" class="font-mono font-black text-cyan-300 text-sm sm:text-base mt-0.5">0 🎡</span>
             </div>
           </div>
-          <button id="beeHireWalterBtn" onclick="hireColonySpecialist('walter')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-            Hire (500 🍯)
+        </div>
+
+        <!-- Interactive Stepper Carousel -->
+        <div class="flex flex-col gap-3 bg-stone-950/80 p-4 rounded-2xl border border-amber-500/40 shadow-inner">
+          <div class="flex items-center justify-between bg-stone-900/90 p-3 sm:p-4 rounded-2xl border border-amber-500/30 gap-3">
+            <button type="button" onclick="stepBeeSpinPackage(-1)" class="w-12 h-12 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 font-black text-2xl flex items-center justify-center border border-amber-500/40 transition active:scale-90">◀</button>
+            <div class="flex flex-col items-center justify-center text-center flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-3xl animate-bounce">🎡</span>
+                <span class="text-2xl font-black text-amber-300 font-mono" id="beeSpinPackageTicketsLabel">1 🎡 Spin Coin</span>
+              </div>
+              <div class="text-xs text-stone-300 mt-1">
+                Cost: <strong class="text-amber-400 font-mono font-black text-sm" id="beeSpinPackageCostLabel">1 Qa 🍯</strong>
+              </div>
+            </div>
+            <button type="button" onclick="stepBeeSpinPackage(1)" class="w-12 h-12 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 font-black text-2xl flex items-center justify-center border border-amber-500/40 transition active:scale-90">▶</button>
+          </div>
+
+          <!-- Direct Exchange Button -->
+          <button id="beeSpinExchangeSelectedBtn" onclick="exchangeCurrentBeeSpinPackage(event)" class="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 active:scale-95 text-stone-950 font-black text-xs py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 border border-yellow-300/40">
+            <span>⚡ Exchange Package (<span id="beeSpinSelectedCount">1</span> 🎡)</span>
           </button>
-        </div>
 
-        <!-- Manager 2: Queen Attendant Elena -->
-        <div class="bg-stone-800/80 rounded-xl p-3 border border-amber-500/30 flex items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5">
-            <span class="text-3xl">👸</span>
-            <div>
-              <h4 class="text-xs font-black text-amber-300">Queen Attendant Elena</h4>
-              <p class="text-[10px] text-stone-300">Boosts Hive honey output by +20%!</p>
-            </div>
-          </div>
-          <button id="beeHireElenaBtn" onclick="hireColonySpecialist('elena')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-            Hire (1500 🍯)
+          <!-- MAX Possible Button -->
+          <button onclick="exchangeBeeCoinsForSpin('max', event)" class="w-full bg-stone-800 hover:bg-stone-700 active:scale-95 text-amber-300 font-black text-xs py-2.5 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 border border-stone-700">
+            <span>🚀 Exchange MAX Possible</span>
+            <span id="beeSpinMaxPossibleLabel" class="bg-stone-950/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-black text-amber-400">0 🎡</span>
           </button>
         </div>
       </div>
-    </section>
 
-    <!-- ============================================================== -->
-    <!-- BEE PAGE 5: ⚡ ROYAL HONEY REFINERY (100 🍯 -> 29 ⚡ CONVERTER) -->
-    <!-- ============================================================== -->
-    <section id="beePage5" class="bee-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-5 border-2 border-yellow-400/50 text-white shadow-xl flex flex-col gap-4 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-yellow-900/40 pb-2.5">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl sm:text-3xl">⚡🍯</span>
+      <!-- SUBTAB 2: ⚡ ROYAL REFINERY (100 HONEY = 29⚡) -->
+      <div class="flex flex-col gap-4 hidden" id="beeExchangeSectionEnergy">
+        <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
+          <div class="text-5xl animate-bounce">⚡🍯</div>
           <div>
-            <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
-              <span>Royal Honey-to-Energy Refinery</span>
-              <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono font-bold px-1.5 py-0.5 rounded-full border border-yellow-600">Direct Conversion</span>
-            </h2>
-            <p class="text-[10px] text-stone-300">
-              Refine your harvested Honey Drops directly into Royal Jelly Energy to power your main Fuel Reactor!
-            </p>
+            <h3 class="text-base font-black text-yellow-300">Honey to Reactor Energy Refinery</h3>
+            <p class="text-xs text-stone-300 max-w-sm mt-1">100 🍯 Converts into 29 ⚡ Energy Units!</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block">Your Honey</span>
+              <span id="beeConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 🍯</span>
+            </div>
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block">Rate</span>
+              <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
+            </div>
+            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block">Total Converted</span>
+              <span id="beeConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
+            <button onclick="executeBeeCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition">
+              <span>Throw 100 🍯 (+29 ⚡)</span>
+            </button>
+            <button onclick="executeBeeCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition">
+              <span>Throw 1,000 🍯 (+290 ⚡)</span>
+            </button>
+            <button onclick="executeBeeCoinToEnergy('all')" class="w-full bg-white text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition">
+              <span>⚡ Throw ALL Available Honey</span>
+            </button>
           </div>
         </div>
-
-        <div class="bg-yellow-950/80 border border-yellow-500/50 px-3 py-1 rounded-xl text-xs font-bold text-yellow-300">
-          Ratio: <strong class="text-white font-black">100 🍯 &rarr; 29 ⚡ Energy</strong>
-        </div>
       </div>
 
-      <!-- Refinery Converter Chamber -->
-      <div class="bg-gradient-to-br from-amber-600/80 via-yellow-600/60 to-stone-900 rounded-2xl p-5 border-2 border-yellow-400/60 shadow-2xl flex flex-col items-center text-center gap-3">
-        <div class="text-5xl animate-bounce-gentle select-none filter drop-shadow">⚡⚗️</div>
-        <div>
-          <h3 class="text-base sm:text-lg font-black text-yellow-200">Royal Centrifuge Energy Synthesizer</h3>
-          <p class="text-[11px] text-stone-200 max-w-md mt-1 leading-relaxed">
-            Pour your honey barrels into the royal distillery. Every 100 🍯 Honey Drops produce 29 ⚡ units of high-grade reactor fuel!
-          </p>
-        </div>
+      <!-- SUBTAB 3: 👑 PRESTIGE HONEY TO GOLD COINS (RESTARTS LEVEL 1) -->
+      <div class="flex flex-col gap-4 hidden" id="beeExchangeSectionPrestige">
+        <div class="bg-gradient-to-br from-yellow-950/70 via-stone-900/90 to-amber-950/60 rounded-2xl p-4 border border-yellow-500/50 shadow-xl flex flex-col items-center text-center gap-3">
+          <div class="text-4xl animate-bounce">👑🍯🪙</div>
+          <div>
+            <h3 class="text-sm font-black text-yellow-300" id="beePrestigeCardTitle">Prestige Exchange</h3>
+          </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-2.5 w-full max-w-md mt-2">
-          <button id="beeRefine100Btn" onclick="executeBeeHoneyToEnergy('single')" class="flex-1 bg-stone-950 hover:bg-stone-900 text-yellow-300 font-black text-xs py-3 px-4 rounded-xl shadow-lg active:scale-95 transition border border-yellow-500/50 flex items-center justify-center gap-1.5">
-            <span>🍯 Throw 100 Honey</span>
-            <span class="bg-yellow-400/20 text-yellow-200 text-[10px] px-1.5 py-0.2 rounded-full font-mono">+29 ⚡</span>
-          </button>
-          <button id="beeRefineAllBtn" onclick="executeBeeHoneyToEnergy('all')" class="flex-1 bg-white hover:bg-amber-100 text-stone-950 font-black text-xs py-3 px-4 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
-            <span>⚡ Throw ALL Available</span>
-          </button>
-        </div>
-      </div>
+          <div class="grid grid-cols-3 gap-2 w-full max-w-md text-center text-xs">
+            <div class="bg-stone-950/80 p-2 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Your Honey</span>
+              <span id="beePrestigeUserCoinsDisplay" class="font-mono font-black text-amber-300 text-sm">0 🍯</span>
+            </div>
+            <div class="bg-stone-950/80 p-2 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Required</span>
+              <span id="beePrestigeCostDisplay" class="font-mono font-black text-yellow-300 text-sm">100 🍯</span>
+            </div>
+            <div class="bg-stone-950/80 p-2 rounded-xl border border-stone-800">
+              <span class="text-stone-400 text-[10px] block font-bold uppercase">Gold Gain</span>
+              <span id="beePrestigeRewardDisplay" class="font-mono font-black text-emerald-400 text-sm">+10 🪙</span>
+            </div>
+          </div>
 
-      <!-- Live Counters Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
-        <div class="bg-stone-800/80 rounded-xl p-3 border border-amber-500/30">
-          <div class="text-[9.5px] uppercase font-bold text-stone-400">Available Honey Drops</div>
-          <div class="text-lg font-black text-amber-300 mt-0.5" id="beeRefineryHoneyDisplay">150 🍯</div>
-        </div>
-        <div class="bg-stone-800/80 rounded-xl p-3 border border-yellow-500/30">
-          <div class="text-[9.5px] uppercase font-bold text-stone-400">Convertible Batches</div>
-          <div class="text-lg font-black text-yellow-300 mt-0.5" id="beeRefineryBatchesDisplay">1 Batch (29 ⚡)</div>
-        </div>
-        <div class="bg-stone-800/80 rounded-xl p-3 border border-emerald-500/30">
-          <div class="text-[9.5px] uppercase font-bold text-stone-400">Royal Jelly Banked</div>
-          <div class="text-lg font-black text-emerald-400 mt-0.5" id="beeRefineryEnergyDisplay">0 ⚡</div>
+          <button id="beePrestigeActionBtn" onclick="executeBeePrestige(event)" class="w-full max-w-md bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-500 hover:from-yellow-400 active:scale-95 text-stone-950 font-black text-xs py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 border border-yellow-300/40">
+            <span>👑 CONVERT &amp; RESTART LV.1</span>
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Dedicated Fixed Bottom Menu Bar for Honeybee Farm (Matching Sunflower) -->
+    <!-- Dedicated Fixed Bottom Menu Bar for Honey Bee Farm -->
     <nav class="bee-bottom-menu-bar" id="beeBottomMenuBar">
-      <!-- Tab 1: Flowers (🌸 Flowers) -->
-      <button class="bee-menu-tab-btn" id="beeMenuTabFlowers" onclick="navigateBeePage(2)" title="20 Flower Meadows">
+      <!-- Tab 1: Flower Meadows (🌸 Flowers) -->
+      <button class="bee-menu-tab-btn" id="beeMenuTabWater" onclick="navigateBeePage(2)" title="20 Flower Meadows">
         <div class="bee-menu-ico">🌸</div>
         <span class="bee-menu-txt">Flowers</span>
       </button>
 
-      <!-- Tab 2: Workers (👷 Workers) -->
-      <button class="bee-menu-tab-btn" id="beeMenuTabWorkers" onclick="navigateBeePage(4)" title="Foragers &amp; Managers">
+      <!-- Tab 2: Colony Managers (👷 Managers) -->
+      <button class="bee-menu-tab-btn" id="beeMenuTabWorkers" onclick="navigateBeePage(4)" title="20 Hive Managers">
         <div class="bee-menu-ico">👷</div>
-        <span class="bee-menu-txt">Workers</span>
+        <span class="bee-menu-txt font-black">Managers</span>
       </button>
 
-      <!-- Center Primary Button: Apiary / Hives (🐝 Apiary) -->
-      <button class="bee-menu-tab-btn center-play-btn active" id="beeMenuTabApiary" onclick="navigateBeePage(1)" title="Play Apiary Hives">
+      <!-- Center Primary Button: Apiary Hives (🐝 Apiary) -->
+      <button class="bee-menu-tab-btn center-play-btn active" id="beeMenuTabGarden" onclick="navigateBeePage(1)" title="Play Apiary Hives">
         <div class="center-play-circle">
-          <span class="bee-menu-play-icon animate-buzz-float">🐝</span>
+          <span class="bee-menu-play-icon">🐝</span>
         </div>
         <span class="bee-menu-txt font-black">Apiary</span>
       </button>
 
-      <!-- Tab 4: Shop / Store (🏪 Store) -->
-      <button class="bee-menu-tab-btn" id="beeMenuTabShop" onclick="navigateBeePage(3)" title="Store &amp; Supplies">
+      <!-- Tab 3: Shop (🏪 Shop) -->
+      <button class="bee-menu-tab-btn" id="beeMenuTabShop" onclick="navigateBeePage(3)" title="Apiary Store">
         <div class="bee-menu-ico">🏪</div>
         <span class="bee-menu-txt">Shop</span>
       </button>
 
-      <!-- Tab 5: Honey to Energy Converter (⚡ 29⚡ Exch) -->
-      <button class="bee-menu-tab-btn" id="beeMenuTabConvert" onclick="navigateBeePage(5)" title="Convert 100 Honey to 29 Energy">
-        <div class="bee-menu-ico">⚡</div>
-        <span class="bee-menu-txt">29⚡ Exch</span>
+      <!-- Tab 4: Honey Exchange (🔋 Exchange) -->
+      <button class="bee-menu-tab-btn" id="beeMenuTabConvert" onclick="navigateBeePage(5)" title="Exchange Honey">
+        <div class="bee-menu-ico">🔋</div>
+        <span class="bee-menu-txt font-black">Exchange</span>
       </button>
     </nav>
-  </div>
-
-  <!-- Modals -->
-
-  <!-- 5-Second Rewarded Sponsor Ad Reel Modal -->
-  <div id="beeAdReelModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl flex flex-col text-white">
-      <div class="bg-stone-800 px-3.5 py-2 border-b border-stone-700 flex items-center justify-between">
-        <div class="flex items-center gap-1.5">
-          <span class="text-[8.5px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded tracking-wider uppercase">Sponsor Reel</span>
-          <span id="beeAdBrandName" class="text-xs text-stone-400">HoneyNectar Lab</span>
-        </div>
-        <span id="beeAdTimerBadge" class="bg-amber-400 text-stone-950 font-black text-[10px] px-2 py-0.5 rounded-full font-mono">
-          ⏳ 5s
-        </span>
-      </div>
-
-      <div class="p-4 flex flex-col items-center justify-center text-center bg-stone-950 min-h-[170px]">
-        <div id="beeAdGraphicEmoji" class="text-4xl mb-2 animate-bounce">🐝</div>
-        <h3 id="beeAdHeadline" class="text-sm font-black text-amber-300">Wild Clover Pollen Mist</h3>
-        <p id="beeAdCatchphrase" class="text-stone-300 text-[10.5px] mt-1 max-w-xs">
-          "Double the buzzing, triple the sweet nectar. The top sponsor of apiaries nationwide!"
-        </p>
-
-        <div class="mt-2.5 inline-flex items-center gap-1 bg-stone-800/80 px-2 py-0.5 rounded-full border border-stone-700 text-[10px]">
-          <span class="text-amber-300 font-semibold">Reward:</span>
-          <span id="beeAdRewardTag" class="font-bold text-white">1 Free Queen Larva 🐝</span>
-        </div>
-
-        <div class="w-full bg-stone-800 h-2 rounded-full mt-3 overflow-hidden">
-          <div id="beeAdProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-0 transition-all ease-linear"></div>
-        </div>
-      </div>
-
-      <div class="p-2.5 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
-        <span class="text-[9.5px] text-stone-400">Watch full 5s clip for reward.</span>
-        <button id="beeAdClaimBtn" disabled class="bg-stone-700 text-stone-500 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-not-allowed transition">
-          Watching...
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rules & Guide Modal -->
-  <div id="beeRulesModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-stone-900 border-2 border-amber-500/70 rounded-2xl max-w-md w-full p-4 sm:p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto text-white flex flex-col gap-3">
-      <div class="flex items-center justify-between border-b border-stone-800 pb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">📖</span>
-          <h3 class="text-sm font-black text-amber-300">Honey Bee Farm Tycoon Guide</h3>
-        </div>
-        <button id="beeCloseRulesBtn" class="w-7 h-7 rounded-full bg-stone-800 text-stone-300 hover:text-white flex items-center justify-center font-bold">&times;</button>
-      </div>
-
-      <div class="space-y-2 text-[10.5px] text-stone-300 leading-relaxed">
-        <div class="p-2.5 bg-stone-800/80 rounded-xl border border-amber-500/30">
-          <strong class="text-amber-300 block font-bold">🐝 20 Apiary Hives (Page 1)</strong>
-          Install Queen Larvae into empty hive boxes. Upgrade each Hive from Level 1 up to 5000! Speed drops down to <strong>0.001s</strong> as output scales massively.
-        </div>
-        <div class="p-2.5 bg-stone-800/80 rounded-xl border border-rose-500/30">
-          <strong class="text-rose-300 block font-bold">🌸 20 Flower Collecting Meadows (Page 2)</strong>
-          Meadow 1 is Free and produces 1 Pollen Pot 🏺 every 5 seconds. Unlock Meadows 2 to 20 with Diamonds.
-        </div>
-        <div class="p-2.5 bg-stone-800/80 rounded-xl border border-emerald-500/30">
-          <strong class="text-emerald-300 block font-bold">👷 Forager Workers (Page 4)</strong>
-          Hire Flower Forager Workers for 250 🍯 or 5 💎 and assign them to Flower Meadows to automatically gather Pollen Pots into your inventory every 5 seconds!
-        </div>
-        <div class="p-2.5 bg-stone-800/80 rounded-xl border border-yellow-500/30">
-          <strong class="text-yellow-300 block font-bold">⚡ Royal Energy Refinery (Page 5)</strong>
-          Throw 100 Honey Drops to synthesize <strong>29 Royal Jelly Energy (⚡)</strong> that recharges your main Reactor!
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-1">
-        <button id="beeCloseRulesBtn2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition">
-          Got It!
-        </button>
-      </div>
-    </div>
   </div>
 </div>

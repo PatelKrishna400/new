@@ -319,7 +319,22 @@ window.updateShopUI = function() {
   const diaEl = document.getElementById('shopDiamondVal');
   if (diaEl) diaEl.textContent = formatNumber(gameState.player.diamonds || 0);
 
-  
+  // Hourly Free Coins Ad Button Timer
+  const hourlyBtn = document.getElementById('btnClaimHourlyShopCoin');
+  const hourlyTxt = document.getElementById('txtClaimHourlyShopCoin');
+  if (hourlyBtn && hourlyTxt) {
+    const lastClaim = (gameState.player && gameState.player.lastHourlyShopCoinAdTime) || 0;
+    const remMs = 3600000 - (Date.now() - lastClaim);
+    if (remMs > 0) {
+      hourlyBtn.disabled = true;
+      const remM = Math.floor(remMs / 60000);
+      const remS = Math.floor((remMs % 60000) / 1000);
+      hourlyTxt.textContent = `⏳ ${remM}m ${remS < 10 ? '0' : ''}${remS}s`;
+    } else {
+      hourlyBtn.disabled = false;
+      hourlyTxt.textContent = 'WATCH AD (+10 🪙)';
+    }
+  }
 
   // Tap Power Upgrade info
   const tapPowerLvlEl = document.getElementById('shopTapPowerLvl');
@@ -458,6 +473,36 @@ window.buyReactorUpgrade = function(type) {
   if (typeof saveGame === 'function') saveGame();
   if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
     window.firebaseSync.saveToCloudImmediate();
+  }
+};
+
+// Action: Claim Free 10 Coins via Rewarded Ad (1 Hour Cooldown)
+window.claimHourlyShopCoinsAd = function() {
+  const lastClaim = (gameState.player && gameState.player.lastHourlyShopCoinAdTime) || 0;
+  const remMs = 3600000 - (Date.now() - lastClaim);
+  if (remMs > 0) {
+    const remM = Math.ceil(remMs / 60000);
+    showShopToast(`⏳ Cooldown active! Please wait ${remM} minutes.`, '⏳');
+    return;
+  }
+
+  const triggerReward = () => {
+    gameState.player.coins = (gameState.player.coins || 0) + 10;
+    gameState.player.lastHourlyShopCoinAdTime = Date.now();
+    updateUI(true);
+    updateShopUI();
+    if (typeof saveGame === 'function') saveGame();
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
+    showShopToast('🎉 +10 Free Gold Coins claimed! Recharging for 1 hour.', '🪙');
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
+  };
+
+  if (typeof showMonetagRewardedAd === 'function') {
+    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  } else {
+    triggerReward();
   }
 };
 
@@ -1099,6 +1144,9 @@ async function purchaseFuelCell(color, method = 'diamond') {
   gameState.player.diamonds -= cost;
   if (gameState.player.blueCoins !== undefined) {
     gameState.player.blueCoins = gameState.player.diamonds;
+  }
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('shop_diamond', cost);
   }
 
   // Track purchase count

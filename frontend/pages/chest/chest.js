@@ -208,6 +208,9 @@ function unlockMysteryChestBox(boxNum) {
   // Daily Stats tracking
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) gameState.dailyStats.chests = (gameState.dailyStats.chests || 0) + 1;
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('use_key', 1);
+  }
 
   // Prepare 3 distinct rewards (from cloud config if customized)
   const rewardsPool = (window.cloudGameConfig && Array.isArray(window.cloudGameConfig.chest_rewards) && window.cloudGameConfig.chest_rewards.length >= 3)

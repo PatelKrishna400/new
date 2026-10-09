@@ -325,6 +325,10 @@ function spinLuckyWheel() {
   // Daily Stats tracking
   if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
   if (gameState.dailyStats) gameState.dailyStats.spins = (gameState.dailyStats.spins || 0) + 1;
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('use_ticket', 1);
+    recordTaskEvent('spin_wheel', 1);
+  }
 
   // King Event Probability Distribution (Inverse to Level Limit):
   const spinState = getSpinState();

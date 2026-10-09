@@ -448,6 +448,9 @@ function bindScratchEvents(canvas) {
       singleCardState.cardCountedForDay = true;
       if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
       if (gameState.dailyStats) gameState.dailyStats.scratches = (gameState.dailyStats.scratches || 0) + 1;
+      if (typeof recordTaskEvent === 'function') {
+        recordTaskEvent('use_card', 1);
+      }
       sfx.playTapSound(2);
       updateScratchUI();
       updateUI();

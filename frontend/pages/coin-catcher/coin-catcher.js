@@ -206,6 +206,9 @@
 
     // Deduct 1 Boom Coin
     gameState.player.boomCoins -= 1;
+    if (typeof recordTaskEvent === 'function') {
+      recordTaskEvent('use_boom', 1);
+    }
     if (typeof saveGame === 'function') saveGame(true);
     if (typeof updateUI === 'function') updateUI();
     updateBoomCoinBalances();

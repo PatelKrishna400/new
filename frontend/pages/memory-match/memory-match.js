@@ -141,6 +141,9 @@
       }
 
       gameState.player.brainCoins = Math.max(0, currentBrainCoins - 1);
+      if (typeof recordTaskEvent === 'function') {
+        recordTaskEvent('use_brain', 1);
+      }
       if (typeof updateUI === 'function') updateUI();
       if (typeof saveGame === 'function') saveGame(true);
       updateBrainCoinPill();

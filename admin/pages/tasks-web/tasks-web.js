@@ -10,16 +10,30 @@ const DEFAULT_TG_TASKS = [];
 const DEFAULT_WEB_TASKS = [
   {
     id: 'web_1',
-    title: 'Visit Cyber Energy Portal & Discover Secret PIN',
+    title: 'Diskwala Portal Sponsor Quest #1',
     desc: 'Unlock with 1,000 Coins, browse sponsor page, and enter 4-digit code to win 100 Diamonds 💎',
-    url: 'https://telegram.org',
+    url: 'https://diskwala.com/quest/alpha',
     costCoins: 1000,
     diamondReward: 100,
-    code: '7842',
+    code: '4821',
     timer: 15,
     duration: 15,
-    tag: 'SPONSOR QUEST',
-    tagText: 'SPONSOR QUEST',
+    tag: 'DISKWALA SPONSOR',
+    tagText: 'DISKWALA SPONSOR',
+    disabled: false
+  },
+  {
+    id: 'web_2',
+    title: 'Diskwala Cloud Sponsor Quest #2',
+    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 250 Diamonds 💎',
+    url: 'https://diskwala.com/quest/beta',
+    costCoins: 10000,
+    diamondReward: 250,
+    code: '7392',
+    timer: 20,
+    duration: 20,
+    tag: 'DISKWALA VIP',
+    tagText: 'DISKWALA VIP',
     disabled: false
   }
 ];
@@ -453,7 +467,13 @@ function renderWebsiteTasksUI() {
             <input type="number" id="wtDiamonds_${task.id}" value="${task.diamondReward || 100}" oninput="onWebTaskInput('${task.id}')" class="form-input" style="color: #22d3ee; font-weight: 800; text-align: center;">
           </div>
           <div class="form-group">
-            <label class="form-label">Entry Cost (Coins 🪙)</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="form-label">Entry Cost (Coins 🪙)</label>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" onclick="document.getElementById('wtCost_${task.id}').value=1000; onWebTaskInput('${task.id}');" style="padding: 1px 5px; font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; border-radius: 4px; cursor: pointer;">1K</button>
+                <button type="button" onclick="document.getElementById('wtCost_${task.id}').value=10000; onWebTaskInput('${task.id}');" style="padding: 1px 5px; font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; border-radius: 4px; cursor: pointer;">10K</button>
+              </div>
+            </div>
             <input type="number" id="wtCost_${task.id}" value="${task.costCoins !== undefined ? task.costCoins : 1000}" oninput="onWebTaskInput('${task.id}')" class="form-input" style="color: #facc15; font-weight: 800; text-align: center;">
           </div>
         </div>
