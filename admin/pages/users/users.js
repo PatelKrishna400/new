@@ -517,7 +517,7 @@ function savePlayerEditToFirebase() {
       [`/players/${uid}/progression/activeLevel`]: updates.level || 1,
       [`/players/${uid}/status`]: statusVal,
       [`/players/${uid}/player/status`]: statusVal,
-      [`/players/${uid}/resetVersion`]: 7,
+      [`/players/${uid}/resetVersion`]: 8,
       [`/players/${uid}/updatedAt`]: Date.now()
     };
     db.ref().update(batch).then(() => {

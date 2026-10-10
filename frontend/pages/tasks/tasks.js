@@ -17,31 +17,31 @@ let WEBSITE_TASKS = [
   {
     id: 'web_dw_1',
     title: 'Diskwala Portal Sponsor Quest #1',
-    cost: 1000,
+    cost: 10000,
     costAlt: 10000,
     url: 'https://diskwala.com/quest/alpha',
     correctPin: '4821',
-    rewardDiamonds: 100,
+    rewardDiamonds: 50,
     tagText: 'DISKWALA SPONSOR'
   },
   {
     id: 'web_dw_2',
     title: 'Diskwala Cloud Sponsor Quest #2',
-    cost: 1000,
+    cost: 10000,
     costAlt: 10000,
     url: 'https://diskwala.com/quest/beta',
     correctPin: '7392',
-    rewardDiamonds: 150,
+    rewardDiamonds: 50,
     tagText: 'DISKWALA SPONSOR'
   },
   {
     id: 'web_dw_3',
     title: 'Diskwala Elite Partner Quest #3',
     cost: 10000,
-    costAlt: 1000,
+    costAlt: 10000,
     url: 'https://diskwala.com/quest/gamma',
     correctPin: '5164',
-    rewardDiamonds: 250,
+    rewardDiamonds: 50,
     tagText: 'DISKWALA VIP'
   }
 ];
@@ -214,28 +214,176 @@ let currentSelectedDay = 1;
 let activeVerifyingTaskId = null;
 
 /* ==========================================================================
-   SUBTAB SWITCHER (30-Day Quests vs Website Tasks)
+   SUBTAB SWITCHER (1. Daily Task, 2. Telegram Task, 3. Website Task)
    ========================================================================== */
 window.switchTaskSubtab = function(tabName) {
   const dailyBtn = document.getElementById('subtabDaily');
+  const tgBtn = document.getElementById('subtabTelegram');
   const webBtn = document.getElementById('subtabWebsite');
+  const dailyStrip = document.getElementById('dailyStreakStrip');
   const gridContainer = document.getElementById('thirtyDayGridContainer');
+  const tgContainer = document.getElementById('telegramTasksListContainer');
   const webContainer = document.getElementById('websiteTasksListContainer');
 
+  if (dailyBtn) dailyBtn.classList.toggle('active', tabName === 'daily');
+  if (tgBtn) tgBtn.classList.toggle('active', tabName === 'telegram');
+  if (webBtn) webBtn.classList.toggle('active', tabName === 'website');
+
+  if (dailyStrip) dailyStrip.style.display = (tabName === 'daily') ? 'flex' : 'none';
+
+  if (gridContainer) gridContainer.classList.toggle('hidden', tabName !== 'daily');
+  if (tgContainer) tgContainer.classList.toggle('hidden', tabName !== 'telegram');
+  if (webContainer) webContainer.classList.toggle('hidden', tabName !== 'website');
+
   if (tabName === 'daily') {
-    if (dailyBtn) dailyBtn.classList.add('active');
-    if (webBtn) webBtn.classList.remove('active');
-    if (gridContainer) gridContainer.classList.remove('hidden');
-    if (webContainer) webContainer.classList.add('hidden');
     renderThirtyDayCards();
-  } else {
-    if (webBtn) webBtn.classList.add('active');
-    if (dailyBtn) dailyBtn.classList.remove('active');
-    if (gridContainer) gridContainer.classList.add('hidden');
-    if (webContainer) webContainer.classList.remove('hidden');
+  } else if (tabName === 'telegram') {
+    renderTelegramTasks();
+  } else if (tabName === 'website') {
     renderWebsiteTasks();
   }
 };
+
+/* ==========================================================================
+   SUBTAB 2: TELEGRAM TASKS (JOIN TELEGRAM, CLAIM KEYS)
+   ========================================================================== */
+const DEFAULT_TELEGRAM_TASKS = [
+  {
+    id: 'tg1',
+    title: 'Join Channel: Earn to ads',
+    rewardText: '1 Key for Chest',
+    rewardKeys: 1,
+    desc: 'Join @Earn_to_ads official Telegram channel to win 1 Key for Chest',
+    url: 'https://t.me/Earn_to_ads',
+    tagText: 'TELEGRAM'
+  },
+  {
+    id: 'tg2',
+    title: 'Join Bot: Prover Svoi Akk',
+    rewardText: '1 Key for Chest',
+    rewardKeys: 1,
+    desc: 'Launch and start @prover_svoiakk_bot on Telegram to win 1 Key for Chest',
+    url: 'https://t.me/prover_svoiakk_bot',
+    tagText: 'TELEGRAM BOT'
+  },
+  {
+    id: 'tg3',
+    title: 'Join Bot: Stars One Click',
+    rewardText: '2 Keys for Chest',
+    rewardKeys: 2,
+    desc: 'Start @stars_oneclick_bot to receive 2 Chest Keys',
+    url: 'https://t.me/stars_oneclick_bot',
+    tagText: 'PARTNER BOT'
+  }
+];
+
+function getTelegramTasksList() {
+  try {
+    let cloud = window.cloudTelegramTasks;
+    if (cloud === undefined || cloud === null) {
+      const raw = localStorage.getItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_TG_TASKS');
+      if (raw !== null) {
+        cloud = JSON.parse(raw);
+      }
+    }
+    if (Array.isArray(cloud)) {
+      return cloud.filter(c => c && !c.disabled).map(ct => ({
+        id: ct.id,
+        title: ct.title,
+        rewardText: ct.rewardText || `${ct.rewardKeys || 1} Key for Chest`,
+        rewardKeys: Number(ct.rewardKeys || 1),
+        desc: ct.desc || `Join ${ct.title} to claim rewards`,
+        url: ct.url || 'https://t.me/Earn_to_ads',
+        tagText: ct.tag || ct.tagText || 'TELEGRAM'
+      }));
+    }
+  } catch (e) {}
+  return [];
+}
+window.getTelegramTasksList = getTelegramTasksList;
+
+function renderTelegramTasks() {
+  const container = document.getElementById('telegramTasksListContainer');
+  if (!container) return;
+
+  if (typeof gameState !== 'undefined') {
+    if (typeof gameState.tasksState === 'undefined') gameState.tasksState = {};
+    if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
+  }
+
+  const allTasks = getTelegramTasksList();
+  // Completed tasks are removed from the active list
+  const activeTasks = allTasks.filter(task => {
+    return !(gameState && gameState.tasksState && gameState.tasksState.claimedTelegram && gameState.tasksState.claimedTelegram[task.id]);
+  });
+
+  if (activeTasks.length === 0) {
+    container.innerHTML = `
+      <div class="empty-tasks-state py-8 text-center flex flex-col items-center justify-center gap-2">
+        <span class="text-3xl">✈️</span>
+        <span class="font-bold text-sm text-slate-300">No Telegram Tasks Available</span>
+        <span class="text-xs text-slate-500 font-mono">${allTasks.length > 0 ? 'All Telegram tasks completed! 🎉' : 'Admin has not added any Telegram tasks.'}</span>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  activeTasks.forEach(task => {
+    const rewardKeys = Number(task.rewardKeys || 1);
+
+    html += `
+      <div class="web-task-card-minimal" id="tgCard-${task.id}" onclick="joinTelegramTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', ${rewardKeys}, '${task.url}')" role="button" tabindex="0">
+        <div class="web-task-card-left">
+          <span class="web-task-card-icon">✈️</span>
+          <div>
+            <span class="web-task-card-title">${task.title}</span>
+            <div style="font-size: 10px; color: #94a3b8; font-family: monospace;">${task.desc}</div>
+          </div>
+        </div>
+        <div class="web-task-reward-pill">
+          <span>🔑 +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+window.renderTelegramTasks = renderTelegramTasks;
+
+function joinTelegramTask(taskId, title, rewardKeys, url, event) {
+  if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
+
+  if (typeof gameState !== 'undefined') {
+    if (typeof gameState.tasksState === 'undefined') gameState.tasksState = {};
+    if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
+
+    if (gameState.tasksState.claimedTelegram[taskId]) {
+      alert('This Telegram task has already been completed!');
+      return;
+    }
+  }
+
+  if (url) window.open(url, '_blank');
+
+  if (typeof gameState !== 'undefined') {
+    gameState.tasksState.claimedTelegram[taskId] = true;
+    if (typeof gameState.player !== 'undefined') {
+      gameState.player.chestKeys = (gameState.player.chestKeys || 0) + rewardKeys;
+    }
+    if (typeof gameState.goal !== 'undefined') {
+      gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys || 100, (gameState.goal.currentKeys || 0) + rewardKeys);
+    }
+  }
+
+  alert(`🎉 Completed! +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'} added to your Inventory!`);
+
+  if (typeof window.updateUI === 'function') window.updateUI();
+  if (typeof window.saveGame === 'function') window.saveGame();
+  renderTelegramTasks();
+}
+window.joinTelegramTask = joinTelegramTask;
 
 /* ==========================================================================
    RENDER 30-DAY RECTANGLE CARDS GRID (3*10 CARDS FORM)
@@ -386,7 +534,7 @@ function renderDayTasksList(dayNum) {
             </button>
           ` : isTargetMet ? `
             <button class="day-task-claim-btn" onclick="claimDayTaskReward(${dayNum}, ${idx})">
-              <span>🎬 Claim (+10 🪙)</span>
+              <span>📢 Claim (+10 🪙)</span>
             </button>
           ` : `
             <button class="day-task-claim-btn" onclick="executeTaskQuickAction('${task.type}')" style="background: rgba(255,255,255,0.08); color: #cbd5e1;">
@@ -485,77 +633,68 @@ window.repairDailyStreakWithDiamonds = function() {
    ========================================================================== */
 function getActiveWebsiteTasks() {
   try {
-    const cloud = window.cloudWebsiteTasks || JSON.parse(localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1') || 'null');
-    if (Array.isArray(cloud) && cloud.length > 0) {
-      return cloud.filter(c => !c.disabled).map(ct => ({
+    let cloud = window.cloudWebsiteTasks;
+    if (cloud === undefined || cloud === null) {
+      const raw = localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1') || localStorage.getItem('ENERGY_TAP_WEB_TASKS');
+      if (raw !== null) {
+        cloud = JSON.parse(raw);
+      }
+    }
+    if (Array.isArray(cloud)) {
+      return cloud.filter(c => c && !c.disabled).map(ct => ({
         id: ct.id,
         title: ct.title,
-        cost: ct.costCoins !== undefined ? ct.costCoins : 1000,
-        costAlt: ct.costAlt !== undefined ? ct.costAlt : 10000,
+        cost: 10000,
+        costAlt: 10000,
         url: ct.url || 'https://diskwala.com',
-        correctPin: ct.code || ct.correctPin || '1234',
-        rewardDiamonds: ct.diamondReward || ct.rewardDiamonds || 100,
+        correctPin: ct.code || ct.correctPin || '4821',
+        rewardDiamonds: ct.diamondReward || ct.rewardDiamonds || 50,
         tagText: ct.tag || ct.tagText || 'DISKWALA SPONSOR'
       }));
     }
   } catch (e) {}
-  return WEBSITE_TASKS;
+  return [];
 }
 
 function renderWebsiteTasks() {
   const container = document.getElementById('websiteTasksListContainer');
   if (!container) return;
 
+  if (typeof gameState === 'undefined') return;
   if (typeof gameState.tasksState === 'undefined') gameState.tasksState = {};
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
   if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
 
-  const currentTasks = getActiveWebsiteTasks();
+  const allTasks = getActiveWebsiteTasks();
+  // Completed tasks are removed from the active list
+  const activeTasks = allTasks.filter(task => {
+    return !(gameState.tasksState && gameState.tasksState.claimedWebsite && gameState.tasksState.claimedWebsite[task.id]);
+  });
+
+  if (activeTasks.length === 0) {
+    container.innerHTML = `
+      <div class="empty-tasks-state py-8 text-center flex flex-col items-center justify-center gap-2">
+        <span class="text-3xl">🌐</span>
+        <span class="font-bold text-sm text-slate-300">No Website Tasks Available</span>
+        <span class="text-xs text-slate-500 font-mono">${allTasks.length > 0 ? 'All Website tasks completed! 🎉' : 'Admin has not added any Website tasks.'}</span>
+      </div>
+    `;
+    return;
+  }
+
   let html = '';
-  currentTasks.forEach(task => {
-    const isOpened = gameState.tasksState.openedWebsite[task.id];
-    const isClaimed = gameState.tasksState.claimedWebsite[task.id];
+  activeTasks.forEach(task => {
+    const isOpened = !!gameState.tasksState.openedWebsite[task.id];
+    const rewardDiamonds = Number(task.rewardDiamonds || task.diamondReward || 50);
 
     html += `
-      <div class="bg-stone-950/90 border border-stone-800 rounded-xl p-3 flex flex-col gap-2.5 shadow-md">
-        <div class="flex items-center justify-between border-b border-stone-800 pb-1.5">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">🌐</span>
-            <div>
-              <h4 class="text-xs font-black text-amber-300">${task.title}</h4>
-              <span class="text-[9px] text-stone-400 font-mono">${task.tagText || 'DISKWALA QUEST'}</span>
-            </div>
-          </div>
-          <span class="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-700">
-            +${task.rewardDiamonds} 💎
-          </span>
+      <div class="web-task-card-minimal ${isOpened ? 'is-unlocked' : ''}" onclick="openWebsiteTaskPopup('${task.id}')" role="button" tabindex="0">
+        <div class="web-task-card-left">
+          <span class="web-task-card-icon">🌐</span>
+          <span class="web-task-card-title">${task.title}</span>
         </div>
-
-        <div class="flex items-center justify-between text-[10px] text-stone-300">
-          <span>Cost Options: <strong class="text-amber-300 font-mono">1,000 🪙</strong> or <strong class="text-amber-300 font-mono">10,000 🪙</strong></span>
-          <span>Secret 4-Digit Code Required</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          ${isClaimed ? `
-            <button class="col-span-2 bg-stone-800 text-stone-400 font-black text-xs py-2 rounded-lg cursor-default">
-              <span>✅ Quest Claimed (+${task.rewardDiamonds} 💎)</span>
-            </button>
-          ` : isOpened ? `
-            <button onclick="openWebsiteTaskUrl('${task.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-2 rounded-lg active:scale-95 transition">
-              <span>🔗 Open Diskwala Site</span>
-            </button>
-            <button onclick="openWebsitePinModal('${task.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-2 rounded-lg active:scale-95 transition">
-              <span>🔢 Enter Code</span>
-            </button>
-          ` : `
-            <button onclick="unlockWebsiteTask('${task.id}', 1000)" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-black text-xs py-2 rounded-lg active:scale-95 transition">
-              <span>🪙 Unlock (1,000 🪙)</span>
-            </button>
-            <button onclick="unlockWebsiteTask('${task.id}', 10000)" class="bg-yellow-600 hover:bg-yellow-500 text-stone-950 font-black text-xs py-2 rounded-lg active:scale-95 transition">
-              <span>🪙 Unlock (10,000 🪙)</span>
-            </button>
-          `}
+        <div class="web-task-reward-pill">
+          <span>+${rewardDiamonds} 💎</span>
         </div>
       </div>
     `;
@@ -564,49 +703,112 @@ function renderWebsiteTasks() {
   container.innerHTML = html;
 }
 
-window.unlockWebsiteTask = function(taskId, cost) {
+window.openWebsiteTaskPopup = function(taskId) {
+  activeVerifyingTaskId = taskId;
+  const task = getActiveWebsiteTasks().find(t => t.id === taskId);
+  if (!task) return;
+
+  const modal = document.getElementById('webCodeModalBackdrop');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('webModalTitle');
+  const subtagEl = document.getElementById('webModalSubtag');
+  const prizeTagEl = document.getElementById('webModalPrizeTag');
+  const rewardDiamonds = Number(task.rewardDiamonds || task.diamondReward || 50);
+
+  if (titleEl) titleEl.innerText = task.title;
+  if (subtagEl) subtagEl.innerText = task.tagText || task.tag || 'DISKWALA SPONSOR';
+  if (prizeTagEl) prizeTagEl.innerText = `+${rewardDiamonds} 💎`;
+
+  const isClaimed = !!(gameState.tasksState && gameState.tasksState.claimedWebsite && gameState.tasksState.claimedWebsite[taskId]);
+  const isOpened = !!(gameState.tasksState && gameState.tasksState.openedWebsite && gameState.tasksState.openedWebsite[taskId]);
+
+  const viewLocked = document.getElementById('webModalLockedView');
+  const viewUnlocked = document.getElementById('webModalUnlockedView');
+  const viewClaimed = document.getElementById('webModalClaimedView');
+
+  if (isClaimed) {
+    if (viewLocked) viewLocked.style.display = 'none';
+    if (viewUnlocked) viewUnlocked.style.display = 'none';
+    if (viewClaimed) viewClaimed.style.display = 'flex';
+  } else if (isOpened) {
+    if (viewLocked) viewLocked.style.display = 'none';
+    if (viewClaimed) viewClaimed.style.display = 'none';
+    if (viewUnlocked) viewUnlocked.style.display = 'flex';
+    for (let i = 0; i < 4; i++) {
+      const input = document.getElementById(`webPin${i}`);
+      if (input) input.value = '';
+    }
+    setTimeout(() => {
+      const firstPin = document.getElementById('webPin0');
+      if (firstPin) firstPin.focus();
+    }, 100);
+  } else {
+    if (viewUnlocked) viewUnlocked.style.display = 'none';
+    if (viewClaimed) viewClaimed.style.display = 'none';
+    if (viewLocked) viewLocked.style.display = 'flex';
+  }
+
+  modal.style.display = 'flex';
+};
+
+// Backward-compatible alias for existing callers
+window.openWebsitePinModal = window.openWebsiteTaskPopup;
+
+window.unlockCurrentWebsiteTask = function() {
+  if (!activeVerifyingTaskId) return;
+  const task = getActiveWebsiteTasks().find(t => t.id === activeVerifyingTaskId);
+  if (!task) return;
+
+  const cost = 10000;
   if (typeof gameState === 'undefined' || !gameState.player) return;
   if ((gameState.player.coins || 0) < cost) {
-    alert(`Need ${cost.toLocaleString()} 🪙 Coins! (Have: ${Math.floor(gameState.player.coins || 0)})`);
+    alert(`Need 10,000 🪙 Coins to unlock this quest! (Current: ${Math.floor(gameState.player.coins || 0).toLocaleString()} 🪙)`);
     return;
   }
 
   gameState.player.coins -= cost;
   if (!gameState.tasksState.openedWebsite) gameState.tasksState.openedWebsite = {};
-  gameState.tasksState.openedWebsite[taskId] = true;
+  gameState.tasksState.openedWebsite[activeVerifyingTaskId] = true;
 
+  if (typeof window.saveGame === 'function') window.saveGame();
   if (typeof window.updateUI === 'function') window.updateUI();
   renderWebsiteTasks();
 
-  // Automatically open the Diskwala link
-  openWebsiteTaskUrl(taskId);
-};
-
-window.openWebsiteTaskUrl = function(taskId) {
-  const task = getActiveWebsiteTasks().find(t => t.id === taskId);
-  if (!task) return;
-  window.open(task.url || 'https://diskwala.com', '_blank');
-};
-
-window.openWebsitePinModal = function(taskId) {
-  activeVerifyingTaskId = taskId;
-  const modal = document.getElementById('webCodeModalBackdrop');
-  if (modal) modal.style.display = 'flex';
-
-  for (let i = 0; i < 4; i++) {
-    const input = document.getElementById(`webPin${i}`);
-    if (input) input.value = '';
+  // Automatically open the sponsor link in new tab
+  if (task.url) {
+    window.open(task.url, '_blank');
   }
+
+  // Switch modal view to Unlocked (PIN Entry)
+  const viewLocked = document.getElementById('webModalLockedView');
+  const viewUnlocked = document.getElementById('webModalUnlockedView');
+  if (viewLocked) viewLocked.style.display = 'none';
+  if (viewUnlocked) {
+    viewUnlocked.style.display = 'flex';
+    for (let i = 0; i < 4; i++) {
+      const input = document.getElementById(`webPin${i}`);
+      if (input) input.value = '';
+    }
+    setTimeout(() => {
+      const firstPin = document.getElementById('webPin0');
+      if (firstPin) firstPin.focus();
+    }, 100);
+  }
+};
+
+window.revisitWebsiteTaskUrl = function() {
+  if (!activeVerifyingTaskId) return;
+  const task = getActiveWebsiteTasks().find(t => t.id === activeVerifyingTaskId);
+  if (!task) return;
+  if (task.url) window.open(task.url, '_blank');
 };
 
 window.closeWebCodeModal = function(event) {
   if (event) event.stopPropagation();
   const modal = document.getElementById('webCodeModalBackdrop');
   if (modal) modal.style.display = 'none';
-};
-
-window.revisitWebsiteTaskUrl = function() {
-  if (activeVerifyingTaskId) openWebsiteTaskUrl(activeVerifyingTaskId);
+  activeVerifyingTaskId = null;
 };
 
 window.submitWebsiteCodeVerification = function() {
@@ -625,34 +827,47 @@ window.submitWebsiteCodeVerification = function() {
     return;
   }
 
-  if (enteredPin !== task.correctPin) {
+  const expectedPin = String(task.correctPin || task.code || '4821').trim();
+  if (enteredPin !== expectedPin) {
     alert('❌ Incorrect 4-Digit Code! Please browse the site carefully and try again.');
     return;
   }
 
-  // Code correct! Watch Ad to claim reward (Requirement 12: all task reward collect for using a ads)
+  // Code correct! Must watch rewarded ad to collect 50 Diamonds
   const doClaim = () => {
     if (!gameState.tasksState.claimedWebsite) gameState.tasksState.claimedWebsite = {};
     gameState.tasksState.claimedWebsite[task.id] = true;
 
+    const rewardDiamonds = Number(task.rewardDiamonds || task.diamondReward || 50);
+
     if (typeof gameState !== 'undefined' && gameState.player) {
-      gameState.player.diamonds = (gameState.player.diamonds || 0) + (task.rewardDiamonds || 100);
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + rewardDiamonds;
+      gameState.player.websiteTasksCompleted = (gameState.player.websiteTasksCompleted || 0) + 1;
+      gameState.player.completedWebTasks = (gameState.player.completedWebTasks || 0) + 1;
       if (typeof window.updateUI === 'function') window.updateUI();
+      if (typeof window.saveGame === 'function') window.saveGame();
     }
 
     closeWebCodeModal();
     renderWebsiteTasks();
 
     // Increment website task progress for today's daily task!
-    recordTaskEvent('web_task', 1);
+    if (typeof recordTaskEvent === 'function') {
+      recordTaskEvent('web_task', 1);
+    }
 
-    alert(`🎉 Verified! You won +${task.rewardDiamonds} 💎 Diamonds!`);
+    // Refresh Gift Card catalog if active
+    if (typeof window.renderCurrentCategoryRewards === 'function') {
+      window.renderCurrentCategoryRewards();
+    }
+
+    alert(`🎉 Verified! You won +${rewardDiamonds} 💎 Diamonds!`);
   };
 
   if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(doClaim, {
-      adTitle: 'Claim Web Quest Diamonds',
-      adDesc: 'Watch sponsor video to verify and collect your Diamonds!'
+      adTitle: 'Claim 50 Diamonds',
+      adDesc: 'Watch sponsor video to verify and collect your 50 Diamonds!'
     });
   } else {
     doClaim();
@@ -722,12 +937,28 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWebsiteTasks();
 });
 
-window.addEventListener('websiteTasksUpdated', () => {
-  renderWebsiteTasks();
-});
-
 // Window Exports
+window.renderTasksList = function() {
+  const activeSubtab = document.querySelector('.task-subtab-btn.active');
+  const subtabId = activeSubtab ? activeSubtab.id : 'subtabDaily';
+  if (subtabId === 'subtabTelegram') {
+    renderTelegramTasks();
+  } else if (subtabId === 'subtabWebsite') {
+    renderWebsiteTasks();
+  } else {
+    renderThirtyDayCards();
+  }
+};
 window.renderThirtyDayCards = renderThirtyDayCards;
+window.renderTelegramTasks = renderTelegramTasks;
 window.renderWebsiteTasks = renderWebsiteTasks;
 window.getActiveWebsiteTasks = getActiveWebsiteTasks;
 window.WEBSITE_TASKS = WEBSITE_TASKS;
+
+window.addEventListener('telegramTasksUpdated', () => {
+  renderTelegramTasks();
+});
+
+window.addEventListener('websiteTasksUpdated', () => {
+  renderWebsiteTasks();
+});

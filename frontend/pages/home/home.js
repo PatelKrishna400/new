@@ -1549,7 +1549,7 @@ function renderBoosterEnergyPopup(header, body) {
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyEnergyBoosterWithAd()">
-        <span style="font-size: 18px;">🎬</span> WATCH 1 AD FOR +10 ENERGY
+        <span style="font-size: 18px;">📢</span> WATCH 1 AD FOR +10 ENERGY
       </button>
     </div>
   `;
@@ -1652,7 +1652,7 @@ function renderBoosterProfitPopup(header, body) {
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyProfitBoosterWithAd()">
-        <span style="font-size: 18px;">🎬</span> WATCH 1 AD FOR 3H *2 PROFIT
+        <span style="font-size: 18px;">📢</span> WATCH 1 AD FOR 3H *2 PROFIT
       </button>
       <button class="popup-action-btn btn-gold-glow" style="background: linear-gradient(135deg, #d97706, #b45309); border: 1.5px solid #fbbf24; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="buyProfitBoosterWithCoins()">
         <span style="font-size: 18px;">🪙</span> BUY FOR 150 COINS (3H *2 PROFIT)
@@ -1743,7 +1743,7 @@ function renderBoosterBankPopup(header, body) {
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="withdrawBankWithAd()">
-        <span style="font-size: 18px;">🎬</span> WATCH 1 AD -> WITHDRAW 100 COINS
+        <span style="font-size: 18px;">📢</span> WATCH 1 AD -> WITHDRAW 100 COINS
       </button>
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 1.5px solid #a78bfa; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);" onclick="withdrawFullBankWithDiamonds()">
         <span style="font-size: 18px;">💎</span> 100 DIAMONDS: FULL WITHDRAWAL + 24H PASS
@@ -1851,7 +1851,7 @@ function renderBoosterFastXpPopup(header, body) {
         <span style="font-size: 18px;">💎</span> 100 DIAMONDS -> 10 MIN FAST XP
       </button>
       <button class="popup-action-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1.5px solid #38bdf8; color: #ffffff; padding: 13px; font-weight: 800; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="watchFastXpAd()">
-        <span style="font-size: 18px;">🎬</span> WATCH 5 ADS (${adsWatched}/5 WATCHED)
+        <span style="font-size: 18px;">📢</span> WATCH 5 ADS (${adsWatched}/5 WATCHED)
       </button>
     </div>
   `;
@@ -1963,7 +1963,7 @@ function renderHome2xPopup(header, body) {
 
     <!-- Ad Bonus -->
     <button class="popup-action-btn btn-emerald-glow" onclick="buyGarba2xWithAds()" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, #059669, #047857); color: #ffffff; border: 1.5px solid #34d399; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.35);">
-      <span style="font-size: 18px;">🎬</span>
+      <span style="font-size: 18px;">📢</span>
       <span>${isLocked ? '⚡ 2X Active' : 'Watch Ad for 30 Min 2X Boost'}</span>
     </button>
   `;

@@ -3,7 +3,7 @@
    ========================================================================== */
 
 #pageHome {
-  padding-bottom: 20px !important;
+  padding-bottom: calc(110px + max(16px, env(safe-area-inset-bottom))) !important;
 }
 
 .home-reactor-container {
@@ -660,55 +660,7 @@
 
 .reactor-orb:active .orb-lightning-bolt { transform: scale(1.14); }
 
-/* Royal Navratri Tap Button Blue Coin Win Badge (Hidden/Removed) */
-.orb-blue-coin-win-badge {
-  display: none !important;
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 4.5px;
-  padding: 3.5px 10px;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.92) 0%, rgba(12, 74, 110, 0.96) 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.85);
-  border-radius: 999px;
-  box-shadow: 
-    0 2px 8px rgba(2, 132, 199, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0 14px rgba(56, 189, 248, 0.55);
-  z-index: 10;
-  pointer-events: none;
-  white-space: nowrap;
-  animation: blueBadgePulse 2.8s ease-in-out infinite alternate;
-  transition: transform 0.08s ease, filter 0.08s ease;
-}
 
-.orb-blue-coin-win-badge .orb-win-icon {
-  font-size: 11px;
-  line-height: 1;
-  filter: drop-shadow(0 0 4px #38bdf8);
-}
-
-.orb-blue-coin-win-badge .orb-win-label {
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  color: #f0f9ff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(56, 189, 248, 0.8);
-}
-
-@keyframes blueBadgePulse {
-  0% { transform: translateX(-50%) scale(1); box-shadow: 0 2px 8px rgba(2, 132, 199, 0.6), 0 0 8px rgba(56, 189, 248, 0.4); }
-  100% { transform: translateX(-50%) scale(1.06); box-shadow: 0 3px 12px rgba(2, 132, 199, 0.9), 0 0 18px rgba(56, 189, 248, 0.8); }
-}
-
-.reactor-orb:active .orb-blue-coin-win-badge,
-.reactor-orb.tapped .orb-blue-coin-win-badge {
-  transform: translateX(-50%) scale(1.14);
-  filter: brightness(1.3);
-}
 
 .floating-number {
   position: absolute;

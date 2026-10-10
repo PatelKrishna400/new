@@ -224,8 +224,8 @@ function getComboMultiplier(tapCount) {
 }
 
 // Global Reset Epoch Versioning (Guarantees fresh 0 balance & level 1 for all users)
-const GAME_RESET_VERSION = 7;
-const GLOBAL_RESET_TIMESTAMP = 1773510000000;
+const GAME_RESET_VERSION = 8;
+const GLOBAL_RESET_TIMESTAMP = 1775750000000;
 window.GAME_RESET_VERSION = GAME_RESET_VERSION;
 window.GLOBAL_RESET_TIMESTAMP = GLOBAL_RESET_TIMESTAMP;
 
@@ -311,6 +311,7 @@ const gameState = {
     passAdCooldowns: {},
     adsWatchedCount: 0,
     websiteTasksCompleted: 0,
+    completedWebTasks: 0,
     status: 'active'
   },
   goal: {
@@ -471,8 +472,8 @@ const gameState = {
   autoBotInterval: null,
 };
 
-// LocalStorage Key (Bumped to V7 to match GAME_RESET_VERSION=7 Global Fresh Zero Restart)
-const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V7';
+// LocalStorage Key (Bumped to V8 to match GAME_RESET_VERSION=8 Global Fresh Zero Restart)
+const STORAGE_KEY = 'ENERGY_TAP_REACTOR_SAVE_V8';
 
 // Load & Save
 function loadSavedGame() {
@@ -484,6 +485,17 @@ function loadSavedGame() {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
+    localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V7');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_30DAY_TASKS_V1');
   } catch (e) {}
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -701,6 +713,17 @@ function resetAllDataToZero() {
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V4');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V5');
     localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V6');
+    localStorage.removeItem('ENERGY_TAP_REACTOR_SAVE_V7');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V3');
+    localStorage.removeItem('ENERGY_TAP_30DAY_TASKS_V1');
     localStorage.removeItem('ENERGY_TAP_FIREBASE_LOCAL_UID');
     localStorage.removeItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5');
   } catch(e) {}
@@ -842,6 +865,57 @@ function resetAllDataToZero() {
     gameState.monthlyCompetition.startTime = now;
     gameState.monthlyCompetition.endTime = now + thirtyDaysMs;
     gameState.monthlyCompetition.forceResetTimestamp = now;
+  }
+
+  // Zero out in-memory minigame balances and reset plots
+  if (typeof window !== 'undefined') {
+    if (window.sunflowerState) {
+      window.sunflowerState.coins = 0;
+      window.sunflowerState.diamonds = 0;
+      window.sunflowerState.seeds = 0;
+      window.sunflowerState.baskets = 0;
+      window.sunflowerState.shovels = 0;
+      if (typeof createDefaultSfPlots === 'function') window.sunflowerState.plots = createDefaultSfPlots();
+      if (typeof createDefaultSfWells === 'function') window.sunflowerState.wells = createDefaultSfWells();
+      if (typeof saveSunflowerStateDebounced === 'function') saveSunflowerStateDebounced();
+      if (typeof renderSunflowerPlots === 'function') renderSunflowerPlots();
+      if (typeof updateStickyHeaderAndMiniStats === 'function') updateStickyHeaderAndMiniStats();
+    }
+    if (window.beeState) {
+      window.beeState.honey = 0;
+      window.beeState.diamonds = 0;
+      window.beeState.larvae = 0;
+      window.beeState.flowers = 0;
+      window.beeState.smokers = 0;
+      if (typeof createDefaultBeePlots === 'function') window.beeState.plots = createDefaultBeePlots();
+      if (typeof saveBeeStateDebounced === 'function') saveBeeStateDebounced();
+      if (typeof renderBeePlots === 'function') renderBeePlots();
+    }
+    if (window.miningState) {
+      window.miningState.shards = 0;
+      window.miningState.diamonds = 0;
+      window.miningState.cores = 0;
+      window.miningState.coolants = 0;
+      window.miningState.pickaxes = 0;
+      if (typeof createDefaultMiningPlots === 'function') window.miningState.plots = createDefaultMiningPlots();
+      if (typeof saveMiningStateDebounced === 'function') saveMiningStateDebounced();
+      if (typeof renderMiningPlots === 'function') renderMiningPlots();
+    }
+    if (window.thirtyDayState) {
+      window.thirtyDayState.streakCount = 1;
+      window.thirtyDayState.activeDayIndex = 1;
+      window.thirtyDayState.streakBroken = false;
+      for (let d = 1; d <= 30; d++) {
+        window.thirtyDayState.days[d] = {
+          progress: Array(10).fill(0),
+          claimed: Array(10).fill(false),
+          completedCount: 0,
+          dayRewardClaimed: false
+        };
+      }
+      if (typeof saveThirtyDayState === 'function') saveThirtyDayState();
+      if (typeof renderThirtyDayCards === 'function') renderThirtyDayCards();
+    }
   }
 
   // Save to persistent storage with reset epoch version
@@ -1687,6 +1761,15 @@ if (typeof window !== 'undefined') {
   window.canClaimActiveLevel = canClaimActiveLevel;
   window.completeActiveLevel = completeActiveLevel;
   window.claimServerAuthoritativeReward = claimServerAuthoritativeReward;
+  window.getCompletedWebsiteTasksCount = getCompletedWebsiteTasksCount;
+}
+
+function getCompletedWebsiteTasksCount() {
+  if (typeof gameState === 'undefined' || !gameState.player) return 0;
+  const pCount = Math.max(Number(gameState.player.completedWebTasks || 0), Number(gameState.player.websiteTasksCompleted || 0));
+  const claimedWeb = (gameState.tasksState && gameState.tasksState.claimedWebsite) ? gameState.tasksState.claimedWebsite : {};
+  const claimedCount = Object.keys(claimedWeb).filter(k => claimedWeb[k]).length;
+  return Math.max(pCount, claimedCount);
 }
 
 /**

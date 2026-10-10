@@ -752,7 +752,7 @@
         bottomActionHtml = `
           <button class="btn-2d w-full bg-gradient-to-b from-emerald-400 to-green-500 border-2 border-[#064e3b] text-[#064e3b] font-game text-[8.5px] py-0.5 rounded-lg shadow-[0_2px_0_#064e3b] flex items-center justify-center space-x-1 animate-pulse">
             <span>COLLECT</span>
-            <span class="text-[9px]">📺</span>
+            <span class="text-[9px]">📢</span>
           </button>
         `;
       }
@@ -831,11 +831,11 @@
       }
     } else {
       if (descEl) descEl.innerText = `Coins paid! Step 2: Watch ad to collect ${config.rewardText}!`;
-      if (stepIcon) stepIcon.innerText = "📺";
+      if (stepIcon) stepIcon.innerText = "📢";
       if (stepText) stepText.innerText = `STEP 2: WATCH AD (${adsWatched}/${config.adsRequired} COMPLETED)`;
       if (actionBtn) {
         actionBtn.className = "btn-2d w-full py-3.5 rounded-2xl font-game text-base sm:text-lg tracking-wider text-[#064e3b] bg-gradient-to-b from-emerald-300 via-green-300 to-emerald-500 border-3 border-[#064e3b] shadow-[0_5px_0_#064e3b] flex items-center justify-center space-x-2 animate-bounce";
-        actionBtn.innerHTML = `<span>WATCH AD TO COLLECT</span> <span class="text-xl">📺</span>`;
+        actionBtn.innerHTML = `<span>WATCH AD TO COLLECT</span> <span class="text-xl">📢</span>`;
       }
     }
   }
@@ -918,7 +918,7 @@
     if (progressFill) progressFill.style.width = '0%';
 
     const sceneTitle = document.getElementById('ad-scene-title');
-    if (sceneTitle) sceneTitle.innerText = isJackpot ? "JACKPOT 30s AD 📺" : "STAGE AD 📺";
+    if (sceneTitle) sceneTitle.innerText = isJackpot ? "JACKPOT 30s AD 📢" : "STAGE AD 📢";
 
     const mainHeading = document.getElementById('ad-main-heading');
     if (mainHeading) mainHeading.innerText = isJackpot ? "JACKPOT AD: 10 DIAMONDS!" : "HOT AIR SKY AD!";
@@ -1129,7 +1129,7 @@
     const watchBtn = document.getElementById('popup-watch-ad-btn');
     if (watchBtn) {
       watchBtn.className = "btn-2d w-full py-3.5 rounded-2xl font-game text-base sm:text-lg tracking-wider text-[#064e3b] bg-gradient-to-b from-emerald-300 via-green-300 to-emerald-500 border-3 border-[#064e3b] shadow-[0_5px_0_#064e3b] flex items-center justify-center space-x-2 animate-bounce";
-      watchBtn.innerHTML = `<span>WATCH 30s AD (${(st.jackpotAdsWatched || 0) + 1}/10)</span> <span class="text-xl">📺</span>`;
+      watchBtn.innerHTML = `<span>WATCH 30s AD (${(st.jackpotAdsWatched || 0) + 1}/10)</span> <span class="text-xl">📢</span>`;
     }
 
     openModal('stage-popup-modal');
@@ -1156,7 +1156,7 @@
           grandBtn.innerHTML = `CLAIM 👑`;
         } else {
           grandBtn.className = "btn-2d font-game text-[11px] py-1 px-3 rounded-xl border-3 border-[#78350f] bg-gradient-to-b from-amber-300 to-amber-500 text-[#78350f] shadow-[0_3px_0_#78350f] animate-bounce";
-          grandBtn.innerHTML = `AD ${jackpotAds + 1}/10 📺`;
+          grandBtn.innerHTML = `AD ${jackpotAds + 1}/10 📢`;
         }
       }
     } else {

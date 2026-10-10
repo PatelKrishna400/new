@@ -12,6 +12,7 @@ const SHARED_DIR = path.join(ROOT_DIR, 'shared');
 const PAGE_KEYS = [
   'dashboard',
   'users',
+  'account-requests',
   'mega-add',
   'mega-request',
   'tasks-web',
@@ -24,9 +25,15 @@ console.log('--- Verifying Admin Modular Page Structure ---');
 let allValid = true;
 
 PAGE_KEYS.forEach(key => {
-  const htmlPath = path.join(PAGES_DIR, key, `${key}.html`);
-  const cssPath = path.join(PAGES_DIR, key, `${key}.css`);
-  const jsPath = path.join(PAGES_DIR, key, `${key}.js`);
+  const htmlPath = fs.existsSync(path.join(PAGES_DIR, key, 'index.html'))
+    ? path.join(PAGES_DIR, key, 'index.html')
+    : path.join(PAGES_DIR, key, `${key}.html`);
+  const cssPath = fs.existsSync(path.join(PAGES_DIR, key, 'style.css'))
+    ? path.join(PAGES_DIR, key, 'style.css')
+    : path.join(PAGES_DIR, key, `${key}.css`);
+  const jsPath = fs.existsSync(path.join(PAGES_DIR, key, 'script.js'))
+    ? path.join(PAGES_DIR, key, 'script.js')
+    : path.join(PAGES_DIR, key, `${key}.js`);
 
   if (!fs.existsSync(htmlPath)) {
     console.error(`Missing HTML: ${htmlPath}`);
@@ -111,6 +118,12 @@ const headerContent = `<!DOCTYPE html>
         <span class="nav-badge" id="badgeUsersCount">0</span>
       </button>
 
+      <button class="nav-item" data-page="account-requests" onclick="switchAdminPage('account-requests', 'Account Creation Requests')">
+        <span class="nav-icon">👤+</span>
+        <span>Account Requests</span>
+        <span class="nav-badge badge-amber" id="badgeAccountRequestsCount" style="display: none;">0</span>
+      </button>
+
       <button class="nav-item" data-page="mega-add" onclick="switchAdminPage('mega-add', 'Mega Add & Item Catalog')">
         <span class="nav-icon">🎁</span>
         <span>Mega Add</span>
@@ -187,7 +200,14 @@ const headerContent = `<!DOCTYPE html>
 
 // Body: Read all page HTMLs
 const pagesContent = PAGE_KEYS.map(k => {
-  const html = fs.readFileSync(path.join(PAGES_DIR, k, `${k}.html`), 'utf8');
+  const htmlPath = fs.existsSync(path.join(PAGES_DIR, k, `${k}.html`))
+    ? path.join(PAGES_DIR, k, `${k}.html`)
+    : path.join(PAGES_DIR, k, 'index.html');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  if (html.includes('<div') && html.includes('</div>')) {
+    const match = html.match(/<div class="admin-page-view[\s\S]*<\/div>\s*$/i);
+    if (match) html = match[0];
+  }
   return `      <!-- ================= PAGE: ${k.toUpperCase()} ================= -->\n${html.split('\n').map(l => '      ' + l).join('\n')}`;
 }).join('\n\n');
 
@@ -605,6 +625,8 @@ const footerContent = `
       } else if (normTarget === 'users') {
         if (typeof window.renderUsersTable === 'function') window.renderUsersTable();
         if (typeof window.updateDuplicateCountBadge === 'function') window.updateDuplicateCountBadge();
+      } else if (normTarget === 'accountrequests') {
+        if (typeof window.renderAccountRequestsTable === 'function') window.renderAccountRequestsTable();
       } else if (normTarget === 'megaadd') {
         if (typeof window.renderRewardsCatalog === 'function') window.renderRewardsCatalog();
         if (typeof window.renderCustomRequestsTable === 'function') window.renderCustomRequestsTable();
@@ -1001,7 +1023,9 @@ console.log('Successfully assembled modular admin/index.html!');
 // Compile consolidated CSS into style.css
 const adminCommonCss = fs.readFileSync(path.join(SHARED_DIR, 'common.css'), 'utf8');
 const adminPageCss = PAGE_KEYS.map(k => {
-  const p = path.join(PAGES_DIR, k, `${k}.css`);
+  const p = fs.existsSync(path.join(PAGES_DIR, k, 'style.css'))
+    ? path.join(PAGES_DIR, k, 'style.css')
+    : path.join(PAGES_DIR, k, `${k}.css`);
   return fs.existsSync(p) ? `/* --- PAGE: ${k.toUpperCase()} --- */\n` + fs.readFileSync(p, 'utf8') : '';
 }).join('\n\n');
 fs.writeFileSync(path.join(ROOT_DIR, 'style.css'), `/* Admin Portal Stylesheet */\n${adminCommonCss}\n\n${adminPageCss}\n`, 'utf8');

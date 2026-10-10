@@ -11,7 +11,7 @@
      ⚡ Royal Refinery (100 🍯 = 29 ⚡), 👑 Prestige (100 🍯 ➔ 10 🪙 Gold Coins)
    ========================================================================== */
 
-const BEE_STORAGE_KEY = 'ENERGY_TAP_BEEFARM_STATE_V3';
+const BEE_STORAGE_KEY = 'ENERGY_TAP_BEEFARM_STATE_V4';
 
 // 20 Hive Base Unlock Costs (Plot 1 is Free)
 const BEE_LAND_UNLOCK_COSTS = [
@@ -25,8 +25,8 @@ const BEE_WELL_UNLOCK_COSTS = [
   2500, 3500, 5000, 7000, 9500, 13000, 18000, 25000, 35000, 50000
 ];
 
-// Base Cycle Times (Meadow 1: 500s, Meadow 2: 1000s, ..., Meadow 20: 10000s)
-const BEE_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 500);
+// Base Cycle Times (Meadow 1: 100s, Meadow 2: 200s, ..., Meadow 20: 2000s)
+const BEE_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 100);
 
 const BEE_WELL_NAMES = [
   "Wild Sunflower Glade #1", "Sweet Lavender Trellis #2", "Crimson Blossom Meadow #3",
@@ -52,8 +52,8 @@ const BEE_LAND_BASE_TIMES = [
 
 // Base Life Limits at Level 1 (sec)
 const BEE_LAND_BASE_LIFE_LIMITS = [
-  500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-  5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
+  100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+  1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
 ];
 
 // Flower Bonus (sec added per flower)
@@ -91,8 +91,8 @@ function createDefaultBeePlots() {
       level: 1,
       growthTimer: 0,
       growthDuration: 30.0,
-      lifeTimer: isUnlocked ? 60.0 : 0,
-      maxLifeLimit: 60.0,
+      lifeTimer: isUnlocked ? 100.0 : 0,
+      maxLifeLimit: BEE_LAND_BASE_LIFE_LIMITS[i - 1] || 500,
       timer: BEE_LAND_BASE_TIMES[i - 1] || 60,
       waterUsageCount: 0,
       storedCoins: 0,
@@ -139,6 +139,12 @@ function createDefaultBeeManagers() {
 
 function loadInitialBeeState() {
   try {
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_BEEFARM_STATE_V3');
+  } catch (e) {}
+
+  try {
     const raw = localStorage.getItem(BEE_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
@@ -149,11 +155,11 @@ function loadInitialBeeState() {
         if (!Array.isArray(parsed.managers) || parsed.managers.length !== 20) {
           parsed.managers = createDefaultBeeManagers();
         }
-        if (typeof parsed.honey !== 'number') parsed.honey = 150;
-        if (typeof parsed.larvae !== 'number') parsed.larvae = 3;
-        if (typeof parsed.flowers !== 'number') parsed.flowers = 2;
-        if (typeof parsed.smokers !== 'number') parsed.smokers = 1;
-        if (typeof parsed.diamonds !== 'number') parsed.diamonds = 25;
+        if (typeof parsed.honey !== 'number') parsed.honey = 0;
+        if (typeof parsed.larvae !== 'number') parsed.larvae = 0;
+        if (typeof parsed.flowers !== 'number') parsed.flowers = 0;
+        if (typeof parsed.smokers !== 'number') parsed.smokers = 0;
+        if (typeof parsed.diamonds !== 'number') parsed.diamonds = 0;
         if (!parsed.upgradeMultiplier) parsed.upgradeMultiplier = 1;
         if (!parsed.activeBooster) parsed.activeBooster = null;
         if (typeof parsed.prestigeLevel !== 'number') parsed.prestigeLevel = 0;
@@ -166,11 +172,11 @@ function loadInitialBeeState() {
 
   return {
     currentPage: 1,
-    honey: 150,
-    diamonds: 25,
-    larvae: 3,
-    flowers: 2,
-    smokers: 1,
+    honey: 0,
+    diamonds: 0,
+    larvae: 0,
+    flowers: 0,
+    smokers: 0,
     upgradeMultiplier: 1,
     activeBooster: null,
     prestigeLevel: 0,
@@ -765,7 +771,7 @@ function renderBeeManagers() {
               <span>💎 10 💎 (+24h)</span>
             </button>
             <button class="bee-mgr-ad-btn" onclick="hireBeeManagerAd(${mgr.landId}, event)">
-              <span>🎬 Ad (+10h)</span>
+              <span>📢 Ad (+10h)</span>
             </button>
             <button class="bee-mgr-coin-btn" onclick="hireBeeManagerCoins(${mgr.landId}, event)">
               <span>🍯 1 Day (${formatBeeNumber(nextCoinCost)} 🍯)</span>
@@ -1059,7 +1065,7 @@ function beeMainLoop(now) {
       if (plot.growthTimer <= 0) {
         plot.plantStatus = 'alive';
         plot.level = 1;
-        plot.lifeTimer = 60.0;
+        plot.lifeTimer = 100.0;
         plot.timer = getBeePlotCycleTime(idx, 1);
         if (isBeeActive && beeState.currentPage === 1) renderBeePlots();
       }

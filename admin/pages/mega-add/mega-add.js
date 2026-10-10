@@ -251,6 +251,8 @@ function saveRewardToFirebase() {
     const catObj = MEGA_CATEGORIES.find(c => c.id === selectedCategory) || MEGA_CATEGORIES[0];
     let rewards = [...(window.adminState.rewards || [])];
 
+    const tasksNeeded = Number(document.getElementById('inpRewardTasksNeeded')?.value) || 0;
+
     const rewardPayload = {
       title,
       name: title,
@@ -263,6 +265,8 @@ function saveRewardToFirebase() {
       categoryIcon: catObj.icon,
       diamonds: Number(diamonds),
       diamondCost: Number(diamonds),
+      tasksNeeded: Number(tasksNeeded),
+      requiredWebTasks: Number(tasksNeeded),
       realValue: realVal,
       originalPrice: realVal,
       mrp: realVal,
@@ -334,6 +338,7 @@ function clearRewardForm() {
   if (document.getElementById('inpRewardDiamonds')) document.getElementById('inpRewardDiamonds').value = '';
   if (document.getElementById('inpRewardRealVal')) document.getElementById('inpRewardRealVal').value = '';
   if (document.getElementById('inpRewardOfferVal')) document.getElementById('inpRewardOfferVal').value = '';
+  if (document.getElementById('inpRewardTasksNeeded')) document.getElementById('inpRewardTasksNeeded').value = '0';
   if (document.getElementById('inpRewardStock')) document.getElementById('inpRewardStock').value = '15';
   if (document.getElementById('inpRewardDesc')) document.getElementById('inpRewardDesc').value = '';
   if (document.getElementById('inpRewardTag')) document.getElementById('inpRewardTag').value = '';
@@ -367,6 +372,7 @@ function editRewardItem(id) {
   if (document.getElementById('inpRewardDiamonds')) document.getElementById('inpRewardDiamonds').value = item.diamonds || item.diamondCost || '';
   if (document.getElementById('inpRewardRealVal')) document.getElementById('inpRewardRealVal').value = item.realValue || item.originalPrice || item.mrp || '';
   if (document.getElementById('inpRewardOfferVal')) document.getElementById('inpRewardOfferVal').value = item.offerValue || item.cashValue || item.discountPrice || '';
+  if (document.getElementById('inpRewardTasksNeeded')) document.getElementById('inpRewardTasksNeeded').value = item.tasksNeeded !== undefined ? item.tasksNeeded : (item.requiredWebTasks || 0);
   if (document.getElementById('inpRewardStock')) document.getElementById('inpRewardStock').value = item.stock !== undefined ? item.stock : 10;
   if (document.getElementById('inpRewardDesc')) document.getElementById('inpRewardDesc').value = item.description || '';
   if (document.getElementById('inpRewardTag')) document.getElementById('inpRewardTag').value = item.tag || '';
@@ -456,6 +462,7 @@ function renderRewardsCatalog() {
           <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
             ${realVal ? `<span style="font-size: 12px; color: #94a3b8; text-decoration: line-through; font-weight: 700;">${realVal}</span>` : ''}
             ${offerVal ? `<span style="font-size: 13.5px; color: #059669; font-weight: 800;">${offerVal}</span>` : ''}
+            ${(r.tasksNeeded || r.requiredWebTasks) ? `<span style="font-size: 10px; font-weight: 800; background: #ccfbf1; color: #0d9488; padding: 2px 6px; border-radius: 4px;">🌐 ${r.tasksNeeded || r.requiredWebTasks} Tasks</span>` : ''}
           </div>
 
           ${link ? `
@@ -657,6 +664,156 @@ function seedSampleCustomRequestsToFirebase() {
   // Deprecated: Sample data seeding removed. Custom requests are purely received from players in Firebase.
 }
 
+function syncStandardGiftCards() {
+  const executeSync = () => {
+    const db = window.getDb ? window.getDb() : null;
+    if (!db) {
+      alert('Firebase is not connected!');
+      return;
+    }
+
+    const d100 = Number(document.getElementById('inpGc100Diamonds')?.value) || 1667;
+    const t100 = Number(document.getElementById('inpGc100Tasks')?.value) || 40;
+    const s100 = Number(document.getElementById('inpGc100Stock')?.value) || 50;
+
+    const d500 = Number(document.getElementById('inpGc500Diamonds')?.value) || 8334;
+    const t500 = Number(document.getElementById('inpGc500Tasks')?.value) || 170;
+    const s500 = Number(document.getElementById('inpGc500Stock')?.value) || 25;
+
+    const d1000 = Number(document.getElementById('inpGc1000Diamonds')?.value) || 16667;
+    const t1000 = Number(document.getElementById('inpGc1000Tasks')?.value) || 340;
+    const s1000 = Number(document.getElementById('inpGc1000Stock')?.value) || 10;
+
+    let rewards = [...(window.adminState.rewards || [])];
+
+    const giftCards = [
+      {
+        id: 'giftcard_100',
+        title: '₹100 Gift Card',
+        name: '₹100 Gift Card',
+        productName: '₹100 Gift Card',
+        category: 'gift-card',
+        categoryName: 'Gift Card',
+        categoryIcon: '🎁',
+        diamonds: d100,
+        diamondCost: d100,
+        tasksNeeded: t100,
+        requiredWebTasks: t100,
+        realValue: '₹100',
+        originalPrice: '₹100',
+        mrp: '₹100',
+        offerValue: '₹100',
+        cashValue: '₹100',
+        discountPrice: '₹100',
+        link: 'https://amazon.in/giftcards',
+        productLink: 'https://amazon.in/giftcards',
+        url: 'https://amazon.in/giftcards',
+        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        stock: s100,
+        buyerStar: 5.0,
+        stars: 5.0,
+        rating: 5.0,
+        tag: '₹100 VOUCHER',
+        description: `Instant ₹100 Digital Voucher. Requires ${d100.toLocaleString()} 💎 Diamonds & ${t100} Website Tasks completed to unlock.`,
+        active: true,
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'giftcard_500',
+        title: '₹500 Gift Card',
+        name: '₹500 Gift Card',
+        productName: '₹500 Gift Card',
+        category: 'gift-card',
+        categoryName: 'Gift Card',
+        categoryIcon: '🎁',
+        diamonds: d500,
+        diamondCost: d500,
+        tasksNeeded: t500,
+        requiredWebTasks: t500,
+        realValue: '₹500',
+        originalPrice: '₹500',
+        mrp: '₹500',
+        offerValue: '₹500',
+        cashValue: '₹500',
+        discountPrice: '₹500',
+        link: 'https://amazon.in/giftcards',
+        productLink: 'https://amazon.in/giftcards',
+        url: 'https://amazon.in/giftcards',
+        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        stock: s500,
+        buyerStar: 5.0,
+        stars: 5.0,
+        rating: 5.0,
+        tag: '₹500 VOUCHER',
+        description: `Instant ₹500 Digital Voucher. Requires ${d500.toLocaleString()} 💎 Diamonds & ${t500} Website Tasks completed to unlock.`,
+        active: true,
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'giftcard_1000',
+        title: '₹1,000 Gift Card',
+        name: '₹1,000 Gift Card',
+        productName: '₹1,000 Gift Card',
+        category: 'gift-card',
+        categoryName: 'Gift Card',
+        categoryIcon: '🎁',
+        diamonds: d1000,
+        diamondCost: d1000,
+        tasksNeeded: t1000,
+        requiredWebTasks: t1000,
+        realValue: '₹1,000',
+        originalPrice: '₹1,000',
+        mrp: '₹1,000',
+        offerValue: '₹1,000',
+        cashValue: '₹1,000',
+        discountPrice: '₹1,000',
+        link: 'https://amazon.in/giftcards',
+        productLink: 'https://amazon.in/giftcards',
+        url: 'https://amazon.in/giftcards',
+        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+        stock: s1000,
+        buyerStar: 5.0,
+        stars: 5.0,
+        rating: 5.0,
+        tag: '₹1,000 VOUCHER',
+        description: `Instant ₹1,000 Digital Voucher. Requires ${d1000.toLocaleString()} 💎 Diamonds & ${t1000} Website Tasks completed to unlock.`,
+        active: true,
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    // Merge or update gift cards in rewards array
+    giftCards.forEach(gc => {
+      const idx = rewards.findIndex(r => r.id === gc.id);
+      if (idx !== -1) {
+        rewards[idx] = { ...rewards[idx], ...gc };
+      } else {
+        rewards.unshift(gc);
+      }
+    });
+
+    db.ref('/mega_rewards').set(rewards)
+      .then(() => {
+        window.adminState.rewards = rewards;
+        renderRewardsCatalog();
+        alert('✅ Standard Gift Cards successfully synced to Firebase (/mega_rewards)!\n• ₹100: ' + d100 + ' 💎, ' + t100 + ' Tasks\n• ₹500: ' + d500 + ' 💎, ' + t500 + ' Tasks\n• ₹1,000: ' + d1000 + ' 💎, ' + t1000 + ' Tasks');
+      })
+      .catch(err => alert('Firebase error: ' + err.message));
+  };
+
+  if (typeof window.requireAdminPassword === 'function') {
+    window.requireAdminPassword(executeSync);
+  } else {
+    executeSync();
+  }
+}
+
 // Global window exports
 window.initCategoryDropdown = initCategoryDropdown;
 window.toggleCategoryDropdown = toggleCategoryDropdown;
@@ -674,3 +831,4 @@ window.seedSampleRewardsToFirebase = seedSampleRewardsToFirebase;
 window.seedSampleCustomRequestsToFirebase = seedSampleCustomRequestsToFirebase;
 window.renderRewardsCatalog = renderRewardsCatalog;
 window.updateCustomReqBadge = updateCustomReqBadge;
+window.syncStandardGiftCards = syncStandardGiftCards;

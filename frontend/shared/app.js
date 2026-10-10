@@ -37,6 +37,8 @@ function getPageMap() {
       rewards: DOM.pageReward,
       wallet: DOM.pageReward,
       streak: DOM.pageStreak,
+      xp: document.getElementById('pageXP'),
+      goal: document.getElementById('pageGoal'),
       adRewards: document.getElementById('pageAdRewards') || DOM.pageAdRewards,
       'ad-rewards': document.getElementById('pageAdRewards') || DOM.pageAdRewards,
       spin: document.getElementById('pageSpin'),
@@ -97,6 +99,8 @@ const PAGE_FILE_MAP = {
   'rewards': 'reward',
   'wallet': 'reward',
   'streak': 'streak',
+  'xp': 'xp',
+  'goal': 'goal',
   'megaReward': 'mega-reward',
   'mega-reward': 'mega-reward',
   'giftCard': 'gift-card',
@@ -153,7 +157,7 @@ function ensurePageLoaded(pageName) {
   if (_loadingPagePromises.has(fileKey)) return _loadingPagePromises.get(fileKey);
 
   const promise = new Promise((resolve) => {
-    const existing = document.querySelector(`script[src*="pages/${fileKey}/${fileKey}.js"]`);
+    const existing = document.querySelector(`script[src*="pages/${fileKey}/${fileKey}.js"], script[src*="pages/${fileKey}/script.js"]`);
     if (existing) {
       _loadedPageScripts.add(fileKey);
       _loadingPagePromises.delete(fileKey);
@@ -168,10 +172,22 @@ function ensurePageLoaded(pageName) {
       _loadingPagePromises.delete(fileKey);
       resolve();
     };
-    script.onerror = (e) => {
-      console.warn(`[LazyLoader] Could not load pages/${fileKey}/${fileKey}.js`, e);
-      _loadingPagePromises.delete(fileKey);
-      resolve();
+    script.onerror = () => {
+      // Fallback to script.js
+      const fallbackScript = document.createElement('script');
+      fallbackScript.src = `pages/${fileKey}/script.js`;
+      fallbackScript.async = true;
+      fallbackScript.onload = () => {
+        _loadedPageScripts.add(fileKey);
+        _loadingPagePromises.delete(fileKey);
+        resolve();
+      };
+      fallbackScript.onerror = (e) => {
+        console.warn(`[LazyLoader] Could not load pages/${fileKey}/${fileKey}.js`, e);
+        _loadingPagePromises.delete(fileKey);
+        resolve();
+      };
+      document.body.appendChild(fallbackScript);
     };
     document.body.appendChild(script);
   });
@@ -183,7 +199,7 @@ window.ensurePageLoaded = ensurePageLoaded;
 
 function preloadNonCriticalPages() {
   const allKeys = [
-    'tasks', 'profile', 'reward', 'streak',
+    'tasks', 'profile', 'xp', 'goal', 'reward', 'streak',
     'spin', 'chest', 'scratch', 'egg', 'leaderboard',
     'memory-match', 'coin-catcher', 'mega-reward',
     'gift-card', 'gadgets', 'accessories', 'gaming-tool',
@@ -294,8 +310,9 @@ function switchPage(pageName) {
         setTimeout(() => navigateMiningPage(1), 20);
       }
     } else {
-      // Menu bar stays in page at bottom for all pages and games
-      bottomNavEl.style.display = 'flex';
+      // Menu bar stays in page at bottom for all pages and games (Home, Tasks, Energy, Rewards, etc.)
+      bottomNavEl.style.setProperty('display', 'flex', 'important');
+      bottomNavEl.style.visibility = 'visible';
       if (sfBottomMenuBar) sfBottomMenuBar.style.display = 'none';
       if (beeBottomMenuBar) beeBottomMenuBar.style.display = 'none';
       if (mineBottomMenuBar) mineBottomMenuBar.style.display = 'none';
@@ -388,6 +405,12 @@ function switchPage(pageName) {
       if (typeof initMemoryMatchPage === 'function') initMemoryMatchPage();
     } else if (targetPage === 'coinCatcher' || targetPage === 'coin-catcher') {
       if (typeof initCoinCatcherPage === 'function') initCoinCatcherPage();
+    } else if (targetPage === 'xp') {
+      if (typeof updateXpPageUI === 'function') updateXpPageUI();
+      else if (typeof initXpPage === 'function') initXpPage();
+    } else if (targetPage === 'goal') {
+      if (typeof updateGoalPageUI === 'function') updateGoalPageUI();
+      else if (typeof initGoalPage === 'function') initGoalPage();
     }
   }
 

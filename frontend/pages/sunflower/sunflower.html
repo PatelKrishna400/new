@@ -21,16 +21,6 @@
         <span class="sf-hdr-ico">🌻</span>
         <span id="sfStickyCoins" class="sf-hdr-val font-black">0</span>
       </div>
-      <!-- 2. 🪙 Gold Coin Balance -->
-      <div class="sf-hdr-pill pill-gold" onclick="switchPage('home')" title="Gold Coins: Main Game Balance">
-        <span class="sf-hdr-ico">🪙</span>
-        <span id="sfStickyGoldCoins" class="sf-hdr-val font-black coin-val">0</span>
-      </div>
-      <!-- 3. 💎 Diamond Balance -->
-      <div class="sf-hdr-pill pill-diamond" onclick="navigateSunflowerPage(3)" title="Diamonds: Tap to open Shop">
-        <span class="sf-hdr-ico">💎</span>
-        <span id="sfStickyDiamonds" class="sf-hdr-val font-black diamond-val">0</span>
-      </div>
       <!-- 4. 🌱 Seeds in Inventory -->
       <div class="sf-hdr-pill pill-emerald" onclick="navigateSunflowerPage(3)" title="Plant Seeds: Tap to open Shop">
         <span class="sf-hdr-ico">🌱</span>
@@ -161,7 +151,11 @@
               <div>
                 <h4 class="text-xs font-black text-amber-300">Sunflower Plant / Seed</h4>
                 <div class="text-[9.5px] text-emerald-400 font-mono mt-0.5 font-bold">
-                  In Inventory: <span id="sfShopPlantCoun            <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
+                  In Inventory: <span id="sfShopPlantCount">0</span> 🌱 Owned &bull; Plant on Lands
+                </div>
+              </div>
+            </div>
+            <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
               200 🪙 / 1 💎
             </span>
           </div>
@@ -171,7 +165,7 @@
               <span>🪙 Buy 1 🌱 (200 Coins)</span>
             </button>
             <button onclick="openSunflowerAdModal('sprout')" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
-              <span>🎬 Watch Ad (+1 Free 🌱)</span>
+              <span>📢 Watch Ad (+1 Free 🌱)</span>
             </button>
           </div>
         </div>
@@ -198,7 +192,7 @@
               <span>🪙 Buy 10 🪣 (250 Coins)</span>
             </button>
             <button onclick="openSunflowerAdModal('basket')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
-              <span>🎬 Watch Ad (+5 Free 🪣)</span>
+              <span>📢 Watch Ad (+5 Free 🪣)</span>
             </button>
           </div>
         </div>
@@ -225,7 +219,7 @@
               <span>🪙 Buy 1 🪏 (200 Coins)</span>
             </button>
             <button onclick="openSunflowerAdModal('shovel')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:scale-95 text-white font-black text-xs py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5">
-              <span>🎬 Watch Ad (+1 Free 🪏)</span>
+              <span>📢 Watch Ad (+1 Free 🪏)</span>
             </button>
           </div>
         </div>
@@ -247,19 +241,19 @@
             <!-- 2X Boost -->
             <button onclick="activateSunflowerProfitBooster(2)" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:brightness-110 active:scale-95 text-stone-950 font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-yellow-400">
               <span class="text-sm">⚡ 2X PROFIT</span>
-              <span class="text-[9.5px] text-stone-900 font-bold">🎬 Watch Ad (20 Min)</span>
+              <span class="text-[9.5px] text-stone-900 font-bold">📢 Watch Ad (20 Min)</span>
             </button>
 
             <!-- 5X Boost -->
             <button onclick="activateSunflowerProfitBooster(5)" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-emerald-400">
               <span class="text-sm">🔥 5X PROFIT</span>
-              <span class="text-[9.5px] text-emerald-100 font-bold">🎬 Watch Ad (20 Min)</span>
+              <span class="text-[9.5px] text-emerald-100 font-bold">📢 Watch Ad (20 Min)</span>
             </button>
 
             <!-- 10X Boost -->
             <button onclick="activateSunflowerProfitBooster(10)" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-purple-400">
               <span class="text-sm">👑 10X PROFIT</span>
-              <span class="text-[9.5px] text-purple-100 font-bold">🎬 Watch Ad (20 Min)</span>
+              <span class="text-[9.5px] text-purple-100 font-bold">📢 Watch Ad (20 Min)</span>
             </button>
           </div>
         </div>
@@ -294,7 +288,7 @@
         <div class="flex items-center gap-2 text-stone-300">
           <span>💎 Unlock Slot: <strong class="text-cyan-300 font-mono">300 💎</strong></span>
           <span>•</span>
-          <span>☀️ 1-Day Contract: <strong class="text-amber-300 font-mono">500, 1000, 1500... ☀️</strong> or <strong class="text-emerald-400">1 Ad 🎬</strong></span>
+          <span>☀️ 1-Day Contract: <strong class="text-amber-300 font-mono">500, 1000, 1500... ☀️</strong> or <strong class="text-emerald-400">1 Ad 📢</strong></span>
         </div>
       </div>
 
@@ -319,10 +313,6 @@
         <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabFuel" onclick="switchSunflowerExchangeSubtab('fuel')">
           <span>🔋</span>
           <span>Fuel Cells</span>
-        </button>
-        <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabEnergy" onclick="switchSunflowerExchangeSubtab('energy')">
-          <span>⚡</span>
-          <span>Solar Refinery (29⚡)</span>
         </button>
         <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabPrestige" onclick="switchSunflowerExchangeSubtab('prestige')">
           <span>👑</span>
@@ -478,63 +468,6 @@
         </div>
       </div>
 
-      <!-- SUBTAB 2: ⚡ SOLAR REFINERY CONVERTER (100 COINS = 29⚡) -->
-      <div class="flex flex-col gap-4 hidden" id="sfExchangeSectionEnergy">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
-          <div class="flex items-center gap-2.5">
-            <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
-            <div>
-              <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
-                <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
-                <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
-              </h2>
-              <p class="text-[10px] text-stone-300">
-                Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
-          <div class="text-5xl animate-bounce">⚡☀️</div>
-          <div>
-            <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
-            <p class="text-xs text-stone-300 max-w-sm mt-1">
-              Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
-            </p>
-          </div>
-
-          <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
-            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-              <span class="text-stone-400 text-[10px] block">Your Coins</span>
-              <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
-            </div>
-            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-              <span class="text-stone-400 text-[10px] block">Batch Rate</span>
-              <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
-            </div>
-            <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-              <span class="text-stone-400 text-[10px] block">Total Converted</span>
-              <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
-            <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-              <span>Throw 100 ☀️</span>
-              <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
-            </button>
-            <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-              <span>Throw 1000 ☀️</span>
-              <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
-            </button>
-            <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
-              <span>⚡ Throw ALL Available Coins</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- SUBTAB 4: 👑 PRESTIGE SUNFLOWER COINS TO GOLD COINS (RESTARTS LEVEL 1) -->
       <div class="flex flex-col gap-4 hidden" id="sfExchangeSectionPrestige">
         <div class="bg-gradient-to-br from-yellow-950/70 via-stone-900/90 to-amber-950/60 rounded-2xl p-4 border border-yellow-500/50 shadow-xl flex flex-col items-center text-center gap-3">
@@ -645,7 +578,7 @@
       <div class="p-3.5 bg-stone-900 border-t border-stone-800 flex flex-col gap-2">
         <!-- 1. Watch Ad for 2X Profit -->
         <button id="sfCollect2xAdBtn" onclick="confirmSfCollect(true)" class="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-stone-950 font-black text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 cursor-pointer transition transform active:scale-95">
-          <span class="text-base">📺</span>
+          <span class="text-base">📢</span>
           <span class="text-[12.5px]">2X PROFIT (Watch Ad)</span>
         </button>
 

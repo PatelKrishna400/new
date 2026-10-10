@@ -256,6 +256,7 @@
       <!-- ================================================================
            MODULAR PAGES CONTAINER (LOADED FROM /pages/)
            ================================================================ -->
+      <main class="page-container" id="mainPagesContainer">
       <!-- PAGE: HOME -->
       <div class="page-view active" id="pageHome">
         <div class="home-reactor-container">
@@ -892,17 +893,23 @@
 
       <!-- PAGE: TASKS -->
       <div class="page-view" id="pageTasks">
-        <!-- Minimal Top Subtabs Header -->
+        <!-- Minimal Top Subtabs Header (3 Options: Daily Task, Telegram Task, Website Task) -->
         <div class="tasks-tab-header">
           <button class="task-subtab-btn active" id="subtabDaily" onclick="switchTaskSubtab('daily')">
             <span class="text-base">📅</span>
-            <span class="subtab-text font-black">30-Day Quests</span>
+            <span class="subtab-text font-black">Daily Task</span>
             <span class="subtab-badge-pill" id="dailyBadgeCount">Day 1</span>
+          </button>
+      
+          <button class="task-subtab-btn" id="subtabTelegram" onclick="switchTaskSubtab('telegram')">
+            <span class="text-base">✈️</span>
+            <span class="subtab-text font-black">Telegram Task</span>
+            <span class="subtab-badge-pill" id="telegramBadgeCount">Official</span>
           </button>
       
           <button class="task-subtab-btn" id="subtabWebsite" onclick="switchTaskSubtab('website')">
             <span class="text-base">🌐</span>
-            <span class="subtab-text font-black">Website Tasks</span>
+            <span class="subtab-text font-black">Website Task</span>
             <span class="subtab-badge-pill" id="websiteBadgeCount">Diskwala</span>
           </button>
         </div>
@@ -932,7 +939,12 @@
             <!-- Dynamically rendered by renderThirtyDayCards() in tasks.js -->
           </div>
       
-          <!-- SUBTAB 2: WEBSITE TASKS CONTAINER -->
+          <!-- SUBTAB 2: TELEGRAM TASKS CONTAINER -->
+          <div id="telegramTasksListContainer" class="flex flex-col gap-3 hidden">
+            <!-- Dynamically rendered by renderTelegramTasks() in tasks.js -->
+          </div>
+      
+          <!-- SUBTAB 3: WEBSITE TASKS CONTAINER -->
           <div id="websiteTasksListContainer" class="flex flex-col gap-3 hidden">
             <!-- Dynamically rendered by renderWebsiteTasks() in tasks.js -->
           </div>
@@ -993,37 +1005,64 @@
           </div>
         </div>
       
-        <!-- Website Task 4-Digit PIN Code Modal -->
-        <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)">
+        <!-- Website Task Popup Modal (10,000 Coins Unlock & 4-Digit PIN Verify) -->
+        <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)" style="display: none;">
           <div class="web-code-modal" id="webCodeModal" onclick="event.stopPropagation()">
             <div class="web-code-header">
               <div class="web-code-icon-badge">🌐</div>
               <div class="web-code-header-text">
-                <span class="web-code-subtag" id="webModalSubtag">DISKWALA VERIFICATION</span>
+                <div class="flex items-center gap-2">
+                  <span class="web-code-subtag" id="webModalSubtag">DISKWALA SPONSOR</span>
+                  <span class="text-[10px] font-mono font-black text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40" id="webModalPrizeTag">+50 💎</span>
+                </div>
                 <h3 class="web-code-title" id="webModalTitle">Website Quest</h3>
               </div>
-              <button class="web-code-close-btn" onclick="closeWebCodeModal()">&times;</button>
+              <button class="web-code-close-btn" onclick="closeWebCodeModal()" aria-label="Close modal">&times;</button>
             </div>
       
             <div class="web-code-body">
-              <div class="text-xs text-stone-300 text-center mb-1">
-                Enter 4-digit code from Diskwala link:
+              <!-- View A: Locked (Requires 10,000 Coins) -->
+              <div id="webModalLockedView" class="flex flex-col gap-3 py-1">
+                <p class="text-xs text-stone-300 text-center">
+                  Unlock this sponsor quest to open the Diskwala website and find the secret 4-digit verification code.
+                </p>
+                <div class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-bold text-amber-200">
+                  <span>Entry Requirement:</span>
+                  <span class="font-mono text-amber-300 font-black">10,000 🪙 Coins</span>
+                </div>
+                <button type="button" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2" id="webModalUnlockBtn" onclick="unlockCurrentWebsiteTask()">
+                  <span>🪙 Unlock Quest (10,000 Coins)</span>
+                </button>
               </div>
       
-              <div class="web-pin-container my-3">
-                <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric">
-                <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
-                <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
-                <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
+              <!-- View B: Unlocked (PIN input & Verify Ad) -->
+              <div id="webModalUnlockedView" class="flex flex-col gap-2.5 py-1" style="display: none;">
+                <div class="text-xs text-stone-300 text-center">
+                  Browse the sponsor site, find the 4-digit code, and enter it below:
+                </div>
+      
+                <div class="web-pin-container my-1">
+                  <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric">
+                  <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
+                  <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
+                  <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
+                </div>
+      
+                <div class="web-code-modal-actions">
+                  <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn" onclick="revisitWebsiteTaskUrl()">
+                    <span>🔗 Open Site</span>
+                  </button>
+                  <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn" onclick="submitWebsiteCodeVerification()">
+                    <span>🎬 Verify &amp; Claim (+50 💎)</span>
+                  </button>
+                </div>
               </div>
       
-              <div class="web-code-modal-actions">
-                <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn" onclick="revisitWebsiteTaskUrl()">
-                  <span>🔗 Open Link</span>
-                </button>
-                <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn" onclick="submitWebsiteCodeVerification()">
-                  <span>🎬 Verify &amp; Claim (Watch Ad)</span>
-                </button>
+              <!-- View C: Claimed -->
+              <div id="webModalClaimedView" class="flex flex-col items-center gap-2 py-3 text-center" style="display: none;">
+                <span class="text-3xl">🎉</span>
+                <span class="text-sm font-black text-emerald-400">Quest Completed!</span>
+                <p class="text-xs text-stone-400">You have claimed the +50 💎 reward for this sponsor quest.</p>
               </div>
             </div>
           </div>
@@ -1675,6 +1714,157 @@
       </div>
       
 
+      <!-- PAGE: XP -->
+      <div class="page-view" id="pageXP">
+              
+              <!-- Top Season Countdown Banner -->
+              <div class="xp-season-banner">
+                <div class="season-timer-box">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span class="season-text">Season Ends In:</span>
+                  <span class="season-time-val" id="xpSeasonTimer">12d 0h 22m 42s</span>
+                </div>
+              </div>
+      
+              <!-- Top Action Nav Row -->
+              <div class="xp-top-actions-row">
+                <button class="xp-back-btn" onclick="switchPage('home')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+      
+                <div class="xp-timer-pill">
+                  <span>✨ LEVEL PROGRESSION</span>
+                </div>
+      
+                <button class="xp-level-badge-btn" id="btnToggleLevels" onclick="toggleXpSubView()">
+                  <span class="btn-sparkle">✨</span>
+                  <span id="toggleLevelsBtnText">LV. 1 - 1000</span>
+                </button>
+              </div>
+      
+              <!-- Subtabs Switcher: Levels 1-1000 vs 10,000 Mega Reward -->
+              <div class="xp-subtab-header">
+                <button class="xp-subtab-btn" id="subtabLevelsList" onclick="switchXpSubtab('levels')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+                  </svg>
+                  <span>Levels 1 - 1000</span>
+                </button>
+      
+                <button class="xp-subtab-btn active" id="subtabMegaReward" onclick="switchXpSubtab('mega')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v10M15 9.5a3 3 0 0 0-6 0c0 3 6 2 6 5a3 3 0 0 1-6 0"/>
+                  </svg>
+                  <span>1,000 Diamonds Mega</span>
+                </button>
+              </div>
+      
+              <!-- ==================== SUBVIEW 1: MEGA REWARD ==================== -->
+              <div class="xp-subview active" id="xpMegaRewardSubView">
+      
+                <!-- Main Mega Reward Card -->
+                <section class="mega-cash-card">
+                  
+                  <!-- Grand Reward Glowing Icon -->
+                  <div class="grand-reward-emblem-wrap">
+                    <div class="grand-emblem-aura" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);"></div>
+                    <div class="grand-reward-circle" style="border-color: #38bdf8; box-shadow: 0 0 32px rgba(56, 189, 248, 0.6); display: flex; align-items: center; justify-content: center;">
+                      <span style="font-size: 44px; filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.8));">💎</span>
+                    </div>
+                    <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #0284c7, #38bdf8);">GRAND REWARD</div>
+                  </div>
+      
+                  <!-- Diamonds Badge -->
+                  <div class="mega-coins-badge" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.4); color: #38bdf8;">
+                    <span class="sparkle-icon">✨</span>
+                    <span>1,000 DIAMONDS 💎</span>
+                  </div>
+      
+                  <h3 class="mega-card-title">Level 1000 Mega Diamond Prize</h3>
+                  <p class="mega-card-desc">Complete Level 1000, then watch 100 ads to claim your 1,000 Diamonds mega reward!</p>
+      
+                  <!-- Step 1 Card -->
+                  <div class="mega-step-card" id="megaStep1Card">
+                    <div class="mega-step-icon-box">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-step-body">
+                      <div class="mega-step-header">
+                        <span class="mega-step-title">Step 1: Reach Level 1000</span>
+                        <span class="mega-step-badge locked" id="megaStep1Badge">LOCKED</span>
+                      </div>
+                      <div class="mega-step-sub">
+                        <span id="megaStep1SubText">Current: Level 0 / 1000 (-1,000 / 1,000,000 XP)</span>
+                        <svg class="step-lock-icon" id="megaStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Step 2 Card -->
+                  <div class="mega-step-card" id="megaStep2Card">
+                    <div class="mega-step-icon-box cyan-icon-box">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                        <polyline points="17 2 12 7 7 2"/>
+                      </svg>
+                    </div>
+                    <div class="mega-step-body">
+                      <div class="mega-step-header">
+                        <span class="mega-step-title">Step 2: Watch 100 Ads</span>
+                        <span class="mega-ads-counter-text" id="megaAdsCounterHeader">0 / 100 Ads (0%)</span>
+                      </div>
+                      
+                      <div class="mega-progress-track">
+                        <div class="mega-progress-fill" id="megaAdsProgressFill" style="width: 0%; background: linear-gradient(90deg, #0284c7, #38bdf8); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);"></div>
+                      </div>
+      
+                      <div class="mega-progress-footer">
+                        <span class="ads-remain-text" id="megaAdsRemainText">100 ads remaining</span>
+                        <span class="prize-tag" style="color: #38bdf8;">Prize: 1,000 Diamonds 💎</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Action Button -->
+                  <button class="mega-action-btn disabled" id="megaActionBtn" onclick="handleMegaRewardAction()">
+                    <svg class="action-lock-svg" id="megaActionLockIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span id="megaActionBtnText">REACH LEVEL 1000 TO UNLOCK AD WATCHER</span>
+                  </button>
+      
+                </section>
+      
+              </div>
+      
+              <!-- ==================== SUBVIEW 2: LEVELS 1-1000 LIST ==================== -->
+              <div class="xp-subview" id="xpLevelsListSubView">
+                
+                <div class="levels-scroll-list" id="levelsScrollList">
+                  <!-- Dynamically populated Levels 1 to 1000 -->
+                </div>
+      
+                <button class="xp-back-home-btn" onclick="switchPage('home')">
+                  BACK TO HOME
+                </button>
+      
+              </div>
+      
+            </div>
+      
+
       <!-- PAGE: REWARD -->
       <div class="page-view" id="pageReward">
       
@@ -2133,6 +2323,165 @@
       
             </div>
       
+      
+
+      <!-- PAGE: GOAL -->
+      <div class="page-view" id="pageGoal">
+              
+              <!-- Top Season Countdown Banner -->
+              <div class="xp-season-banner">
+                <div class="season-timer-box">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span class="season-text">Goal Season Ends In:</span>
+                  <span class="season-time-val" id="goalSeasonTimer">12d 0h 22m 42s</span>
+                </div>
+              </div>
+      
+              <!-- Top Action Nav Row -->
+              <div class="xp-top-actions-row">
+                <button class="xp-back-btn" onclick="switchPage('home')" aria-label="Back" title="Back">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+      
+                <div class="xp-timer-pill">
+                  <span>🎯 GOAL MISSIONS</span>
+                </div>
+      
+                <button class="xp-level-badge-btn" id="btnToggleGoals" onclick="toggleGoalSubView()">
+                  <span class="btn-sparkle">🎯</span>
+                  <span id="toggleGoalsBtnText">GOAL LV. 0</span>
+                </button>
+              </div>
+      
+              <!-- Subtabs Switcher: Goals 1-1000 vs Mega Reward -->
+              <div class="xp-subtab-header">
+                <button class="xp-subtab-btn" id="subtabGoalsList" onclick="switchGoalSubtab('goals')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+                  </svg>
+                  <span>Goals 1 - 1000</span>
+                </button>
+      
+                <button class="xp-subtab-btn active" id="subtabGoalMegaReward" onclick="switchGoalSubtab('mega')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v10M15 9.5a3 3 0 0 0-6 0c0 3 6 2 6 5a3 3 0 0 1-6 0"/>
+                  </svg>
+                  <span>Mega Reward</span>
+                </button>
+              </div>
+      
+              <!-- ==================== SUBVIEW 1: GOAL MEGA REWARD ==================== -->
+              <div class="xp-subview active" id="goalMegaRewardSubView">
+      
+                <!-- Main Grand Goal Mega Reward Card -->
+                <section class="mega-cash-card">
+                  
+                  <!-- Grand Glowing Emblem -->
+                  <div class="grand-reward-emblem-wrap">
+                    <div class="grand-emblem-aura" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, transparent 70%);"></div>
+                    <div class="grand-reward-circle" style="border-color: #38bdf8; box-shadow: 0 0 32px rgba(56, 189, 248, 0.6); display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 100 100" class="grand-coins-svg">
+                        <circle cx="42" cy="45" r="24" fill="#042f2e" stroke="#06b6d4" stroke-width="3.5" />
+                        <circle cx="42" cy="45" r="18" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 2"/>
+                        <text x="42" y="53" font-size="22" text-anchor="middle">🥢</text>
+                        
+                        <circle cx="60" cy="58" r="22" fill="#022c22" stroke="#fbbf24" stroke-width="3" />
+                        <circle cx="60" cy="58" r="16" fill="none" stroke="#fde047" stroke-width="1.8" stroke-dasharray="3 2"/>
+                        <text x="60" y="66" font-size="20" text-anchor="middle">🪙</text>
+                      </svg>
+                    </div>
+                    <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #0284c7, #38bdf8);">GRAND GOAL REWARD</div>
+                  </div>
+      
+                  <!-- Loot Bundle Badge -->
+                  <div class="mega-coins-badge" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.4); color: #38bdf8;">
+                    <span class="sparkle-icon">👑</span>
+                    <span>100 KEYS • 75 CARDS • 150 TICKETS • 1,000 COINS</span>
+                  </div>
+      
+                  <h3 class="mega-card-title">Level 1000 Mega Goal Prize</h3>
+                  <p class="mega-card-desc">Complete Goal Level 1000, then watch 1,000 ads to claim your ultimate reward: 100 Keys, 75 Cards, 150 Tickets, and 1,000 Coins!</p>
+      
+                  <!-- Step 1 Card -->
+                  <div class="mega-step-card" id="goalMegaStep1Card">
+                    <div class="mega-step-icon-box" style="background: rgba(2, 132, 199, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+                      </svg>
+                    </div>
+                    <div class="mega-step-body">
+                      <div class="mega-step-header">
+                        <span class="mega-step-title">Step 1: Complete Goal Level 1000</span>
+                        <span class="mega-step-badge locked" id="goalMegaStep1Badge">LOCKED</span>
+                      </div>
+                      <div class="mega-step-sub">
+                        <span id="goalMegaStep1SubText">Current: Goal Level 1 / 1000</span>
+                        <svg class="step-lock-icon" id="goalMegaStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Step 2 Card -->
+                  <div class="mega-step-card" id="goalMegaStep2Card">
+                    <div class="mega-step-icon-box cyan-icon-box">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                        <polyline points="17 2 12 7 7 2"/>
+                      </svg>
+                    </div>
+                    <div class="mega-step-body">
+                      <div class="mega-step-header">
+                        <span class="mega-step-title">Step 2: Watch 1,000 Ads</span>
+                        <span class="mega-ads-counter-text" id="goalMegaAdsCounterHeader">0 / 1000 Ads (0%)</span>
+                      </div>
+                      
+                      <div class="mega-progress-track">
+                        <div class="mega-progress-fill" id="goalMegaAdsProgressFill" style="width: 0%; background: linear-gradient(90deg, #0284c7, #38bdf8); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);"></div>
+                      </div>
+      
+                      <div class="mega-progress-footer">
+                        <span class="ads-remain-text" id="goalMegaAdsRemainText">1000 ads remaining</span>
+                        <span class="prize-tag" style="color: #38bdf8;">100 Keys • 75 Cards • 150 Tickets • 1,000 🪙</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <!-- Action Button -->
+                  <button class="mega-action-btn disabled" id="goalMegaActionBtn" onclick="handleGoalMegaRewardAction()">
+                    <svg class="action-lock-svg" id="goalMegaActionLockIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span id="goalMegaActionBtnText">REACH GOAL LEVEL 1000 TO UNLOCK AD WATCHER</span>
+                  </button>
+      
+                </section>
+      
+              </div>
+      
+              <!-- ==================== SUBVIEW 2: GOALS 1-1000 LIST ==================== -->
+              <div class="xp-subview" id="goalRoadmapSubView">
+                
+                <div class="levels-scroll-list" id="goalsScrollList">
+                  <!-- Dynamically populated Goals 1 to 1000 -->
+                </div>
+      
+                <button class="xp-back-home-btn" onclick="switchPage('home')">
+                  BACK TO HOME
+                </button>
+      
+              </div>
+      
+            </div>
       
 
       <!-- PAGE: STREAK -->
@@ -4803,7 +5152,11 @@
                     <div>
                       <h4 class="text-xs font-black text-amber-300">Sunflower Plant / Seed</h4>
                       <div class="text-[9.5px] text-emerald-400 font-mono mt-0.5 font-bold">
-                        In Inventory: <span id="sfShopPlantCoun            <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
+                        In Inventory: <span id="sfShopPlantCount">0</span> 🌱 Owned &bull; Plant on Lands
+                      </div>
+                    </div>
+                  </div>
+                  <span class="bg-amber-950 text-amber-300 text-[10px] font-mono font-black px-2 py-0.5 rounded-full shrink-0 border border-amber-500/40">
                     200 🪙 / 1 💎
                   </span>
                 </div>
@@ -4962,10 +5315,6 @@
                 <span>🔋</span>
                 <span>Fuel Cells</span>
               </button>
-              <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabEnergy" onclick="switchSunflowerExchangeSubtab('energy')">
-                <span>⚡</span>
-                <span>Solar Refinery (29⚡)</span>
-              </button>
               <button class="sf-exchange-tab-btn flex-1 py-2 px-2 sm:px-3 rounded-lg text-xs font-black transition flex items-center justify-center gap-1" id="sfExchTabPrestige" onclick="switchSunflowerExchangeSubtab('prestige')">
                 <span>👑</span>
                 <span>Prestige (☀️ ➔ 🪙)</span>
@@ -5117,63 +5466,6 @@
               <!-- 10 Fuel Cells List Container -->
               <div class="fuel-shop-vertical-list flex flex-col gap-3" id="sfFuelShopCardsList">
                 <!-- Dynamically populated by renderSunflowerFuelShopCards() in sunflower.js -->
-              </div>
-            </div>
-      
-            <!-- SUBTAB 2: ⚡ SOLAR REFINERY CONVERTER (100 COINS = 29⚡) -->
-            <div class="flex flex-col gap-4 hidden" id="sfExchangeSectionEnergy">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-2.5">
-                <div class="flex items-center gap-2.5">
-                  <div class="text-2xl sm:text-3xl animate-pulse">⚡⚗️</div>
-                  <div>
-                    <h2 class="text-xs sm:text-sm font-black text-yellow-300 flex items-center gap-1.5">
-                      <span>Solar Refinery &bull; 100 ☀️ = 29 ⚡</span>
-                      <span class="text-[9px] bg-yellow-950 text-yellow-300 font-mono px-1.5 py-0.5 rounded-full border border-yellow-500/40">Clean Energy</span>
-                    </h2>
-                    <p class="text-[10px] text-stone-300">
-                      Convert your harvested Solar Coins into clean Quantum Reactor Energy to recharge your main generator!
-                    </p>
-                  </div>
-                </div>
-              </div>
-      
-              <div class="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 rounded-2xl p-5 border border-yellow-500/40 flex flex-col items-center text-center gap-3 shadow-inner">
-                <div class="text-5xl animate-bounce">⚡☀️</div>
-                <div>
-                  <h3 class="text-base font-black text-yellow-300">Solar to Reactor Energy Converter</h3>
-                  <p class="text-xs text-stone-300 max-w-sm mt-1">
-                    Every 100 ☀️ Coins converts into 29 ⚡ Energy Units that instantly replenish your Energy Tap Reactor!
-                  </p>
-                </div>
-      
-                <div class="grid grid-cols-3 gap-3 w-full max-w-md my-2 text-center text-xs">
-                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                    <span class="text-stone-400 text-[10px] block">Your Coins</span>
-                    <span id="sfConvCoinDisplay" class="font-mono font-black text-amber-300 text-sm">150 ☀️</span>
-                  </div>
-                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                    <span class="text-stone-400 text-[10px] block">Batch Rate</span>
-                    <span class="font-mono font-black text-yellow-300 text-sm">100=29⚡</span>
-                  </div>
-                  <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800">
-                    <span class="text-stone-400 text-[10px] block">Total Converted</span>
-                    <span id="sfConvTotalEnergyDisplay" class="font-mono font-black text-emerald-400 text-sm">0 ⚡</span>
-                  </div>
-                </div>
-      
-                <div class="flex flex-wrap items-center justify-center gap-2 w-full max-w-md">
-                  <button id="sfConvert100Btn" onclick="executeSfCoinToEnergy(100)" class="flex-1 min-w-[130px] bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-                    <span>Throw 100 ☀️</span>
-                    <span class="bg-stone-950/30 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-stone-950">+29 ⚡</span>
-                  </button>
-                  <button id="sfConvert1000Btn" onclick="executeSfCoinToEnergy(1000)" class="flex-1 min-w-[130px] bg-stone-800 hover:bg-stone-700 text-yellow-300 font-black text-xs py-2.5 rounded-xl border border-yellow-500/40 shadow-lg active:scale-95 transition flex items-center justify-center gap-1.5">
-                    <span>Throw 1000 ☀️</span>
-                    <span class="bg-yellow-400/20 px-1.5 py-0.2 rounded-full text-[10px] font-mono text-yellow-200">+290 ⚡</span>
-                  </button>
-                  <button id="sfConvertAllBtn" onclick="executeSfCoinToEnergy('all')" class="w-full bg-white hover:bg-amber-100 text-amber-950 font-black text-xs py-2.5 rounded-xl shadow-lg active:scale-95 transition border border-yellow-400 flex items-center justify-center gap-1">
-                    <span>⚡ Throw ALL Available Coins</span>
-                  </button>
-                </div>
               </div>
             </div>
       
@@ -6688,6 +6980,7 @@
         </div>
       </div>
       
+      </main>
 
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
@@ -6729,8 +7022,6 @@
           </svg>
         </button>
       </nav>
-
-    </main>
 
     <!-- Modal Sheets -->
     <div class="modal-backdrop" id="modalBackdrop">

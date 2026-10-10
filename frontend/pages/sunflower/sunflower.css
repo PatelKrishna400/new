@@ -277,6 +277,32 @@
   color: #1e293b !important;
 }
 
+/* SF Page 3: Dedicated Shop & Depot High-Contrast Dark Luxury Styling */
+#sfPage3 {
+  background: linear-gradient(180deg, #181512 0%, #0c0a09 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.15) !important;
+  color: #fef3c7 !important;
+}
+#sfPage3 .bg-stone-950\/80,
+#sfPage3 .bg-stone-950\/90 {
+  background: rgba(28, 25, 23, 0.95) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #fef3c7 !important;
+}
+#sfPage3 .text-stone-300 {
+  color: #cbd5e1 !important;
+}
+#sfPage3 .text-amber-300 {
+  color: #fde047 !important;
+}
+#sfPage3 .text-cyan-300 {
+  color: #67e8f9 !important;
+}
+#sfPage3 .text-stone-200 {
+  color: #e2e8f0 !important;
+}
+
 /* Soil Beds */
 .sf-garden-bed {
   background: radial-gradient(circle at 50% 35%, #78350f 0%, #451a03 70%, #290f02 100%);
@@ -1431,7 +1457,6 @@
 /* ==========================================================================
    SUNFLOWER DEDICATED FLOATING BOTTOM MENU BAR (PERMANENTLY LOCKED AT BOTTOM)
    ========================================================================== */
-#pageSunflower.active ~ .bottom-nav,
 body.page-sunflower-active .bottom-nav {
   display: none !important;
 }

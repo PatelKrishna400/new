@@ -256,8 +256,8 @@ class FirebaseSyncService {
           // Check if cloud state is from older version before Global Zero Reset
           const cloudResetVer = cloudData.resetVersion || 0;
           const cloudUpdatedAt = cloudData.updatedAt || 0;
-          const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
-          const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7;
+          const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1775750000000;
+          const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8;
 
           if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
             console.log('🔄 Cloud player record is from prior season/version. Resetting player to Level 0, zero balances, and new event timers!');
@@ -392,8 +392,8 @@ class FirebaseSyncService {
       // Check if remote cloud state is from older version before Global Zero Reset
       const cloudResetVer = cloudData.resetVersion || 0;
       const cloudUpdatedAt = cloudData.updatedAt || 0;
-      const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1773510000000;
-      const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7;
+      const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1775750000000;
+      const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8;
 
       if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
         console.log('🔄 Remote cloud player record is older than Global Zero Reset. Enforcing fresh zero state!');
@@ -943,7 +943,7 @@ class FirebaseSyncService {
       };
 
       const payload = {
-        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7,
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8,
         updatedAt: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now(),
         player: playerPayload,
         progression: gameState.progression,
@@ -1020,7 +1020,7 @@ class FirebaseSyncService {
         coins: Number(gameState.player.coins || 0),
         diamondWins: Number(gameState.player.diamondWins || gameState.player.diamondWinsCount || 0),
         energyTaps: Number(gameState.reactor.energyTaps || 0),
-        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 7,
+        resetVersion: (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8,
         lastActive: typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
       };
       this.database.ref(`leaderboard/${this.userId}`).set(leaderboardPayload).catch(() => {});

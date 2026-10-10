@@ -11,7 +11,7 @@
      ⚡ Geothermal Refinery (100 💎 = 29 ⚡), 👑 Prestige (100 💎 ➔ 10 🪙 Gold Coins)
    ========================================================================== */
 
-const MINE_STORAGE_KEY = 'ENERGY_TAP_MINING_STATE_V3';
+const MINE_STORAGE_KEY = 'ENERGY_TAP_MINING_STATE_V4';
 
 // 20 Shaft Base Unlock Costs (Plot 1 is Free)
 const MINE_LAND_UNLOCK_COSTS = [
@@ -25,7 +25,7 @@ const MINE_WELL_UNLOCK_COSTS = [
   2500, 3500, 5000, 7000, 9500, 13000, 18000, 25000, 35000, 50000
 ];
 
-const MINE_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 500);
+const MINE_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 100);
 
 const MINE_WELL_NAMES = [
   "Sub-Zero Cryo-Pump #1", "Permafrost Wellhead #2", "Glacial Syphon #3",
@@ -51,8 +51,8 @@ const MINE_LAND_BASE_TIMES = [
 
 // Base Life Limits at Level 1 (sec)
 const MINE_LAND_BASE_LIFE_LIMITS = [
-  500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-  5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
+  100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+  1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
 ];
 
 // Coolant Bonus (sec added per coolant)
@@ -90,8 +90,8 @@ function createDefaultMiningPlots() {
       level: 1,
       growthTimer: 0,
       growthDuration: 30.0,
-      lifeTimer: isUnlocked ? 60.0 : 0,
-      maxLifeLimit: 60.0,
+      lifeTimer: isUnlocked ? 100.0 : 0,
+      maxLifeLimit: MINE_LAND_BASE_LIFE_LIMITS[i - 1] || 500,
       timer: MINE_LAND_BASE_TIMES[i - 1] || 60,
       waterUsageCount: 0,
       storedCoins: 0,
@@ -136,6 +136,12 @@ function createDefaultMiningManagers() {
 
 function loadInitialMiningState() {
   try {
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_MINING_STATE_V3');
+  } catch (e) {}
+
+  try {
     const raw = localStorage.getItem(MINE_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
@@ -146,11 +152,11 @@ function loadInitialMiningState() {
         if (!Array.isArray(parsed.managers) || parsed.managers.length !== 20) {
           parsed.managers = createDefaultMiningManagers();
         }
-        if (typeof parsed.shards !== 'number') parsed.shards = 150;
-        if (typeof parsed.cores !== 'number') parsed.cores = 3;
-        if (typeof parsed.coolants !== 'number') parsed.coolants = 2;
-        if (typeof parsed.pickaxes !== 'number') parsed.pickaxes = 1;
-        if (typeof parsed.diamonds !== 'number') parsed.diamonds = 25;
+        if (typeof parsed.shards !== 'number') parsed.shards = 0;
+        if (typeof parsed.cores !== 'number') parsed.cores = 0;
+        if (typeof parsed.coolants !== 'number') parsed.coolants = 0;
+        if (typeof parsed.pickaxes !== 'number') parsed.pickaxes = 0;
+        if (typeof parsed.diamonds !== 'number') parsed.diamonds = 0;
         if (!parsed.upgradeMultiplier) parsed.upgradeMultiplier = 1;
         if (!parsed.activeBooster) parsed.activeBooster = null;
         if (typeof parsed.prestigeLevel !== 'number') parsed.prestigeLevel = 0;
@@ -163,11 +169,11 @@ function loadInitialMiningState() {
 
   return {
     currentPage: 1,
-    shards: 150,
-    diamonds: 25,
-    cores: 3,
-    coolants: 2,
-    pickaxes: 1,
+    shards: 0,
+    diamonds: 0,
+    cores: 0,
+    coolants: 0,
+    pickaxes: 0,
     upgradeMultiplier: 1,
     activeBooster: null,
     prestigeLevel: 0,
@@ -766,7 +772,7 @@ function renderMiningManagers() {
               <span>💎 10 💎 (+24h)</span>
             </button>
             <button class="mine-mgr-ad-btn" onclick="hireMineManagerAd(${mgr.landId}, event)">
-              <span>🎬 Ad (+10h)</span>
+              <span>📢 Ad (+10h)</span>
             </button>
             <button class="mine-mgr-coin-btn" onclick="hireMineManagerCoins(${mgr.landId}, event)">
               <span>💎 1 Day (${formatMineNumber(nextCoinCost)} 💎)</span>
@@ -1059,7 +1065,7 @@ function mineMainLoop(now) {
       if (plot.growthTimer <= 0) {
         plot.plantStatus = 'alive';
         plot.level = 1;
-        plot.lifeTimer = 60.0;
+        plot.lifeTimer = 100.0;
         plot.timer = getMinePlotCycleTime(idx, 1);
         if (isMineActive && miningState.currentPage === 1) renderMiningPlots();
       }

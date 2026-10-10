@@ -11,10 +11,11 @@ const DEFAULT_WEB_TASKS = [
   {
     id: 'web_1',
     title: 'Diskwala Portal Sponsor Quest #1',
-    desc: 'Unlock with 1,000 Coins, browse sponsor page, and enter 4-digit code to win 100 Diamonds 💎',
+    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
     url: 'https://diskwala.com/quest/alpha',
-    costCoins: 1000,
-    diamondReward: 100,
+    costCoins: 10000,
+    diamondReward: 50,
+    rewardDiamonds: 50,
     code: '4821',
     timer: 15,
     duration: 15,
@@ -25,13 +26,29 @@ const DEFAULT_WEB_TASKS = [
   {
     id: 'web_2',
     title: 'Diskwala Cloud Sponsor Quest #2',
-    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 250 Diamonds 💎',
+    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
     url: 'https://diskwala.com/quest/beta',
     costCoins: 10000,
-    diamondReward: 250,
+    diamondReward: 50,
+    rewardDiamonds: 50,
     code: '7392',
-    timer: 20,
-    duration: 20,
+    timer: 15,
+    duration: 15,
+    tag: 'DISKWALA SPONSOR',
+    tagText: 'DISKWALA SPONSOR',
+    disabled: false
+  },
+  {
+    id: 'web_3',
+    title: 'Diskwala Elite Partner Quest #3',
+    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
+    url: 'https://diskwala.com/quest/gamma',
+    costCoins: 10000,
+    diamondReward: 50,
+    rewardDiamonds: 50,
+    code: '5164',
+    timer: 15,
+    duration: 15,
     tag: 'DISKWALA VIP',
     tagText: 'DISKWALA VIP',
     disabled: false
@@ -535,8 +552,8 @@ function confirmAddWebsiteTask() {
   const url = (document.getElementById('inpNewWebUrl')?.value || '').trim();
   const code = (document.getElementById('inpNewWebPin')?.value || '4829').trim();
   const timer = Number(document.getElementById('inpNewWebTimer')?.value) || 15;
-  const diamonds = Number(document.getElementById('inpNewWebDiamonds')?.value) || 100;
-  const cost = Number(document.getElementById('inpNewWebCoins')?.value) || 1000;
+  const diamonds = Number(document.getElementById('inpNewWebDiamonds')?.value) || 50;
+  const cost = Number(document.getElementById('inpNewWebCoins')?.value) || 10000;
   const tag = (document.getElementById('inpNewWebTag')?.value || 'SPONSOR QUEST').trim();
 
   if (!title) {

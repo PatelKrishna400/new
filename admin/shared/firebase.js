@@ -794,7 +794,7 @@ function saveUserToFirebase(uid, updateFields, goalLevel, status) {
     updates[`/players/${uid}/status`] = status;
     updates[`/players/${uid}/player/status`] = status;
   }
-  updates[`/players/${uid}/resetVersion`] = 7;
+  updates[`/players/${uid}/resetVersion`] = 8;
   updates[`/players/${uid}/updatedAt`] = Date.now();
   return db.ref().update(updates).then(() => {
     logActivity('user_edit', `Updated player: ${(updateFields && (updateFields.username || updateFields.name)) || uid}`, updateFields);

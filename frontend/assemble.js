@@ -14,7 +14,9 @@ const PAGE_KEYS = [
   'energy',
   'tasks',
   'profile',
+  'xp',
   'reward',
+  'goal',
   'streak',
   'mega-reward',
   'gift-card',
@@ -45,9 +47,15 @@ console.log('--- Verifying Modular Page Structure ---');
 let allValid = true;
 
 PAGE_KEYS.forEach(key => {
-  const htmlPath = path.join(PAGES_DIR, key, `${key}.html`);
-  const cssPath = path.join(PAGES_DIR, key, `${key}.css`);
-  const jsPath = path.join(PAGES_DIR, key, `${key}.js`);
+  const htmlPath = fs.existsSync(path.join(PAGES_DIR, key, `${key}.html`))
+    ? path.join(PAGES_DIR, key, `${key}.html`)
+    : path.join(PAGES_DIR, key, 'index.html');
+  const cssPath = fs.existsSync(path.join(PAGES_DIR, key, `${key}.css`))
+    ? path.join(PAGES_DIR, key, `${key}.css`)
+    : path.join(PAGES_DIR, key, 'style.css');
+  const jsPath = fs.existsSync(path.join(PAGES_DIR, key, `${key}.js`))
+    ? path.join(PAGES_DIR, key, `${key}.js`)
+    : path.join(PAGES_DIR, key, 'script.js');
 
   if (!fs.existsSync(htmlPath)) {
     console.error(`Missing HTML: ${htmlPath}`);
@@ -329,14 +337,19 @@ const headerContent = `<!DOCTYPE html>
       <!-- ================================================================
            MODULAR PAGES CONTAINER (LOADED FROM /pages/)
            ================================================================ -->
+      <main class="page-container" id="mainPagesContainer">
 `;
 
 const pagesContent = PAGE_KEYS.map(k => {
-  const html = fs.readFileSync(path.join(PAGES_DIR, k, `${k}.html`), 'utf8');
+  const htmlPath = fs.existsSync(path.join(PAGES_DIR, k, `${k}.html`))
+    ? path.join(PAGES_DIR, k, `${k}.html`)
+    : path.join(PAGES_DIR, k, 'index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
   return `      <!-- PAGE: ${k.toUpperCase()} -->\n${html.split('\n').map(l => '      ' + l).join('\n')}`;
 }).join('\n\n');
 
 const footerContent = `
+      </main>
 
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
@@ -378,8 +391,6 @@ const footerContent = `
           </svg>
         </button>
       </nav>
-
-    </main>
 
     <!-- Modal Sheets -->
     <div class="modal-backdrop" id="modalBackdrop">
@@ -461,7 +472,9 @@ console.log('Successfully assembled modular index.html in frontend/!');
 // Compile consolidated CSS into style.css directly
 const commonCss = fs.readFileSync(path.join(SHARED_DIR, 'common.css'), 'utf8');
 const pageCssBundles = PAGE_KEYS.map(k => {
-  const p = path.join(PAGES_DIR, k, `${k}.css`);
+  const p = fs.existsSync(path.join(PAGES_DIR, k, 'style.css'))
+    ? path.join(PAGES_DIR, k, 'style.css')
+    : path.join(PAGES_DIR, k, `${k}.css`);
   return fs.existsSync(p) ? `/* --- PAGE: ${k.toUpperCase()} --- */\n` + fs.readFileSync(p, 'utf8') : '';
 }).join('\n\n');
 const fullCss = `/* Energy Tap Reactor - Consolidated Unified Stylesheet */\n${commonCss}\n\n${pageCssBundles}\n`;

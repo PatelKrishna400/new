@@ -8,7 +8,7 @@
    - Firebase Realtime Database Integration & Cloud Sync in Every Action
    ========================================================================== */
 
-const SF_STORAGE_KEY = 'ENERGY_TAP_SUNFLOWER_STATE_V3';
+const SF_STORAGE_KEY = 'ENERGY_TAP_SUNFLOWER_STATE_V4';
 
 // 20 Lands Base Unlock Costs (Plot 1 is Free)
 const SF_LAND_UNLOCK_COSTS = [
@@ -63,8 +63,8 @@ const SF_WELL_UNLOCK_COSTS = [
   50000   // Well 20: 50000 💎
 ];
 
-// 20 Wells Base Starting Cycle Times (Well 1: 500s, Well 2: 1000s, ... Well 20: 10000s)
-const SF_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 500);
+// 20 Wells Base Starting Cycle Times (Well 1: 100s, Well 2: 200s, ... Well 20: 2000s)
+const SF_WELL_BASE_TIMES = Array.from({ length: 20 }, (_, i) => (i + 1) * 100);
 
 // 20 Wells Base Basket Production per Cycle (Well 1 to 20 starting at 1 bucket at Level 1)
 const SF_WELL_BASE_BASKETS = Array.from({ length: 20 }, () => 1);
@@ -148,26 +148,26 @@ const SF_LAND_BASE_TIMES = [
 
 // Base Life Limit at Level 1 (in seconds)
 const SF_LAND_BASE_LIFE_LIMITS = [
-  500,      // Land 1: 500 sec
-  1000,     // Land 2: 1,000 sec
-  1500,     // Land 3: 1,500 sec
-  2000,     // Land 4: 2,000 sec
-  2500,     // Land 5: 2,500 sec
-  3000,     // Land 6: 3,000 sec
-  3500,     // Land 7: 3,500 sec
-  4000,     // Land 8: 4,000 sec
-  4500,     // Land 9: 4,500 sec
-  5000,     // Land 10: 5,000 sec
-  5500,     // Land 11: 5,500 sec
-  6000,     // Land 12: 6,000 sec
-  6500,     // Land 13: 6,500 sec
-  7000,     // Land 14: 7,000 sec
-  7500,     // Land 15: 7,500 sec
-  8000,     // Land 16: 8,000 sec
-  8500,     // Land 17: 8,500 sec
-  9000,     // Land 18: 9,000 sec
-  9500,     // Land 19: 9,500 sec
-  10000     // Land 20: 10,000 sec
+  100,      // Land 1: 100 sec
+  200,      // Land 2: 200 sec
+  300,      // Land 3: 300 sec
+  400,      // Land 4: 400 sec
+  500,      // Land 5: 500 sec
+  600,      // Land 6: 600 sec
+  700,      // Land 7: 700 sec
+  800,      // Land 8: 800 sec
+  900,      // Land 9: 900 sec
+  1000,     // Land 10: 1,000 sec
+  1100,     // Land 11: 1,100 sec
+  1200,     // Land 12: 1,200 sec
+  1300,     // Land 13: 1,300 sec
+  1400,     // Land 14: 1,400 sec
+  1500,     // Land 15: 1,500 sec
+  1600,     // Land 16: 1,600 sec
+  1700,     // Land 17: 1,700 sec
+  1800,     // Land 18: 1,800 sec
+  1900,     // Land 19: 1,900 sec
+  2000      // Land 20: 2,000 sec
 ];
 
 // 💧 Water Bonus/Life (seconds added per water bucket)
@@ -268,7 +268,7 @@ const SF_LAND_L5000_LIFE_LIMITS = [
 
 // Max Life Limit Formula (Level 1 to 5000)
 function getSfPlotMaxLifeLimit(plotIndex, level) {
-  const baseLife = SF_LAND_BASE_LIFE_LIMITS[plotIndex] || 500;
+  const baseLife = SF_LAND_BASE_LIFE_LIMITS[plotIndex] || ((plotIndex + 1) * 100);
   const maxLife = SF_LAND_L5000_LIFE_LIMITS[plotIndex] || 500;
   const L = Math.min(5000, Math.max(1, level || 1));
   if (L <= 1) return baseLife;
@@ -296,6 +296,7 @@ function createDefaultSfPlots() {
     const isUnlocked = i === 1;
     const baseTime = SF_LAND_BASE_TIMES[i - 1];
     const baseLife = SF_LAND_BASE_LIFE_LIMITS[i - 1];
+    const initialLife = baseLife;
     const baseCoins = SF_LAND_L1_COINS[i - 1];
     plots.push({
       id: i,
@@ -305,7 +306,7 @@ function createDefaultSfPlots() {
       plantStatus: isUnlocked ? 'alive' : 'empty', // 'empty' | 'growing' | 'alive' | 'dead'
       growthTimer: 0,
       growthDuration: 60.0, // 1 min (60s) growth for all lands
-      lifeTimer: isUnlocked ? baseLife : 0, // Starts at Base Life Limit once grown
+      lifeTimer: isUnlocked ? initialLife : 0, // Starts at initial base life (100s for L1, 200s for L2... user extends with water buckets)
       productionTime: baseTime,
       coinProduction: baseCoins,
       upgradeCost: Math.max(10, Math.round(baseCoins * 5 + 5)),
@@ -351,7 +352,13 @@ function createDefaultSfWells() {
 
 function loadInitialSunflowerState() {
   try {
-    const raw = localStorage.getItem(SF_STORAGE_KEY) || localStorage.getItem('ENERGY_TAP_SUNFLOWER_STATE_V2') || localStorage.getItem('ENERGY_TAP_SUNFLOWER_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V1');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V2');
+    localStorage.removeItem('ENERGY_TAP_SUNFLOWER_STATE_V3');
+  } catch (e) {}
+
+  try {
+    const raw = localStorage.getItem(SF_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.plots) && parsed.plots.length === 20) {
@@ -384,8 +391,9 @@ function loadInitialSunflowerState() {
             else p.plantStatus = 'alive';
           }
 
+          const baseLife = SF_LAND_BASE_LIFE_LIMITS[idx] || ((idx + 1) * 100);
           if (typeof p.lifeTimer !== 'number' || !Number.isFinite(p.lifeTimer) || p.lifeTimer < 0 || p.lifeTimer > maxCap * 1.5) {
-            p.lifeTimer = (p.plantStatus === 'alive') ? (SF_LAND_BASE_LIFE_LIMITS[idx] || 500) : 0;
+            p.lifeTimer = (p.plantStatus === 'alive') ? Math.min(baseLife, maxCap) : 0;
           }
 
           // Ensure unlocked lands have an active plant and working timer (auto-revive withered/dead plots)
@@ -393,7 +401,7 @@ function loadInitialSunflowerState() {
             if (p.plantStatus === 'dead' || p.isWithered || p.lifeTimer <= 0) {
               p.plantStatus = 'alive';
               p.isWithered = false;
-              p.lifeTimer = SF_LAND_BASE_LIFE_LIMITS[idx] || 500;
+              p.lifeTimer = Math.min(baseLife, maxCap);
               p.timer = p.productionTime;
             }
           }
@@ -407,13 +415,13 @@ function loadInitialSunflowerState() {
                 if (p.growthTimer <= 0) {
                   p.growthTimer = 0;
                   p.plantStatus = 'alive';
-                  p.lifeTimer = SF_LAND_BASE_LIFE_LIMITS[idx] || 500;
+                  p.lifeTimer = Math.min(baseLife, maxCap);
                   p.timer = p.productionTime;
                   p.isWithered = false;
                 }
               } else if (p.plantStatus === 'alive') {
                 // Keep plants alive offline - do not wither player crops away!
-                p.lifeTimer = Math.max(120, (p.lifeTimer || 500) - elapsed * 0.1);
+                p.lifeTimer = Math.max(0, (p.lifeTimer || baseLife) - elapsed * 0.1);
                 if (p.productionTime > 0) {
                   const cycles = Math.floor(elapsed / p.productionTime);
                   const remainder = elapsed % p.productionTime;
@@ -511,12 +519,12 @@ function loadInitialSunflowerState() {
 
   return {
     currentPage: 1,
-    coins: 150,
+    coins: 0,
     energy: 0,
-    diamonds: 25,
-    seeds: 3,        // Sunflower plants / seeds in inventory
-    baskets: 2,      // Water buckets
-    shovels: 1,      // Shovels to clear dead plants
+    diamonds: 0,
+    seeds: 0,        // Sunflower plants / seeds in inventory (0 to start)
+    baskets: 0,      // Water buckets (0 to start)
+    shovels: 0,      // Shovels to clear dead plants (0 to start)
     upgradeMultiplier: 1, // 1, 10, 100, or 'max'
     wellWorkersCount: 0, // Total hired well workers
     landWorkersCount: 0, // Total hired land managers
@@ -565,8 +573,8 @@ if (sunflowerState.cistern) sunflowerState.cistern.maxCrateCapacity = 999999999;
 if (Array.isArray(sunflowerState.wells)) {
   sunflowerState.wells.forEach(w => { w.maxStorage = 999999999; });
 }
-sunflowerState._diamonds = sunflowerState.diamonds || 25;
-sunflowerState._coins = sunflowerState.coins || 150;
+sunflowerState._diamonds = typeof sunflowerState.diamonds === 'number' ? sunflowerState.diamonds : 0;
+sunflowerState._coins = typeof sunflowerState.coins === 'number' ? sunflowerState.coins : 0;
 
 Object.defineProperty(sunflowerState, 'diamonds', {
   get() {
@@ -1091,6 +1099,7 @@ window.navigateSunflowerPage = function(pageNum) {
 
   if (pageNum === 1) renderSunflowerPlots();
   if (pageNum === 2) renderSunflowerWells();
+  if (pageNum === 3) updateSunflowerUI();
   if (pageNum === 4) renderSunflowerManagers();
   if (pageNum === 5) {
     renderSunflowerSpinExchange();
@@ -1410,7 +1419,7 @@ window.unlockSfPlot = function(plotId, event = null) {
     plot.level = 1;
     plot.plantStatus = 'alive';
     plot.growthTimer = 0;
-    plot.lifeTimer = SF_LAND_BASE_LIFE_LIMITS[plotIndex] || 500;
+    plot.lifeTimer = SF_LAND_BASE_LIFE_LIMITS[plotIndex] || ((plotIndex + 1) * 100);
     plot.timer = getSfPlotCycleTime(plotIndex, 1);
     plot.isWithered = false;
     plot.readyToCollect = false;
@@ -1748,7 +1757,7 @@ function renderSunflowerManagers() {
               <span>💎 10 💎 (+24h)</span>
             </button>
             <button class="sf-mgr-ad-btn" onclick="hireLandManagerAd(${mgr.landId}, event)" title="Extend Manager by 10 Hours via Ad (Max 100h)">
-              <span>🎬 Ad (+10h)</span>
+              <span>📢 Ad (+10h)</span>
             </button>
             <button class="sf-mgr-coin-btn" onclick="hireLandManagerCoins(${mgr.landId}, event)" title="Extend 1 Day for Coins (Max 100h)">
               <span>☀️ 1 Day (${formatNumber(nextCoinCost)} ☀️)</span>
@@ -2665,7 +2674,7 @@ function renderSunflowerWells() {
         ${well.level >= 5000
           ? `<button id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade disabled" disabled><span>★ MAX</span></button>`
           : (well.level % 5 === 0
-              ? `<button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade sf-ad-upgrade-btn" title="Watch sponsor video to upgrade well level"><span>🎬 Watch Ad (Lv.${well.level + 1})</span></button>`
+              ? `<button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade sf-ad-upgrade-btn" title="Watch sponsor video to upgrade well level"><span>📢 Watch Ad (Lv.${well.level + 1})</span></button>`
               : `<button onclick="upgradeSfWell(${well.id}, event)" id="sfWellUpBtn-${well.id}" class="sf-card-btn sf-btn-upgrade ${!canAfford ? 'disabled' : ''}"><span>▲ Lv.${upInfo.targetLevel} (${formatNumber(upInfo.totalCost)} ☀️)</span></button>`
             )
         }
@@ -2795,7 +2804,7 @@ function updateSingleWellUI(wellId, full = true) {
       } else if (well.level % 5 === 0) {
         upBtn.disabled = false;
         upBtn.className = "sf-card-btn sf-btn-upgrade sf-ad-upgrade-btn";
-        upBtn.innerHTML = `<span>🎬 Watch Ad (Lv.${well.level + 1})</span>`;
+        upBtn.innerHTML = `<span>📢 Watch Ad (Lv.${well.level + 1})</span>`;
       } else {
         upBtn.disabled = false;
         upBtn.className = `sf-card-btn sf-btn-upgrade ${!canAfford ? 'disabled' : ''}`;
@@ -3232,7 +3241,7 @@ function renderSunflowerPlots() {
             ${plot.level >= 5000
               ? `<button id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn disabled" disabled><span>MAX</span></button>`
               : (plot.level % 5 === 0
-                  ? `<button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn sf-ad-upgrade-btn" title="Watch sponsor video to upgrade land level"><span>🎬 Watch Ad (Lv.${plot.level + 1})</span></button>`
+                  ? `<button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn sf-ad-upgrade-btn" title="Watch sponsor video to upgrade land level"><span>📢 Watch Ad (Lv.${plot.level + 1})</span></button>`
                   : `<button onclick="upgradeSfPlot(${plot.id}, event)" id="sfPlotUpBtn-${plot.id}" class="sf-sketch-up-btn ${!canAfford ? 'disabled' : ''}" title="Upgrade land level"><span>Upgrade (${formatNumber(upInfo.totalCost)} ☀️)</span></button>`
                 )
             }
@@ -3383,7 +3392,7 @@ function updateSinglePlotUI(plotId) {
     } else if (plot.level % 5 === 0) {
       upBtn.disabled = false;
       upBtn.className = "sf-sketch-up-btn sf-ad-upgrade-btn";
-      upBtn.innerHTML = `<span>🎬 Watch Ad (Lv.${plot.level + 1})</span>`;
+      upBtn.innerHTML = `<span>📢 Watch Ad (Lv.${plot.level + 1})</span>`;
     } else {
       upBtn.disabled = false;
       upBtn.className = `sf-sketch-up-btn ${!canAfford ? 'disabled' : ''}`;
@@ -3522,13 +3531,15 @@ function sunflowerMainLoop(now) {
       if (plot.growthTimer <= 0) {
         plot.growthTimer = 0;
         plot.plantStatus = 'alive';
-        plot.lifeTimer = SF_LAND_BASE_LIFE_LIMITS[idx] || 500; // Base lifetime begins upon mature bloom!
+        const maxCap = getSfPlotMaxLifeLimit(idx, plot.level);
+        const initialLife = SF_LAND_BASE_LIFE_LIMITS[idx] || ((idx + 1) * 100);
+        plot.lifeTimer = initialLife; // Initial lifetime is 100s for L1, 200s for L2... upon bloom! Add water buckets to extend up to max cap!
         plot.timer = getSfPlotCycleTime(idx, plot.level);
         plot.readyToCollect = false;
         plot.uncollectedCoins = 0;
         plot.isWithered = false;
         sunflowerAudio.playSolarChime();
-        spawnSfFloat(`🌻 Land #${plot.id} Sunflower Created & Matured! Base Lifetime Started!`, window.innerWidth / 2, window.innerHeight / 2, 'text-yellow-400 font-bold');
+        spawnSfFloat(`🌻 Land #${plot.id} Sunflower Matured! Initial Life: ${initialLife}s (Add 🪣 water to reach ${maxCap}s max!)`, window.innerWidth / 2, window.innerHeight / 2, 'text-yellow-400 font-bold');
         sfNeedRerender = true;
       } else {
         updateSinglePlotUI(plot.id);
@@ -4201,20 +4212,16 @@ window.exchangeSfCoinsForSpin = exchangeSfCoinsForSpin;
 window.switchSunflowerExchangeSubtab = function(subtab) {
   const spinSec = document.getElementById('sfExchangeSectionSpin');
   const fuelSec = document.getElementById('sfExchangeSectionFuel');
-  const energySec = document.getElementById('sfExchangeSectionEnergy');
   const prestigeSec = document.getElementById('sfExchangeSectionPrestige');
   const spinBtn = document.getElementById('sfExchTabSpin');
   const fuelBtn = document.getElementById('sfExchTabFuel');
-  const energyBtn = document.getElementById('sfExchTabEnergy');
   const prestigeBtn = document.getElementById('sfExchTabPrestige');
 
   if (spinSec) spinSec.classList.add('hidden');
   if (fuelSec) fuelSec.classList.add('hidden');
-  if (energySec) energySec.classList.add('hidden');
   if (prestigeSec) prestigeSec.classList.add('hidden');
   if (spinBtn) spinBtn.classList.remove('active');
   if (fuelBtn) fuelBtn.classList.remove('active');
-  if (energyBtn) energyBtn.classList.remove('active');
   if (prestigeBtn) prestigeBtn.classList.remove('active');
 
   if (subtab === 'spin') {
@@ -4234,8 +4241,10 @@ window.switchSunflowerExchangeSubtab = function(subtab) {
     if (prestigeBtn) prestigeBtn.classList.add('active');
     renderSunflowerPrestigeUI();
   } else {
-    if (energySec) energySec.classList.remove('hidden');
-    if (energyBtn) energyBtn.classList.add('active');
+    // Default to Spin Coins
+    if (spinSec) spinSec.classList.remove('hidden');
+    if (spinBtn) spinBtn.classList.add('active');
+    renderSunflowerSpinExchange();
   }
 };
 

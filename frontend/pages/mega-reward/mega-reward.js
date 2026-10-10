@@ -257,6 +257,58 @@ function onMegaDiamondClick() {
 }
 
 // ==========================================================================
+const DEFAULT_GIFT_CARDS = [
+  {
+    id: 'giftcard_100',
+    title: '₹100 Gift Card',
+    category: 'gift-card',
+    diamonds: 1667,
+    diamondCost: 1667,
+    tasksNeeded: 40,
+    requiredWebTasks: 40,
+    realValue: '₹100',
+    offerValue: '₹100',
+    stock: 50,
+    buyerStar: 5.0,
+    tag: '₹100 VOUCHER',
+    description: 'Instant ₹100 Digital Voucher. Requires 1,667 💎 Diamonds & 40 Website Tasks completed to unlock.',
+    imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300'
+  },
+  {
+    id: 'giftcard_500',
+    title: '₹500 Gift Card',
+    category: 'gift-card',
+    diamonds: 8334,
+    diamondCost: 8334,
+    tasksNeeded: 170,
+    requiredWebTasks: 170,
+    realValue: '₹500',
+    offerValue: '₹500',
+    stock: 25,
+    buyerStar: 5.0,
+    tag: '₹500 VOUCHER',
+    description: 'Instant ₹500 Digital Voucher. Requires 8,334 💎 Diamonds & 170 Website Tasks completed to unlock.',
+    imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300'
+  },
+  {
+    id: 'giftcard_1000',
+    title: '₹1,000 Gift Card',
+    category: 'gift-card',
+    diamonds: 16667,
+    diamondCost: 16667,
+    tasksNeeded: 340,
+    requiredWebTasks: 340,
+    realValue: '₹1,000',
+    offerValue: '₹1,000',
+    stock: 10,
+    buyerStar: 5.0,
+    tag: '₹1,000 VOUCHER',
+    description: 'Instant ₹1,000 Digital Voucher. Requires 16,667 💎 Diamonds & 340 Website Tasks completed to unlock.',
+    imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300'
+  }
+];
+
+// ==========================================================================
 // REAL-TIME CATEGORY PRODUCTS RENDERER (READS CLOUD MEGA REWARDS)
 // ==========================================================================
 function renderCategoryProducts(pageIdOrCatId) {
@@ -278,7 +330,7 @@ function renderCategoryProducts(pageIdOrCatId) {
   }
 
   // Filter for this category with robust normalization
-  const filtered = allRewards.filter(r => {
+  let filtered = allRewards.filter(r => {
     if (!r) return false;
     const rCat = (r.category || '').toLowerCase().replace(/[_\s]/g, '-');
     const cId = cat.id.toLowerCase().replace(/[_\s]/g, '-');
@@ -287,7 +339,15 @@ function renderCategoryProducts(pageIdOrCatId) {
     return rCat === cId || rCat === alt || rCat === pId;
   });
 
+  // If gift-card category has no cloud items yet, use standard fixed tier gift cards
+  if (filtered.length === 0 && (cat.id === 'gift-card' || cat.pageId === 'giftCard')) {
+    filtered = DEFAULT_GIFT_CARDS;
+  }
+
   const playerDiamonds = (gameState.player && gameState.player.diamonds) ? gameState.player.diamonds : 0;
+  const completedWebTasks = (typeof window.getCompletedWebsiteTasksCount === 'function')
+    ? window.getCompletedWebsiteTasksCount()
+    : Math.max(Number(gameState.player?.websiteTasksCompleted || 0), Number(gameState.player?.completedWebTasks || 0));
 
   if (filtered.length === 0) {
     container.innerHTML = `
@@ -306,6 +366,9 @@ function renderCategoryProducts(pageIdOrCatId) {
     const isOutOfStock = (item.stock !== undefined && item.stock <= 0);
     const diamondCost = Number(item.diamonds !== undefined ? item.diamonds : item.diamondCost) || 100;
     const canAfford = playerDiamonds >= diamondCost;
+    const tasksNeeded = Number(item.tasksNeeded !== undefined ? item.tasksNeeded : (item.requiredWebTasks || 0));
+    const isTaskLocked = tasksNeeded > 0 && completedWebTasks < tasksNeeded;
+
     const title = item.title || item.productName || item.name || 'Exclusive Reward';
     const imgUrl = item.imageUrl || item.image || item.img || '';
     const hasImage = imgUrl && imgUrl.length > 5;
@@ -330,6 +393,11 @@ function renderCategoryProducts(pageIdOrCatId) {
               <span class="product-star-tag" style="display: inline-flex; align-items: center; gap: 2px; background: rgba(234, 179, 8, 0.18); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px;">
                 ⭐ ${buyerStar}
               </span>
+              ${tasksNeeded > 0 ? `
+                <span class="product-tasks-tag" style="display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 99px; ${isTaskLocked ? 'background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35);' : 'background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);'}">
+                  ${isTaskLocked ? '🔒' : '🔓'} Tasks: ${completedWebTasks} / ${tasksNeeded}
+                </span>
+              ` : ''}
               <span class="product-stock-tag ${isOutOfStock ? 'out' : ''}">
                 ${isOutOfStock ? '🚫 Sold Out' : `📦 ${item.stock || 1} in stock`}
               </span>
@@ -359,6 +427,10 @@ function renderCategoryProducts(pageIdOrCatId) {
           <div>
             ${isOutOfStock ? `
               <button class="btn-redeem-item disabled" disabled>Sold Out</button>
+            ` : isTaskLocked ? `
+              <button class="btn-redeem-item disabled" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="showFloatingToast('🔒 Locked! Need ${(tasksNeeded - completedWebTasks)} more website tasks completed (${completedWebTasks}/${tasksNeeded})')">
+                <span>🔒 Need ${(tasksNeeded - completedWebTasks)} Tasks</span>
+              </button>
             ` : !canAfford ? `
               <button class="btn-redeem-item disabled" onclick="showFloatingToast('Need ${(diamondCost - playerDiamonds).toLocaleString()} more 💎 to redeem this reward!')">
                 <span>Need ${(diamondCost - playerDiamonds).toLocaleString()} 💎</span>
@@ -400,14 +472,36 @@ function openRewardRedemptionModal(rewardId) {
     } catch (e) {}
   }
 
-  const reward = allRewards.find(r => r.id === rewardId);
+  let reward = allRewards.find(r => r.id === rewardId);
+  if (!reward) {
+    reward = DEFAULT_GIFT_CARDS.find(r => r.id === rewardId);
+  }
   if (!reward) return;
 
   const playerDiamonds = (gameState.player && gameState.player.diamonds) ? gameState.player.diamonds : 0;
   const cost = Number(reward.diamonds !== undefined ? reward.diamonds : reward.diamondCost) || 0;
 
+  // Website Task Unlock Condition
+  const tasksNeeded = Number(reward.tasksNeeded !== undefined ? reward.tasksNeeded : (reward.requiredWebTasks || 0));
+  const completedWebTasks = (typeof window.getCompletedWebsiteTasksCount === 'function')
+    ? window.getCompletedWebsiteTasksCount()
+    : Math.max(Number(gameState.player?.websiteTasksCompleted || 0), Number(gameState.player?.completedWebTasks || 0));
+
+  if (tasksNeeded > 0 && completedWebTasks < tasksNeeded) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔒 Locked! Complete ${tasksNeeded - completedWebTasks} more website tasks to unlock this Gift Card. (${completedWebTasks}/${tasksNeeded})`);
+    } else {
+      alert(`🔒 Locked! Complete ${tasksNeeded - completedWebTasks} more website tasks to unlock this Gift Card. (${completedWebTasks}/${tasksNeeded})`);
+    }
+    return;
+  }
+
   if (playerDiamonds < cost) {
-    showFloatingToast(`⚠️ You need ${(cost - playerDiamonds).toLocaleString()} more 💎 to redeem "${reward.title}"`);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`⚠️ You need ${(cost - playerDiamonds).toLocaleString()} more 💎 to redeem "${reward.title}"`);
+    } else {
+      alert(`⚠️ You need ${(cost - playerDiamonds).toLocaleString()} more 💎 to redeem "${reward.title}"`);
+    }
     return;
   }
 
