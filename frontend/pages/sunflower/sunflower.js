@@ -1349,7 +1349,7 @@ window.upgradeSfPlot = function(plotId, event = null) {
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 🎬`, posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 📢`, posX, posY, 'text-red-400');
     return;
   }
 
@@ -2520,7 +2520,7 @@ window.upgradeSfWell = function(wellId, event = null) {
   } else {
     const posX = event ? event.clientX : window.innerWidth / 2;
     const posY = event ? event.clientY : window.innerHeight / 2;
-    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 🎬`, posX, posY, 'text-red-400');
+    spawnSfFloat(`Need ${formatNumber(info.totalCost)} Coins! Or Watch Ad 📢`, posX, posY, 'text-red-400');
     return;
   }
 

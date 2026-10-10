@@ -7,53 +7,7 @@ const WEB_STORAGE_KEY = 'ENERGY_TAP_WEB_TASKS';
 const MONTHLY_STORAGE_KEY = 'ENERGY_TAP_MONTHLY_TASKS_CONFIG_V1';
 
 const DEFAULT_TG_TASKS = [];
-const DEFAULT_WEB_TASKS = [
-  {
-    id: 'web_1',
-    title: 'Diskwala Portal Sponsor Quest #1',
-    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
-    url: 'https://diskwala.com/quest/alpha',
-    costCoins: 10000,
-    diamondReward: 50,
-    rewardDiamonds: 50,
-    code: '4821',
-    timer: 15,
-    duration: 15,
-    tag: 'DISKWALA SPONSOR',
-    tagText: 'DISKWALA SPONSOR',
-    disabled: false
-  },
-  {
-    id: 'web_2',
-    title: 'Diskwala Cloud Sponsor Quest #2',
-    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
-    url: 'https://diskwala.com/quest/beta',
-    costCoins: 10000,
-    diamondReward: 50,
-    rewardDiamonds: 50,
-    code: '7392',
-    timer: 15,
-    duration: 15,
-    tag: 'DISKWALA SPONSOR',
-    tagText: 'DISKWALA SPONSOR',
-    disabled: false
-  },
-  {
-    id: 'web_3',
-    title: 'Diskwala Elite Partner Quest #3',
-    desc: 'Unlock with 10,000 Coins, browse sponsor page, and enter 4-digit code to win 50 Diamonds 💎',
-    url: 'https://diskwala.com/quest/gamma',
-    costCoins: 10000,
-    diamondReward: 50,
-    rewardDiamonds: 50,
-    code: '5164',
-    timer: 15,
-    duration: 15,
-    tag: 'DISKWALA VIP',
-    tagText: 'DISKWALA VIP',
-    disabled: false
-  }
-];
+const DEFAULT_WEB_TASKS = [];
 const DEFAULT_MONTHLY_TASKS = [
   { id: 'd1', number: 1, title: '1. Tap 2,000 Times', target: 2000, rewardCards: 1, type: 'tap', tagText: 'MONTHLY QUEST', desc: 'Tap the central orb 2,000 times on the Home page to win 1 Scratch Card', disabled: false },
   { id: 'd2', number: 2, title: '2. Tap 5,000 Times', target: 5000, rewardCards: 1, type: 'tap', tagText: 'MONTHLY QUEST', desc: 'Reach 5,000 total taps on the central orb to win 1 Scratch Card', disabled: false },
@@ -321,7 +275,10 @@ function removeTelegramTask(id) {
   if (!confirm('Are you sure you want to remove this Telegram task?')) return;
   const current = getTelegramTasks().filter(t => t.id !== id);
   window.adminState.telegramTasks = current;
-  try { localStorage.setItem(TG_STORAGE_KEY, JSON.stringify(current)); } catch(e){}
+  try {
+    localStorage.setItem(TG_STORAGE_KEY, JSON.stringify(current));
+    localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(current));
+  } catch(e){}
   renderTelegramTasksUI();
   performSaveTelegramTasksToFirebase(true);
 }
@@ -350,7 +307,17 @@ function performSaveTelegramTasksToFirebase(isSilent) {
   });
 
   window.adminState.telegramTasks = updated;
-  try { localStorage.setItem(TG_STORAGE_KEY, JSON.stringify(updated)); } catch(e){}
+  try {
+    localStorage.setItem(TG_STORAGE_KEY, JSON.stringify(updated));
+    localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(updated));
+  } catch(e){}
+
+  // Sync to backend REST API
+  fetch('/api/tasks/telegram', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  }).catch(() => {});
 
   const db = window.getDb ? window.getDb() : null;
   if (db) {
@@ -373,24 +340,23 @@ function resetDefaultTelegramTasks() {
    ========================================================================== */
 
 function getWebsiteTasks() {
-  if (window.adminState && window.adminState.websiteTasks && Array.isArray(window.adminState.websiteTasks) && window.adminState.websiteTasks.length > 0) {
+  if (window.adminState && Array.isArray(window.adminState.websiteTasks)) {
     return window.adminState.websiteTasks;
   }
   try {
-    const cached = localStorage.getItem(WEB_STORAGE_KEY);
+    const cached = localStorage.getItem(WEB_STORAGE_KEY) || localStorage.getItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1');
     if (cached !== null) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        window.adminState.websiteTasks = parsed;
+      if (Array.isArray(parsed)) {
+        if (window.adminState) window.adminState.websiteTasks = parsed;
         return parsed;
       }
     }
   } catch (e) {}
-  const defaults = JSON.parse(JSON.stringify(DEFAULT_WEB_TASKS));
-  if (window.adminState && (!window.adminState.websiteTasks || window.adminState.websiteTasks.length === 0)) {
-    window.adminState.websiteTasks = defaults;
+  if (window.adminState) {
+    window.adminState.websiteTasks = [];
   }
-  return defaults;
+  return [];
 }
 
 let webAutoSaveTimer = null;
@@ -604,7 +570,10 @@ function removeWebsiteTask(id) {
   if (!confirm('Are you sure you want to remove this Website quest?')) return;
   const current = getWebsiteTasks().filter(t => t.id !== id);
   window.adminState.websiteTasks = current;
-  try { localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(current)); } catch(e){}
+  try {
+    localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(current));
+    localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(current));
+  } catch(e){}
   renderWebsiteTasksUI();
   performSaveWebsiteTasksToFirebase(true);
 }
@@ -651,7 +620,17 @@ function performSaveWebsiteTasksToFirebase(isSilent) {
   });
 
   window.adminState.websiteTasks = updated;
-  try { localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(updated)); } catch(e){}
+  try {
+    localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(updated));
+    localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(updated));
+  } catch(e){}
+
+  // Sync to backend REST API
+  fetch('/api/tasks/website', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  }).catch(() => {});
 
   const db = window.getDb ? window.getDb() : null;
   if (db) {

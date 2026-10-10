@@ -38,233 +38,105 @@ A high-performance, modular Telegram Web Mini-App game with real-time Firebase C
 ## 🏗️ Project Architecture
 
 ```
-tap-empire/
+energy-tap-platform/
 │
-├── admin/                              # Admin dashboard
-│   ├── index.html                      # Admin login/dashboard
-│   ├── users.html                      # User management
-│   ├── tasks.html                      # Task management
-│   ├── rewards.html                    # Reward management
-│   ├── economy.html                    # Coins, energy, XP, etc.
-│   ├── ads.html                        # Ad configuration
-│   ├── withdrawals.html                # Withdrawal management
-│   ├── referrals.html                  # Referral management
-│   ├── leaderboard.html                # Leaderboard management
-│   ├── settings.html                   # Global settings
-│   │
-│   ├── css/
-│   │   ├── admin.css
-│   │   ├── dashboard.css
-│   │   └── responsive.css
-│   │
-│   └── js/
-│       ├── admin.js
-│       ├── auth.js
-│       ├── users.js
-│       ├── tasks.js
-│       ├── rewards.js
-│       ├── economy.js
-│       ├── ads.js
-│       ├── withdrawals.js
-│       ├── referrals.js
-│       ├── leaderboard.js
-│       └── settings.js
+├── server.js                      # Core Node.js HTTP backend (REST endpoints, anti-fraud, MIME & static streaming)
+├── package.json                   # Dependencies and npm build/start scripts
+├── assemble.js                    # Root orchestrator executing frontend and admin compilation
+├── test.js                        # Master automated verification test suite
+├── reset-firebase-data.js         # Firebase database initialization & reset utility
 │
-├── frontend/                           # Telegram Mini App
-│   │
-│   ├── index.html                      # Main application entry
-│   ├── style.css                       # Global/master styles
-│   │
-│   ├── pages/                          # Game pages/modules
-│   │   ├── home/
-│   │   │   ├── home.html
-│   │   │   ├── home.css
-│   │   │   └── home.js
-│   │   │
-│   │   ├── energy/
-│   │   │   ├── energy.html
-│   │   │   ├── energy.css
-│   │   │   └── energy.js
-│   │   │
-│   │   ├── tasks/
-│   │   │   ├── tasks.html
-│   │   │   ├── tasks.css
-│   │   │   └── tasks.js
-│   │   │
-│   │   ├── profile/
-│   │   │   ├── profile.html
-│   │   │   ├── profile.css
-│   │   │   └── profile.js
-│   │   │
-│   │   ├── xp/
-│   │   │   ├── xp.html
-│   │   │   ├── xp.css
-│   │   │   └── xp.js
-│   │   │
-│   │   ├── reward/
-│   │   │   ├── reward.html
-│   │   │   ├── reward.css
-│   │   │   └── reward.js
-│   │   │
-│   │   ├── goal/
-│   │   │   ├── goal.html
-│   │   │   ├── goal.css
-│   │   │   └── goal.js
-│   │   │
-│   │   ├── streak/
-│   │   │   ├── streak.html
-│   │   │   ├── streak.css
-│   │   │   └── streak.js
-│   │   │
-│   │   ├── mega-reward/
-│   │   │   ├── mega-reward.html
-│   │   │   ├── mega-reward.css
-│   │   │   └── mega-reward.js
-│   │   │
-│   │   ├── spin/
-│   │   │   ├── spin.html
-│   │   │   ├── spin.css
-│   │   │   └── spin.js
-│   │   │
-│   │   ├── chest/
-│   │   │   ├── chest.html
-│   │   │   ├── chest.css
-│   │   │   └── chest.js
-│   │   │
-│   │   ├── scratch/
-│   │   │   ├── scratch.html
-│   │   │   ├── scratch.css
-│   │   │   └── scratch.js
-│   │   │
-│   │   ├── egg/
-│   │   │   ├── egg.html
-│   │   │   ├── egg.css
-│   │   │   └── egg.js
-│   │   │
-│   │   ├── custom/
-│   │   │   ├── custom.html
-│   │   │   ├── custom.css
-│   │   │   └── custom.js
-│   │   │
-│   │   └── suggest-box/
-│   │       ├── suggest-box.html
-│   │       ├── suggest-box.css
-│   │       └── suggest-box.js
-│   │
-│   ├── components/                     # Reusable UI components
-│   │   ├── header/
-│   │   ├── bottom-nav/
-│   │   ├── modal/
-│   │   ├── popup/
-│   │   ├── toast/
-│   │   ├── loader/
-│   │   ├── progress-bar/
-│   │   ├── reward-card/
-│   │   ├── coin-animation/
-│   │   └── ad-button/
-│   │
-│   ├── shared/                         # Shared application logic
-│   │   ├── firebase/
-│   │   │   ├── config.js
-│   │   │   ├── auth.js
-│   │   │   ├── database.js
-│   │   │   ├── users.js
-│   │   │   ├── tasks.js
-│   │   │   ├── rewards.js
-│   │   │   ├── leaderboard.js
-│   │   │   └── settings.js
-│   │   │
-│   │   ├── telegram/
-│   │   │   ├── telegram.js
-│   │   │   └── user.js
-│   │   │
-│   │   ├── ads/
-│   │   │   ├── ads.js
-│   │   │   └── ad-config.js
-│   │   │
-│   │   ├── state/
-│   │   │   ├── app-state.js
-│   │   │   ├── user-state.js
-│   │   │   └── game-state.js
-│   │   │
-│   │   ├── audio/
-│   │   │   └── audio.js
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── format.js
-│   │   │   ├── validation.js
-│   │   │   ├── storage.js
-│   │   │   ├── time.js
-│   │   │   └── security.js
-│   │   │
-│   │   └── constants/
-│   │       ├── economy.js
-│   │       ├── rewards.js
-│   │       └── game-config.js
-│   │
-│   ├── assets/
-│   │   ├── images/
-│   │   ├── icons/
-│   │   ├── backgrounds/
-│   │   ├── rewards/
-│   │   ├── skins/
-│   │   └── sounds/
-│   │
-│   └── animations/
-│       ├── coin.css
-│       ├── energy.css
-│       ├── reward.css
-│       ├── popup.css
-│       └── transitions.css
+├── database.rules.json            # Firebase Realtime Database rules
+├── firestore.rules                # Google Cloud Firestore security rules
+├── firebase.json                  # Firebase hosting configuration
+├── vercel.json                    # Vercel serverless deployment & routing configuration
 │
-├── backend/                            # Server-side operations
-│   ├── api/
-│   │   ├── users.js
-│   │   ├── rewards.js
-│   │   ├── tasks.js
-│   │   ├── ads.js
-│   │   └── withdrawals.js
-│   │
-│   ├── services/
-│   │   ├── firebase.js
-│   │   ├── telegram.js
-│   │   └── validation.js
-│   │
-│   └── index.js
+├── admin/                         # Admin Management Portal
+│   ├── index.html                 # Compiled master admin dashboard
+│   ├── style.css                  # Compiled admin stylesheet
+│   ├── assemble.js                # Admin compiler script
+│   ├── shared/                    # Shared admin scripts & CSS
+│   │   ├── firebase.js            # Admin Firebase SDK bridge
+│   │   └── common.css             # Admin design tokens & table styles
+│   └── pages/                     # 9 Modular administrative control pages
+│       ├── dashboard/             # Platform analytics & overview
+│       ├── users/                 # Player search, balance modifier, bans
+│       ├── account-requests/      # Multi-identity resolution
+│       ├── ads-manage/            # Monetag ad zones & settings
+│       ├── firebase-manage/       # Cloud backup export & restore
+│       ├── mega-add/              # Custom jackpot / reward creator
+│       ├── mega-request/          # Cashout & payout approval review
+│       ├── settings/              # Maintenance mode & global settings
+│       └── tasks-web/             # Partner web & Telegram tasks manager
 │
-├── scripts/
-│   ├── assemble.js                     # Page compiler
-│   ├── validate.js                     # Integrity checker
-│   ├── optimize.js                     # Production optimization
-│   └── build.js                        # Production build
-│
-├── database.rules.json                  # Firebase security rules
-├── firebase.json                        # Firebase configuration
-├── FIREBASE_SETUP.md
-├── README.md
-├── package.json
-├── .env.example
-├── .gitignore
-└── vercel.json
+└── frontend/                      # Player Client Single Page Application (SPA)
+    ├── index.html                 # Compiled client SPA containing all 31 page views
+    ├── style.css                  # Compiled master stylesheet
+    ├── assemble.js                # Frontend compiler script
+    ├── shared/                    # Core client engines & services
+    │   ├── state.js               # Reactive gameState store & local persistence
+    │   ├── app.js                 # App bootstrapper, router, audio & notifications
+    │   ├── firebase-service.js    # Firebase Realtime Database & Firestore sync
+    │   ├── ad-service.js          # Monetag SDK & fallback ad player
+    │   └── common.css             # Cyber theme variables & animations
+    └── pages/                     # 31 Modular self-contained game pages
+        ├── home/                  # Central Quantum Reactor core & tap engine
+        ├── energy/                # 7-tier fuel injector & upgrades
+        ├── diamond-generator/     # Infinite diamond miner & piggy bank vault
+        ├── sunflower/             # Sunflower Valley 20 lands farm & water wells
+        ├── bee-farm/              # Honey apiary 20 meadows farm & honey hives
+        ├── mining/                # Cryo-bore drill 20 mines & geothermal extractors
+        ├── tasks/                 # Daily, Telegram, and Website sponsor quests
+        ├── profile/               # Player statistics, hourly coins & vault passes
+        ├── xp/                    # Levels 1-1000 roadmap & 10,000 Coin cash prize
+        ├── reward/                # Cyber arcade mini-game directory
+        ├── goal/                  # Goals 1-1000 roadmap & mega goal reward
+        ├── streak/                # 30-Day login streak matrix
+        ├── mega-reward/           # Community progressive jackpots
+        ├── gift-card/             # Gift cards redemption marketplace
+        ├── gadgets/               # Tech gadgets & hardware rewards
+        ├── accessories/           # Reactor ring cosmetic skins
+        ├── gaming-tool/           # CPS speed analyzer & diagnostic tools
+        ├── kitchen/               # Lifestyle goods catalog
+        ├── stationery/            # Creative office supplies catalog
+        ├── fitness/               # Athletic equipment catalog
+        ├── home-decorate/         # Interior ambient lighting catalog
+        ├── custom/                # Bespoke custom prize requests
+        ├── suggest-box/           # Community voting & suggestion box
+        ├── ad-rewards/            # Direct rewarded video ad refill station
+        ├── spin/                  # Lucky rotary wheel mini-game (HTML5 Canvas)
+        ├── chest/                 # 4-tier mystery vault mini-game
+        ├── scratch/               # Quantum scratch card (Foil erase & prize tiers)
+        ├── egg/                   # 12-Egg cyber hatchery mini-game
+        ├── leaderboard/           # Global live player rankings
+        ├── memory-match/          # 4x4 Memory Match card game & balloon pursuit
+        └── coin-catcher/          # Falling coins & bomb dodge arcade game
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Build / Assemble Pages
-Compile all modular pages into `index.html` and `style.css`:
+### 1. Build & Compile All Modules
+Compile both frontend and admin modular pages into their production targets:
 ```bash
-node frontend/assemble.js
+node assemble.js
 ```
 
-### 2. Local Preview
-Serve the `frontend/` directory using any HTTP server:
+### 2. Run Master Verification Test Suite
+Validate element IDs, inline handlers, page triplets, and Firebase connectivity:
 ```bash
-npx serve frontend
-# or
-python -m http.server 8080 --directory frontend
+node test.js
 ```
+
+### 3. Start the Local Server
+Launch the HTTP server and backend API:
+```bash
+node server.js
+```
+- **Game Client**: `http://localhost:3000/`
+- **Admin Portal**: `http://localhost:3000/admin/`
+- **API Health**: `http://localhost:3000/api/health`
 
 ---
 

@@ -35,7 +35,7 @@
           <div class="ad-dialog-top">
             <div class="ad-sponsor-chip">
               <span class="ad-pulse-circle"></span>
-              <span>🎬 SPONSORED REWARDED AD</span>
+              <span>📢 SPONSORED REWARDED AD</span>
             </div>
             <span class="ad-timer-countdown" id="adTimerCountdown">15s</span>
           </div>

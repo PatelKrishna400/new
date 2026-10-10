@@ -13,38 +13,7 @@
 const THIRTY_DAY_STORAGE_KEY = 'ENERGY_TAP_30DAY_TASKS_V1';
 
 // Website Tasks List with Diskwala links and 1,000 / 10,000 coin options
-let WEBSITE_TASKS = [
-  {
-    id: 'web_dw_1',
-    title: 'Diskwala Portal Sponsor Quest #1',
-    cost: 10000,
-    costAlt: 10000,
-    url: 'https://diskwala.com/quest/alpha',
-    correctPin: '4821',
-    rewardDiamonds: 50,
-    tagText: 'DISKWALA SPONSOR'
-  },
-  {
-    id: 'web_dw_2',
-    title: 'Diskwala Cloud Sponsor Quest #2',
-    cost: 10000,
-    costAlt: 10000,
-    url: 'https://diskwala.com/quest/beta',
-    correctPin: '7392',
-    rewardDiamonds: 50,
-    tagText: 'DISKWALA SPONSOR'
-  },
-  {
-    id: 'web_dw_3',
-    title: 'Diskwala Elite Partner Quest #3',
-    cost: 10000,
-    costAlt: 10000,
-    url: 'https://diskwala.com/quest/gamma',
-    correctPin: '5164',
-    rewardDiamonds: 50,
-    tagText: 'DISKWALA VIP'
-  }
-];
+let WEBSITE_TASKS = [];
 
 // Helper to generate the 10 tasks for Day d (1 to 30)
 function generateTasksForDay(dayNum) {
@@ -247,35 +216,7 @@ window.switchTaskSubtab = function(tabName) {
 /* ==========================================================================
    SUBTAB 2: TELEGRAM TASKS (JOIN TELEGRAM, CLAIM KEYS)
    ========================================================================== */
-const DEFAULT_TELEGRAM_TASKS = [
-  {
-    id: 'tg1',
-    title: 'Join Channel: Earn to ads',
-    rewardText: '1 Key for Chest',
-    rewardKeys: 1,
-    desc: 'Join @Earn_to_ads official Telegram channel to win 1 Key for Chest',
-    url: 'https://t.me/Earn_to_ads',
-    tagText: 'TELEGRAM'
-  },
-  {
-    id: 'tg2',
-    title: 'Join Bot: Prover Svoi Akk',
-    rewardText: '1 Key for Chest',
-    rewardKeys: 1,
-    desc: 'Launch and start @prover_svoiakk_bot on Telegram to win 1 Key for Chest',
-    url: 'https://t.me/prover_svoiakk_bot',
-    tagText: 'TELEGRAM BOT'
-  },
-  {
-    id: 'tg3',
-    title: 'Join Bot: Stars One Click',
-    rewardText: '2 Keys for Chest',
-    rewardKeys: 2,
-    desc: 'Start @stars_oneclick_bot to receive 2 Chest Keys',
-    url: 'https://t.me/stars_oneclick_bot',
-    tagText: 'PARTNER BOT'
-  }
-];
+const DEFAULT_TELEGRAM_TASKS = [];
 
 function getTelegramTasksList() {
   try {
@@ -316,6 +257,9 @@ function renderTelegramTasks() {
   const activeTasks = allTasks.filter(task => {
     return !(gameState && gameState.tasksState && gameState.tasksState.claimedTelegram && gameState.tasksState.claimedTelegram[task.id]);
   });
+
+  const tgBadge = document.getElementById('telegramBadgeCount');
+  if (tgBadge) tgBadge.textContent = activeTasks.length;
 
   if (activeTasks.length === 0) {
     container.innerHTML = `
@@ -671,6 +615,9 @@ function renderWebsiteTasks() {
     return !(gameState.tasksState && gameState.tasksState.claimedWebsite && gameState.tasksState.claimedWebsite[task.id]);
   });
 
+  const webBadge = document.getElementById('websiteBadgeCount');
+  if (webBadge) webBadge.textContent = activeTasks.length;
+
   if (activeTasks.length === 0) {
     container.innerHTML = `
       <div class="empty-tasks-state py-8 text-center flex flex-col items-center justify-center gap-2">
@@ -935,7 +882,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderThirtyDayCards();
   renderWebsiteTasks();
+  renderTelegramTasks();
+  syncTasksFromServerIfEmpty();
 });
+
+function syncTasksFromServerIfEmpty() {
+  fetch('/api/tasks')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.ok) {
+        let changed = false;
+        if (Array.isArray(data.telegramTasks) && (window.cloudTelegramTasks === undefined || window.cloudTelegramTasks === null)) {
+          window.cloudTelegramTasks = data.telegramTasks;
+          try {
+            localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(data.telegramTasks));
+            localStorage.setItem('ENERGY_TAP_TG_TASKS', JSON.stringify(data.telegramTasks));
+          } catch(e){}
+          changed = true;
+        }
+        if (Array.isArray(data.websiteTasks) && (window.cloudWebsiteTasks === undefined || window.cloudWebsiteTasks === null)) {
+          window.cloudWebsiteTasks = data.websiteTasks;
+          try {
+            localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(data.websiteTasks));
+            localStorage.setItem('ENERGY_TAP_WEB_TASKS', JSON.stringify(data.websiteTasks));
+          } catch(e){}
+          changed = true;
+        }
+        if (changed) {
+          renderTelegramTasks();
+          renderWebsiteTasks();
+        }
+      }
+    })
+    .catch(() => {});
+}
 
 // Window Exports
 window.renderTasksList = function() {
@@ -962,3 +942,4 @@ window.addEventListener('telegramTasksUpdated', () => {
 window.addEventListener('websiteTasksUpdated', () => {
   renderWebsiteTasks();
 });
+

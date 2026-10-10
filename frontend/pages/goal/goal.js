@@ -581,7 +581,7 @@ function updateGoalViewUI() {
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'block';
     } else if (watchedAds < 1000) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn';
-      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `WATCH AD (${watchedAds}/1000) FOR GOAL MEGA REWARD 🎬`;
+      if (DOM.goalMegaActionBtnText) DOM.goalMegaActionBtnText.textContent = `WATCH AD (${watchedAds}/1000) FOR GOAL MEGA REWARD 📢`;
       if (DOM.goalMegaActionLockIcon) DOM.goalMegaActionLockIcon.style.display = 'none';
     } else if (!isClaimed) {
       DOM.goalMegaActionBtn.className = 'mega-action-btn claim-ready';

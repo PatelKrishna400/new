@@ -907,7 +907,7 @@
         badgeGroup.innerHTML = `
           <rect x="-24" y="-15" width="48" height="30" rx="9" fill="#580822" />
           <rect x="-24" y="-17" width="48" height="30" rx="9" fill="#e11d48" stroke="#881337" stroke-width="2" />
-          <text x="0" y="5" font-size="18" text-anchor="middle">📺</text>
+          <text x="0" y="5" font-size="18" text-anchor="middle">📢</text>
         `;
       } else {
         badgeGroup.innerHTML = `
