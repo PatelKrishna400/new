@@ -58,16 +58,18 @@
     </div>
 
     <!-- Controls / Action Strip -->
-    <div class="memory-controls-bar flex items-center justify-center gap-2">
-      <button class="memory-action-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
-        <span>🧠</span> New Game / Deal (16 Cards)
+    <div class="memory-controls-bar">
+      <button class="memory-action-btn memory-deal-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
+        <span>🧠</span> Deal / New Game (16 Cards)
       </button>
-      <button class="memory-action-btn" id="memoryAdBtn" onclick="claimFreeBrainCoinAd()" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;">
-        <span>📢</span> Free 🧠 (+1 Coin)
-      </button>
-      <button class="memory-action-btn" id="memoryPursuitBtn" onclick="openBalloonPursuitModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #fff;">
-        <span>🎈</span> Balloon Pursuit
-      </button>
+      <div class="memory-secondary-actions">
+        <button class="memory-action-btn memory-ad-btn" id="memoryAdBtn" onclick="claimFreeBrainCoinAd()">
+          <span>📢</span> Free 🧠 (+1 Coin)
+        </button>
+        <button class="memory-action-btn memory-pursuit-btn" id="memoryPursuitBtn" onclick="openBalloonPursuitModal()">
+          <span>🎈</span> Balloon Pursuit
+        </button>
+      </div>
     </div>
   </section>
 

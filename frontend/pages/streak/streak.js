@@ -224,20 +224,18 @@ function claimCurrentStreakDay() {
     }
   };
 
-  // Rewarded Interstitial
+  // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        executeStreakReward();
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
-  }
-
-  if (typeof showRewardedAd === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      executeStreakReward();
+    }).catch(e => {
+      console.warn('show_10676091 notice:', e);
+      executeStreakReward();
+    });
+  } else if (typeof showRewardedAd === 'function') {
     showRewardedAd(executeStreakReward);
   } else {
     executeStreakReward();

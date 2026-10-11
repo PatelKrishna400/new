@@ -90,9 +90,7 @@ const headerContent = `<!DOCTYPE html>
   <title>Energy Tap Reactor - Telegram Mini App</title>
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Monetag Rewarded Interstitial SDK (Zone: 11677609) -->
-  <script async src="https://libtl.com/sdk.js" data-zone="11677609" data-sdk="show_11677609"></script>
-  <!-- Monetag In-App Interstitial SDK (Zone: 10676091) -->
+  <!-- Monetag Rewarded Interstitial SDK (Zone: 10676091) -->
   <script async src="https://libtl.com/sdk.js" data-zone="10676091" data-sdk="show_10676091"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

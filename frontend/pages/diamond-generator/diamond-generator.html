@@ -1,84 +1,120 @@
 <div class="page-view" id="pageDiamondGenerator">
-  <!-- Minimal Gaming Header -->
+  <!-- Sci-Fi Game HUD Header -->
   <header class="dg-header-bar">
     <div class="dg-header-left">
       <button onclick="switchPage('home')" class="dg-back-btn" title="Back" aria-label="Back">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-          </button>
-      <span class="dg-title font-sci">DIAMOND GENERATOR</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="dg-title-block">
+        <div class="dg-hud-tag">QUANTUM LAB</div>
+        <span class="dg-title font-sci">DIAMOND GENERATOR</span>
+      </div>
     </div>
 
-    <!-- Live Resource Badges -->
+    <!-- Live Resource Badges HUD -->
     <div class="dg-resources">
       <div class="dg-pill cyan" title="Main Diamond Balance">
-        <span>💎</span>
+        <span class="dg-pill-icon">💎</span>
         <span id="dgStickyDiamonds" class="font-mono">0.00000000</span>
       </div>
       <div class="dg-pill gold" title="Coins">
-        <span>🪙</span>
+        <span class="dg-pill-icon">🪙</span>
         <span id="dgStickyCoins" class="font-mono">0</span>
       </div>
       <div class="dg-pill sky" title="Reactor Energy">
-        <span>⚡</span>
+        <span class="dg-pill-icon">⚡</span>
         <span id="dgStickyEnergy" class="font-mono">0</span>
       </div>
     </div>
   </header>
 
   <div class="dg-container">
-    <!-- Generator Stage -->
+    <!-- Ambient Cyber Glow Backdrop -->
+    <div class="dg-ambient-mesh"></div>
+
+    <!-- ============================================================
+         PRIMARY QUANTUM REACTOR CHAMBER (GAME CORE VIEW)
+         ============================================================ -->
     <section class="dg-stage-card">
+      <div class="dg-corner-bracket tl"></div>
+      <div class="dg-corner-bracket tr"></div>
+      <div class="dg-corner-bracket bl"></div>
+      <div class="dg-corner-bracket br"></div>
+
+      <!-- Top Reactor Telemetry Bar -->
       <div class="dg-stage-top">
-        <span class="dg-status-tag" id="dgStatusBadge">READY</span>
-        <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.00000001 💎 / 5m</span>
+        <div class="dg-telemetry-left">
+          <span class="dg-led-dot"></span>
+          <span class="dg-status-tag" id="dgStatusBadge">READY</span>
+          <span class="dg-telemetry-stability font-mono">100% STABLE</span>
+        </div>
+        <div class="dg-rate-tag-wrapper">
+          <span class="dg-rate-tag-label">OUTPUT</span>
+          <span class="dg-rate-tag font-mono" id="dgRateHeaderBadge">+0.00000001 💎 / 5m</span>
+        </div>
       </div>
 
-      <!-- Hologram Node with Smooth Loading Progress Ring -->
+      <!-- Sci-Fi Holographic Reactor Chamber -->
       <div class="dg-core-wrapper">
+        <!-- Multi-layered Plasma Aura -->
         <div class="dg-aura"></div>
+        <div class="dg-plasma-burst"></div>
+
+        <!-- Cybernetic Containment Grid & Radial Rings -->
+        <div class="dg-cyber-ring-outer"></div>
+        <div class="dg-cyber-ring-tech"></div>
+
         <svg class="dg-ring-svg" viewBox="0 0 160 160">
           <circle cx="80" cy="80" r="70" class="dg-ring-track"/>
           <circle cx="80" cy="80" r="70" class="dg-ring-fill" id="diamondProgressRing" stroke-dasharray="439.82" stroke-dashoffset="439.82"/>
         </svg>
 
+        <!-- 3D Holographic Crystal Node -->
         <div class="diamond-crystal-node" id="diamondCrystalNode">
+          <!-- Ambient Crystal Caustics -->
+          <div class="crystal-shine-sweep"></div>
+
           <svg class="diamond-core-art" viewBox="0 0 100 100" fill="none">
             <defs>
               <linearGradient id="dFacetTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#f0f9ff"/>
-                <stop offset="100%" stop-color="#38bdf8"/>
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="60%" stop-color="#7dd3fc"/>
+                <stop offset="100%" stop-color="#0284c7"/>
               </linearGradient>
               <linearGradient id="dFacetLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#a5f3fc"/>
+                <stop offset="0%" stop-color="#cffafe"/>
                 <stop offset="100%" stop-color="#0891b2"/>
               </linearGradient>
               <linearGradient id="dFacetCenter" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#67e8f9"/>
-                <stop offset="100%" stop-color="#0284c7"/>
+                <stop offset="60%" stop-color="#00f0ff"/>
+                <stop offset="100%" stop-color="#0369a1"/>
               </linearGradient>
               <linearGradient id="dFacetRight" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#38bdf8"/>
                 <stop offset="100%" stop-color="#0c4a6e"/>
               </linearGradient>
-              <filter id="diamondCoreShine" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#00f0ff" flood-opacity="0.9"/>
+              <filter id="diamondCoreShine" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00f0ff" flood-opacity="0.95"/>
+                <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#38bdf8" flood-opacity="0.6"/>
               </filter>
             </defs>
             <g filter="url(#diamondCoreShine)">
-              <polygon points="30,22 70,22 84,38 16,38" fill="url(#dFacetTop)"/>
-              <polygon points="16,38 30,22 40,38" fill="url(#dFacetLeft)" opacity="0.95"/>
-              <polygon points="84,38 70,22 60,38" fill="url(#dFacetRight)" opacity="0.95"/>
-              <polygon points="30,22 50,38 70,22" fill="#e0f2fe" opacity="0.9"/>
-              <polygon points="40,38 50,22 60,38 50,38" fill="#ffffff"/>
-              <polygon points="16,38 50,38 50,86" fill="url(#dFacetLeft)"/>
-              <polygon points="84,38 50,38 50,86" fill="url(#dFacetRight)"/>
-              <polygon points="35,46 50,86 65,46 50,52" fill="url(#dFacetCenter)" opacity="0.95"/>
-              <circle cx="50" cy="40" r="2.5" fill="#ffffff"/>
+              <polygon points="30,20 70,20 86,38 14,38" fill="url(#dFacetTop)"/>
+              <polygon points="14,38 30,20 40,38" fill="url(#dFacetLeft)" opacity="0.95"/>
+              <polygon points="86,38 70,20 60,38" fill="url(#dFacetRight)" opacity="0.95"/>
+              <polygon points="30,20 50,38 70,20" fill="#e0f2fe" opacity="0.9"/>
+              <polygon points="40,38 50,20 60,38 50,38" fill="#ffffff"/>
+              <polygon points="14,38 50,38 50,88" fill="url(#dFacetLeft)"/>
+              <polygon points="86,38 50,38 50,88" fill="url(#dFacetRight)"/>
+              <polygon points="34,44 50,88 66,44 50,52" fill="url(#dFacetCenter)" opacity="0.95"/>
+              <circle cx="50" cy="38" r="3" fill="#ffffff"/>
             </g>
           </svg>
 
+          <!-- Core HUD Readouts -->
           <div class="diamond-core-info">
             <span class="diamond-countdown-text font-mono" id="diamondCountdownText">00:00</span>
             <span class="diamond-rate-label font-mono" id="diamondCoreRateLabel">Needs 100 ⚡</span>
@@ -86,28 +122,65 @@
         </div>
       </div>
 
-      <!-- Linear Loading Progress Bar (Zero-Jitter Smooth Loading Indicator) -->
-      <div class="dg-progress-bar-wrap" title="Generation Progress">
-        <div class="dg-progress-bar-fill" id="diamondLinearBar" style="width: 0%;"></div>
+      <!-- Sci-Fi Plasma Progress Conduit Track -->
+      <div class="dg-conduit-wrap">
+        <div class="dg-conduit-header">
+          <span class="dg-conduit-title">REACTION STABILIZER CONDUIT</span>
+          <span class="dg-conduit-pct font-mono" id="dgConduitPct">0%</span>
+        </div>
+        <div class="dg-progress-bar-wrap" title="Generation Progress">
+          <div class="dg-progress-bar-fill" id="diamondLinearBar" style="width: 0%;">
+            <span class="dg-progress-glow-tip"></span>
+          </div>
+        </div>
       </div>
 
-      <!-- Start Button with Energy Requirement -->
+      <!-- Master Arcade Start Reactor Button -->
       <button type="button" class="btn-start-diamond-gen" id="btnStartDiamondGen" onclick="startDiamondGeneration()">
-        <span class="btn-shine"></span>
-        <span id="btnStartDiamondGenText">⚡ START GENERATION (100 ⚡)</span>
+        <div class="btn-reactor-pulse"></div>
+        <div class="btn-shine"></div>
+        <span class="btn-icon">⚡</span>
+        <span id="btnStartDiamondGenText">START GENERATION (100 ⚡)</span>
       </button>
+
+      <!-- Tactical Reactor Telemetry Strip -->
+      <div class="dg-reactor-telemetry-grid">
+        <div class="dg-telemetry-chip">
+          <span class="chip-lbl">⚡ FUEL COST</span>
+          <span class="chip-val font-mono">100 Energy</span>
+        </div>
+        <div class="dg-telemetry-chip">
+          <span class="chip-lbl">⏱️ CYCLE TIME</span>
+          <span class="chip-val font-mono" id="dgChipCycleTime">300.0s (5m)</span>
+        </div>
+        <div class="dg-telemetry-chip">
+          <span class="chip-lbl">🐷 VAULT STORAGE</span>
+          <span class="chip-val font-mono" id="dgChipVaultStored">Active</span>
+        </div>
+        <div class="dg-telemetry-chip">
+          <span class="chip-lbl">🤖 OVERSEER DRONE</span>
+          <span class="chip-val font-mono" id="dgChipDrone">Standby</span>
+        </div>
+      </div>
     </section>
 
     <!-- ============================================================
-         QUANTUM ENERGY AUTOMATION MANAGER (AUTO CONSUME 100 ENERGY)
+         QUANTUM ENERGY AUTOMATION MANAGER (AI DRONE STATION)
          ============================================================ -->
     <section class="dg-manager-card" id="dgManagerCard">
+      <div class="dg-corner-bracket tl"></div>
+      <div class="dg-corner-bracket tr"></div>
+
       <div class="dg-manager-hdr">
         <div class="dg-manager-title-wrap">
-          <span class="dg-manager-icon">🤖</span>
+          <div class="dg-drone-avatar">
+            <span class="dg-manager-icon">🤖</span>
+            <span class="dg-drone-radar-sweep"></span>
+          </div>
           <div>
-            <h3 class="dg-manager-title font-sci">QUANTUM AUTOMATION MANAGER</h3>
-            <p class="dg-manager-sub">Auto-feeds 100 ⚡ Energy to generate diamonds continuously (Works offline!)</p>
+            <div class="dg-card-kicker">AI OVERSEER</div>
+            <h3 class="dg-manager-title font-sci">QUANTUM AUTOMATION DRONE</h3>
+            <p class="dg-manager-sub">Automatically feeds 100 ⚡ Energy to forge diamonds 24/7 (Even Offline!)</p>
           </div>
         </div>
         <span class="dg-manager-status-badge font-mono" id="dgManagerStatusBadge">INACTIVE</span>
@@ -115,51 +188,61 @@
       
       <div class="dg-manager-body">
         <div class="dg-manager-info-row">
-          <span class="dg-info-lbl">Manager Active Time:</span>
+          <span class="dg-info-lbl">⏱️ Drone Active Flight Time:</span>
           <span class="dg-info-val font-mono" id="dgManagerTimerVal">0h 00m remaining</span>
         </div>
         <div class="dg-manager-actions">
           <button type="button" class="dg-btn-mgr-hire" id="btnHireDgManagerDia" onclick="hireDgManager('diamond')">
-            <span>💎 Hire / Extend (10 💎 / 24h)</span>
+            <span class="btn-chip-icon">💎</span>
+            <span>Hire / Extend (10 💎 / 24h)</span>
           </button>
           <button type="button" class="dg-btn-mgr-hire ad" id="btnHireDgManagerAd" onclick="hireDgManager('ad')">
-            <span>📢 Watch Ad (+2h Free Manager)</span>
+            <span class="btn-chip-icon">📢</span>
+            <span>Watch Ad (+2h Free Manager)</span>
           </button>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         PIGGY BANK / DIAMOND STORAGE (30-DAY RETENTION & AD EXTENSION)
+         PIGGY BANK / QUANTUM DIAMOND VAULT
          ============================================================ -->
     <section class="dg-piggy-section" id="dgPiggyBankCard">
+      <div class="dg-corner-bracket tl"></div>
+      <div class="dg-corner-bracket tr"></div>
+      
       <div class="piggy-header-row">
         <div class="piggy-title-wrap">
           <div class="piggy-icon-halo">
             <span class="piggy-emoji">🐷</span>
+            <span class="vault-dial-ring"></span>
           </div>
           <div>
-            <h3 class="piggy-title font-sci">PIGGY BANK</h3>
-            <span class="piggy-sub">Vault Storage • Unlimited Retention</span>
+            <div class="dg-card-kicker">SAFE DEPOSIT VAULT</div>
+            <h3 class="piggy-title font-sci">PIGGY BANK VAULT</h3>
+            <span class="piggy-sub">Secure Diamond Reserve • Unlimited Retention</span>
           </div>
         </div>
         <div class="piggy-balance-badge font-mono" id="piggyStoredBadge" title="Stored Diamonds in Piggy Bank">
-          <span>💎</span>
+          <span class="piggy-dia-icon">💎</span>
           <span id="piggyStoredAmount">0.00000000</span>
         </div>
       </div>
 
       <!-- Expiry Status Banner -->
       <div class="piggy-expiry-strip">
-        <span class="expiry-icon">⏳</span>
-        <span class="expiry-text" id="piggyExpiryStatus">Retention: Permanent (Unlimited)</span>
+        <div class="expiry-left">
+          <span class="expiry-icon">⏳</span>
+          <span class="expiry-text" id="piggyExpiryStatus">Retention: Permanent (Unlimited)</span>
+        </div>
         <span class="expiry-badge" id="piggyExtensionBadge">+0 Days Extended</span>
       </div>
 
       <!-- Piggy Bank Action Controls -->
       <div class="piggy-actions-grid">
         <button type="button" class="piggy-collect-btn font-sci" id="btnCollectPiggyBank" onclick="collectPiggyBankDiamonds()" style="display: none;">
-          <span>🎁 COLLECT TO BALANCE</span>
+          <span class="collect-glow"></span>
+          <span>🎁 COLLECT TO MAIN BALANCE</span>
         </button>
 
         <button type="button" class="piggy-extend-btn font-sci" id="btnExtendPiggyAd" onclick="extendPiggyBankWithAd()">
@@ -167,7 +250,7 @@
         </button>
       </div>
 
-      <!-- Generation Records Collapsible -->
+      <!-- Generation Records Collapsible Ledger -->
       <div class="piggy-records-wrapper">
         <div class="piggy-records-header" onclick="togglePiggyRecords()">
           <span class="records-title">📜 Generation Vault Records (<span id="piggyRecordCount">0</span>)</span>
@@ -179,14 +262,17 @@
       </div>
     </section>
 
-    <!-- Upgrades Row (Power & Speed) -->
+    <!-- ============================================================
+         TACTICAL GENERATOR UPGRADES (POWER & SPEED CONSOLES)
+         ============================================================ -->
     <section class="dg-upgrades-grid">
       <!-- Power Card -->
       <div class="dg-upg-card" id="cardPowerUpg">
+        <div class="dg-corner-bracket tl"></div>
         <div class="dg-upg-hdr">
           <div class="dg-upg-title-wrap">
             <span class="dg-upg-icon">💎</span>
-            <span class="dg-upg-title font-sci">POWER</span>
+            <span class="dg-upg-title font-sci">POWER CORE</span>
           </div>
           <span class="dg-level-tag" id="ducOutputLevelBadge">Lv. 1</span>
         </div>
@@ -199,11 +285,12 @@
       </div>
 
       <!-- Speed Card -->
-      <div class="dg-upg-card" id="cardSpeedUpg">
+      <div class="dg-upg-card speed" id="cardSpeedUpg">
+        <div class="dg-corner-bracket tr"></div>
         <div class="dg-upg-hdr">
           <div class="dg-upg-title-wrap">
             <span class="dg-upg-icon">⚡</span>
-            <span class="dg-upg-title font-sci">SPEED</span>
+            <span class="dg-upg-title font-sci">TACHYON SPEED</span>
           </div>
           <span class="dg-level-tag speed" id="ducSpeedLevelBadge">Lv. 1</span>
         </div>
@@ -216,9 +303,11 @@
       </div>
     </section>
 
-    <!-- Tabbed Cost Reducer Section (Power & Speed Ads) -->
+    <!-- ============================================================
+         TACTICAL COST REDUCER CONSOLE (POWER & SPEED AD BOOSTERS)
+         ============================================================ -->
     <section class="dg-cost-reducer-section">
-      <!-- Tab Switch -->
+      <!-- Tab Switch Controls -->
       <div class="dg-cost-tabs" role="tablist">
         <button type="button" class="dg-tab-opt active font-sci" id="tabPowerCost" onclick="switchDgCostTab('power')">
           <span>⚡ POWER DISCOUNT</span>
@@ -232,7 +321,10 @@
       <div class="dg-tab-panel active" id="panelPowerCost">
         <div class="dg-reducer-card">
           <div class="dg-reducer-top">
-            <span class="dg-reducer-title font-sci">COIN COST REDUCER</span>
+            <div class="dg-reducer-title-block">
+              <span class="dg-reducer-title font-sci">COIN COST REDUCER</span>
+              <span class="dg-reducer-sub">Permanently lowers upgrade coin price</span>
+            </div>
             <span class="dg-reducer-badge font-mono" id="powerDiscountBadge">-0 🪙 DISCOUNT</span>
           </div>
 
@@ -257,9 +349,12 @@
 
       <!-- Tab Content: Speed Cost Reducer -->
       <div class="dg-tab-panel" id="panelSpeedCost">
-        <div class="dg-reducer-card">
+        <div class="dg-reducer-card speed">
           <div class="dg-reducer-top">
-            <span class="dg-reducer-title font-sci">DIAMOND COST REDUCER</span>
+            <div class="dg-reducer-title-block">
+              <span class="dg-reducer-title font-sci">DIAMOND COST REDUCER</span>
+              <span class="dg-reducer-sub">Permanently lowers speed overclock diamond price</span>
+            </div>
             <span class="dg-reducer-badge speed font-mono" id="speedDiscountBadge">-0 💎 DISCOUNT</span>
           </div>
 

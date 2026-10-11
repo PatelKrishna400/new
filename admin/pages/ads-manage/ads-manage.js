@@ -368,8 +368,8 @@ function saveAdsConfigToFirebase() {
     const config = {
       directLinkUrl: document.getElementById('inpDirectLinkUrl')?.value.trim() || 'https://otieuche.com/4/8893420',
       directCpm: Number(document.getElementById('inpDirectLinkCpm')?.value) || 0.60,
-      zoneId: document.getElementById('inpMonetagZoneId')?.value.trim() || '11677609',
-      monetagZoneId: document.getElementById('inpMonetagZoneId')?.value.trim() || '11677609',
+      zoneId: document.getElementById('inpMonetagZoneId')?.value.trim() || '10676091',
+      monetagZoneId: document.getElementById('inpMonetagZoneId')?.value.trim() || '10676091',
       sdkUrl: document.getElementById('inpMonetagSdkUrl')?.value.trim() || 'https://libtl.com/sdk.js',
       monetagCpm: Number(document.getElementById('inpMonetagCpm')?.value) || 0.20,
       cooldownSec: Number(document.getElementById('adCooldownSec')?.value) || 30,

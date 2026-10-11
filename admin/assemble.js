@@ -663,12 +663,6 @@ const footerContent = `
   <!-- Chart.js Graphical Representation Engine -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- Firebase Cloud Realtime SDKs & Shared Service -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="shared/firebase.js"></script>
-
   <!-- Admin Direct Read & Edit Access Engine (Point 4) -->
   <script>
     const ADMIN_SECURITY_KEY = '0911';
@@ -898,6 +892,14 @@ ${PAGE_KEYS.map(k => `  <script src="pages/${k}/${k}.js"></script>`).join('\n')}
         if (nameEl) nameEl.textContent = session.name || session.username;
         if (roleEl) roleEl.textContent = session.role || 'Admin';
         if (avatarEl) avatarEl.textContent = (session.username || 'A')[0].toUpperCase();
+
+        // Immediately trigger live data rendering
+        setTimeout(() => {
+          if (typeof updateDashboardMetrics === 'function') updateDashboardMetrics();
+          if (typeof refreshDashboardAnalytics === 'function') refreshDashboardAnalytics();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
+          if (typeof updateGlobalMetrics === 'function') updateGlobalMetrics();
+        }, 50);
       } else {
         // Unauthenticated -> Lock interface behind gate
         if (gate) gate.style.display = 'flex';

@@ -20,11 +20,35 @@ function generateTasksForDay(dayNum) {
   const t6Items = ['ticket', 'card', 'key', 'boom'];
   const t7Items = ['egg', 'brain'];
 
-  const t6Item = t6Items[(dayNum - 1) % t6Items.length];
-  const t7Item = t7Items[(dayNum - 1) % t7Items.length];
+  let t6Item = 'ticket';
+  let t7Item = 'egg';
 
-  const t6Emoji = { ticket: '🎫', card: '🃏', key: '🔑', boom: '💣' }[t6Item] || '🎫';
-  const t7Emoji = { egg: '🥚', brain: '🧠' }[t7Item] || '🥚';
+  if (dayNum === 1) {
+    // Day 1: strictly ticket for Task 6 and egg for Task 7
+    t6Item = 'ticket';
+    t7Item = 'egg';
+  } else {
+    // Days 2 to 30: randomly change option given in brackets using deterministic pseudo-random per day
+    const seed6 = Math.sin(dayNum * 127.1 + 311.7) * 43758.5453;
+    const idx6 = Math.floor(Math.abs(seed6)) % t6Items.length;
+    t6Item = t6Items[idx6];
+
+    const seed7 = Math.cos(dayNum * 269.5 + 183.3) * 43758.5453;
+    const idx7 = Math.floor(Math.abs(seed7)) % t7Items.length;
+    t7Item = t7Items[idx7];
+  }
+
+  const t6Meta = {
+    ticket: { title: 'Use 5 Tickets', sub: 'Spin lucky prize spinner with tickets', emoji: '🎫' },
+    card: { title: 'Use 5 Scratch Cards', sub: 'Scratch & reveal cards in Scratch minigame', emoji: '🃏' },
+    key: { title: 'Use 5 Chest Keys', sub: 'Unlock mystery treasure chests with keys', emoji: '🔑' },
+    boom: { title: 'Use 5 Booms', sub: 'Boom blast in Coin Catcher minigame', emoji: '💣' }
+  }[t6Item] || { title: `Use 5 ${t6Item.toUpperCase()}`, sub: `Minigame ${t6Item}`, emoji: '🎫' };
+
+  const t7Meta = {
+    egg: { title: 'Use 100 Eggs', sub: 'Hatch 100 eggs in Egg Nest minigame', emoji: '🥚' },
+    brain: { title: 'Use 100 Brains', sub: 'Challenge 100 brains in Memory Match', emoji: '🧠' }
+  }[t7Item] || { title: `Use 100 ${t7Item.toUpperCase()}`, sub: `Minigame ${t7Item}`, emoji: '🥚' };
 
   return [
     {
@@ -53,7 +77,7 @@ function generateTasksForDay(dayNum) {
     },
     {
       id: `d${dayNum}_t4`,
-      title: 'Sunflower Land Upgrade 200 Times',
+      title: 'Sunflower Land Upgrade 200',
       sub: 'Upgrade Sunflower Valley plots',
       type: 'sunflower_upgrade',
       target: 200,
@@ -69,19 +93,19 @@ function generateTasksForDay(dayNum) {
     },
     {
       id: `d${dayNum}_t6`,
-      title: `Use 5 ${t6Item.toUpperCase()}s`,
-      sub: `Consume 5 ${t6Item}s in minigames`,
+      title: t6Meta.title,
+      sub: t6Meta.sub,
       type: `use_${t6Item}`,
       target: 5,
-      emoji: t6Emoji
+      emoji: t6Meta.emoji
     },
     {
       id: `d${dayNum}_t7`,
-      title: `Use 100 ${t7Item.toUpperCase()}s`,
-      sub: `Consume 100 ${t7Item}s in minigames`,
+      title: t7Meta.title,
+      sub: t7Meta.sub,
       type: `use_${t7Item}`,
       target: 100,
-      emoji: t7Emoji
+      emoji: t7Meta.emoji
     },
     {
       id: `d${dayNum}_t8`,
@@ -93,16 +117,16 @@ function generateTasksForDay(dayNum) {
     },
     {
       id: `d${dayNum}_t9`,
-      title: 'Spend 100 Diamonds in Shop',
-      sub: 'Shop item purchases',
+      title: 'Shop Use 100 Diamonds',
+      sub: 'Spend 100 diamonds in Shop',
       type: 'shop_diamond',
       target: 100,
       emoji: '🛍️'
     },
     {
       id: `d${dayNum}_t10`,
-      title: 'Complete Total 8 Tasks Today',
-      sub: 'Finish 8 out of today’s quests',
+      title: 'Complete Total 8 Tasks',
+      sub: 'Finish any 8 tasks today',
       type: 'complete_eight',
       target: 8,
       emoji: '🏆'
@@ -277,16 +301,22 @@ function renderTelegramTasks() {
     const rewardKeys = Number(task.rewardKeys || 1);
 
     html += `
-      <div class="web-task-card-minimal" id="tgCard-${task.id}" onclick="joinTelegramTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', ${rewardKeys}, '${task.url}')" role="button" tabindex="0">
+      <div class="web-task-card-minimal tg-task-card" id="tgCard-${task.id}" onclick="joinTelegramTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', ${rewardKeys}, '${task.url}')" role="button" tabindex="0">
         <div class="web-task-card-left">
-          <span class="web-task-card-icon">✈️</span>
-          <div>
+          <div class="tg-task-icon-box">
+            <span>✈️</span>
+          </div>
+          <div class="tg-task-text-col">
             <span class="web-task-card-title">${task.title}</span>
-            <div style="font-size: 10px; color: #94a3b8; font-family: monospace;">${task.desc}</div>
           </div>
         </div>
-        <div class="web-task-reward-pill">
-          <span>🔑 +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'}</span>
+        <div class="tg-task-right">
+          <div class="web-task-reward-pill tg-reward">
+            <span>🔑 +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'}</span>
+          </div>
+          <button class="tg-task-action-btn" type="button">
+            <span>Join ➔</span>
+          </button>
         </div>
       </div>
     `;
@@ -330,113 +360,194 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
 window.joinTelegramTask = joinTelegramTask;
 
 /* ==========================================================================
-   RENDER 30-DAY RECTANGLE CARDS GRID (3*10 CARDS FORM)
+   RENDER 30-DAY RECTANGLE TABS & IN-PAGE QUESTS VIEW
    ========================================================================== */
-function renderThirtyDayCards() {
-  const container = document.getElementById('thirtyDayGridContainer');
-  if (!container) return;
+function isMegaRewardUnlocked() {
+  if (typeof gameState !== 'undefined' && gameState.megaRewardUnlocked) return true;
+  try {
+    if (localStorage.getItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED') === 'true') return true;
+  } catch (e) {}
+  if (thirtyDayState && thirtyDayState.days && thirtyDayState.days[30] && thirtyDayState.days[30].completedCount >= 8) return true;
+  return false;
+}
 
-  const streakDisplay = document.getElementById('streakCountDisplay');
-  if (streakDisplay) streakDisplay.innerText = `${thirtyDayState.streakCount} Day${thirtyDayState.streakCount > 1 ? 's' : ''}`;
+function renderMegaRewardBanner() {
+  const banner = document.getElementById('dailyMegaRewardBanner');
+  if (!banner) return;
 
-  const dayNumDisplay = document.getElementById('currentActiveDayNum');
-  if (dayNumDisplay) dayNumDisplay.innerText = thirtyDayState.activeDayIndex;
-
-  // Check if broken streak notice should popup
-  if (thirtyDayState.streakBroken) {
-    const modal = document.getElementById('brokenStreakModal');
-    if (modal) modal.style.display = 'flex';
+  const unlocked = isMegaRewardUnlocked();
+  let completedDaysCount = 0;
+  for (let d = 1; d <= 30; d++) {
+    if (thirtyDayState.days[d] && thirtyDayState.days[d].completedCount >= 8) {
+      completedDaysCount++;
+    }
   }
+
+  if (unlocked) {
+    banner.className = 'daily-mega-reward-card unlocked';
+    banner.innerHTML = `
+      <div class="mega-banner-content" onclick="switchPage('mega-reward')">
+        <div class="mega-banner-left">
+          <div class="mega-banner-icon-box unlocked">
+            <span class="mega-banner-icon">👑</span>
+          </div>
+          <div class="mega-banner-text">
+            <div class="mega-banner-badge">30 DAYS COMPLETED 🎉</div>
+            <h4 class="mega-banner-heading">MEGA REWARD REQUEST UNLOCKED!</h4>
+          </div>
+        </div>
+        <button class="mega-banner-btn" type="button" onclick="event.stopPropagation(); switchPage('mega-reward')">
+          <span>CLAIM REWARD 🎁</span>
+        </button>
+      </div>
+    `;
+  } else {
+    const pct = Math.min(100, Math.round((completedDaysCount / 30) * 100));
+    banner.className = 'daily-mega-reward-card locked';
+    banner.innerHTML = `
+      <div class="mega-banner-content">
+        <div class="mega-banner-left">
+          <div class="mega-banner-icon-box locked">
+            <span class="mega-banner-icon">🔒</span>
+          </div>
+          <div class="mega-banner-text">
+            <div class="mega-banner-badge-locked">UNLOCKS AFTER 30 DAYS</div>
+            <h4 class="mega-banner-heading-locked">30-Day Grand Prize: Mega Reward</h4>
+            <div class="mega-banner-progress-bar-wrap">
+              <div class="mega-banner-progress-bar-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mega-banner-prog-box">
+          <span class="mega-banner-prog-label">Days Cleared</span>
+          <span class="mega-banner-prog-val font-mono font-black">${completedDaysCount} / 30</span>
+          <span class="mega-banner-prog-pct">${pct}% Completed</span>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function renderThirtyDayTabs() {
+  const tabsStrip = document.getElementById('thirtyDayRectTabsStrip');
+  if (!tabsStrip) return;
 
   let html = '';
   for (let d = 1; d <= 30; d++) {
     const dayData = thirtyDayState.days[d] || { completedCount: 0, dayRewardClaimed: false };
     const isCompleted = dayData.completedCount >= 10;
-    const isPreviousDayCompleted = d === 1 || (thirtyDayState.days[d - 1] && thirtyDayState.days[d - 1].completedCount >= 10);
+    const isPreviousDayCompleted = d === 1 || (thirtyDayState.days[d - 1] && thirtyDayState.days[d - 1].completedCount >= 8);
     const isUnlocked = isPreviousDayCompleted && d <= thirtyDayState.activeDayIndex;
-    const isActive = d === thirtyDayState.activeDayIndex && !isCompleted;
+    const isSelected = d === currentSelectedDay;
 
-    let cardClass = 'thirty-day-card';
-    let statusText = '';
-    let pillClass = '';
+    let tabClass = 'thirty-day-rect-tab';
+    let statusText = '🔒';
+    let pillClass = 'locked';
 
     if (isCompleted) {
-      cardClass += ' completed-day';
-      statusText = '✅ 10/10 Done';
+      tabClass += ' completed-tab';
+      statusText = '✓ Done';
       pillClass = 'completed';
     } else if (isUnlocked) {
-      cardClass += ' active-day';
-      statusText = `In Progress (${dayData.completedCount}/10)`;
+      tabClass += ' active-tab';
+      statusText = '⚡ Active';
       pillClass = 'active';
     } else {
-      cardClass += ' locked-day';
-      statusText = '🔒 Locked';
+      tabClass += ' locked-tab';
+      statusText = '🔒 Lock';
       pillClass = 'locked';
     }
 
+    if (isSelected) {
+      tabClass += ' selected';
+    }
+    if (d === 30) {
+      tabClass += ' mega-tab';
+    }
+
+    const pct = Math.min(100, Math.round(((dayData.completedCount || 0) / 10) * 100));
+
     html += `
-      <div class="${cardClass}" onclick="openDayDetailModal(${d})" id="dayCard-${d}">
-        <span class="thirty-day-num">DAY ${d}</span>
-        <span class="thirty-day-status-pill ${pillClass}">${statusText}</span>
-        ${d === 30 ? '<span class="text-[8px] bg-yellow-950 text-yellow-300 font-bold px-1 rounded border border-yellow-500/50">👑 MEGA REWARD</span>' : ''}
-      </div>
+      <button type="button" class="${tabClass}" onclick="selectDayTab(${d})" id="dayTab-${d}">
+        <div class="tab-top-row">
+          <span class="tab-day-label">${d === 30 ? '👑 DAY 30' : `DAY ${d}`}</span>
+          <span class="tab-badge-pill ${pillClass}">${statusText}</span>
+        </div>
+        <div class="tab-bottom-row">
+          <span class="tab-task-count font-mono">${dayData.completedCount || 0}/10 Tasks</span>
+          <span class="tab-reward-note">+10🪙</span>
+        </div>
+        <div class="tab-mini-prog-track">
+          <div class="tab-mini-prog-fill ${pillClass}" style="width: ${pct}%;"></div>
+        </div>
+      </button>
     `;
   }
 
-  container.innerHTML = html;
+  tabsStrip.innerHTML = html;
 }
 
-/* ==========================================================================
-   DAY 10-TASKS DETAIL MODAL
-   ========================================================================== */
-window.openDayDetailModal = function(dayNum) {
-  const isPreviousDayCompleted = dayNum === 1 || (thirtyDayState.days[dayNum - 1] && thirtyDayState.days[dayNum - 1].completedCount >= 10);
-  const isUnlocked = isPreviousDayCompleted && dayNum <= thirtyDayState.activeDayIndex;
-
-  if (!isUnlocked && !thirtyDayState.days[dayNum].completedCount) {
-    alert(`Day ${dayNum} is Locked! Complete all 10 tasks of previous days and maintain daily streak to unlock.`);
-    return;
-  }
-
+window.selectDayTab = function(dayNum) {
   currentSelectedDay = dayNum;
-  const modal = document.getElementById('dayDetailModalBackdrop');
-  if (modal) modal.style.display = 'flex';
+  renderThirtyDayTabs();
+  renderSelectedDayQuests(dayNum);
 
-  const titleEl = document.getElementById('dayModalTitle');
-  if (titleEl) titleEl.innerText = `Day ${dayNum} Quests (10 Tasks)`;
-
-  renderDayTasksList(dayNum);
+  const tabEl = document.getElementById(`dayTab-${dayNum}`);
+  if (tabEl) {
+    tabEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
 };
 
-window.closeDayDetailModal = function(event) {
-  if (event) event.stopPropagation();
-  const modal = document.getElementById('dayDetailModalBackdrop');
-  if (modal) modal.style.display = 'none';
-};
+function renderSelectedDayQuests(dayNum) {
+  const panel = document.getElementById('selectedDayQuestsPanel');
+  if (!panel) return;
 
-function renderDayTasksList(dayNum) {
-  const container = document.getElementById('dayTasksVerticalList');
-  if (!container) return;
+  const titleEl = document.getElementById('selectedDayTitle');
+  const subEl = document.getElementById('selectedDaySubtitle');
+  const progTextEl = document.getElementById('selectedDayProgText');
+  const barFillEl = document.getElementById('selectedDayBarFill');
+  const statusPillEl = document.getElementById('selectedDayStatusPill');
+  const statusTextEl = document.getElementById('selectedDayStatusText');
+  const container = document.getElementById('selectedDayTasksList');
 
   const tasks = generateTasksForDay(dayNum);
-  const dayData = thirtyDayState.days[dayNum];
+  const dayData = thirtyDayState.days[dayNum] || { progress: Array(10).fill(0), claimed: Array(10).fill(false), completedCount: 0 };
 
-  // Count how many are 100% completed
+  // Calculate completion
   let doneCount = 0;
   tasks.forEach((t, idx) => {
-    if (dayData.progress[idx] >= t.target) doneCount++;
+    if ((dayData.progress[idx] || 0) >= t.target) doneCount++;
   });
   dayData.completedCount = doneCount;
 
   // Auto-complete task 10 if 8 tasks are done
-  if (doneCount >= 8 && dayData.progress[9] < 8) {
+  if (doneCount >= 8 && (dayData.progress[9] || 0) < 8) {
     dayData.progress[9] = 8;
   }
 
-  const progLabel = document.getElementById('dayTasksProgressLabel');
-  if (progLabel) progLabel.innerText = `${doneCount} / 10 Completed`;
+  if (titleEl) titleEl.innerText = dayNum === 30 ? `👑 Day 30 Final Quests (10 Tasks)` : `Day ${dayNum} Quests (10 Tasks)`;
+  if (subEl) subEl.innerHTML = '';
+  if (progTextEl) progTextEl.innerText = `${doneCount} / 10 Completed`;
+  if (barFillEl) barFillEl.style.width = `${Math.min(100, Math.round((doneCount / 10) * 100))}%`;
 
-  // If all 10 completed and day reward not claimed, award 10,000 Diamonds!
+  const isCompleted = doneCount >= 10;
+  const isPreviousDayCompleted = dayNum === 1 || (thirtyDayState.days[dayNum - 1] && thirtyDayState.days[dayNum - 1].completedCount >= 8);
+  const isUnlocked = isPreviousDayCompleted && dayNum <= thirtyDayState.activeDayIndex;
+
+  if (statusPillEl && statusTextEl) {
+    if (isCompleted) {
+      statusPillEl.className = 'selected-day-status-pill completed';
+      statusTextEl.innerText = '✅ Day Complete';
+    } else if (isUnlocked) {
+      statusPillEl.className = 'selected-day-status-pill active';
+      statusTextEl.innerText = '⚡ Day Active';
+    } else {
+      statusPillEl.className = 'selected-day-status-pill locked';
+      statusTextEl.innerText = '🔒 Day Locked';
+    }
+  }
+
+  // Check 10,000 Diamonds Day Reward
   if (doneCount >= 10 && !dayData.dayRewardClaimed) {
     dayData.dayRewardClaimed = true;
     if (typeof gameState !== 'undefined' && gameState.player) {
@@ -446,42 +557,56 @@ function renderDayTasksList(dayNum) {
     alert(`🎉 DAY ${dayNum} 100% COMPLETED!\nYou won +10,000 💎 Diamonds!`);
 
     // If Day 30 completed, unlock Mega Reward Request!
-    if (dayNum === 30 && typeof gameState !== 'undefined') {
-      gameState.megaRewardUnlocked = true;
-      alert('👑 ALL 30 DAYS COMPLETED!\nMega Reward Request has been UNLOCKED!');
+    if (dayNum === 30) {
+      if (typeof gameState !== 'undefined') {
+        gameState.megaRewardUnlocked = true;
+      }
+      try {
+        localStorage.setItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED', 'true');
+      } catch (e) {}
+      alert('👑 ALL 30 DAYS COMPLETED!\nMega Reward Request has been UNLOCKED!\nYou can now claim real Mega Rewards!');
+      renderMegaRewardBanner();
     }
     saveThirtyDayState();
   }
+
+  if (!container) return;
 
   let html = '';
   tasks.forEach((task, idx) => {
     const prog = dayData.progress[idx] || 0;
     const isTargetMet = prog >= task.target;
     const isClaimed = dayData.claimed[idx];
+    const pct = Math.min(100, Math.round((Math.min(prog, task.target) / task.target) * 100));
 
     html += `
-      <div class="day-task-row ${isTargetMet ? 'task-completed' : ''}">
+      <div class="day-task-row ${isClaimed ? 'task-claimed' : (isTargetMet ? 'task-completed' : '')}">
+        <div class="day-task-avatar">
+          <span>${task.emoji}</span>
+        </div>
         <div class="day-task-info">
-          <div class="day-task-title flex items-center gap-1.5">
-            <span>${task.emoji}</span>
-            <span>${task.title}</span>
+          <div class="day-task-title-row">
+            <span class="day-task-title">${task.title}</span>
+            <span class="day-task-target-pill ${isClaimed ? 'claimed' : (isTargetMet ? 'complete' : '')}">
+              ${isClaimed ? '✓ Done' : `${Math.min(task.target, prog)} / ${task.target}`}
+            </span>
           </div>
-          <div class="day-task-prog">
-            Progress: ${Math.min(task.target, prog)} / ${task.target} &bull; ${task.sub}
+          <div class="day-task-mini-progress">
+            <div class="day-task-mini-progress-fill ${isClaimed ? 'claimed' : (isTargetMet ? 'complete' : '')}" style="width: ${isClaimed ? 100 : pct}%;"></div>
           </div>
         </div>
 
-        <div>
+        <div class="day-task-action-wrap">
           ${isClaimed ? `
-            <button class="day-task-claim-btn claimed">
-              <span>✅ Claimed</span>
+            <button class="day-task-claim-btn claimed" type="button" disabled>
+              <span>✓ Claimed</span>
             </button>
           ` : isTargetMet ? `
-            <button class="day-task-claim-btn" onclick="claimDayTaskReward(${dayNum}, ${idx})">
-              <span>📢 Claim (+10 🪙)</span>
+            <button class="day-task-claim-btn claim-ready" type="button" onclick="claimDayTaskReward(${dayNum}, ${idx})">
+              <span>📢 Claim +10 🪙</span>
             </button>
           ` : `
-            <button class="day-task-claim-btn" onclick="executeTaskQuickAction('${task.type}')" style="background: rgba(255,255,255,0.08); color: #cbd5e1;">
+            <button class="day-task-claim-btn go-btn" type="button" onclick="executeTaskQuickAction('${task.type}')">
               <span>Go &rarr;</span>
             </button>
           `}
@@ -494,6 +619,49 @@ function renderDayTasksList(dayNum) {
   saveThirtyDayState();
 }
 
+function renderThirtyDayCards() {
+  const streakDisplay = document.getElementById('streakCountDisplay');
+  if (streakDisplay) streakDisplay.innerText = `${thirtyDayState.streakCount} Day${thirtyDayState.streakCount > 1 ? 's' : ''}`;
+
+  const dayNumDisplay = document.getElementById('currentActiveDayNum');
+  if (dayNumDisplay) dayNumDisplay.innerText = thirtyDayState.activeDayIndex;
+
+  // Check if broken streak notice should popup
+  if (thirtyDayState.streakBroken) {
+    const modal = document.getElementById('brokenStreakModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  // Render Mega Reward Banner
+  renderMegaRewardBanner();
+
+  // Render 30 Rectangular Tabs
+  renderThirtyDayTabs();
+
+  // Render Current Selected Day Quests Panel
+  if (!currentSelectedDay || currentSelectedDay < 1 || currentSelectedDay > 30) {
+    currentSelectedDay = thirtyDayState.activeDayIndex || 1;
+  }
+  renderSelectedDayQuests(currentSelectedDay);
+}
+
+/* ==========================================================================
+   DAY 10-TASKS DETAIL MODAL (Backward-compatibility sheet)
+   ========================================================================== */
+window.openDayDetailModal = function(dayNum) {
+  selectDayTab(dayNum);
+};
+
+window.closeDayDetailModal = function(event) {
+  if (event) event.stopPropagation();
+  const modal = document.getElementById('dayDetailModalBackdrop');
+  if (modal) modal.style.display = 'none';
+};
+
+function renderDayTasksList(dayNum) {
+  renderSelectedDayQuests(dayNum);
+}
+
 window.claimDayTaskReward = function(dayNum, taskIdx) {
   const dayData = thirtyDayState.days[dayNum];
   if (!dayData || dayData.claimed[taskIdx]) return;
@@ -504,18 +672,34 @@ window.claimDayTaskReward = function(dayNum, taskIdx) {
       gameState.player.coins = (gameState.player.coins || 0) + 10;
       if (typeof window.updateUI === 'function') window.updateUI();
     }
-    renderDayTasksList(dayNum);
-    renderThirtyDayCards();
+    renderSelectedDayQuests(dayNum);
+    renderThirtyDayTabs();
+    renderMegaRewardBanner();
     saveThirtyDayState();
-    alert('🎉 +10 🪙 Gold Coins Claimed!');
+
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎉 +10 🪙 Gold Coins Added to Balance!');
+    } else {
+      alert('🎉 +10 🪙 Gold Coins Claimed!');
+    }
   };
 
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(doClaim, {
-      adTitle: 'Claim Task Reward',
-      adDesc: 'Watch a short video to claim +10 Coins!'
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      doClaim();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      doClaim();
     });
+  } else if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doClaim);
   } else {
+    alert('You have seen an ad!');
     doClaim();
   }
 };
@@ -526,8 +710,14 @@ window.executeTaskQuickAction = function(taskType) {
   else if (taskType === 'web_task') switchTaskSubtab('website');
   else if (taskType === 'fuel_use') switchPage('energy');
   else if (taskType === 'sunflower_upgrade' || taskType === 'sunflower_prestige') switchPage('sunflower');
-  else if (taskType === 'spin_wheel') switchPage('spin');
+  else if (taskType === 'use_ticket' || taskType === 'spin_wheel') switchPage('spin');
+  else if (taskType === 'use_card') switchPage('scratch');
+  else if (taskType === 'use_key') switchPage('chest');
+  else if (taskType === 'use_boom') switchPage('coin-catcher');
+  else if (taskType === 'use_egg') switchPage('egg');
+  else if (taskType === 'use_brain') switchPage('memory-match');
   else if (taskType === 'shop_diamond') switchPage('profile');
+  else switchPage('home');
 };
 
 /* ==========================================================================
@@ -544,12 +734,22 @@ window.repairDailyStreakWithAd = function() {
     alert('🔥 Daily Streak Repaired! You can now continue your 30-Day Quests.');
   };
 
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(doRepair, {
-      adTitle: 'Repair Daily Streak',
-      adDesc: 'Watch sponsor video to repair your 30-day streak!'
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      doRepair();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      doRepair();
     });
+  } else if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doRepair);
   } else {
+    alert('You have seen an ad!');
     doRepair();
   }
 };
@@ -635,13 +835,25 @@ function renderWebsiteTasks() {
     const rewardDiamonds = Number(task.rewardDiamonds || task.diamondReward || 50);
 
     html += `
-      <div class="web-task-card-minimal ${isOpened ? 'is-unlocked' : ''}" onclick="openWebsiteTaskPopup('${task.id}')" role="button" tabindex="0">
+      <div class="web-task-card-minimal web-sponsor-card ${isOpened ? 'is-unlocked' : ''}" onclick="openWebsiteTaskPopup('${task.id}')" role="button" tabindex="0">
         <div class="web-task-card-left">
-          <span class="web-task-card-icon">🌐</span>
-          <span class="web-task-card-title">${task.title}</span>
+          <div class="web-task-icon-box ${isOpened ? 'unlocked' : 'locked'}">
+            <span>${isOpened ? '🔓' : '🌐'}</span>
+          </div>
+          <div class="web-task-text-col">
+            <div class="flex items-center gap-1.5">
+              <span class="web-task-card-title">${task.title}</span>
+              <span class="web-sponsor-tag">${task.tagText || 'SPONSOR'}</span>
+            </div>
+          </div>
         </div>
-        <div class="web-task-reward-pill">
-          <span>+${rewardDiamonds} 💎</span>
+        <div class="web-task-right">
+          <div class="web-task-reward-pill web-reward">
+            <span>💎 +${rewardDiamonds}</span>
+          </div>
+          <button class="web-task-action-btn ${isOpened ? 'verify-btn' : 'unlock-btn'}" type="button">
+            <span>${isOpened ? 'Enter PIN ➔' : 'Unlock 🪙'}</span>
+          </button>
         </div>
       </div>
     `;
@@ -811,12 +1023,22 @@ window.submitWebsiteCodeVerification = function() {
     alert(`🎉 Verified! You won +${rewardDiamonds} 💎 Diamonds!`);
   };
 
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(doClaim, {
-      adTitle: 'Claim 50 Diamonds',
-      adDesc: 'Watch sponsor video to verify and collect your 50 Diamonds!'
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      doClaim();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      doClaim();
     });
+  } else if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doClaim);
   } else {
+    alert('You have seen an ad!');
     doClaim();
   }
 };

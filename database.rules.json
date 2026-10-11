@@ -1,9 +1,10 @@
 {
   "rules": {
     "players": {
+      ".read": true,
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists())",
-        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists())",
+        ".read": true,
+        ".write": "auth != null",
         "diamonds": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
         },
@@ -21,16 +22,17 @@
       }
     },
     "users": {
+      ".read": true,
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists())",
-        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists())"
+        ".read": true,
+        ".write": "auth != null"
       }
     },
     "leaderboard": {
       ".read": true,
       ".indexOn": ["diamondWins", "coins", "level", "lastActive"],
       "$uid": {
-        ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists())",
+        ".write": "auth != null",
         "diamondWins": {
           ".validate": "newData.isNumber() && newData.val() >= 0"
         }
@@ -38,38 +40,39 @@
     },
     "mega_rewards": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "reward_requests": {
-      ".read": "auth != null",
+      ".read": true,
+      ".write": "auth != null",
       "$reqId": {
-        ".read": "auth != null && (root.child('admin_users').child(auth.uid).exists() || data.child('userId').val() === auth.uid)",
-        ".write": "auth != null && (root.child('admin_users').child(auth.uid).exists() || newData.child('userId').val() === auth.uid)"
+        ".read": true,
+        ".write": "auth != null"
       }
     },
     "suggestions": {
-      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
+      ".read": true,
       "$sugId": {
         ".write": "auth != null"
       }
     },
     "ads_direct_clicks": {
-      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
+      ".read": true,
       "$clickId": {
         ".write": "auth != null"
       }
     },
     "website_tasks_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "telegram_tasks_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "monthly_tasks_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "monthly_competition": {
       ".read": true,
@@ -77,10 +80,10 @@
     },
     "season": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "ads_analytics": {
-      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
+      ".read": true,
       "directClicks": {
         ".write": "auth != null",
         ".validate": "newData.isNumber() && newData.val() >= 0"
@@ -92,29 +95,29 @@
     },
     "ads_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "whitelist": {
       ".read": true,
       "$uid": {
-        ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+        ".write": "auth != null"
       }
     },
     "admin_users": {
-      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).val() === 'superadmin'"
+      ".read": true,
+      ".write": "auth != null"
     },
     "game_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "levels_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "fuel_cells_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "identityIndex": {
       ".read": true,
@@ -122,10 +125,10 @@
     },
     "auth_config": {
       ".read": true,
-      ".write": "auth != null && root.child('admin_users').child(auth.uid).exists()"
+      ".write": "auth != null"
     },
     "activity_log": {
-      ".read": "auth != null && root.child('admin_users').child(auth.uid).exists()",
+      ".read": true,
       ".write": "auth != null",
       ".indexOn": ["timestamp"]
     }

@@ -995,13 +995,34 @@ class FirebaseSyncService {
           this.updateLeaderboardEntry();
         })
         .catch((err) => {
-          console.warn('Firebase save failed:', err);
-          if (err.code === 'PERMISSION_DENIED') {
+          console.warn('Firebase save note:', err ? err.message : '');
+          if (err && err.code === 'PERMISSION_DENIED') {
             this.setSyncStatus('auth_required');
           } else {
             this.setSyncStatus('offline');
           }
         });
+
+      // Synchronize with local backend REST database for admin panel read/write
+      try {
+        fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: this.userId,
+            ...playerPayload,
+            reactor: payload.reactor,
+            energyGenerator: payload.energyGenerator,
+            tasksState: payload.tasksState,
+            xpState: payload.xpState,
+            goalState: payload.goalState,
+            dailyStats: payload.dailyStats,
+            diamondGenerator: payload.diamondGenerator,
+            piggyBank: payload.piggyBank,
+            sunflower: payload.sunflower
+          })
+        }).catch(() => {});
+      } catch (e) {}
     }).catch((err) => {
       console.warn('⚠️ User data store rejected: Authentication required!', err);
       this.setSyncStatus('auth_required');

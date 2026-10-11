@@ -499,9 +499,20 @@ window.claimHourlyShopCoinsAd = function() {
     if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
   };
 
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      triggerReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerReward();
+    });
   } else {
+    alert('You have seen an ad!');
     triggerReward();
   }
 };
@@ -610,26 +621,6 @@ window.claimPassItemViaAd = function(itemType) {
     return;
   }
 
-  // In-App Interstitial
-  if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091({
-        type: 'inApp',
-        inAppSettings: {
-          frequency: 2,
-          capping: 0.1,
-          interval: 30,
-          timeout: 5,
-          everyPage: false
-        }
-      });
-    } catch (e) {
-      console.warn('show_10676091 error:', e);
-    }
-  } else if (typeof window.triggerShopInAppInterstitial === 'function') {
-    window.triggerShopInAppInterstitial();
-  }
-
   const doReward = () => {
     if (!gameState.player.passAdCooldowns) {
       gameState.player.passAdCooldowns = {};
@@ -669,14 +660,20 @@ window.claimPassItemViaAd = function(itemType) {
     }
   };
 
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(doReward, {
-      adTitle: `Free ${item.name}`,
-      adDesc: `Watch 1 ad for 1 Free ${item.name}!`
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      doReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      doReward();
     });
-  } else if (typeof startAdSimulation === 'function') {
-    startAdSimulation(normKey, `${item.name} Ad`, `Watch 1 ad for +1 ${item.name}`, doReward);
   } else {
+    alert('You have seen an ad!');
     doReward();
   }
 };
@@ -2107,28 +2104,20 @@ window.startReelGiftAdFlow = function() {
     sfx.playTapSound(1.2);
   }
 
-  // Rewarded Interstitial
+  // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        openReelGiftStudioModal();
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
-  }
-
-  // Use the universal rewarded ad service (Monetag live ad or failsafe countdown)
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(() => {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
       openReelGiftStudioModal();
-    }, {
-      adTitle: 'Free Cyber Reel Gift Drop',
-      adDesc: 'Watch this sponsored transmission to unlock your exclusive Reel Gift & Social Pack!'
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      openReelGiftStudioModal();
     });
   } else {
+    alert('You have seen an ad!');
     openReelGiftStudioModal();
   }
 };
@@ -2818,28 +2807,26 @@ window.activateQuantumBlueTapsWithAd = function() {
     sfx.playTapSound(1.2);
   }
 
-  // Rewarded Interstitial
-  if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        activateQuantumBlueTaps(50, 0, 'Ad Reward');
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
-  }
+  const executeReward = () => {
+    activateQuantumBlueTaps(50, 0, 'Ad Reward');
+  };
 
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(() => {
-      activateQuantumBlueTaps(50, 0, 'Ad Reward');
-    }, {
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      alert('You have seen an ad!');
+      executeReward();
+    }).catch(e => {
+      console.warn('show_10676091 notice:', e);
+      executeReward();
+    });
+  } else if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(executeReward, {
       adTitle: 'Quantum Blue Taps Surge',
       adDesc: 'Watch ad to activate 50 Blue Taps (Each tap grants 1 Blue Coin)!'
     });
   } else {
-    activateQuantumBlueTaps(50, 0, 'Free Fallback');
+    executeReward();
   }
 };
 
@@ -2910,55 +2897,36 @@ window.watchAdForBlueCoins = function() {
     sfx.playTapSound(1.2);
   }
 
-  // Rewarded Interstitial
-  if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        gameState.player.diamonds = (gameState.player.diamonds || 0) + 50;
-        if (gameState.player.blueCoins !== undefined) {
-          gameState.player.blueCoins = gameState.player.diamonds;
-        }
-        if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-          sfx.playLevelUpSound();
-        }
-        showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
-        updateBlueTabUI();
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame();
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
-  }
-
-  if (typeof window.showRewardedAd === 'function') {
-    window.showRewardedAd(() => {
-      gameState.player.diamonds = (gameState.player.diamonds || 0) + 50;
-      if (gameState.player.blueCoins !== undefined) {
-        gameState.player.blueCoins = gameState.player.diamonds;
-      }
-      if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
-        sfx.playLevelUpSound();
-      }
-      showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
-      updateBlueTabUI();
-      if (typeof updateUI === 'function') updateUI();
-      if (typeof saveGame === 'function') saveGame();
-    }, {
-      adTitle: 'Blue Coin Ad Surge',
-      adDesc: 'Watch ad to claim +50 Free Blue Coins!'
-    });
-  } else {
+  const doReward = () => {
     gameState.player.diamonds = (gameState.player.diamonds || 0) + 50;
     if (gameState.player.blueCoins !== undefined) {
       gameState.player.blueCoins = gameState.player.diamonds;
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
     }
     showShopToast('💙 +50 Blue Coins Unlocked!', '🎬');
     updateBlueTabUI();
     if (typeof updateUI === 'function') updateUI();
     if (typeof saveGame === 'function') saveGame();
+  };
+
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      alert('You have seen an ad!');
+      doReward();
+    }).catch(e => {
+      console.warn('show_10676091 notice:', e);
+      doReward();
+    });
+  } else if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doReward, {
+      adTitle: 'Blue Coin Ad Surge',
+      adDesc: 'Watch ad to claim +50 Free Blue Coins!'
+    });
+  } else {
+    doReward();
   }
 };
 

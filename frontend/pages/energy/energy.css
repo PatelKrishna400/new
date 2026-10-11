@@ -1494,7 +1494,7 @@
 .beefarm-entry-tab-card .bf-tab-honeycomb-bg {
   position: absolute;
   inset: 0;
-  background-image: url('bee-farm-bg.png');
+  background-image: url('honey-bg.png');
   background-size: cover;
   background-position: right 30%;
   background-repeat: no-repeat;
@@ -1674,7 +1674,7 @@
 /* Mining Entry Card */
 .mining-entry-tab-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(16, 26, 48, 0.95) 0%, rgba(9, 15, 30, 0.95) 100%);
+  background: linear-gradient(135deg, #091322 0%, #060b18 100%);
   border: 1.5px solid rgba(0, 240, 255, 0.45);
   border-radius: 18px;
   padding: 12px 14px;
@@ -1683,40 +1683,65 @@
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.15), 0 8px 24px rgba(0, 0, 0, 0.5);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(0, 240, 255, 0.18);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  min-height: 98px;
 }
 
 .mining-entry-tab-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 240, 255, 0.3), 0 12px 28px rgba(0, 0, 0, 0.6);
   border-color: #00f0ff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 240, 255, 0.35);
 }
 
 .mining-entry-tab-card:active {
-  transform: scale(0.98);
+  transform: scale(0.985);
 }
 
-.mining-tab-cyber-bg {
+.mining-entry-tab-card .mining-tab-cyber-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(0, 240, 255, 0.04) 50%, rgba(0, 0, 0, 0.25) 50%);
-  background-size: 100% 4px;
-  opacity: 0.4;
-  pointer-events: none;
+  background-image: url('stone-bg.png');
+  background-size: cover;
+  background-position: right 30%;
+  background-repeat: no-repeat;
+  opacity: 0.88;
+  filter: saturate(1.25) contrast(1.1) brightness(0.95);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, filter 0.35s ease;
   z-index: 1;
+  pointer-events: none;
 }
 
-.mining-entry-glow {
+.mining-entry-tab-card:hover .mining-tab-cyber-bg {
+  transform: scale(1.05);
+  opacity: 0.98;
+  filter: saturate(1.35) contrast(1.15) brightness(1.05);
+}
+
+.mining-entry-tab-card .mining-entry-glow {
   position: absolute;
-  top: -20px;
-  left: -20px;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.94) 0%, 
+    rgba(6, 11, 24, 0.88) 42%, 
+    rgba(10, 18, 36, 0.65) 65%, 
+    rgba(15, 23, 42, 0.25) 85%, 
+    rgba(0, 240, 255, 0.12) 100%
+  );
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.mining-entry-tab-card:hover .mining-entry-glow {
+  background: linear-gradient(90deg, 
+    rgba(6, 11, 24, 0.90) 0%, 
+    rgba(6, 11, 24, 0.82) 42%, 
+    rgba(10, 18, 36, 0.52) 65%, 
+    rgba(15, 23, 42, 0.15) 85%, 
+    rgba(0, 240, 255, 0.22) 100%
+  );
 }
 
 .mining-entry-left {
@@ -1766,6 +1791,7 @@
   font-size: 13px;
   font-weight: 800;
   color: #67e8f9;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 240, 255, 0.4);
   letter-spacing: 0.3px;
   margin: 0;
   line-height: 1.2;
@@ -1775,12 +1801,13 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: 8.5px;
   font-weight: 800;
-  background: rgba(0, 240, 255, 0.18);
-  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.22);
+  color: #a5f3fc;
   padding: 1.5px 6px;
   border-radius: 9999px;
-  border: 1px solid rgba(0, 240, 255, 0.45);
+  border: 1px solid rgba(0, 240, 255, 0.5);
   letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .mining-entry-desc {

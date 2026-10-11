@@ -224,36 +224,70 @@
           </div>
         </div>
 
-        <!-- Item 4: 20-Minute Profit Multipliers (*2, *5, *10 - Mutually Exclusive) -->
+        <!-- Item 4: 20-Minute Profit Multipliers (*2, *5, *10 - One time one run) -->
         <div class="bg-stone-950/90 rounded-xl p-3.5 border border-amber-500/50 flex flex-col gap-3 shadow-md">
           <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
             <div class="flex items-center gap-2">
               <span class="text-2xl animate-pulse">⚡</span>
               <div>
                 <h4 class="text-xs font-black text-amber-300">Harvest Profit Multipliers (20 Minutes)</h4>
-                <p class="text-[10px] text-stone-300">Watch an ad to boost all harvest coins! (Only one active at a time)</p>
+                <p class="text-[10px] text-stone-300">Boost all harvest coins! (*2 Ad, *5 100🪙, *10 100💎 - 1 at a time)</p>
               </div>
             </div>
             <span id="sfBoosterActiveBadge" class="bg-stone-800 text-stone-400 text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border border-stone-700">No Active Booster</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <!-- 2X Boost -->
+            <!-- 2X Boost: Watch Ad -->
             <button onclick="activateSunflowerProfitBooster(2)" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:brightness-110 active:scale-95 text-stone-950 font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-yellow-400">
               <span class="text-sm">⚡ 2X PROFIT</span>
               <span class="text-[9.5px] text-stone-900 font-bold">📢 Watch Ad (20 Min)</span>
             </button>
 
-            <!-- 5X Boost -->
+            <!-- 5X Boost: 100 Coins -->
             <button onclick="activateSunflowerProfitBooster(5)" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-emerald-400">
               <span class="text-sm">🔥 5X PROFIT</span>
-              <span class="text-[9.5px] text-emerald-100 font-bold">📢 Watch Ad (20 Min)</span>
+              <span class="text-[9.5px] text-emerald-100 font-bold">🪙 100 Coins (20 Min)</span>
             </button>
 
-            <!-- 10X Boost -->
+            <!-- 10X Boost: 100 Diamonds -->
             <button onclick="activateSunflowerProfitBooster(10)" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-purple-400">
               <span class="text-sm">👑 10X PROFIT</span>
-              <span class="text-[9.5px] text-purple-100 font-bold">📢 Watch Ad (20 Min)</span>
+              <span class="text-[9.5px] text-purple-100 font-bold">💎 100 Diamonds (20 Min)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 5: 20-Minute Production Speed Multipliers (*2, *5, *10 - One time one run) -->
+        <div class="bg-stone-950/90 rounded-xl p-3.5 border border-cyan-500/50 flex flex-col gap-3 shadow-md">
+          <div class="flex items-center justify-between border-b border-cyan-500/30 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl animate-pulse">⏩</span>
+              <div>
+                <h4 class="text-xs font-black text-cyan-300">Production Speed Multipliers (20 Minutes)</h4>
+                <p class="text-[10px] text-stone-300">Accelerate crops &amp; wells speed! (*2 Ad, *5 100🪙, *10 100💎 - 1 at a time)</p>
+              </div>
+            </div>
+            <span id="sfSpeedBoosterActiveBadge" class="bg-stone-800 text-stone-400 text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border border-stone-700">No Active Booster</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <!-- 2X Speed: Watch Ad -->
+            <button onclick="activateSunflowerSpeedBooster(2)" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-cyan-400">
+              <span class="text-sm">⚡ 2X SPEED</span>
+              <span class="text-[9.5px] text-cyan-100 font-bold">📢 Watch Ad (20 Min)</span>
+            </button>
+
+            <!-- 5X Speed: 100 Coins -->
+            <button onclick="activateSunflowerSpeedBooster(5)" class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-teal-400">
+              <span class="text-sm">🚀 5X SPEED</span>
+              <span class="text-[9.5px] text-teal-100 font-bold">🪙 100 Coins (20 Min)</span>
+            </button>
+
+            <!-- 10X Speed: 100 Diamonds -->
+            <button onclick="activateSunflowerSpeedBooster(10)" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:brightness-110 active:scale-95 text-white font-black text-xs py-3 px-2 rounded-xl shadow transition flex flex-col items-center justify-center gap-1 border border-indigo-400">
+              <span class="text-sm">🏎️ 10X SPEED</span>
+              <span class="text-[9.5px] text-indigo-100 font-bold">💎 100 Diamonds (20 Min)</span>
             </button>
           </div>
         </div>
@@ -261,7 +295,7 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- SF PAGE 4: 👷 LAND MANAGERS (MANAGE LAND BY LAND VERTICAL STACK)-->
+    <!-- SF PAGE 4: 👷 AUTOMATION MANAGERS (SUNFLOWER & WATER WELLS)     -->
     <!-- ============================================================== -->
     <section id="sfPage4" class="sf-game-page bg-stone-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border-2 border-amber-500/50 text-white shadow-xl flex flex-col gap-3 hidden">
       <!-- Managers Page Header -->
@@ -270,8 +304,8 @@
           <span class="text-2xl">👷</span>
           <div>
             <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-              <span>Land Managers (20 Lands)</span>
-              <span class="text-[9px] bg-amber-950 text-amber-300 font-bold px-1.5 py-0.5 rounded-full border border-amber-700">1 Manager = 1 Land</span>
+              <span>Automation Managers</span>
+              <span class="text-[9px] bg-amber-950 text-amber-300 font-bold px-1.5 py-0.5 rounded-full border border-amber-700">1 Manager = 1 Slot</span>
             </h2>
           </div>
         </div>
@@ -283,12 +317,26 @@
         </div>
       </div>
 
+      <!-- Denoted Sub-Tabs: 🌻 Sunflower Managers vs 💧 Water Managers -->
+      <div class="sf-mgr-subtabs-nav flex items-center gap-1.5 p-1 bg-stone-950/90 rounded-xl border border-stone-800">
+        <button id="sfMgrTabSunflower" onclick="switchSunflowerManagerTab('sunflower')" class="sf-mgr-subtab-btn active sunflower">
+          <span>🌻</span>
+          <span>Sunflower Managers (20 Lands)</span>
+          <span id="sfMgrSunflowerActiveBadge" class="text-[9px] bg-amber-950/80 text-amber-300 font-mono font-bold px-1.5 py-0.2 rounded-full border border-amber-700/60">0/20</span>
+        </button>
+        <button id="sfMgrTabWater" onclick="switchSunflowerManagerTab('water')" class="sf-mgr-subtab-btn water">
+          <span>💧</span>
+          <span>Water Managers (20 Wells)</span>
+          <span id="sfMgrWaterActiveBadge" class="text-[9px] bg-cyan-950/80 text-cyan-300 font-mono font-bold px-1.5 py-0.2 rounded-full border border-cyan-700/60">0/20</span>
+        </button>
+      </div>
+
       <!-- Quick Info Strip -->
       <div class="sf-mgr-info-strip bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 flex flex-wrap items-center justify-between gap-2 text-[10.5px]">
         <div class="flex items-center gap-2 text-stone-300">
-          <span>💎 Unlock Slot: <strong class="text-cyan-300 font-mono">300 💎</strong></span>
+          <span>🪙 Unlock Slot: <strong class="text-amber-300 font-mono">300 🪙 Gold Coins</strong></span>
           <span>•</span>
-          <span>☀️ 1-Day Contract: <strong class="text-amber-300 font-mono">500, 1000, 1500... ☀️</strong> or <strong class="text-emerald-400">1 Ad 📢</strong></span>
+          <span>Extend: <strong class="text-amber-300 font-mono">10 🪙 (+24h)</strong> or <strong class="text-yellow-400 font-mono">☀️ Coins</strong> or <strong class="text-emerald-400">1 Ad 📢 (+10h)</strong></span>
         </div>
       </div>
 

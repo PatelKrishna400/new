@@ -126,6 +126,15 @@
   height: 14px;
 }
 
+.subtab-icon-wrap {
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
 .subtab-badge-pill {
   background: rgba(3, 8, 22, 0.65);
   color: #ffffff;
@@ -2269,5 +2278,1472 @@
   transform: translateY(-1px);
 }
 
+/* ==========================================================================
+   30-DAY DAILY TASKS - RECTANGULAR CARDS & GRID
+   ========================================================================== */
+.tasks-streak-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(20, 14, 6, 0.95) 0%, rgba(38, 24, 7, 0.92) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 14px;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
 
+.thirty-day-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+}
 
+@media (min-width: 600px) {
+  .thirty-day-grid-layout {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Rectangular Card Base */
+.thirty-day-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 12px;
+  min-height: 74px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 30, 0.95) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.thirty-day-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.thirty-day-card:active {
+  transform: translateY(1px);
+}
+
+/* Active Day Card State */
+.thirty-day-card.active-day {
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Completed Day Card State */
+.thirty-day-card.completed-day {
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Locked Day Card State */
+.thirty-day-card.locked-day {
+  opacity: 0.6;
+  background: rgba(10, 15, 26, 0.75);
+  border: 1px dashed rgba(100, 116, 139, 0.25);
+  cursor: not-allowed;
+}
+
+/* Day 30 Special Mega Reward Card */
+.thirty-day-card.mega-day {
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.35) 0%, rgba(30, 27, 75, 0.95) 100%);
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: pulseMegaCard 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseMegaCard {
+  0%, 100% { border-color: #f59e0b; box-shadow: 0 0 14px rgba(245, 158, 11, 0.3); }
+  50% { border-color: #fde047; box-shadow: 0 0 24px rgba(253, 224, 71, 0.5); }
+}
+
+/* Card Header Top Row */
+.thirty-day-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.thirty-day-num-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.thirty-day-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  color: #f8fafc;
+  letter-spacing: 0.4px;
+}
+
+.thirty-day-mega-tag {
+  font-size: 8px;
+  font-weight: 900;
+  color: #fde047;
+  background: rgba(120, 53, 15, 0.8);
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* Status Pill */
+.thirty-day-status-pill {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+}
+
+.thirty-day-status-pill.active {
+  background: rgba(6, 182, 212, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.thirty-day-status-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.thirty-day-status-pill.locked {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Card Bottom Row */
+.thirty-day-card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.thirty-day-prog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.thirty-day-prog-text {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.thirty-day-coin-reward {
+  color: #f59e0b;
+  font-weight: 800;
+}
+
+.thirty-day-mini-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.thirty-day-mini-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+/* ==========================================================================
+   DAY 10-TASKS DETAIL MODAL & TASK ROWS
+   ========================================================================== */
+.task-notes-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.day-detail-modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  background: linear-gradient(180deg, #0f172a 0%, #060b18 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  padding: 16px 16px 24px 16px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+.task-notes-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(148, 163, 184, 0.3);
+  margin: 0 auto 12px auto;
+}
+
+.day-modal-header {
+  margin-bottom: 8px;
+}
+
+.day-task-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.day-task-row:hover {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.day-task-row.task-completed {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(6, 78, 59, 0.15);
+}
+
+.day-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.day-task-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.day-task-prog {
+  font-size: 9.5px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+}
+
+.day-task-claim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 10.5px;
+  font-weight: 800;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  transition: transform 0.1s ease, filter 0.1s ease;
+  white-space: nowrap;
+}
+
+.day-task-claim-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.day-task-claim-btn:active {
+  transform: translateY(1px);
+}
+
+.day-task-claim-btn.claimed {
+  background: rgba(100, 116, 139, 0.2);
+  color: #64748b;
+  box-shadow: none;
+  cursor: default;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.day-task-claim-btn.claim-ready {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+  border: 1px solid #34d399;
+  animation: pulseClaimBtn 1.5s infinite;
+}
+
+@keyframes pulseClaimBtn {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.04); filter: brightness(1.2); }
+}
+
+.day-task-claim-btn.go-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.day-task-claim-btn.go-btn:hover {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ==========================================================================
+   30-DAY DAILY TASKS REVAMP (RECTANGULAR TABS + MEGA REWARD REQUEST)
+   ========================================================================== */
+.thirty-day-view-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Mega Reward Request Banner */
+.daily-mega-reward-card {
+  width: 100%;
+  border-radius: 18px;
+  padding: 14px 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-mega-reward-card.locked {
+  background: linear-gradient(135deg, rgba(16, 24, 48, 0.95) 0%, rgba(8, 14, 30, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.daily-mega-reward-card.unlocked {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.35) 50%, rgba(15, 23, 42, 0.98) 100%);
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 28px rgba(245, 158, 11, 0.45), inset 0 1.5px 0 rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+}
+
+.mega-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.mega-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 220px;
+}
+
+.mega-banner-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24px;
+}
+
+.mega-banner-icon-box.locked {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1.5px solid rgba(148, 163, 184, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mega-banner-icon-box.unlocked {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6));
+  border: 1.5px solid #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+  animation: pulseGold 2s infinite ease-in-out;
+}
+
+.mega-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mega-banner-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+.mega-banner-badge-locked {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+}
+
+.mega-banner-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+  margin: 0;
+}
+
+.mega-banner-heading-locked {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.mega-banner-progress-bar-wrap {
+  width: 100%;
+  max-width: 240px;
+  height: 6px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.mega-banner-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8 0%, #00f0ff 100%);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+.mega-banner-prog-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(2, 6, 23, 0.75);
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mega-banner-prog-label {
+  font-size: 8.5px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mega-banner-prog-val {
+  font-size: 12px;
+  color: #38bdf8;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 900;
+}
+
+.mega-banner-prog-pct {
+  font-size: 9px;
+  color: #34d399;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+
+.mega-banner-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #020617;
+  font-weight: 900;
+  font-size: 11.5px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1px solid #fef08a;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mega-banner-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.15);
+}
+
+.mega-banner-btn:active {
+  transform: translateY(1px);
+}
+
+/* 30-Day Rectangular Tabs Strip */
+.thirty-day-rect-tabs-header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.thirty-day-strip-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f59e0b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.thirty-day-rect-tabs-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px 10px 2px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+}
+
+.thirty-day-rect-tabs-strip::-webkit-scrollbar {
+  height: 5px;
+}
+
+.thirty-day-rect-tabs-strip::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.5);
+  border-radius: 4px;
+}
+
+.thirty-day-rect-tabs-strip::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 4px;
+}
+
+/* Individual Rectangular Tab Button */
+.thirty-day-rect-tab {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 102px;
+  width: 102px;
+  height: 56px;
+  background: linear-gradient(180deg, rgba(16, 26, 48, 0.95) 0%, rgba(8, 14, 30, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  padding: 6px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.thirty-day-rect-tab:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.thirty-day-rect-tab:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.thirty-day-rect-tab.selected {
+  background: linear-gradient(180deg, rgba(20, 38, 78, 0.98) 0%, rgba(10, 20, 46, 1) 100%);
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.thirty-day-rect-tab.active-tab {
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.thirty-day-rect-tab.completed-tab {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(180deg, rgba(6, 44, 34, 0.95) 0%, rgba(4, 22, 18, 0.98) 100%);
+}
+
+.thirty-day-rect-tab.mega-tab {
+  border-color: rgba(245, 158, 11, 0.6);
+}
+
+.thirty-day-rect-tab.mega-tab.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.7);
+}
+
+.tab-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tab-day-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 0.3px;
+}
+
+.tab-badge-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1.5px 5px;
+  border-radius: 4px;
+}
+
+.tab-badge-pill.completed {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.6);
+}
+
+.tab-badge-pill.active {
+  background: rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.tab-badge-pill.locked {
+  background: rgba(100, 116, 139, 0.2);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.tab-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1px;
+}
+
+.tab-task-count {
+  font-size: 9px;
+  color: #cbd5e1;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tab-reward-note {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.tab-mini-prog-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.tab-mini-prog-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.25s ease;
+}
+
+.tab-mini-prog-fill.active {
+  background: #38bdf8;
+}
+
+.tab-mini-prog-fill.completed {
+  background: #10b981;
+}
+
+.tab-mini-prog-fill.locked {
+  background: #475569;
+}
+
+/* Selected Day Panel */
+.selected-day-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(14, 24, 46, 0.95) 0%, rgba(6, 12, 28, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.selected-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  padding-bottom: 12px;
+  gap: 10px;
+}
+
+.selected-day-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(15, 23, 42, 0.9));
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.selected-day-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin: 0;
+}
+
+.selected-day-status-pill {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.selected-day-status-pill.active {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.selected-day-status-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.selected-day-status-pill.locked {
+  background: rgba(100, 116, 139, 0.18);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+}
+
+.selected-day-progress-track {
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-day-bar-bg {
+  width: 100%;
+  height: 9px;
+  border-radius: 99px;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.selected-day-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8 0%, #00f0ff 60%, #10b981 100%);
+  border-radius: 99px;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+}
+
+/* Day Reward Bonus Card */
+.selected-day-reward-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(8, 28, 54, 0.6) 100%);
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  border-radius: 14px;
+  padding: 10px 14px;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.reward-card-gem-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(6, 182, 212, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+}
+
+.reward-card-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selected-day-bonus-badge {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 900;
+  color: #38bdf8;
+  background: rgba(6, 36, 60, 0.9);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+/* 10 Tasks Vertical List */
+.day-tasks-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* Individual Quest Card */
+.day-task-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(14, 24, 46, 0.75);
+  border: 1.5px solid rgba(148, 163, 184, 0.15);
+  border-radius: 14px;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.day-task-row:hover {
+  background: rgba(22, 36, 68, 0.85);
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.day-task-row.task-completed {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(6, 60, 46, 0.25);
+}
+
+.day-task-row.task-claimed {
+  opacity: 0.75;
+  border-color: rgba(148, 163, 184, 0.15);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.day-task-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.day-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.day-task-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-task-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-task-target-pill {
+  font-size: 9.5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.day-task-target-pill.complete {
+  background: rgba(6, 78, 59, 0.6);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #34d399;
+}
+
+.day-task-target-pill.claimed {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.day-task-sub {
+  font-size: 9.5px;
+  color: #94a3b8;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-task-mini-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.day-task-mini-progress-fill {
+  height: 100%;
+  background: #38bdf8;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.day-task-mini-progress-fill.complete {
+  background: #10b981;
+}
+
+.day-task-mini-progress-fill.claimed {
+  background: #64748b;
+}
+
+.day-task-action-wrap {
+  flex-shrink: 0;
+}
+
+.day-task-claim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.day-task-claim-btn.go-btn {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+}
+
+.day-task-claim-btn.go-btn:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  transform: translateY(-1px);
+}
+
+.day-task-claim-btn.claim-ready {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+  animation: pulseClaimBtn 1.8s infinite ease-in-out;
+}
+
+.day-task-claim-btn.claim-ready:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px) scale(1.03);
+}
+
+.day-task-claim-btn.claimed {
+  background: rgba(100, 116, 139, 0.18);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+  cursor: default;
+}
+
+/* Telegram Task Specifics */
+.tg-task-card {
+  border-color: rgba(14, 165, 233, 0.35);
+  background: linear-gradient(180deg, rgba(14, 30, 68, 0.9) 0%, rgba(6, 16, 38, 0.98) 100%);
+}
+
+.tg-task-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.25);
+}
+
+.tg-task-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.tg-task-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tg-task-desc {
+  font-size: 10px;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tg-task-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.web-task-reward-pill.tg-reward {
+  background: rgba(120, 53, 15, 0.35);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+
+.tg-task-action-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+  transition: all 0.15s ease;
+}
+
+.tg-task-action-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+/* Website Sponsor Card */
+.web-sponsor-card {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.web-sponsor-card:hover {
+  border-color: #38bdf8;
+}
+
+.web-task-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.web-task-icon-box.locked {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.web-task-icon-box.unlocked {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.web-sponsor-tag {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(6, 40, 68, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+}
+
+.web-task-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.web-task-desc {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.web-task-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.web-task-reward-pill.web-reward {
+  background: rgba(6, 36, 68, 0.7);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+
+.web-task-action-btn {
+  padding: 5px 12px;
+  font-size: 10.5px;
+  font-weight: 800;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.web-task-action-btn.unlock-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #020617;
+  border: 1px solid #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.web-task-action-btn.verify-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.web-task-action-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+/* Streak Strip Specifics */
+.tasks-streak-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.15) 40%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  margin-bottom: 6px;
+}
+
+.streak-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.streak-fire-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(220, 38, 38, 0.3));
+  border: 1.5px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  flex-shrink: 0;
+}
+
+.streak-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.streak-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.streak-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.streak-status-tag {
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.6);
+}
+
+.streak-counter-text {
+  font-size: 10px;
+  color: #e2e8f0;
+}
+
+.streak-strip-right {
+  flex-shrink: 0;
+}
+
+.streak-day-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(2, 6, 23, 0.8);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  padding: 4px 10px;
+}
+
+.streak-day-sub {
+  font-size: 8px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.streak-day-num {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.6); }
+  50% { box-shadow: 0 0 26px rgba(245, 158, 11, 0.9); }
+}
+
+@keyframes pulseClaimBtn {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
+  50% { transform: scale(1.03); box-shadow: 0 0 24px rgba(16, 185, 129, 0.9); }
+}
+
+/* ==========================================================================
+   BROKEN STREAK MODAL & DIALOG
+   ========================================================================== */
+.broken-streak-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.broken-streak-card {
+  width: 100%;
+  max-width: 360px;
+  background: linear-gradient(180deg, #18090f 0%, #0d060c 100%);
+  border: 2px solid rgba(244, 63, 94, 0.7);
+  border-radius: 24px;
+  padding: 22px 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(244, 63, 94, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.broken-streak-icon-wrap {
+  font-size: 38px;
+  line-height: 1;
+  filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.7));
+  animation: bounceMini 1.8s infinite ease-in-out;
+}
+
+@keyframes bounceMini {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.broken-streak-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #fb7185;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.broken-streak-desc {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.broken-streak-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.broken-streak-btn-ad {
+  width: 100%;
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  border: 1px solid #f43f5e;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(225, 29, 72, 0.45);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.broken-streak-btn-ad:hover {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(244, 63, 94, 0.6);
+}
+
+.broken-streak-btn-ad:active {
+  transform: scale(0.97);
+}
+
+.broken-streak-btn-dia {
+  width: 100%;
+  background: rgba(8, 51, 68, 0.85);
+  border: 1.5px solid rgba(6, 182, 212, 0.6);
+  color: #67e8f9;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.broken-streak-btn-dia:hover {
+  background: rgba(14, 116, 144, 0.9);
+  color: #ffffff;
+  border-color: #22d3ee;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(6, 182, 212, 0.4);
+}
+
+.broken-streak-btn-dia:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================================
+   GLOBAL PARAGRAPH & EXTRA TEXT ELIMINATION (UNIFIED COMPACT ARCADE UI)
+   ========================================================================== */
+#pageTasks p,
+#pageTasks .day-task-sub,
+#pageTasks .reward-card-desc,
+#pageTasks .mega-banner-sub,
+#pageTasks .tg-task-desc,
+#pageTasks .web-task-desc,
+#pageTasks .thirty-day-strip-helper,
+#pageTasks .selected-day-subtitle {
+  display: none !important;
+}
+
+#pageTasks * {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+#pageTasks .font-mono,
+#pageTasks [class*="font-mono"],
+#pageTasks .streak-day-num,
+#pageTasks .day-task-target-pill,
+#pageTasks .mega-banner-prog-val,
+#pageTasks .web-pin-input {
+  font-family: 'JetBrains Mono', monospace !important;
+}

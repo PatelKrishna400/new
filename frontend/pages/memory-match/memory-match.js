@@ -369,33 +369,21 @@
   }
 
   window.claimFreeBrainCoinAd = function() {
-    // Rewarded Popup
+    // Rewarded interstitial
     if (typeof show_10676091 === 'function') {
-      try {
-        show_10676091('pop').then(() => {
-          // user watch ad till the end or close it in interstitial format
-          // your code to reward user for rewarded format
-          grantBrainCoin();
-        }).catch(e => {
-          // user get error during playing ad
-          // do nothing or whatever you want
-          console.warn('show_10676091 pop error:', e);
-        });
-      } catch (e) {
-        console.warn('show_10676091 error:', e);
-      }
-    }
-
-    if (typeof window.showRewardedAd === 'function') {
+      show_10676091().then(() => {
+        // You need to add your user reward function here, which will be executed after the user watches the ad.
+        // For more details, please refer to the detailed instructions.
+        alert('You have seen an ad!');
+        grantBrainCoin();
+      }).catch(e => {
+        console.warn('show_10676091 notice:', e);
+        grantBrainCoin();
+      });
+    } else if (typeof window.showRewardedAd === 'function') {
       window.showRewardedAd(grantBrainCoin, {
         adTitle: 'Free Brain Coin Sponsor Ad',
-        adDesc: 'Watch full 15s sponsored ad to earn 1 Brain Coin'
-      });
-    } else if (typeof window.show_11677609 === 'function') {
-      window.show_11677609().then(() => {
-        grantBrainCoin();
-      }).catch(() => {
-        grantBrainCoin();
+        adDesc: 'Watch full sponsored ad to earn 1 Brain Coin'
       });
     } else {
       grantBrainCoin();
@@ -896,13 +884,13 @@
     adCountdown = adDuration;
     adReadyToClaim = false;
 
-    // Trigger Monetag SDK if present
-    if (typeof window.show_11677609 === 'function') {
-      try {
-        window.show_11677609();
-      } catch (e) {
-        console.warn('Monetag notice in Balloon Pursuit:', e);
-      }
+    // Rewarded interstitial
+    if (typeof show_10676091 === 'function') {
+      show_10676091().then(() => {
+        alert('You have seen an ad!');
+      }).catch(e => {
+        console.warn('show_10676091 notice in Balloon Pursuit:', e);
+      });
     }
 
     const skipBtn = document.getElementById('ad-skip-btn');

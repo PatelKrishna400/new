@@ -18,14 +18,30 @@
 
 const SPIN_PRIZES = [
   { label: '1 Crown', type: 'crown', amount: 1, icon: '👑', isCrown: true, rarity: 'epic' },
-  { label: '50 Coins', type: 'coins', amount: 50, icon: '🪙', rarity: 'common' },
+  { label: '10 Party Coins', type: 'party_coins', amount: 10, icon: '🎉', rarity: 'common' },
   { label: '1 Key', type: 'keys', amount: 1, icon: '🔑', rarity: 'rare' },
   { label: '1 Card', type: 'card', amount: 1, icon: '🎴', rarity: 'rare' },
   { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },
   { label: '1 Ticket', type: 'ticket', amount: 1, icon: '🎟️', rarity: 'rare' },
   { label: '500 Coins', type: 'coins', amount: 500, icon: '🪙', isJackpot: true, rarity: 'jackpot' },
-  { label: '50 Blue Coins', type: 'blue_coins', amount: 50, icon: '💙', rarity: 'rare' }
+  { label: '20 Party Coins', type: 'party_coins', amount: 20, icon: '🎉', rarity: 'rare' }
 ];
+
+// 🧨 DYNAMITE WHEEL (🎉 SPINNER PRIZES: 1, 2, 5, 10, 15, 20, 25, 50, Try Again)
+const DYNAMITE_PRIZES = [
+  { label: '1 Dynamite', type: 'dynamite', amount: 1, icon: '🧨', rarity: 'common' },     // slice 0 (0°)
+  { label: '2 Dynamite', type: 'dynamite', amount: 2, icon: '🧨', rarity: 'common' },     // slice 1 (40°)
+  { label: '5 Dynamite', type: 'dynamite', amount: 5, icon: '🧨', rarity: 'common' },     // slice 2 (80°)
+  { label: '10 Dynamite', type: 'dynamite', amount: 10, icon: '🧨', rarity: 'rare' },     // slice 3 (120°)
+  { label: '15 Dynamite', type: 'dynamite', amount: 15, icon: '🧨', rarity: 'rare' },     // slice 4 (160°)
+  { label: 'Try Again', type: 'none', amount: 0, icon: '❌', rarity: 'common' },           // slice 5 (200°)
+  { label: '20 Dynamite', type: 'dynamite', amount: 20, icon: '🧨', rarity: 'epic' },     // slice 6 (240°)
+  { label: '25 Dynamite', type: 'dynamite', amount: 25, icon: '🧨', rarity: 'epic' },     // slice 7 (280°)
+  { label: '50 Dynamite', type: 'dynamite', amount: 50, icon: '🧨', isJackpot: true, rarity: 'jackpot' } // slice 8 (320°)
+];
+
+let currentSpinWheelTab = 'ticket'; // 'ticket' | 'dynamite'
+let currentPartyBet = 1; // 1 | 10 | 20
 
 // ==========================================================================
 // KING EVENT MATHEMATICAL ENGINE (1 - 1000 LEVELS WAVE PROGRESSION)
@@ -135,26 +151,27 @@ function getSpinState() {
   return gameState.spinState;
 }
 
-// Initialize 24 circular LED Chaser Bulbs around the perimeter
+// Initialize 24 circular LED Chaser Bulbs around the perimeter of active wheels
 function initSpinChaserBulbs() {
-  const ring = document.getElementById('spinChaserRing');
-  if (!ring) return;
-  if (ring.children.length === 24) return; // Already rendered, skip DOM recreation
-  ring.innerHTML = ''; // Fresh render ensures exact placement
+  ['spinChaserRing', 'spinPartyChaserRing'].forEach(ringId => {
+    const ring = document.getElementById(ringId);
+    if (!ring) return;
+    if (ring.children.length === 24) return;
+    ring.innerHTML = '';
 
-  const totalBulbs = 24;
-  for (let i = 0; i < totalBulbs; i++) {
-    const bulb = document.createElement('div');
-    bulb.className = `chaser-bulb ${i % 2 === 0 ? '' : 'alt'}`;
-    const angle = (i / totalBulbs) * 2 * Math.PI - (Math.PI / 2);
-    // Percentage positioning from center 50% with radius 49.5%
-    const leftPercent = 50 + 49.5 * Math.cos(angle);
-    const topPercent = 50 + 49.5 * Math.sin(angle);
-    bulb.style.left = `${leftPercent.toFixed(2)}%`;
-    bulb.style.top = `${topPercent.toFixed(2)}%`;
-    bulb.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
-    ring.appendChild(bulb);
-  }
+    const totalBulbs = 24;
+    for (let i = 0; i < totalBulbs; i++) {
+      const bulb = document.createElement('div');
+      bulb.className = `chaser-bulb ${i % 2 === 0 ? '' : 'alt'}`;
+      const angle = (i / totalBulbs) * 2 * Math.PI - (Math.PI / 2);
+      const leftPercent = 50 + 49.5 * Math.cos(angle);
+      const topPercent = 50 + 49.5 * Math.sin(angle);
+      bulb.style.left = `${leftPercent.toFixed(2)}%`;
+      bulb.style.top = `${topPercent.toFixed(2)}%`;
+      bulb.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
+      ring.appendChild(bulb);
+    }
+  });
 }
 
 // Synthesize realistic mechanical click sound for wheel pegs
@@ -267,6 +284,48 @@ function updateSpinTicketUI() {
     if (btnIcon) btnIcon.textContent = '🎟️';
     if (btnText) btnText.textContent = 'NEED 1 TICKET TO SPIN (0 🎫)';
     if (centerHubLabel) centerHubLabel.textContent = '0 🎫';
+  }
+
+  // Update Party Coins & Dynamite Coins balances
+  const partyHeaderEl = document.getElementById('spinPartyHeaderCount');
+  const partyCoins = (gameState.player && (gameState.player.partyCoins !== undefined ? gameState.player.partyCoins : gameState.player.blueCoins)) || 0;
+  if (partyHeaderEl) partyHeaderEl.textContent = typeof formatNumber === 'function' ? formatNumber(partyCoins) : partyCoins.toString();
+
+  const dynamiteHeaderEl = document.getElementById('spinDynamiteHeaderCount');
+  const dynamiteCoins = (gameState.player && gameState.player.dynamiteCoins) || 0;
+  if (dynamiteHeaderEl) dynamiteHeaderEl.textContent = typeof formatNumber === 'function' ? formatNumber(dynamiteCoins) : dynamiteCoins.toString();
+
+  // Update Dynamite Wheel Action Button State
+  const partyBtn = document.getElementById('btnSpinPartyWheel');
+  const partyBtnIcon = document.getElementById('spinPartyBtnIcon');
+  const partyBtnText = document.getElementById('spinPartyBtnText');
+  const partyHubLabel = document.getElementById('spinPartyCenterHubLabel');
+  const isPartySpinning = gameState.rewardState && gameState.rewardState.isPartySpinning;
+
+  if (isPartySpinning) {
+    if (partyBtn) {
+      partyBtn.disabled = true;
+      partyBtn.className = 'spin-action-main-btn dynamite-mode';
+    }
+    if (partyBtnIcon) partyBtnIcon.textContent = '⚡';
+    if (partyBtnText) partyBtnText.textContent = 'SPINNING DYNAMITE...';
+    if (partyHubLabel) partyHubLabel.textContent = '...';
+  } else if (partyCoins >= currentPartyBet) {
+    if (partyBtn) {
+      partyBtn.disabled = false;
+      partyBtn.className = 'spin-action-main-btn dynamite-mode';
+    }
+    if (partyBtnIcon) partyBtnIcon.textContent = '🧨';
+    if (partyBtnText) partyBtnText.textContent = `SPIN DYNAMITE WHEEL (${currentPartyBet} 🎉)`;
+    if (partyHubLabel) partyHubLabel.textContent = 'SPIN';
+  } else {
+    if (partyBtn) {
+      partyBtn.disabled = false;
+      partyBtn.className = 'spin-action-main-btn dynamite-mode no-ticket-mode';
+    }
+    if (partyBtnIcon) partyBtnIcon.textContent = '🎉';
+    if (partyBtnText) partyBtnText.textContent = `NEED ${currentPartyBet} 🎉 COINS (${partyCoins} 🎉)`;
+    if (partyHubLabel) partyHubLabel.textContent = `${partyCoins} 🎉`;
   }
 
   updateSpinLevelUI();
@@ -538,8 +597,11 @@ function applySpinPrize(prize, multiplier = 1) {
 
   if (prize.type === 'coins') {
     gameState.player.coins += finalAmount;
-  } else if (prize.type === 'blue_coins' || prize.type === 'blueCoins') {
-    gameState.player.blueCoins = (gameState.player.blueCoins || 0) + finalAmount;
+  } else if (prize.type === 'party_coins' || prize.type === 'party' || prize.type === 'blue_coins' || prize.type === 'blueCoins') {
+    gameState.player.partyCoins = (gameState.player.partyCoins || gameState.player.blueCoins || 0) + finalAmount;
+    gameState.player.blueCoins = gameState.player.partyCoins;
+  } else if (prize.type === 'dynamite' || prize.type === 'dynamite_coins') {
+    gameState.player.dynamiteCoins = (gameState.player.dynamiteCoins || 0) + finalAmount;
   } else if (prize.type === 'keys') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + finalAmount;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + finalAmount);
@@ -579,24 +641,18 @@ function claimDoubleSpinReward() {
     }
   };
 
-  // Rewarded Popup
+  // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091('pop').then(() => {
-        // user watch ad till the end or close it in interstitial format
-        // your code to reward user for rewarded format
-        handleDoubleSuccess();
-      }).catch(e => {
-        // user get error during playing ad
-        // do nothing or whatever you want
-        console.warn('show_10676091 pop error:', e);
-      });
-    } catch (e) {
-      console.warn('show_10676091 error:', e);
-    }
-  }
-
-  if (typeof showRewardedAd === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      handleDoubleSuccess();
+    }).catch(e => {
+      console.warn('show_10676091 notice:', e);
+      handleDoubleSuccess();
+    });
+  } else if (typeof showRewardedAd === 'function') {
     showRewardedAd(handleDoubleSuccess, () => {
       applySpinPrize(prize, 1);
       if (typeof showFloatingToast === 'function') {
@@ -792,6 +848,211 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSpinLevelUI();
   }
 });
+
+// ==========================================================================
+// DYNAMITE WHEEL (🎉 SPINNER WITH 🧨 PRIZES)
+// ==========================================================================
+
+function switchSpinWheelTab(tab) {
+  if (gameState.rewardState && (gameState.rewardState.isSpinning || gameState.rewardState.isPartySpinning)) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('⚡ Wheel is spinning! Please wait for it to stop.');
+    }
+    return;
+  }
+  currentSpinWheelTab = tab;
+  const btnTicket = document.getElementById('spinTabBtnTicket');
+  const btnDynamite = document.getElementById('spinTabBtnDynamite');
+  const contentTicket = document.getElementById('spinSubtabContentWheel');
+  const contentDynamite = document.getElementById('spinSubtabContentDynamite');
+
+  if (tab === 'ticket') {
+    if (btnTicket) btnTicket.classList.add('active');
+    if (btnDynamite) btnDynamite.classList.remove('active');
+    if (contentTicket) {
+      contentTicket.style.display = 'block';
+      contentTicket.classList.add('active');
+    }
+    if (contentDynamite) {
+      contentDynamite.style.display = 'none';
+      contentDynamite.classList.remove('active');
+    }
+  } else {
+    if (btnTicket) btnTicket.classList.remove('active');
+    if (btnDynamite) btnDynamite.classList.add('active');
+    if (contentTicket) {
+      contentTicket.style.display = 'none';
+      contentTicket.classList.remove('active');
+    }
+    if (contentDynamite) {
+      contentDynamite.style.display = 'block';
+      contentDynamite.classList.add('active');
+    }
+  }
+  initSpinChaserBulbs();
+  updateSpinTicketUI();
+}
+window.switchSpinWheelTab = switchSpinWheelTab;
+
+function setSpinPartyBet(amount) {
+  currentPartyBet = Number(amount) || 1;
+  [1, 10, 20].forEach(val => {
+    const btn = document.getElementById(`spinBetBtn${val}`);
+    if (btn) btn.classList.toggle('active', val === currentPartyBet);
+  });
+  updateSpinTicketUI();
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') {
+    sfx.playTapSound(2);
+  }
+}
+window.setSpinPartyBet = setSpinPartyBet;
+
+function watchAdForPartyCoins() {
+  const doReward = () => {
+    const gain = 20;
+    gameState.player.partyCoins = (gameState.player.partyCoins || gameState.player.blueCoins || 0) + gain;
+    gameState.player.blueCoins = gameState.player.partyCoins;
+    updateSpinTicketUI();
+    updateUI();
+    saveGame();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎉 Claimed +${gain} Free Party Coins!`);
+    }
+    if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
+      sfx.playLevelUpSound();
+    }
+  };
+
+  if (typeof window.showRewardedAd === 'function') {
+    window.showRewardedAd(doReward, {
+      adTitle: 'Free +20 🎉 Party Coins',
+      adDesc: 'Watch sponsor video to get +20 Party Coins for the Dynamite Wheel!'
+    });
+  } else {
+    doReward();
+  }
+}
+window.watchAdForPartyCoins = watchAdForPartyCoins;
+
+function handlePartySpinButtonClick() {
+  if (gameState.rewardState && gameState.rewardState.isPartySpinning) return;
+  const partyCoins = (gameState.player && (gameState.player.partyCoins !== undefined ? gameState.player.partyCoins : gameState.player.blueCoins)) || 0;
+  if (partyCoins < currentPartyBet) {
+    if (confirm(`You need at least ${currentPartyBet} 🎉 Party Coins to spin! (Have: ${partyCoins} 🎉)\n\nWatch a quick ad to get +20 Free 🎉 Party Coins?`)) {
+      watchAdForPartyCoins();
+    }
+    return;
+  }
+  spinDynamiteWheel();
+}
+window.handlePartySpinButtonClick = handlePartySpinButtonClick;
+
+function spinDynamiteWheel() {
+  if (gameState.rewardState && gameState.rewardState.isPartySpinning) return;
+
+  const partyCoins = (gameState.player && (gameState.player.partyCoins !== undefined ? gameState.player.partyCoins : gameState.player.blueCoins)) || 0;
+  if (partyCoins < currentPartyBet) return;
+
+  // Deduct party coins
+  gameState.player.partyCoins = Math.max(0, partyCoins - currentPartyBet);
+  gameState.player.blueCoins = gameState.player.partyCoins;
+
+  if (!gameState.rewardState) gameState.rewardState = {};
+  gameState.rewardState.isPartySpinning = true;
+  updateSpinTicketUI();
+  if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(3);
+
+  // Daily Stats & tasks
+  if (typeof checkDailyStatsDate === 'function') checkDailyStatsDate();
+  if (gameState.dailyStats) gameState.dailyStats.spins = (gameState.dailyStats.spins || 0) + 1;
+  if (typeof recordTaskEvent === 'function') {
+    recordTaskEvent('spin_wheel', 1);
+  }
+
+  // Weighted probability for 9 slices (1, 2, 5, 10, 15, Try Again, 20, 25, 50):
+  const weights = [25, 20, 18, 12, 8, 7, 5, 3, 2];
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * totalWeight;
+  let sliceIndex = 0;
+  for (let i = 0; i < weights.length; i++) {
+    if (r < weights[i]) {
+      sliceIndex = i;
+      break;
+    }
+    r -= weights[i];
+  }
+
+  const prize = DYNAMITE_PRIZES[sliceIndex];
+
+  // Mathematical rotation calculation for 9 slices (40 deg each):
+  const fullSpins = 6;
+  const currentRotation = gameState.rewardState.partySpinRotation || 0;
+  const targetRemainder = (360 - (sliceIndex * 40)) % 360;
+  const currentRemainder = currentRotation % 360;
+  let diff = targetRemainder - currentRemainder;
+  if (diff <= 0) diff += 360;
+  const newRotation = currentRotation + (fullSpins * 360) + diff;
+  gameState.rewardState.partySpinRotation = newRotation;
+
+  const wheelEl = document.getElementById('spinPartyWheelCircle');
+  const wheelFrame = document.getElementById('spinPartyWheelFrame');
+  const pointer = document.getElementById('spinPartyPointerArrow');
+
+  if (wheelFrame) wheelFrame.classList.add('spinning-active');
+
+  // Mechanical flapper ticking rhythm
+  const tickDelays = [60, 60, 65, 70, 75, 85, 95, 110, 130, 155, 185, 225, 275, 335, 410, 500, 610];
+  let accumulatedDelay = 0;
+  tickDelays.forEach(delay => {
+    accumulatedDelay += delay;
+    setTimeout(() => {
+      if (gameState.rewardState && gameState.rewardState.isPartySpinning) {
+        playWheelTickSound();
+        if (pointer) {
+          pointer.classList.remove('ticking');
+          void pointer.offsetWidth;
+          pointer.classList.add('ticking');
+        }
+        if (typeof triggerTelegramHaptic === 'function') triggerTelegramHaptic('light');
+      }
+    }, accumulatedDelay);
+  });
+
+  if (wheelEl) {
+    wheelEl.style.transition = 'transform 3.8s cubic-bezier(0.12, 0.85, 0.2, 1)';
+    wheelEl.style.transform = `rotate(${newRotation}deg)`;
+  }
+
+  setTimeout(() => {
+    if (wheelFrame) wheelFrame.classList.remove('spinning-active');
+    gameState.rewardState.isPartySpinning = false;
+
+    if (prize.type === 'none') {
+      if (typeof sfx !== 'undefined' && typeof sfx.playTapSound === 'function') sfx.playTapSound(1);
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('❌ Missed this time! Try again for 🧨 Dynamite Coins!');
+      }
+      updateSpinTicketUI();
+      updateUI();
+      saveGame();
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+    } else {
+      if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') sfx.playLevelUpSound();
+      triggerSpinConfetti();
+      const amountWon = prize.amount * currentPartyBet;
+      showSpinPrizeModal({
+        label: `${amountWon} Dynamite Coins`,
+        type: 'dynamite',
+        amount: amountWon,
+        icon: '🧨',
+        rarity: prize.rarity
+      });
+    }
+  }, 4000);
+}
+window.spinDynamiteWheel = spinDynamiteWheel;
 
 // Global exports
 window.initSpinChaserBulbs = initSpinChaserBulbs;

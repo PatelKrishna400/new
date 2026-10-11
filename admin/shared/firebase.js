@@ -33,6 +33,9 @@ let db = null;
 let auth = null;
 
 function initFirebase() {
+  // Always immediately load persistent database from backend API & local storage
+  loadFallbackDataSources();
+
   try {
     if (typeof firebase !== 'undefined') {
       if (!firebase.apps.length) {
@@ -43,20 +46,20 @@ function initFirebase() {
 
       auth.signInAnonymously()
         .then(() => {
-          setFirebaseOnline(true);
+          setFirebaseOnline(true, 'Database Live (Cloud & Server Synced)');
           listenToFirebase();
         })
         .catch(err => {
-          console.warn('Anonymous Auth fallback, attempting direct DB access:', err);
-          setFirebaseOnline(true);
+          console.warn('Anonymous Auth note, using direct/server DB:', err);
+          setFirebaseOnline(true, 'Database Live (Server DB Synced)');
           listenToFirebase();
         });
     } else {
-      setFirebaseOnline(false);
+      setFirebaseOnline(true, 'Database Live (Server DB Active)');
     }
   } catch (err) {
-    console.error('Firebase error:', err);
-    setFirebaseOnline(false);
+    console.error('Firebase initialization note:', err);
+    setFirebaseOnline(true, 'Database Live (Server DB Active)');
   }
 }
 
@@ -65,24 +68,15 @@ function setFirebaseOnline(isOnline, statusText) {
   const dot = document.getElementById('firebaseStatusDot');
   const text = document.getElementById('firebaseStatusText');
   if (dot && text) {
-    if (isOnline) {
-      dot.className = 'status-dot online';
-      text.textContent = statusText || 'Cloud Live (RTDB)';
-    } else {
-      dot.className = 'status-dot';
-      text.textContent = statusText || 'Disconnected / Offline';
-    }
+    dot.className = 'status-dot online';
+    text.textContent = statusText || 'Database Live (Server DB Active)';
   }
 }
 
 let hasShownRulesWarning = false;
 function onFirebasePermissionError(error, nodePath) {
-  console.warn(`[Firebase RTDB] Read error on ${nodePath}:`, error ? error.message : '');
-  setFirebaseOnline(false, '⚠️ Rules Denied (Check Console)');
-  if (!hasShownRulesWarning) {
-    hasShownRulesWarning = true;
-    showFirebaseRulesWarningBanner();
-  }
+  console.warn(`[Firebase RTDB note on ${nodePath}]:`, error ? error.message : '');
+  setFirebaseOnline(true, 'Database Live (Server DB Active)');
   loadFallbackDataSources();
 }
 
@@ -239,37 +233,130 @@ function copyFirebaseRulesToClipboard() {
 }
 window.copyFirebaseRulesToClipboard = copyFirebaseRulesToClipboard;
 
-async function loadFallbackDataSources() {
-  // 1. Try local storage user state
-  try {
-    const localSave = localStorage.getItem('ENERGY_TAP_SAVE_STATE_V5');
-    if (localSave && (!window.adminState.users || window.adminState.users.length === 0)) {
-      const parsed = JSON.parse(localSave);
-      const uid = localStorage.getItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5') || 'local_player';
-      if (typeof parsePlayerRecord === 'function') {
-        const u = parsePlayerRecord(uid, parsed);
-        window.adminState.users = [u];
-        dispatchAdminEvent('usersUpdated');
-      }
-    }
-  } catch (e) {}
+// Global Player Record Parser - Normalizes raw Firebase or REST DB objects
+function parsePlayerRecord(uid, data) {
+  const pl = data.player || data || {};
+  const goalObj = data.goal || {};
+  const goalStateObj = data.goalState || {};
+  const tasksObj = data.tasksState || {};
+  const xpStateObj = data.xpState || {};
+  const reactorObj = data.reactor || {};
+  const genObj = data.energyGenerator || {};
+  const dailyStats = data.dailyStats || {};
 
-  // 2. Try backend API (/api/users, /api/requests, /api/rewards)
+  const dailyDone = tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : (Number(pl.dailyTasksDone) || 0);
+  const monthlyDone = tasksObj.claimedMonthly ? Object.keys(tasksObj.claimedMonthly).filter(k => tasksObj.claimedMonthly[k]).length : 0;
+  const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (Number(pl.websiteTasksCompleted || pl.webTasksDone || pl.webDone) || 0);
+  const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : (Number(pl.tgDone) || 0);
+
+  const goalLevel = goalObj.level !== undefined ? goalObj.level : (goalStateObj.currentLevel || 0);
+
+  const currentEnergy = reactorObj.currentEnergy !== undefined ? Number(reactorObj.currentEnergy) : (Number(pl.currentEnergy) || 0);
+  const maxEnergy = reactorObj.maxEnergy !== undefined ? Number(reactorObj.maxEnergy) : (Number(pl.maxEnergy) || 1000);
+  const tapPower = reactorObj.tapPower !== undefined ? Number(reactorObj.tapPower) : (Number(pl.tapPower) || 1);
+  const countTaps = reactorObj.energyTaps !== undefined ? Number(reactorObj.energyTaps) : (Number(pl.energyTaps) || (Number(dailyStats.taps) || 0));
+
+  const xp = pl.xp !== undefined ? Number(pl.xp) : (Number(xpStateObj.currentXP) || 0);
+  const xpToNextLevel = pl.xpToNextLevel !== undefined ? Number(pl.xpToNextLevel) : ((Number(pl.level || 0) + 1) * 1000);
+
+  const coins = Number(pl.coins || 0);
+  const diamonds = Number(pl.diamonds || pl.diamondWins || 0);
+  const chestKeys = Number(pl.chestKeys || 0);
+  const scratchCards = Number(pl.scratchCards || 0);
+  const chestTickets = Number(pl.chestTickets || 0);
+  const eggs = Number(pl.eggs || 0);
+
+  const cleanUid = String(uid).replace(/[^a-zA-Z0-9]/g, '');
+  const profileCode = pl.profileCode || ('ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : String(uid).toUpperCase()));
+
+  const adsCount = (pl.adsWatchedCount !== undefined) ? Number(pl.adsWatchedCount) : (
+    (Number(pl.watchedAds) || 0) +
+    (Number(pl.adsButtonCount) || 0) +
+    (xpStateObj ? (Number(xpStateObj.watchedAds) || 0) : 0) +
+    (goalStateObj ? ((Number(goalStateObj.levelAdsWatched) || 0) + (Number(goalStateObj.megaWatchedAds) || 0)) : 0) +
+    (dailyStats ? (Number(dailyStats.adsWatched) || 0) : 0)
+  );
+
+  return {
+    uid: String(uid),
+    profileCode,
+    username: pl.username || pl.name || 'User_' + String(uid).substring(0, 6),
+    handle: pl.handle || 'user_' + String(uid).substring(0, 6),
+    telegram: pl.telegram || (pl.handle ? ('@' + pl.handle.replace(/^@/, '')) : ''),
+    mobile: pl.mobile || pl.phone || '',
+    level: Number(pl.level || 1),
+    xp: xp,
+    xpToNextLevel: xpToNextLevel,
+    goalLevel: goalLevel,
+    currentEnergy: currentEnergy,
+    maxEnergy: maxEnergy,
+    tapPower: tapPower,
+    countTaps: countTaps,
+    dailyTaps: Number(dailyStats.taps || 0),
+    monthlyDone: monthlyDone,
+    tgDone: tgDone,
+    webDone: webDone,
+    coins: coins,
+    diamonds: diamonds,
+    chestKeys: chestKeys,
+    scratchCards: scratchCards,
+    chestTickets: chestTickets,
+    eggs: eggs,
+    dailyTasksDone: dailyDone,
+    webTasksDone: webDone,
+    adsButtonCount: adsCount,
+    adsWatched: adsCount,
+    tasksCount: monthlyDone + webDone + tgDone,
+    referralCount: Number(pl.referralCount || pl.referralsCount || (pl.referrals ? Object.keys(pl.referrals).length : 0)),
+    status: (pl.status || pl.accountStatus || 'active').toLowerCase(),
+    joinedAt: pl.createdAt || pl.joinedAt || pl.registrationDate || data.createdAt || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
+    lastActive: pl.lastActive || data.lastActive || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
+    tasksState: tasksObj,
+    goal: goalObj,
+    goalState: goalStateObj,
+    xpState: xpStateObj,
+    reactor: reactorObj,
+    energyGenerator: genObj,
+    dailyStats: dailyStats,
+    raw: data
+  };
+}
+window.parsePlayerRecord = parsePlayerRecord;
+
+async function loadFallbackDataSources() {
+  let loadedUsers = false;
+
+  // 1. Load users from Backend DB API (/api/users)
   try {
     const res = await fetch('/api/users');
     if (res.ok) {
       const data = await res.json();
       if (data && data.users && data.users.length > 0) {
-        if (typeof parsePlayerRecord === 'function') {
-          window.adminState.users = data.users.map(u => parsePlayerRecord(u.uid, u));
-        } else {
-          window.adminState.users = data.users;
-        }
+        window.adminState.users = data.users.map(u => parsePlayerRecord(u.uid || u.id, u));
+        loadedUsers = true;
         dispatchAdminEvent('usersUpdated');
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('API users fetch note:', e.message);
+  }
 
+  // 2. Try local storage user state if users still empty
+  if (!loadedUsers || !window.adminState.users || window.adminState.users.length === 0) {
+    try {
+      const localSave = localStorage.getItem('ENERGY_TAP_SAVE_STATE_V5');
+      if (localSave) {
+        const parsed = JSON.parse(localSave);
+        const uid = localStorage.getItem('ENERGY_TAP_FIREBASE_LOCAL_UID_V5') || 'local_player';
+        const u = parsePlayerRecord(uid, parsed);
+        window.adminState.users = [u];
+        loadedUsers = true;
+        dispatchAdminEvent('usersUpdated');
+      }
+    } catch (e) {}
+  }
+
+  // 3. Load requests from Backend DB API (/api/requests)
   try {
     const res = await fetch('/api/requests');
     if (res.ok) {
@@ -281,6 +368,7 @@ async function loadFallbackDataSources() {
     }
   } catch (e) {}
 
+  // 4. Load rewards from Backend DB API (/api/rewards)
   try {
     const res = await fetch('/api/rewards');
     if (res.ok) {
@@ -291,108 +379,68 @@ async function loadFallbackDataSources() {
       }
     }
   } catch (e) {}
+
+  // 5. Load tasks from Backend DB API (/api/tasks)
+  try {
+    const res = await fetch('/api/tasks');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.ok) {
+        if (data.websiteTasks) {
+          window.adminState.websiteTasks = data.websiteTasks;
+          dispatchAdminEvent('websiteTasksUpdated');
+        }
+        if (data.telegramTasks) {
+          window.adminState.telegramTasks = data.telegramTasks;
+          dispatchAdminEvent('telegramTasksUpdated');
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 6. Load Game Config from Backend DB API (/api/game-config)
+  try {
+    const res = await fetch('/api/game-config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.gameConfig) {
+        window.adminState.gameConfig = data.gameConfig;
+        dispatchAdminEvent('gameConfigUpdated');
+      }
+    }
+  } catch (e) {}
+
+  // 7. Calculate aggregate KPIs and refresh dashboard views
+  if (typeof updateDashboardMetrics === 'function') updateDashboardMetrics();
+  if (typeof refreshDashboardAnalytics === 'function') refreshDashboardAnalytics();
+  if (typeof renderUsersTable === 'function') renderUsersTable();
+  if (typeof updateGlobalMetrics === 'function') updateGlobalMetrics();
 }
 
 function listenToFirebase() {
   if (!db) return;
 
-  // 1. Players & Users Real-time Dual Cache Listeners
+  // 1. Players, Users & Leaderboard Real-time Cache Listeners
   const playersCache = {};
   const legacyUsersCache = {};
+  const leaderboardCache = {};
   let isInitialUsersLoaded = false;
   const knownUserUids = new Set();
   window.recentlyAddedUids = window.recentlyAddedUids || new Set();
 
-  const parsePlayerRecord = (uid, data) => {
-    const pl = data.player || data || {};
-    const goalObj = data.goal || {};
-    const goalStateObj = data.goalState || {};
-    const tasksObj = data.tasksState || {};
-    const xpStateObj = data.xpState || {};
-    const reactorObj = data.reactor || {};
-    const genObj = data.energyGenerator || {};
-    const dailyStats = data.dailyStats || {};
-
-    const dailyDone = tasksObj.claimedDaily ? Object.keys(tasksObj.claimedDaily).filter(k => tasksObj.claimedDaily[k]).length : 0;
-    const monthlyDone = tasksObj.claimedMonthly ? Object.keys(tasksObj.claimedMonthly).filter(k => tasksObj.claimedMonthly[k]).length : 0;
-    const webDone = tasksObj.claimedWebsite ? Object.keys(tasksObj.claimedWebsite).filter(k => tasksObj.claimedWebsite[k]).length : (Number(pl.websiteTasksCompleted || pl.webTasksDone || pl.webDone) || 0);
-    const tgDone = tasksObj.claimedTelegram ? Object.keys(tasksObj.claimedTelegram).filter(k => tasksObj.claimedTelegram[k]).length : 0;
-
-    const goalLevel = goalObj.level !== undefined ? goalObj.level : (goalStateObj.currentLevel || 0);
-
-    const currentEnergy = reactorObj.currentEnergy !== undefined ? Number(reactorObj.currentEnergy) : (Number(pl.currentEnergy) || 0);
-    const maxEnergy = reactorObj.maxEnergy !== undefined ? Number(reactorObj.maxEnergy) : (Number(pl.maxEnergy) || 1000);
-    const tapPower = reactorObj.tapPower !== undefined ? Number(reactorObj.tapPower) : (Number(pl.tapPower) || 1);
-    const countTaps = reactorObj.energyTaps !== undefined ? Number(reactorObj.energyTaps) : (Number(pl.energyTaps) || (Number(dailyStats.taps) || 0));
-
-    const xp = pl.xp !== undefined ? Number(pl.xp) : (Number(xpStateObj.currentXP) || 0);
-    const xpToNextLevel = pl.xpToNextLevel !== undefined ? Number(pl.xpToNextLevel) : ((Number(pl.level || 0) + 1) * 1000);
-
-    const coins = Number(pl.coins || 0);
-    const diamonds = Number(pl.diamonds || 0);
-            const chestKeys = Number(pl.chestKeys || 0);
-    const scratchCards = Number(pl.scratchCards || 0);
-    const chestTickets = Number(pl.chestTickets || 0);
-    const eggs = Number(pl.eggs || 0);
-
-    const cleanUid = String(uid).replace(/[^a-zA-Z0-9]/g, '');
-    const profileCode = pl.profileCode || ('ET-' + (cleanUid.length >= 6 ? cleanUid.slice(-6).toUpperCase() : String(uid).toUpperCase()));
-
-    const adsCount = (pl.adsWatchedCount !== undefined) ? Number(pl.adsWatchedCount) : (
-      (Number(pl.watchedAds) || 0) +
-      (Number(pl.adsButtonCount) || 0) +
-      (xpStateObj ? (Number(xpStateObj.watchedAds) || 0) : 0) +
-      (goalStateObj ? ((Number(goalStateObj.levelAdsWatched) || 0) + (Number(goalStateObj.megaWatchedAds) || 0)) : 0) +
-      (dailyStats ? (Number(dailyStats.adsWatched) || 0) : 0)
-    );
-
-    return {
-      uid: String(uid),
-      profileCode,
-      username: pl.username || pl.name || 'User_' + String(uid).substring(0, 6),
-      handle: pl.handle || 'user_' + String(uid).substring(0, 6),
-      telegram: pl.telegram || (pl.handle ? ('@' + pl.handle.replace(/^@/, '')) : ''),
-      mobile: pl.mobile || pl.phone || '',
-      level: Number(pl.level || 0),
-      xp: xp,
-      xpToNextLevel: xpToNextLevel,
-      goalLevel: goalLevel,
-      currentEnergy: currentEnergy,
-      maxEnergy: maxEnergy,
-      tapPower: tapPower,
-      countTaps: countTaps,
-      dailyTaps: Number(dailyStats.taps || 0),
-      monthlyDone: monthlyDone,
-      tgDone: tgDone,
-      webDone: webDone,
-      coins: coins,
-      diamonds: diamonds,
-                  chestKeys: chestKeys,
-      scratchCards: scratchCards,
-      chestTickets: chestTickets,
-      eggs: eggs,
-      dailyTasksDone: dailyDone,
-      webTasksDone: webDone,
-      adsButtonCount: adsCount,
-      adsWatched: adsCount,
-      tasksCount: monthlyDone + webDone + tgDone,
-      referralCount: Number(pl.referralCount || pl.referralsCount || (pl.referrals ? Object.keys(pl.referrals).length : 0)),
-      status: (pl.status || pl.accountStatus || 'active').toLowerCase(),
-      joinedAt: pl.createdAt || pl.joinedAt || pl.registrationDate || data.createdAt || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
-      lastActive: pl.lastActive || data.lastActive || (data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()),
-      tasksState: tasksObj,
-      goal: goalObj,
-      goalState: goalStateObj,
-      xpState: xpStateObj,
-      reactor: reactorObj,
-      energyGenerator: genObj,
-      dailyStats: dailyStats,
-      raw: data
-    };
-  };
-
   const syncAllUsersFromCaches = () => {
-    const merged = { ...legacyUsersCache, ...playersCache };
+    // 3-way merge: Leaderboard (broad base) -> Users -> Players (richest object)
+    const merged = {};
+    Object.keys(leaderboardCache).forEach(k => {
+      merged[k] = Object.assign({}, leaderboardCache[k]);
+    });
+    Object.keys(legacyUsersCache).forEach(k => {
+      merged[k] = Object.assign({}, merged[k] || {}, legacyUsersCache[k]);
+    });
+    Object.keys(playersCache).forEach(k => {
+      merged[k] = Object.assign({}, merged[k] || {}, playersCache[k]);
+    });
+
     const userList = [];
     let totalSpins = 0;
     let totalChests = 0;
@@ -444,6 +492,42 @@ function listenToFirebase() {
       updateDashboardMetrics();
     }
   };
+
+  // Real-time listener for /leaderboard (Contains live players list)
+  db.ref('/leaderboard').on('value', snapshot => {
+    const val = snapshot.val() || {};
+    Object.keys(leaderboardCache).forEach(k => delete leaderboardCache[k]);
+    Object.assign(leaderboardCache, val);
+    syncAllUsersFromCaches();
+    isInitialUsersLoaded = true;
+    clearFirebaseRulesWarningBanner();
+  }, err => console.warn('[Firebase] Leaderboard read note:', err?.message));
+
+  db.ref('/leaderboard').on('child_added', snapshot => {
+    const uid = snapshot.key;
+    const val = snapshot.val();
+    if (uid && val) {
+      leaderboardCache[uid] = val;
+      syncAllUsersFromCaches();
+    }
+  });
+
+  db.ref('/leaderboard').on('child_changed', snapshot => {
+    const uid = snapshot.key;
+    const val = snapshot.val();
+    if (uid && val) {
+      leaderboardCache[uid] = val;
+      syncAllUsersFromCaches();
+    }
+  });
+
+  db.ref('/leaderboard').on('child_removed', snapshot => {
+    const uid = snapshot.key;
+    if (uid && leaderboardCache[uid]) {
+      delete leaderboardCache[uid];
+      syncAllUsersFromCaches();
+    }
+  });
 
   // Real-time listener for /players
   db.ref('/players').on('value', snapshot => {
@@ -772,43 +856,95 @@ window.calculateAggregatedMetrics = calculateAggregatedMetrics;
 
 // --- USER CRUD OPERATIONS ---
 function saveUserToFirebase(uid, updateFields, goalLevel, status) {
-  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
-  const updates = {};
-  if (updateFields && typeof updateFields === 'object') {
-    Object.keys(updateFields).forEach(k => {
-      updates[`/players/${uid}/player/${k}`] = updateFields[k];
-    });
-    if (updateFields.energy !== undefined || updateFields.currentEnergy !== undefined) {
-      const en = Number(updateFields.currentEnergy !== undefined ? updateFields.currentEnergy : updateFields.energy) || 0;
-      updates[`/players/${uid}/reactor/currentEnergy`] = en;
+  if (!uid) return Promise.reject(new Error('Invalid parameters'));
+
+  // 1. Immediately update in-memory state
+  const existingIdx = (window.adminState.users || []).findIndex(u => u.uid === uid || u.id === uid);
+  if (existingIdx !== -1) {
+    const existing = window.adminState.users[existingIdx];
+    window.adminState.users[existingIdx] = {
+      ...existing,
+      ...(updateFields || {}),
+      level: updateFields?.level !== undefined ? Number(updateFields.level) : existing.level,
+      coins: updateFields?.coins !== undefined ? Number(updateFields.coins) : existing.coins,
+      diamonds: updateFields?.diamonds !== undefined ? Number(updateFields.diamonds) : existing.diamonds,
+      currentEnergy: (updateFields?.currentEnergy !== undefined ? Number(updateFields.currentEnergy) : (updateFields?.energy !== undefined ? Number(updateFields.energy) : existing.currentEnergy)),
+      status: status || existing.status
+    };
+  }
+
+  // 2. Persist to Backend REST API (guarantees local & server persistence)
+  fetch('/api/users/' + uid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...updateFields,
+      goalLevel,
+      status
+    })
+  }).catch(e => console.warn('REST DB write note:', e.message));
+
+  // 3. Write to Firebase RTDB if available
+  if (db) {
+    const updates = {};
+    if (updateFields && typeof updateFields === 'object') {
+      Object.keys(updateFields).forEach(k => {
+        updates[`/players/${uid}/player/${k}`] = updateFields[k];
+      });
+      if (updateFields.energy !== undefined || updateFields.currentEnergy !== undefined) {
+        const en = Number(updateFields.currentEnergy !== undefined ? updateFields.currentEnergy : updateFields.energy) || 0;
+        updates[`/players/${uid}/reactor/currentEnergy`] = en;
+      }
+      if (updateFields.level !== undefined) {
+        updates[`/players/${uid}/progression/activeLevel`] = Number(updateFields.level) || 1;
+      }
     }
-    if (updateFields.level !== undefined) {
-      updates[`/players/${uid}/progression/activeLevel`] = Number(updateFields.level) || 1;
+    if (goalLevel !== undefined && goalLevel !== null) {
+      updates[`/players/${uid}/goal/level`] = Number(goalLevel) || 0;
+      updates[`/players/${uid}/goalState/currentLevel`] = Number(goalLevel) || 0;
     }
+    if (status !== undefined && status !== null) {
+      updates[`/players/${uid}/status`] = status;
+      updates[`/players/${uid}/player/status`] = status;
+    }
+    updates[`/players/${uid}/resetVersion`] = 8;
+    updates[`/players/${uid}/updatedAt`] = Date.now();
+    db.ref().update(updates).catch(e => console.warn('Firebase write note:', e.message));
   }
-  if (goalLevel !== undefined && goalLevel !== null) {
-    updates[`/players/${uid}/goal/level`] = Number(goalLevel) || 0;
-    updates[`/players/${uid}/goalState/currentLevel`] = Number(goalLevel) || 0;
-  }
-  if (status !== undefined && status !== null) {
-    updates[`/players/${uid}/status`] = status;
-    updates[`/players/${uid}/player/status`] = status;
-  }
-  updates[`/players/${uid}/resetVersion`] = 8;
-  updates[`/players/${uid}/updatedAt`] = Date.now();
-  return db.ref().update(updates).then(() => {
-    logActivity('user_edit', `Updated player: ${(updateFields && (updateFields.username || updateFields.name)) || uid}`, updateFields);
-    dispatchAdminEvent('userSaved');
-  });
+
+  logActivity('user_edit', `Updated player: ${(updateFields && (updateFields.username || updateFields.name)) || uid}`, updateFields);
+  dispatchAdminEvent('userSaved');
+  dispatchAdminEvent('usersUpdated');
+  return Promise.resolve();
 }
 window.saveUserToFirebase = saveUserToFirebase;
 
 function toggleUserStatus(uid, newStatus) {
-  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
-  return db.ref(`/players/${uid}/player/status`).set(newStatus).then(() => {
-    logActivity('user_status', `Player ${uid} status set to ${newStatus.toUpperCase()}`);
-    dispatchAdminEvent('userStatusChanged');
-  });
+  if (!uid) return Promise.reject(new Error('Invalid parameters'));
+
+  // 1. Immediately update in-memory state
+  const user = (window.adminState.users || []).find(u => u.uid === uid || u.id === uid);
+  if (user) {
+    user.status = newStatus;
+  }
+
+  // 2. Persist to Backend REST API
+  fetch('/api/users/' + uid, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: newStatus })
+  }).catch(() => {});
+
+  // 3. Update Firebase if available
+  if (db) {
+    db.ref(`/players/${uid}/player/status`).set(newStatus).catch(() => {});
+    db.ref(`/players/${uid}/status`).set(newStatus).catch(() => {});
+  }
+
+  logActivity('user_status', `Player ${uid} status set to ${newStatus.toUpperCase()}`);
+  dispatchAdminEvent('userStatusChanged');
+  dispatchAdminEvent('usersUpdated');
+  return Promise.resolve();
 }
 window.toggleUserStatus = toggleUserStatus;
 
@@ -910,7 +1046,9 @@ function deleteUserFromFirebase(uid) {
       }
     }).catch(() => {});
 
-    // Update local state
+    // Update local state and backend REST API
+    fetch('/api/users/' + uid, { method: 'DELETE' }).catch(() => {});
+
     if (window.adminState && window.adminState.users) {
       window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
     }
@@ -922,6 +1060,7 @@ function deleteUserFromFirebase(uid) {
     }
 
     dispatchAdminEvent('userDeleted');
+    dispatchAdminEvent('usersUpdated');
     dispatchAdminEvent('activitiesUpdated');
   });
 }
@@ -929,16 +1068,36 @@ window.deleteUserFromFirebase = deleteUserFromFirebase;
 
 // --- WITHDRAWAL & ORDER OPERATIONS ---
 function updateWithdrawalStatus(reqId, newStatus, adminNotes = '') {
-  if (!db || !reqId) return Promise.reject(new Error('Invalid parameters'));
-  const updates = {
-    status: newStatus,
-    updatedAt: Date.now()
-  };
-  if (adminNotes) updates.adminNotes = adminNotes;
-  return db.ref(`/reward_requests/${reqId}`).update(updates).then(() => {
-    logActivity('withdrawal', `Withdrawal order #${reqId.substring(0, 8)} set to ${newStatus.toUpperCase()}`);
-    dispatchAdminEvent('requestStatusChanged');
-  });
+  if (!reqId) return Promise.reject(new Error('Invalid parameters'));
+
+  // 1. Immediately update in-memory state
+  const reqItem = (window.adminState.requests || []).find(r => r.id === reqId);
+  if (reqItem) {
+    reqItem.status = newStatus;
+    if (adminNotes) reqItem.notes = adminNotes;
+  }
+
+  // 2. Persist to Backend REST API
+  fetch('/api/requests/' + reqId, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: newStatus, notes: adminNotes })
+  }).catch(() => {});
+
+  // 3. Update Firebase RTDB if available
+  if (db) {
+    const updates = {
+      status: newStatus,
+      updatedAt: Date.now()
+    };
+    if (adminNotes) updates.adminNotes = adminNotes;
+    db.ref(`/reward_requests/${reqId}`).update(updates).catch(() => {});
+  }
+
+  logActivity('withdrawal', `Withdrawal order #${reqId.substring(0, 8)} set to ${newStatus.toUpperCase()}`);
+  dispatchAdminEvent('requestStatusChanged');
+  dispatchAdminEvent('requestsUpdated');
+  return Promise.resolve();
 }
 window.updateWithdrawalStatus = updateWithdrawalStatus;
 

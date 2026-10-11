@@ -27,28 +27,24 @@ function startAdSimulation(fuelType, title, desc, callback) {
     if (typeof callback === 'function') callback();
   };
 
-  // Directly run Monetag Rewarded Interstitial Ad with interactive modal fallback
-  if (typeof showRewardedAd === 'function') {
-    showRewardedAd(_onceCallback, { adTitle: title, adDesc: desc });
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      _onceCallback();
+    }).catch(e => {
+      console.warn('show_10676091 notice:', e);
+      _onceCallback();
+    });
     return;
   }
 
-  // Fallback: direct Monetag SDK only when unified service is unavailable
-  if (typeof show_10676091 === 'function') {
-    try {
-      show_10676091().then(() => {
-        _onceCallback();
-      }).catch(e => {
-        console.warn('show_10676091 error:', e);
-      });
-      // Wait for SDK promise — do NOT continue to legacy simulation below
-      // unless SDK function is genuinely missing. Return here and let the
-      // modal fallback timer below still run as visual backup is handled
-      // by showRewardedAd path above. If SDK hangs, user can still collect
-      // via the simulated timer UI.
-    } catch (e) {
-      console.warn('show_10676091 call error:', e);
-    }
+  // Fallback: unified ad service
+  if (typeof showRewardedAd === 'function') {
+    showRewardedAd(_onceCallback, { adTitle: title, adDesc: desc });
+    return;
   }
 
   switchPage('adRewards');

@@ -289,9 +289,20 @@ function extendPiggyBankWithAd() {
     }
   };
 
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerExtension, onError: triggerExtension });
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      triggerExtension();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerExtension();
+    });
   } else {
+    alert('You have seen an ad!');
     triggerExtension();
   }
 }
@@ -459,9 +470,20 @@ function watchPowerAdDiscount() {
     }
   };
 
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      // You need to add your user reward function here, which will be executed after the user watches the ad.
+      // For more details, please refer to the detailed instructions.
+      alert('You have seen an ad!');
+      triggerReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerReward();
+    });
   } else {
+    alert('You have seen an ad!');
     triggerReward();
   }
 }
@@ -490,9 +512,18 @@ function watchSpeedAdDiscount() {
     }
   };
 
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      alert('You have seen an ad!');
+      triggerReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerReward();
+    });
   } else {
+    alert('You have seen an ad!');
     triggerReward();
   }
 }
@@ -514,9 +545,20 @@ function watchPowerMilestoneAd() {
     updateDiamondGeneratorUI();
     if (typeof showFloatingToast === 'function') showFloatingToast(`🎬 Milestone Ad ${dg.powerMilestoneAds}/3 Watched!`);
   };
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
-  } else triggerReward();
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      alert('You have seen an ad!');
+      triggerReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerReward();
+    });
+  } else {
+    alert('You have seen an ad!');
+    triggerReward();
+  }
 }
 
 function watchSpeedMilestoneAd() {
@@ -535,9 +577,20 @@ function watchSpeedMilestoneAd() {
     updateDiamondGeneratorUI();
     if (typeof showFloatingToast === 'function') showFloatingToast(`🎬 Milestone Ad ${dg.speedMilestoneAds}/3 Watched!`);
   };
-  if (typeof showMonetagRewardedAd === 'function') {
-    showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
-  } else triggerReward();
+  // Rewarded interstitial
+  if (typeof show_10676091 === 'function') {
+    show_10676091().then(() => {
+      alert('You have seen an ad!');
+      triggerReward();
+    }).catch((e) => {
+      console.warn('show_10676091 notice:', e);
+      alert('You have seen an ad!');
+      triggerReward();
+    });
+  } else {
+    alert('You have seen an ad!');
+    triggerReward();
+  }
 }
 
 function switchDgCostTab(tab) {
@@ -601,9 +654,22 @@ function hireDgManager(method) {
       updateDiamondGeneratorUI();
       if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Manager extended by +2 Hours via Ad! Auto-generating diamonds from energy!');
     };
-    if (typeof showMonetagRewardedAd === 'function') {
-      showMonetagRewardedAd({ onRewarded: triggerReward, onError: triggerReward });
-    } else triggerReward();
+    // Rewarded interstitial
+    if (typeof show_10676091 === 'function') {
+      show_10676091().then(() => {
+        // You need to add your user reward function here, which will be executed after the user watches the ad.
+        // For more details, please refer to the detailed instructions.
+        alert('You have seen an ad!');
+        triggerReward();
+      }).catch((e) => {
+        console.warn('show_10676091 notice:', e);
+        alert('You have seen an ad!');
+        triggerReward();
+      });
+    } else {
+      alert('You have seen an ad!');
+      triggerReward();
+    }
   }
 }
 
@@ -812,6 +878,8 @@ function updateDiamondGeneratorRealtime() {
   document.querySelectorAll('#diamondLinearBar, .diamond-linear-fill, #diamondLinearBarHome, .dg-progress-bar-fill').forEach(bar => {
     if (bar) bar.style.width = `${percent.toFixed(2)}%`;
   });
+  const conduitPct = document.getElementById('dgConduitPct');
+  if (conduitPct) conduitPct.textContent = `${Math.floor(percent)}%`;
 
   // 4. Status Badge State Display (Ready, Generating, Completed, Not Enough Energy)
   const statusBadge = document.getElementById('dgStatusBadge');
@@ -923,10 +991,24 @@ function updateDiamondGeneratorUI() {
   const coreRate = document.getElementById('diamondCoreRateLabel');
   if (coreRate) coreRate.textContent = `+${formatDiamondDisplay(rate)} 💎`;
 
+  // Telemetry Quick Chips
+  const chipCycleEl = document.getElementById('dgChipCycleTime');
+  if (chipCycleEl) chipCycleEl.textContent = `${cycleDur.toFixed(1)}s`;
+
   // Piggy Bank UI
   const piggyCollectible = getPiggyBankCollectibleTotal();
   const piggyAmountEl = document.getElementById('piggyStoredAmount');
   if (piggyAmountEl) piggyAmountEl.textContent = formatDiamondDisplay(piggyCollectible);
+
+  const chipVaultEl = document.getElementById('dgChipVaultStored');
+  if (chipVaultEl) chipVaultEl.textContent = `${formatDiamondDisplay(piggyCollectible)} 💎`;
+
+  const chipDroneEl = document.getElementById('dgChipDrone');
+  if (chipDroneEl) {
+    const isDroneActive = isDgManagerActive();
+    chipDroneEl.textContent = isDroneActive ? 'Online (Active)' : 'Standby';
+    chipDroneEl.style.color = isDroneActive ? '#10b981' : '#7dd3fc';
+  }
 
   const piggyBtn = document.getElementById('btnCollectPiggyBank');
   const piggyNoticeEl = document.getElementById('piggyCollectNotice');

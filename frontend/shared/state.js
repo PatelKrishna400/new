@@ -290,6 +290,8 @@ const gameState = {
     maxLevel: 1000,
     coins: 0,
     blueCoins: 0,
+    partyCoins: 0,
+    dynamiteCoins: 0,
     diamonds: 0,
     diamondWins: 0,
     diamondWinsCount: 0,
@@ -596,6 +598,8 @@ function loadSavedGame() {
 
       if (gameState.player.diamonds === undefined) gameState.player.diamonds = 0;
       if (gameState.player.blueCoins === undefined) gameState.player.blueCoins = 0;
+      if (gameState.player.partyCoins === undefined) gameState.player.partyCoins = gameState.player.blueCoins || 0;
+      if (gameState.player.dynamiteCoins === undefined) gameState.player.dynamiteCoins = 0;
 
       // Ensure goalState defaults
       if (!gameState.goalState.levelProgress) {

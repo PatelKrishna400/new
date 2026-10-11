@@ -4,29 +4,41 @@
 
 #pageBeeFarm {
   position: relative;
-  padding-bottom: 90px;
-  background-color: #070e1d;
+  padding-bottom: 120px;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* Atmospheric Scenic Landscape Stage behind entire Honey Bee Farm */
+/* Atmospheric Scenic Landscape Stage hidden for clean light UI theme */
 .bee-tab-scenic-stage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 520px;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  display: none !important;
+}
+
+#beePage1,
+#beePage2,
+#beePage4,
+#beePage5 {
+  background: #ffffff !important;
+  border: 2px solid #fde047 !important;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.1) !important;
+  border-radius: 20px !important;
+  color: #1e293b !important;
+}
+
+#beePage3 {
+  background: linear-gradient(180deg, #181512 0%, #0c0a09 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 20px !important;
+  color: #ffffff !important;
 }
 
 .bee-stage-artwork {
   position: absolute;
   inset: -20px -20px 0 -20px;
-  background-image: url('bee-farm-bg.png');
+  background-image: url('honey-bg.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: right 25%;
@@ -90,7 +102,7 @@
 .bee-dash-art-bg {
   position: absolute;
   inset: 0;
-  background-image: url('bee-farm-bg.png');
+  background-image: url('honey-bg.png');
   background-size: cover;
   background-position: right 30%;
   background-repeat: no-repeat;
@@ -546,7 +558,7 @@
   width: 100% !important;
 }
 
-/* Dedicated Bottom Menu Bar for Honeybee Farm */
+/* Dedicated Bottom Menu Bar for Honeybee Farm (Matching Sunflower Valley Dock) */
 .bee-bottom-menu-bar {
   display: none;
   position: fixed;
@@ -557,7 +569,7 @@
   margin: 0 auto max(8px, env(safe-area-inset-bottom)) auto;
   width: calc(100% - 24px);
   max-width: 440px;
-  background: #ffffff !important;
+  background: #1c1917 !important;
   border: 2px solid #f59e0b !important;
   border-radius: 32px;
   align-items: center;
@@ -566,9 +578,9 @@
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 
-    0 8px 24px rgba(245, 158, 11, 0.28),
-    0 2px 6px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 #ffffff;
+    0 8px 24px rgba(245, 158, 11, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(254, 240, 138, 0.2);
   z-index: 120;
   flex-shrink: 0;
 }
@@ -591,33 +603,41 @@ body.page-beefarm-active .bee-bottom-menu-bar {
   padding: 4px 0;
   border-radius: 12px;
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-  color: #78350f;
+  color: #a8a29e;
   outline: none;
 }
 
+.bee-menu-tab-btn:hover {
+  color: #fde047;
+}
+
 .bee-menu-tab-btn.active {
-  color: #b45309;
+  color: #f59e0b;
   font-weight: 800;
   transform: translateY(-2px);
 }
 
 .bee-menu-tab-btn.center-play-btn {
   position: relative;
-  top: -14px;
+  top: -10px;
 }
 
 .bee-menu-tab-btn.center-play-btn .center-play-circle {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fbbf24 0%, #f59e0b 60%, #d97706 100%);
-  border: 3px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 2.5px solid #fef08a;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bee-menu-tab-btn.center-play-btn.active .center-play-circle {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
 }
 
 .bee-menu-tab-btn.center-play-btn:active .center-play-circle {
@@ -625,7 +645,14 @@ body.page-beefarm-active .bee-bottom-menu-bar {
 }
 
 .bee-menu-ico {
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.bee-menu-txt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
 }
 
 .bee-menu-txt {

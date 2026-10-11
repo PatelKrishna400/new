@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   
-  <!-- Consolidated Unified Stylesheet -->
-  <link rel="stylesheet" href="css/admin.css">
+  <!-- Consolidated Unified Stylesheet (Replaces 10 separate HTTP round-trips) -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -275,7 +275,15 @@
               </div>
             </div>
       
-            
+            <!-- Telemetry Cache Sinks -->
+            <span id="dashDailyTasksCompleted" style="display: none;">0</span>
+            <span id="dashWebTasksCompleted" style="display: none;">0</span>
+            <span id="dashTotalSpins" style="display: none;">0</span>
+            <span id="dashTotalChests" style="display: none;">0</span>
+            <span id="dashTotalScratches" style="display: none;">0</span>
+            <div id="dashQuickToast" style="display: none;"></div>
+            <div id="adminRealtimeToastContainer" style="display: none;"></div>
+            <div id="firebaseRulesWarningBanner" style="display: none;"></div>
           </div>
         </div>
       
@@ -2303,6 +2311,12 @@
           </div>
         </div>
       
+        <!-- Compatibility Alias Element Sinks -->
+        <div id="addTgTaskModal" style="display: none;"></div>
+        <div id="addWebTaskModal" style="display: none;"></div>
+        <input type="hidden" id="inpNewTgCards" value="1">
+        <input type="hidden" id="newWebCode" value="4821">
+      
       </section>
       
 
@@ -2774,7 +2788,7 @@
             <div class="ads-form-row-3col">
               <div class="form-group" style="flex: 1.5;">
                 <label class="form-label">Monetag Zone ID / Code</label>
-                <input type="text" id="inpMonetagZoneId" value="11677609" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0f172a;">
+                <input type="text" id="inpMonetagZoneId" value="10676091" class="form-input" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0f172a;">
               </div>
               <div class="form-group" style="flex: 2;">
                 <label class="form-label">Monetag SDK Tag URL</label>
@@ -3894,12 +3908,6 @@
   <!-- Chart.js Graphical Representation Engine -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- Firebase Cloud Realtime SDKs & Shared Service -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="shared/firebase.js"></script>
-
   <!-- Admin Direct Read & Edit Access Engine (Point 4) -->
   <script>
     const ADMIN_SECURITY_KEY = '0911';
@@ -4137,6 +4145,14 @@
         if (nameEl) nameEl.textContent = session.name || session.username;
         if (roleEl) roleEl.textContent = session.role || 'Admin';
         if (avatarEl) avatarEl.textContent = (session.username || 'A')[0].toUpperCase();
+
+        // Immediately trigger live data rendering
+        setTimeout(() => {
+          if (typeof updateDashboardMetrics === 'function') updateDashboardMetrics();
+          if (typeof refreshDashboardAnalytics === 'function') refreshDashboardAnalytics();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
+          if (typeof updateGlobalMetrics === 'function') updateGlobalMetrics();
+        }, 50);
       } else {
         // Unauthenticated -> Lock interface behind gate
         if (gate) gate.style.display = 'flex';
