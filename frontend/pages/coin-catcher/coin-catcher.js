@@ -1116,10 +1116,32 @@
     }
   }
 
+  function cleanupCoinCatcherPage() {
+    isGameActive = false;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    if (spawnInterval) {
+      clearInterval(spawnInterval);
+      spawnInterval = null;
+    }
+    if (animFrameId) {
+      cancelAnimationFrame(animFrameId);
+      animFrameId = null;
+    }
+    closeMorningCafePuzzleModal();
+    const overlay = document.getElementById('catcherModalOverlay');
+    if (overlay) overlay.classList.remove('open');
+    const boomModal = document.getElementById('catcherBoomModal');
+    if (boomModal) boomModal.classList.remove('open');
+  }
+
   // Global Window Exports
   window.startCoinCatcherGame = startCoinCatcherGame;
   window.collectAndExitCoinCatcher = collectAndExitCoinCatcher;
   window.claimCoinCatcherReward = claimCoinCatcherReward;
+  window.cleanupCoinCatcherPage = cleanupCoinCatcherPage;
   window.resumeAfterBombAd = resumeAfterBombAd;
   window.exitAndForfeitCoins = exitAndForfeitCoins;
   window.claimFreeBoomCoinAd = claimFreeBoomCoinAd;

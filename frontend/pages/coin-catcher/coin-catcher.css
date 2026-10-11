@@ -35,6 +35,15 @@
   display: none !important;
 }
 
+/* Ensure all Coin Catcher modals and overlays are hidden when on other views */
+#pageCoinCatcher:not(.active) .catcher-modal-overlay,
+#pageCoinCatcher:not(.active) #catcherModalOverlay,
+#pageCoinCatcher:not(.active) #catcherBoomModal,
+#pageCoinCatcher:not(.active) #morningCafePuzzleModal,
+#pageCoinCatcher:not(.active) .cafe-submodal {
+  display: none !important;
+}
+
 /* Custom Cyber Amber Scrollbar for Coin Catcher Game */
 #pageCoinCatcher::-webkit-scrollbar {
   width: 7px !important;

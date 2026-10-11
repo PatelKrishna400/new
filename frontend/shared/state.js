@@ -277,6 +277,13 @@ const gameState = {
     failedWebsite: {},
     openedWebsite: {}
   },
+  balloonPursuitState: {
+    currentUnlockedStage: 1,
+    jackpotAdsWatched: 0,
+    stageAdsWatchedMap: {},
+    stageCoinsPaidMap: {},
+    eventEndTime: 0
+  },
   player: {
     name: 'Player',
     handle: 'player',

@@ -35,6 +35,16 @@
   display: none !important;
 }
 
+/* Ensure all Memory Match modals and overlays are hidden when on other views */
+#pageMemoryMatch:not(.active) .memory-modal-overlay,
+#pageMemoryMatch:not(.active) #memoryModalOverlay,
+#pageMemoryMatch:not(.active) #balloonPursuitModal,
+#pageMemoryMatch:not(.active) #stage-popup-modal,
+#pageMemoryMatch:not(.active) #ad-simulator-modal,
+#pageMemoryMatch:not(.active) #victory-modal {
+  display: none !important;
+}
+
 /* Custom Cyber Cyan / Violet Scrollbar for Memory Match Game */
 #pageMemoryMatch::-webkit-scrollbar {
   width: 7px !important;

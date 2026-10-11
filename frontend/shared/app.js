@@ -329,9 +329,13 @@ function switchPage(pageName) {
   document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
   _currentActivePageElem = null;
 
-  // Close any open mini-game submodals
-  if (typeof closeBalloonPursuitModal === 'function') closeBalloonPursuitModal();
-  if (typeof closeMorningCafePuzzleModal === 'function') closeMorningCafePuzzleModal();
+  // Cleanup game timers and modal overlays when leaving mini-games to other views
+  if (pageName !== 'memoryMatch' && pageName !== 'memory-match') {
+    if (typeof cleanupMemoryMatchPage === 'function') cleanupMemoryMatchPage();
+  }
+  if (pageName !== 'coinCatcher' && pageName !== 'coin-catcher') {
+    if (typeof cleanupCoinCatcherPage === 'function') cleanupCoinCatcherPage();
+  }
 
   // Close any legacy modal backdrop
   closeTabModal();

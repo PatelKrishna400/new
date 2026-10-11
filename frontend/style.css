@@ -25772,6 +25772,16 @@ body.full-page-game-active div[id^="page"].active {
   display: none !important;
 }
 
+/* Ensure all Memory Match modals and overlays are hidden when on other views */
+#pageMemoryMatch:not(.active) .memory-modal-overlay,
+#pageMemoryMatch:not(.active) #memoryModalOverlay,
+#pageMemoryMatch:not(.active) #balloonPursuitModal,
+#pageMemoryMatch:not(.active) #stage-popup-modal,
+#pageMemoryMatch:not(.active) #ad-simulator-modal,
+#pageMemoryMatch:not(.active) #victory-modal {
+  display: none !important;
+}
+
 /* Custom Cyber Cyan / Violet Scrollbar for Memory Match Game */
 #pageMemoryMatch::-webkit-scrollbar {
   width: 7px !important;
@@ -26433,6 +26443,15 @@ body.full-page-game-active div[id^="page"].active {
 #cafe-win-modal.hidden,
 #cafe-info-modal.hidden,
 #cafe-ad-modal.hidden {
+  display: none !important;
+}
+
+/* Ensure all Coin Catcher modals and overlays are hidden when on other views */
+#pageCoinCatcher:not(.active) .catcher-modal-overlay,
+#pageCoinCatcher:not(.active) #catcherModalOverlay,
+#pageCoinCatcher:not(.active) #catcherBoomModal,
+#pageCoinCatcher:not(.active) #morningCafePuzzleModal,
+#pageCoinCatcher:not(.active) .cafe-submodal {
   display: none !important;
 }
 

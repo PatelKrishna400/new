@@ -57,6 +57,29 @@
     initDOMElements();
     if (!elGrid) return;
 
+    // Check entry cost (1 Brain Coin)
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      const currentBrainCoins = Number(gameState.player.brainCoins || 0);
+      if (currentBrainCoins < 1) {
+        // Grant starter brain coins so player can play immediately
+        gameState.player.brainCoins = 3;
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame(true);
+        updateBrainCoinPill();
+      }
+
+      // Deduct 1 Brain Coin entry fee for this round
+      if (gameState.player.brainCoins >= 1) {
+        gameState.player.brainCoins = Math.max(0, gameState.player.brainCoins - 1);
+        if (typeof recordTaskEvent === 'function') {
+          recordTaskEvent('use_brain', 1);
+        }
+        if (typeof updateUI === 'function') updateUI();
+        if (typeof saveGame === 'function') saveGame(true);
+        updateBrainCoinPill();
+      }
+    }
+
     // Reset game state
     clearInterval(timerInterval);
     timeRemaining = 60;
@@ -115,6 +138,7 @@
 
       if (timeRemaining <= 0) {
         clearInterval(timerInterval);
+        timerInterval = null;
         endGame(false);
       }
     }, 1000);
@@ -122,34 +146,10 @@
 
   function onCardClicked(cardEl, card) {
     if (!isGameActive || isBoardLocked) return;
-    if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+    if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched') || cardEl.classList.contains('card-removed')) return;
     if (flippedCards.length >= 2) return;
 
-    // Deduct 1 Brain Coin per card flip
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      const currentBrainCoins = Number(gameState.player.brainCoins || 0);
-      if (currentBrainCoins < 1) {
-        if (typeof showFloatingToast === 'function') {
-          showFloatingToast('⚠️ You need at least 1 🧠 Brain Coin to flip a card! Tap the + button to claim free coins.');
-        } else {
-          alert('You need at least 1 Brain Coin to flip a card!');
-        }
-        if (typeof sfx !== 'undefined' && sfx.playErrorSound) {
-          sfx.playErrorSound();
-        }
-        return;
-      }
-
-      gameState.player.brainCoins = Math.max(0, currentBrainCoins - 1);
-      if (typeof recordTaskEvent === 'function') {
-        recordTaskEvent('use_brain', 1);
-      }
-      if (typeof updateUI === 'function') updateUI();
-      if (typeof saveGame === 'function') saveGame(true);
-      updateBrainCoinPill();
-    }
-
-    // Flip card
+    // Flip card - free during gameplay so all 16 cards can be clicked and matched
     cardEl.classList.add('flipped');
     flippedCards.push({ el: cardEl, data: card });
 
@@ -167,7 +167,7 @@
     const [card1, card2] = flippedCards;
 
     if (card1.data.id === card2.data.id) {
-      // MATCH FOUND! Both cards match -> REMOVE CARDS FROM BOARD
+      // MATCH FOUND! Both cards match -> REMOVE & HIDE CARDS FROM BOARD
       setTimeout(() => {
         card1.el.classList.add('matched', 'card-removed');
         card2.el.classList.add('matched', 'card-removed');
@@ -181,6 +181,7 @@
           sfx.playLevelUpSound();
         }
 
+        // When all 8 pairs (all 16 cards) are matched and hidden -> Win Reward!
         if (matchesFound === 8) {
           endGame(true);
         }
@@ -206,7 +207,10 @@
 
   function endGame(isVictory) {
     isGameActive = false;
-    clearInterval(timerInterval);
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
     initDOMElements();
     if (!elOverlay) return;
@@ -218,10 +222,11 @@
     const elStatTime = document.getElementById('memoryStatTime');
     const elStatMistakes = document.getElementById('memoryStatMistakes');
     const elStatReward = document.getElementById('memoryStatReward');
+    const elRewardRow = document.getElementById('memoryRewardRow');
     const elClaimBtn = document.getElementById('memoryClaimBtn');
 
     if (isVictory) {
-      // Finish game -> Win ONLY 5 Balloon Coins
+      // All cards matched & hidden -> Award 5 Balloon Coins
       lastCalculatedReward = {
         isVictory: true,
         type: 'balloon_coins',
@@ -242,6 +247,7 @@
 
       if (elStatTime) elStatTime.textContent = `${timeRemaining}s Remaining`;
       if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
+      if (elRewardRow) elRewardRow.style.display = 'flex';
       if (elStatReward) {
         elStatReward.innerHTML = `<span style="color: #facc15; font-size: 16px; font-weight: 800;">+5 Balloon Coins 🎈</span>`;
       }
@@ -255,18 +261,12 @@
         sfx.playLevelUpSound();
       }
     } else {
-      // Incomplete / Time expired -> Otherwise win 10 Brain Coins
-      lastCalculatedReward = {
-        isVictory: false,
-        type: 'brain_coins',
-        amount: 10,
-        timeRemaining: 0,
-        mistakes: mistakes
-      };
+      // Incomplete / Time expired -> OTHERWISE REWARD IS HIDDEN!
+      lastCalculatedReward = null;
 
-      if (elIcon) elIcon.textContent = '🧠';
+      if (elIcon) elIcon.textContent = '⏰';
       if (elTitle) elTitle.textContent = 'TIME EXPIRED!';
-      if (elDesc) elDesc.textContent = 'Game ended before clearing all cards. Consolation reward awarded!';
+      if (elDesc) elDesc.textContent = 'You did not match all cards in time. Clear all cards to win rewards!';
 
       if (elStars) {
         elStars.querySelectorAll('.star-item').forEach(st => st.classList.remove('active'));
@@ -274,13 +274,16 @@
 
       if (elStatTime) elStatTime.textContent = '0s';
       if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
-      if (elStatReward) {
-        elStatReward.innerHTML = `<span style="color: #c084fc; font-size: 16px; font-weight: 800;">+10 Brain Coins 🧠</span>`;
-      }
+
+      // Reward is hidden otherwise
+      if (elRewardRow) elRewardRow.style.display = 'none';
+      if (elStatReward) elStatReward.innerHTML = '';
       if (elClaimBtn) {
-        elClaimBtn.style.display = 'flex';
-        elClaimBtn.disabled = false;
-        elClaimBtn.innerHTML = '<span>🧠</span> Claim 10 Brain Coins';
+        elClaimBtn.style.display = 'none';
+      }
+
+      if (typeof sfx !== 'undefined' && sfx.playErrorSound) {
+        sfx.playErrorSound();
       }
     }
 
@@ -288,7 +291,7 @@
   }
 
   function claimMemoryMatchReward() {
-    if (!lastCalculatedReward) return;
+    if (!lastCalculatedReward || !lastCalculatedReward.isVictory) return;
 
     const elClaimBtn = document.getElementById('memoryClaimBtn');
     if (elClaimBtn) {
@@ -296,45 +299,27 @@
       elClaimBtn.textContent = '✓ Claimed!';
     }
 
-    if (lastCalculatedReward.isVictory) {
-      // Award ONLY 5 Balloon Coins
-      if (typeof gameState !== 'undefined' && gameState.player) {
-        if (gameState.player.balloonCoins === undefined) gameState.player.balloonCoins = 0;
-        gameState.player.balloonCoins += 5;
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame(true);
-        if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-          window.firebaseSync.saveToCloudImmediate();
-        }
-      }
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎉 Victory! +5 🎈 Balloon Coins added! Opening Balloon Pursuit...');
-      }
-      if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
-        sfx.playLevelUpSound();
-      }
-
-      // Automatically open Balloon Pursuit progression map
-      setTimeout(() => {
-        openBalloonPursuitModal();
-      }, 400);
-    } else {
-      // Otherwise: Award 10 Brain Coins
-      if (typeof gameState !== 'undefined' && gameState.player) {
-        gameState.player.brainCoins = (gameState.player.brainCoins || 0) + 10;
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame(true);
-        if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-          window.firebaseSync.saveToCloudImmediate();
-        }
-      }
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎁 Consolation Reward: +10 🧠 Brain Coins claimed!');
-      }
-      if (typeof sfx !== 'undefined' && sfx.playCoinSound) {
-        sfx.playCoinSound();
+    // Award ONLY 5 Balloon Coins on victory
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      if (gameState.player.balloonCoins === undefined) gameState.player.balloonCoins = 0;
+      gameState.player.balloonCoins += 5;
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof saveGame === 'function') saveGame(true);
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
       }
     }
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🎉 Victory! +5 🎈 Balloon Coins added! Opening Balloon Pursuit...');
+    }
+    if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
+      sfx.playLevelUpSound();
+    }
+
+    // Automatically open Balloon Pursuit progression map
+    setTimeout(() => {
+      openBalloonPursuitModal();
+    }, 400);
 
     // Increment mini-game counter on profile stats
     if (typeof gameState !== 'undefined' && gameState.player) {
@@ -1219,9 +1204,24 @@
     }, 1000);
   }
 
+  function cleanupMemoryMatchPage() {
+    isGameActive = false;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    const overlay = document.getElementById('memoryModalOverlay');
+    if (overlay) overlay.classList.remove('open');
+    closeBalloonPursuitModal();
+    closeModal('stage-popup-modal');
+    closeModal('ad-simulator-modal');
+    closeModal('victory-modal');
+  }
+
   // Global window bindings
   window.startMemoryMatchGame = startMemoryMatchGame;
   window.claimMemoryMatchReward = claimMemoryMatchReward;
+  window.cleanupMemoryMatchPage = cleanupMemoryMatchPage;
   window.updateBrainCoinPill = updateBrainCoinPill;
   window.updateBalloonCoinPill = updateBalloonCoinPill;
   window.openBalloonPursuitModal = openBalloonPursuitModal;
