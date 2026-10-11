@@ -4175,6 +4175,8 @@ function executeSfCoinToEnergy(amount = 100, event = null) {
     const maxE = gameState.reactor.maxEnergy || 1000;
     gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + energyGain);
     if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+    if (typeof window.updateUI === 'function') window.updateUI();
   }
 
   sunflowerAudio.playSolarChime();
@@ -4628,6 +4630,7 @@ window.executeSunflowerPrestige = function(event) {
   sunflowerState.prestigeLevel = tier;
   if (typeof gameState !== 'undefined' && gameState.player) {
     gameState.player.coins = (gameState.player.coins || 0) + reward;
+    if (typeof window.saveGame === 'function') window.saveGame(true);
     if (typeof window.updateUI === 'function') window.updateUI();
   }
 

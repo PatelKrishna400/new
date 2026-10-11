@@ -41,7 +41,7 @@
           </div>
 
           <!-- Video Simulation Screen with Proper Monetag Direct Link -->
-          <div class="ad-video-screen" id="adVideoScreenBox" style="cursor: pointer;" title="Tap to visit official sponsor ad" onclick="window.open('${MONETAG_DIRECT_LINK}', '_blank')">
+          <div class="ad-video-screen" id="adVideoScreenBox" style="cursor: pointer;" title="Tap to visit official sponsor ad" onclick="window.trackDirectAdClick(); window.open('${MONETAG_DIRECT_LINK}', '_blank')">
             <div class="ad-screen-grid-pattern"></div>
             <div class="ad-center-visual">
               <div class="ad-core-spinner outer"></div>
@@ -54,7 +54,7 @@
             </div>
 
             <!-- Clickable Official Ads Link Button -->
-            <a href="${MONETAG_DIRECT_LINK}" target="_blank" rel="noopener noreferrer" class="ad-direct-link-btn" onclick="event.stopPropagation(); window.open('${MONETAG_DIRECT_LINK}', '_blank');">
+            <a href="${MONETAG_DIRECT_LINK}" target="_blank" rel="noopener noreferrer" class="ad-direct-link-btn" onclick="event.stopPropagation(); window.trackDirectAdClick(); window.open('${MONETAG_DIRECT_LINK}', '_blank');">
               <span>🌐 OPEN SPONSOR AD</span>
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
@@ -128,6 +128,13 @@
 
           if (!gameState.dailyStats) gameState.dailyStats = {};
           gameState.dailyStats.adsWatched = (gameState.dailyStats.adsWatched || 0) + 1;
+        }
+
+        // Realtime Firebase Ads Analytics sync
+        if (typeof firebase !== 'undefined' && firebase.database) {
+          try {
+            firebase.database().ref('ads_analytics/monetagViews').transaction(curr => (curr || 0) + 1).catch(() => {});
+          } catch(e) {}
         }
 
         // 2. Execute user-supplied reward callback
@@ -233,6 +240,14 @@
       }
     } catch (err) {
       console.warn('⚠️ Error triggering show_10676091 in-app interstitial:', err);
+    }
+  };
+
+  window.trackDirectAdClick = function() {
+    if (typeof firebase !== 'undefined' && firebase.database) {
+      try {
+        firebase.database().ref('ads_analytics/directClicks').transaction(curr => (curr || 0) + 1).catch(() => {});
+      } catch (err) {}
     }
   };
 

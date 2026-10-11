@@ -291,6 +291,15 @@ class FirebaseSyncService {
           if (cloudData.piggyBank) {
             gameState.piggyBank = Object.assign(gameState.piggyBank || {}, cloudData.piggyBank);
           }
+          if (cloudData.sunflower && typeof window !== 'undefined' && typeof window.syncSunflowerFromCloud === 'function') {
+            window.syncSunflowerFromCloud(cloudData.sunflower);
+          }
+          if (cloudData.beeFarm && typeof window !== 'undefined' && typeof window.syncBeeFarmFromCloud === 'function') {
+            window.syncBeeFarmFromCloud(cloudData.beeFarm);
+          }
+          if (cloudData.mining && typeof window !== 'undefined' && typeof window.syncMiningFromCloud === 'function') {
+            window.syncMiningFromCloud(cloudData.mining);
+          }
 
           let shouldCatchup = false;
           let catchupTimestamp = null;
@@ -562,6 +571,12 @@ class FirebaseSyncService {
 
       if (cloudData.sunflower && typeof window !== 'undefined' && typeof window.syncSunflowerFromCloud === 'function') {
         window.syncSunflowerFromCloud(cloudData.sunflower);
+      }
+      if (cloudData.beeFarm && typeof window !== 'undefined' && typeof window.syncBeeFarmFromCloud === 'function') {
+        window.syncBeeFarmFromCloud(cloudData.beeFarm);
+      }
+      if (cloudData.mining && typeof window !== 'undefined' && typeof window.syncMiningFromCloud === 'function') {
+        window.syncMiningFromCloud(cloudData.mining);
       }
 
       if (hasChanged) {
@@ -984,6 +999,8 @@ class FirebaseSyncService {
           giftsClaimed: 0
         },
         sunflower: (typeof window !== 'undefined' && window.sunflowerState) ? window.sunflowerState : null,
+        beeFarm: (typeof window !== 'undefined' && window.beeState) ? window.beeState : null,
+        mining: (typeof window !== 'undefined' && window.miningState) ? window.miningState : null,
         diamondGenerator: gameState.diamondGenerator || null,
         piggyBank: gameState.piggyBank || null
       };

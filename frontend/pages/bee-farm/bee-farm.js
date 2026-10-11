@@ -222,8 +222,42 @@ function saveBeeStateDebounced() {
     } catch (e) {
       console.warn('Bee state save error:', e);
     }
+    syncBeeToFirebase();
   }, 1000);
 }
+
+function syncBeeToFirebase() {
+  if (typeof window !== 'undefined' && window.firebaseSync) {
+    const fs = window.firebaseSync;
+    if (fs.database && fs.userId) {
+      fs.database.ref(`players/${fs.userId}/beeFarm`).set(beeState).catch(() => {});
+    }
+  }
+}
+window.syncBeeToFirebase = syncBeeToFirebase;
+
+window.syncBeeFarmFromCloud = function(cloudBee) {
+  if (!cloudBee || typeof cloudBee !== 'object') return;
+  try {
+    if (Array.isArray(cloudBee.plots) && cloudBee.plots.length === 20) {
+      beeState.plots = cloudBee.plots;
+    }
+    if (Array.isArray(cloudBee.wells) && cloudBee.wells.length === 20) {
+      beeState.wells = cloudBee.wells;
+    }
+    if (typeof cloudBee.honey === 'number') beeState.honey = cloudBee.honey;
+    if (typeof cloudBee.larvae === 'number') beeState.larvae = cloudBee.larvae;
+    if (typeof cloudBee.flowers === 'number') beeState.flowers = cloudBee.flowers;
+    if (typeof cloudBee.smokers === 'number') beeState.smokers = cloudBee.smokers;
+    if (typeof cloudBee.prestigeLevel === 'number') beeState.prestigeLevel = cloudBee.prestigeLevel;
+    if (cloudBee.managers) beeState.managers = Object.assign(beeState.managers || {}, cloudBee.managers);
+    renderBeePlots();
+    renderBeeWells();
+    updateBeeStickyHeaderAndStats();
+  } catch(e) {
+    console.warn('Failed to apply cloud bee farm state:', e);
+  }
+};
 
 /* ==========================================================================
    NAVIGATION: 5-TAB CUSTOM BOTTOM MENU
@@ -1590,6 +1624,8 @@ window.executeBeeCoinToEnergy = function(amount) {
     const maxE = gameState.reactor.maxEnergy || 1000;
     gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + energyGain);
     if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+    if (typeof window.updateUI === 'function') window.updateUI();
   }
   updateBeeStickyHeaderAndStats();
   saveBeeStateDebounced();
@@ -1629,6 +1665,8 @@ window.executeBeePrestige = function(event) {
   beeState.prestigeLevel = tier;
   if (typeof gameState !== 'undefined' && gameState.player) {
     gameState.player.coins = (gameState.player.coins || 0) + reward;
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+    if (typeof window.updateUI === 'function') window.updateUI();
   }
 
   // Reset hives and meadows to Level 1

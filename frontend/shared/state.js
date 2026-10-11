@@ -621,6 +621,12 @@ function loadSavedGame() {
       if (gameState.player.balloonCoins === undefined) {
         gameState.player.balloonCoins = 0;
       }
+      if (gameState.player.brainCoins === undefined) {
+        gameState.player.brainCoins = 0;
+      }
+      if (gameState.player.boomCoins === undefined) {
+        gameState.player.boomCoins = 0;
+      }
       if (gameState.player.sunflowerCoins === undefined) {
         gameState.player.sunflowerCoins = gameState.player.sunflower || 0;
       }

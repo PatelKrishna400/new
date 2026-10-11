@@ -1102,12 +1102,18 @@
 
   function openCafeSubModal(id) {
     const el = document.getElementById(id);
-    if (el) el.classList.remove('hidden');
+    if (el) {
+      el.classList.remove('hidden');
+      el.style.display = 'flex';
+    }
   }
 
   function closeCafeSubModal(id) {
     const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
+    if (el) {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
   }
 
   // Global Window Exports

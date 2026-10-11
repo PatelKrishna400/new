@@ -4492,7 +4492,7 @@
         <!-- ================================================================
              BALLOON PURSUIT PROGRESSION MAP MODAL
              ================================================================ -->
-        <div id="balloonPursuitModal" class="balloon-pursuit-modal fixed inset-0 z-50 flex items-center justify-center p-0 hidden" style="background: rgba(4, 3, 10, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+        <div id="balloonPursuitModal" class="balloon-pursuit-modal fixed inset-0 z-50 flex items-center justify-center p-0 hidden" style="display: none; background: rgba(4, 3, 10, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
           <main class="bp-mobile-frame flex flex-col justify-between p-3.5 pb-2 overflow-y-auto max-h-screen">
             
             <!-- TOP APP BAR: BACK BUTTON & BALLOON COIN PILL ONLY -->
@@ -4611,7 +4611,7 @@
           </main>
       
           <!-- POPUP: STAGE UNLOCK & TWO-STEP ACTION (COIN FIRST -> AD TO CLAIM) -->
-          <div id="stage-popup-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+          <div id="stage-popup-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" style="display: none;">
             <div class="bg-gradient-to-b from-[#2e1d5a] via-[#211442] to-[#140b2b] border-4 border-[#5b3c9e] rounded-3xl p-5 w-full max-w-sm text-center shadow-[0_12px_0_#0d061c] relative transform transition-all">
               
               <button onclick="closeModal('stage-popup-modal')" class="btn-2d absolute -top-3 -right-3 w-9 h-9 bg-rose-600 border-2 border-rose-900 rounded-full text-white font-game text-base flex items-center justify-center shadow-lg">✕</button>
@@ -4647,7 +4647,7 @@
           </div>
       
           <!-- FULL 2D AD SIMULATOR -->
-          <div id="ad-simulator-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+          <div id="ad-simulator-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden" style="display: none;">
             <div class="bg-[#130b26] border-4 border-amber-400 rounded-3xl w-full max-w-sm overflow-hidden shadow-[0_12px_0_#78350f] flex flex-col relative">
               
               <div class="bg-[#241544] border-b-2 border-amber-400/50 p-2.5 px-3 flex items-center justify-between">
@@ -4690,7 +4690,7 @@
           </div>
       
           <!-- GRAND JACKPOT VICTORY MODAL -->
-          <div id="victory-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+          <div id="victory-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" style="display: none;">
             <div class="bg-gradient-to-b from-[#2e1d5a] to-[#120a26] border-4 border-amber-400 rounded-3xl p-5 w-full max-w-sm text-center shadow-[0_12px_0_#78350f] relative animate-bounce-short">
               
               <div class="text-5xl mb-2 animate-pulse">💎 👑 🎈</div>
@@ -5143,7 +5143,7 @@
             </main>
       
             <!-- SUB-MODAL 1: 2D SIMULATED VIDEO AD POPUP -->
-            <div id="cafe-ad-modal" class="cafe-submodal fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div id="cafe-ad-modal" class="cafe-submodal fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" style="display: none;">
               <div class="cafe-modal-2d bg-[#fffdf5] rounded-3xl max-w-sm w-full p-4 relative overflow-hidden flex flex-col items-center">
                 <div class="w-full flex items-center justify-between pb-3 border-b-2 border-slate-200">
                   <div class="flex items-center space-x-2">
@@ -5184,7 +5184,7 @@
             </div>
       
             <!-- SUB-MODAL 2: OUT OF PIECES PROMPT POPUP -->
-            <div id="cafe-pieces-prompt-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div id="cafe-pieces-prompt-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" style="display: none;">
               <div class="cafe-modal-2d bg-[#fff9eb] rounded-3xl max-w-sm w-full p-5 text-center">
                 <div class="w-14 h-14 mx-auto bg-amber-400 border-3 border-amber-950 rounded-2xl flex items-center justify-center text-3xl shadow">
                   🧩
@@ -5206,7 +5206,7 @@
             </div>
       
             <!-- SUB-MODAL 3: WIN / REWARDS CLAIM MODAL -->
-            <div id="cafe-win-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div id="cafe-win-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" style="display: none;">
               <div class="cafe-modal-2d bg-gradient-to-b from-[#fff6ed] to-[#ffe3ec] rounded-3xl max-w-sm w-full p-5 text-center">
                 <div class="w-16 h-16 mx-auto -mt-10 bg-amber-400 border-4 border-amber-950 rounded-2xl flex items-center justify-center text-4xl shadow animate-bounce">
                   🏆
@@ -5236,7 +5236,7 @@
             </div>
       
             <!-- SUB-MODAL 4: HOW TO PLAY MODAL -->
-            <div id="cafe-info-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div id="cafe-info-modal" class="cafe-submodal fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" style="display: none;">
               <div class="cafe-modal-2d bg-[#fff9eb] rounded-3xl max-w-sm w-full p-5 text-center">
                 <div class="text-3xl mb-1">🧩</div>
                 <h3 class="font-game text-lg text-rose-950 font-black">HOW TO PLAY</h3>

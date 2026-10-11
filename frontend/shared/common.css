@@ -747,6 +747,11 @@ body.full-page-game-active div[id^="page"].active {
   to { opacity: 1; }
 }
 
+/* Global Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
 /* Subpage Sticky Top Actions Row */
 .xp-top-actions-row,
 .goal-top-actions-row {

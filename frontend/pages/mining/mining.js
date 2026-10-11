@@ -196,8 +196,43 @@ function saveMiningStateDebounced() {
     } catch (e) {
       console.warn('Mining state save error:', e);
     }
+    syncMiningToFirebase();
   }, 1000);
 }
+
+function syncMiningToFirebase() {
+  if (typeof window !== 'undefined' && window.firebaseSync) {
+    const fs = window.firebaseSync;
+    if (fs.database && fs.userId) {
+      fs.database.ref(`players/${fs.userId}/mining`).set(miningState).catch(() => {});
+    }
+  }
+}
+window.syncMiningToFirebase = syncMiningToFirebase;
+
+window.syncMiningFromCloud = function(cloudMining) {
+  if (!cloudMining || typeof cloudMining !== 'object') return;
+  try {
+    if (Array.isArray(cloudMining.plots) && cloudMining.plots.length === 20) {
+      miningState.plots = cloudMining.plots;
+    }
+    if (Array.isArray(cloudMining.wells) && cloudMining.wells.length === 20) {
+      miningState.wells = cloudMining.wells;
+    }
+    if (typeof cloudMining.shards === 'number') miningState.shards = cloudMining.shards;
+    if (typeof cloudMining.diamonds === 'number') miningState.diamonds = cloudMining.diamonds;
+    if (typeof cloudMining.cores === 'number') miningState.cores = cloudMining.cores;
+    if (typeof cloudMining.coolants === 'number') miningState.coolants = cloudMining.coolants;
+    if (typeof cloudMining.pickaxes === 'number') miningState.pickaxes = cloudMining.pickaxes;
+    if (typeof cloudMining.prestigeLevel === 'number') miningState.prestigeLevel = cloudMining.prestigeLevel;
+    if (cloudMining.managers) miningState.managers = Object.assign(miningState.managers || {}, cloudMining.managers);
+    renderMiningPlots();
+    renderMiningWells();
+    updateMiningStickyHeaderAndStats();
+  } catch(e) {
+    console.warn('Failed to apply cloud mining state:', e);
+  }
+};
 
 /* ==========================================================================
    NAVIGATION
@@ -959,6 +994,8 @@ window.executeMineCoinToEnergy = function(amount) {
     const maxE = gameState.reactor.maxEnergy || 1000;
     gameState.reactor.currentEnergy = Math.min(maxE, (gameState.reactor.currentEnergy || 0) + energyGain);
     if (typeof updateEnergyUI === 'function') updateEnergyUI();
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+    if (typeof window.updateUI === 'function') window.updateUI();
   }
   updateMiningStickyHeaderAndStats();
   saveMiningStateDebounced();
@@ -998,6 +1035,8 @@ window.executeMinePrestige = function(event) {
   miningState.prestigeLevel = tier;
   if (typeof gameState !== 'undefined' && gameState.player) {
     gameState.player.coins = (gameState.player.coins || 0) + reward;
+    if (typeof window.saveGame === 'function') window.saveGame(true);
+    if (typeof window.updateUI === 'function') window.updateUI();
   }
 
   miningState.plots = createDefaultMiningPlots();

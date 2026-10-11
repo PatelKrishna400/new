@@ -325,12 +325,13 @@ function switchPage(pageName) {
     }
   }
 
-  // Hide previously active page view directly without global querySelectorAll
-  if (_currentActivePageElem) {
-    _currentActivePageElem.classList.remove('active');
-  } else {
-    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-  }
+  // Hide previously active page view and clean active states
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  _currentActivePageElem = null;
+
+  // Close any open mini-game submodals
+  if (typeof closeBalloonPursuitModal === 'function') closeBalloonPursuitModal();
+  if (typeof closeMorningCafePuzzleModal === 'function') closeMorningCafePuzzleModal();
 
   // Close any legacy modal backdrop
   closeTabModal();

@@ -691,6 +691,37 @@ function updateEnergyUI() {
   }
 
   formatTimerDisplay();
+
+  // Tycoon Hub Entry Cards Live Mini-Stats Sync
+  if (typeof window !== 'undefined') {
+    if (window.sunflowerState) {
+      const sfC = document.getElementById('sfEntryCoins');
+      const sfB = document.getElementById('sfEntryBaskets');
+      const sfS = document.getElementById('sfEntryShovels');
+      const fmt = typeof formatNumber === 'function' ? formatNumber : (n => Math.floor(n).toLocaleString());
+      if (sfC) sfC.textContent = fmt(window.sunflowerState.coins || 0);
+      if (sfB) sfB.textContent = fmt(window.sunflowerState.baskets || 0);
+      if (sfS) sfS.textContent = fmt(window.sunflowerState.shovels || 0);
+    }
+    if (window.beeState) {
+      const bfH = document.getElementById('bfEntryHoney');
+      const bfP = document.getElementById('bfEntryPollen');
+      const bfS = document.getElementById('bfEntrySmoker');
+      const fmtB = typeof formatBeeNumber === 'function' ? formatBeeNumber : (typeof formatNumber === 'function' ? formatNumber : (n => Math.floor(n).toLocaleString()));
+      if (bfH) bfH.textContent = fmtB(window.beeState.honey || 0);
+      if (bfP) bfP.textContent = fmtB(window.beeState.flowers || window.beeState.pollen || 0);
+      if (bfS) bfS.textContent = fmtB(window.beeState.smokers || 0);
+    }
+    if (window.miningState) {
+      const mc = document.getElementById('mineEntryCrystals');
+      const mco = document.getElementById('mineEntryCoolant');
+      const mp = document.getElementById('mineEntryPickaxe');
+      const fmtM = typeof formatMineNumber === 'function' ? formatMineNumber : (typeof formatNumber === 'function' ? formatNumber : (n => Math.floor(n).toLocaleString()));
+      if (mc) mc.textContent = fmtM(window.miningState.shards || 0);
+      if (mco) mco.textContent = fmtM(window.miningState.coolants || 0);
+      if (mp) mp.textContent = fmtM(window.miningState.pickaxes || 0);
+    }
+  }
 }
 
 // Helper to get fuel readable name

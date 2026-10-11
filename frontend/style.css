@@ -748,6 +748,11 @@ body.full-page-game-active div[id^="page"].active {
   to { opacity: 1; }
 }
 
+/* Global Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
 /* Subpage Sticky Top Actions Row */
 .xp-top-actions-row,
 .goal-top-actions-row {
@@ -25735,10 +25740,20 @@ body.full-page-game-active div[id^="page"].active {
    ========================================================================== */
 
 #pageMemoryMatch {
-  padding: 10px 12px 140px 12px !important;
-  min-height: 100% !important;
-  height: auto !important;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
   box-sizing: border-box;
+}
+
+#pageMemoryMatch.active {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  padding: 10px 12px 140px 12px !important;
+  box-sizing: border-box !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
@@ -25746,9 +25761,15 @@ body.full-page-game-active div[id^="page"].active {
   scrollbar-width: thin !important;
   scrollbar-color: rgba(6, 182, 212, 0.8) rgba(15, 23, 42, 0.65) !important;
   -ms-overflow-style: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 10px;
+}
+
+/* Modals inside Memory Match */
+#balloonPursuitModal.hidden,
+.balloon-pursuit-modal.hidden,
+#stage-popup-modal.hidden,
+#ad-simulator-modal.hidden,
+#victory-modal.hidden {
+  display: none !important;
 }
 
 /* Custom Cyber Cyan / Violet Scrollbar for Memory Match Game */
@@ -26383,10 +26404,20 @@ body.full-page-game-active div[id^="page"].active {
    ========================================================================== */
 
 #pageCoinCatcher {
-  padding: 10px 12px 140px 12px !important;
-  min-height: 100% !important;
-  height: auto !important;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
   box-sizing: border-box;
+}
+
+#pageCoinCatcher.active {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  padding: 10px 12px 140px 12px !important;
+  box-sizing: border-box !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
@@ -26394,9 +26425,15 @@ body.full-page-game-active div[id^="page"].active {
   scrollbar-width: thin !important;
   scrollbar-color: rgba(245, 158, 11, 0.8) rgba(15, 23, 42, 0.65) !important;
   -ms-overflow-style: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 10px;
+}
+
+/* Modals inside Coin Catcher */
+.cafe-submodal.hidden,
+#cafe-pieces-prompt-modal.hidden,
+#cafe-win-modal.hidden,
+#cafe-info-modal.hidden,
+#cafe-ad-modal.hidden {
+  display: none !important;
 }
 
 /* Custom Cyber Amber Scrollbar for Coin Catcher Game */

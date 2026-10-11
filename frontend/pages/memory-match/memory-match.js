@@ -552,6 +552,7 @@
     const modal = document.getElementById('balloonPursuitModal');
     if (modal) {
       modal.classList.remove('hidden');
+      modal.style.display = 'flex';
       renderStagesGrid();
       updateBalloonCoinPill();
       startBalloonTimer();
@@ -563,6 +564,7 @@
     const modal = document.getElementById('balloonPursuitModal');
     if (modal) {
       modal.classList.add('hidden');
+      modal.style.display = 'none';
     }
   }
 
@@ -1162,12 +1164,18 @@
 
   function openModal(id) {
     const el = document.getElementById(id);
-    if (el) el.classList.remove('hidden');
+    if (el) {
+      el.classList.remove('hidden');
+      el.style.display = 'flex';
+    }
   }
 
   function closeModal(id) {
     const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
+    if (el) {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
   }
 
   function showBalloonToast(msg) {
