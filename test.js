@@ -167,7 +167,7 @@ function checkFrontendIntegrity() {
     'gift-card', 'gadgets', 'accessories', 'gaming-tool', 'kitchen',
     'stationery', 'fitness', 'home-decorate', 'custom', 'suggest-box',
     'ad-rewards', 'spin', 'chest', 'scratch', 'egg', 'leaderboard',
-    'memory-match', 'coin-catcher'
+    'memory-match', 'coin-catcher', 'cracker'
   ];
 
   let ok = true;
@@ -184,7 +184,7 @@ function checkFrontendIntegrity() {
   });
 
   if (ok) {
-    console.log(`✅ All 31 canonical frontend pages exist with valid .html, .css, and .js triplets!`);
+    console.log(`✅ All ${PAGE_KEYS.length} canonical frontend pages exist with valid .html, .css, and .js triplets!`);
   }
   return ok;
 }

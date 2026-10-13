@@ -21,9 +21,8 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   scroll-behavior: smooth;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(6, 182, 212, 0.8) rgba(15, 23, 42, 0.65) !important;
-  -ms-overflow-style: auto !important;
+  scrollbar-width: none !important; /* Hide Firefox scrollbar */
+  -ms-overflow-style: none !important; /* Hide IE/Edge scrollbar */
 }
 
 /* Modals inside Memory Match */
@@ -45,39 +44,171 @@
   display: none !important;
 }
 
-/* Custom Cyber Cyan / Violet Scrollbar for Memory Match Game */
+/* Hide Scrollbar for Chrome, Safari, and Opera on Memory Match */
 #pageMemoryMatch::-webkit-scrollbar {
-  width: 7px !important;
-  height: 7px !important;
-  display: block !important;
-  background: transparent !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-#pageMemoryMatch::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.7) !important;
-  border-radius: 99px !important;
-  margin: 6px 0 !important;
-  border: 1px solid rgba(6, 182, 212, 0.15) !important;
-  display: block !important;
+/* ==========================================================================
+   MEMORY MATCH 30-DAY BALLOON EVENT BANNER TAB (PROMINENT & FULLY VISIBLE)
+   ========================================================================== */
+.memory-event-banner-tab {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.35);
+  cursor: pointer;
+  overflow: visible !important;
+  transition: all 0.2s ease;
+  margin: 4px 0 8px 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-#pageMemoryMatch::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%) !important;
-  border-radius: 99px !important;
-  border: 1.5px solid rgba(15, 23, 42, 0.85) !important;
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
-  display: block !important;
-  min-height: 40px !important;
-  transition: all 0.2s ease !important;
+.memory-event-banner-tab:hover,
+.memory-event-banner-tab:active {
+  border-color: #fbbf24;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.5);
 }
 
-#pageMemoryMatch::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #22d3ee 0%, #60a5fa 50%, #a855f7 100%) !important;
-  box-shadow: 0 0 15px rgba(34, 211, 238, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+.event-banner-glow {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 140px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-#pageMemoryMatch::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(180deg, #67e8f9 0%, #c084fc 100%) !important;
+.event-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.event-banner-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  border-radius: 6px;
+  padding: 2.5px 7px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.event-tab-title {
+  font-size: 13.5px;
+  font-weight: 900;
+  color: #fde047;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.event-tab-desc {
+  font-size: 10px;
+  color: #e2e8f0;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.event-tab-desc strong {
+  color: #fbbf24;
+}
+
+.event-banner-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.event-timer-capsule {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 8px;
+  padding: 3px 8px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.event-timer-capsule .timer-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.event-timer-capsule .timer-digits {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.event-cta-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: none;
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #78350f;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.5);
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.event-cta-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+  padding: 3px 8px;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #78350f;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .memory-arena-card {
@@ -205,17 +336,29 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Card Front (Unflipped state with tech circuit pattern) */
+/* Card Front (Unflipped state: Mystery cover, card value is 100% HIDDEN) */
 .memory-card-front {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
   color: #38bdf8;
+  transform: rotateY(0deg);
 }
 
 .memory-card-front .card-circuit-logo {
-  font-size: 20px;
-  opacity: 0.85;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0.9;
   filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
+}
+
+.memory-card-front .card-tap-hint {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  margin-top: 3px;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif;
 }
 
 .memory-card-front::after {
@@ -223,11 +366,11 @@
   position: absolute;
   inset: 3px;
   border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 8px;
   pointer-events: none;
 }
 
-/* Card Back (Flipped / Revealed state) */
+/* Card Back (Flipped state: Revealed card value shown only when flipped) */
 .memory-card-back {
   background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
   border: 2px solid #8b5cf6;
@@ -240,7 +383,7 @@
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
 }
 
-/* Card Removed state when matched */
+/* Card Removed state when matched: Entire card hides and removes from board */
 .memory-card.card-removed {
   opacity: 0 !important;
   visibility: hidden !important;
@@ -530,24 +673,14 @@
   min-height: 100vh;
   box-shadow: 0 0 60px rgba(0,0,0,0.95);
   position: relative;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(6, 182, 212, 0.7) rgba(15, 23, 42, 0.7) !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 .bp-mobile-frame::-webkit-scrollbar {
-  width: 6px !important;
-  display: block !important;
-}
-
-.bp-mobile-frame::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border-radius: 99px !important;
-}
-
-.bp-mobile-frame::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #06b6d4 0%, #8b5cf6 100%) !important;
-  border-radius: 99px !important;
-  box-shadow: 0 0 8px rgba(6, 182, 212, 0.5) !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .wooden-beam {

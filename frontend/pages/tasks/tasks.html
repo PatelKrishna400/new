@@ -39,32 +39,32 @@
     <div class="streak-strip-right">
       <div class="streak-day-badge">
         <span class="streak-day-sub">Current Progress</span>
-        <span class="streak-day-num">Day <strong id="currentActiveDayNum">1</strong> / 30</span>
+        <span class="streak-day-num">Day <strong id="currentActiveDayNum">1</strong> / 7</span>
       </div>
     </div>
   </div>
 
   <!-- Main Tasks Content Container -->
   <div class="tasks-scroll-container pb-4" id="tasksListContainer">
-    <!-- SUBTAB 1: 30-DAY DAILY TASKS SYSTEM (RECTANGULAR TABS + IN-PAGE QUESTS + MEGA REWARD UNLOCK) -->
+    <!-- SUBTAB 1: 7-DAY DAILY TASKS SYSTEM (ARROW PROCESS CHAIN + IN-PAGE QUESTS + MEGA REWARD UNLOCK) -->
     <div id="thirtyDayGridContainer" class="thirty-day-view-wrap">
-      <!-- 👑 Mega Reward Request Unlock Banner (Unlocks after 30 days) -->
+      <!-- 👑 Mega Reward Request Unlock Banner (Unlocks after 7 days) -->
       <div id="dailyMegaRewardBanner" class="daily-mega-reward-card">
         <!-- Rendered dynamically by renderMegaRewardBanner() in tasks.js -->
       </div>
 
-      <!-- 30-Day Rectangular Tabs Strip Header -->
-      <div class="thirty-day-rect-tabs-header">
-        <div class="flex items-center justify-between px-1 mb-1.5">
+      <!-- 7-Day Arrow Chevron Process Header (1 to 7 Days Only) -->
+      <div class="thirty-day-rect-tabs-header seven-day-arrow-header">
+        <div class="flex items-center justify-between px-1 mb-2">
           <span class="thirty-day-strip-title flex items-center gap-1.5">
             <span>📅</span>
-            <span>30-Day Quest Calendar</span>
+            <span>7-Day Quest Journey</span>
           </span>
-          <span id="thirtyDayTabsHelperText" style="display: none;"></span>
+          <span class="text-xs text-amber-300 font-bold font-mono">1 to 7 Days Only</span>
         </div>
-        <!-- Scrollable Rectangular Tabs Strip -->
-        <div class="thirty-day-rect-tabs-strip" id="thirtyDayRectTabsStrip">
-          <!-- 30 Rectangular Tabs [Day 1] ... [Day 30] rendered by renderThirtyDayTabs() in tasks.js -->
+        <!-- 7 Arrow Chevron Process Chain Strip -->
+        <div class="seven-day-arrow-chain" id="thirtyDayRectTabsStrip">
+          <!-- 7 Arrow Chevron Buttons [Day 1] ... [Day 7] rendered by renderThirtyDayTabs() in tasks.js -->
         </div>
       </div>
 

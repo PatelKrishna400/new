@@ -1,0 +1,478 @@
+/* ==========================================================================
+   CRACKER BOOM MISSIONS (LEVELS 1 - 1000) STYLES (pages/cracker/cracker.css)
+   ========================================================================== */
+
+#pageCracker {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px 140px 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+#pageCracker::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#pageCracker.active {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+/* Season Banner */
+.cracker-season-banner {
+  background: linear-gradient(135deg, rgba(30, 10, 10, 0.9) 0%, rgba(15, 7, 7, 0.95) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-lg, 16px);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.cracker-season-banner .season-timer-box {
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.cracker-season-banner .season-time-val {
+  background: rgba(10, 2, 2, 0.85);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fef08a;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-weight: 800;
+}
+
+/* Timer Pill & Balance Pill */
+.cracker-timer-pill {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(249, 115, 22, 0.5) !important;
+  color: #fb923c !important;
+}
+
+.cracker-balance-pill {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fde047;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cracker-balance-pill:active {
+  transform: scale(0.95);
+}
+
+.cracker-badge-btn {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.25), rgba(249, 115, 22, 0.3)) !important;
+  border: 1px solid rgba(249, 115, 22, 0.6) !important;
+  color: #fdba74 !important;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25) !important;
+}
+
+/* Quick Boost Strip */
+.cracker-boost-strip {
+  background: linear-gradient(135deg, rgba(35, 15, 10, 0.85) 0%, rgba(20, 8, 8, 0.95) 100%);
+  border: 1.5px solid rgba(249, 115, 22, 0.35);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.cracker-boost-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cracker-boost-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.6));
+}
+
+.cracker-boost-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.cracker-boost-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fdba74;
+}
+
+.cracker-boost-desc {
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.cracker-boost-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.cracker-quick-spin-btn {
+  flex: 1.2;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.cracker-quick-spin-btn:active {
+  transform: scale(0.97);
+}
+
+.cracker-quick-ad-btn {
+  flex: 0.9;
+  padding: 9px 10px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 12px;
+  color: #fde047;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 0.15s ease;
+}
+
+.cracker-quick-ad-btn:active {
+  transform: scale(0.97);
+}
+
+/* Mega Card Fiery Customization */
+.cracker-mega-card {
+  border-color: rgba(249, 115, 22, 0.3) !important;
+}
+
+.cracker-mega-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+.cracker-mega-btn.claim-ready {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5) !important;
+}
+
+/* Cracker Roadmap List Item Styling */
+#crackerLevelsScrollList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.cracker-row-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cracker-row-card.active-level-row {
+  background: linear-gradient(135deg, rgba(35, 15, 15, 0.95) 0%, rgba(20, 10, 10, 0.95) 100%);
+  border: 1.5px solid rgba(249, 115, 22, 0.65);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.cracker-row-card.reached {
+  background: rgba(10, 25, 20, 0.65);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.cracker-level-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.cracker-row-card.active-level-row .cracker-level-badge {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  border-color: #fde047;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.6);
+}
+
+.cracker-level-badge .badge-letter {
+  font-size: 9px;
+  font-weight: 900;
+  color: #94a3b8;
+  line-height: 1;
+}
+
+.cracker-row-card.active-level-row .cracker-level-badge .badge-letter {
+  color: #fffbeb;
+}
+
+.cracker-level-badge .badge-num {
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}
+
+.cracker-row-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: 12px;
+  text-align: left;
+}
+
+.cracker-row-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.cracker-row-req {
+  font-size: 11px;
+  color: #fdba74;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.cracker-row-progress {
+  font-size: 10px;
+  color: #38bdf8;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.cracker-row-rewards-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.cracker-rewards-pill-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cracker-reward-chip {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.cracker-reward-chip.gold {
+  color: #fde047;
+  border-color: rgba(250, 204, 21, 0.35);
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.cracker-reward-chip.diamond {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.1);
+}
+
+/* Action Buttons in List */
+.cracker-claim-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  border: 1px solid rgba(254, 240, 138, 0.5);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+  animation: pulseCrackerClaim 1.8s infinite ease-in-out;
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.cracker-claim-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes pulseCrackerClaim {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.85);
+    transform: scale(1.02);
+  }
+}
+
+.cracker-need-btn {
+  padding: 6px 12px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  border-radius: 12px;
+  color: #fdba74;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.cracker-need-btn:active {
+  transform: scale(0.96);
+}
+
+.cracker-done-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cracker-lock-icon {
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Footer Actions */
+.cracker-list-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.cracker-spin-jump-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(249, 115, 22, 0.35)) !important;
+  border: 1.5px solid rgba(249, 115, 22, 0.6) !important;
+  color: #fef08a !important;
+  box-shadow: 0 4px 18px rgba(249, 115, 22, 0.3) !important;
+}
+
+/* Banner inside Spin Wheel Page */
+.spin-cracker-missions-banner {
+  margin: 6px 0 10px 0;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(35, 10, 10, 0.9) 0%, rgba(20, 8, 8, 0.95) 100%);
+  border: 1.5px solid rgba(249, 115, 22, 0.5);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.spin-cracker-missions-banner:hover {
+  border-color: #f97316;
+  transform: translateY(-1px);
+}
+
+.spin-cracker-missions-banner:active {
+  transform: scale(0.98);
+}
+
+.cracker-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.cracker-banner-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.7));
+}
+
+.cracker-banner-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cracker-banner-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fdba74;
+  letter-spacing: 0.3px;
+}
+
+.cracker-banner-desc {
+  font-size: 10px;
+  color: #cbd5e1;
+  margin-top: 1px;
+}
+
+.cracker-banner-go-btn {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}

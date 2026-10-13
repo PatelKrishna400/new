@@ -23,6 +23,31 @@
     </div>
   </div>
 
+  <!-- Interactive 30-Day Balloon Pursuit Event Banner Tab Card -->
+  <div class="memory-event-banner-tab" id="memoryEventBannerTab" onclick="openBalloonPursuitModal()" title="Open Balloon Pursuit 30-Day Event Map" role="button" tabindex="0">
+    <div class="event-banner-glow"></div>
+    <div class="event-banner-content">
+      <div class="event-banner-left">
+        <div class="event-tag-pill">
+          <span class="event-flame-icon">🔥</span>
+          <span>SPECIAL 30-DAY EVENT ACTIVE</span>
+        </div>
+        <h3 class="event-tab-title">🎈 BALLOON PURSUIT ADVENTURE</h3>
+        <p class="event-tab-desc">Match 16 cards to win <strong>+10 🎈 Balloon Coins</strong> &amp; conquer 12 Stages for <strong>💎 10 Diamonds &amp; Mega Loot</strong>!</p>
+      </div>
+      <div class="event-banner-right">
+        <div class="event-timer-capsule">
+          <span class="timer-label">EVENT ENDS IN</span>
+          <span class="timer-digits font-mono" id="memoryPageEventTimer">30d 00:00:00</span>
+        </div>
+        <button class="event-cta-btn" type="button">
+          <span>EVENT MAP</span>
+          <span class="cta-arrow">➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Game Arena Card -->
   <section class="memory-arena-card">
     <div class="memory-ambient-glow"></div>
@@ -33,7 +58,7 @@
         <span class="hud-icon">⏱️</span>
         <div class="hud-data">
           <span class="hud-label">TIME</span>
-          <span class="hud-val" id="memoryTimeVal">60s</span>
+          <span class="hud-val" id="memoryTimeVal">100s</span>
         </div>
       </div>
       <div class="memory-hud-pill">
@@ -41,13 +66,6 @@
         <div class="hud-data">
           <span class="hud-label">MATCHES</span>
           <span class="hud-val highlight" id="memoryMatchesVal">0 / 8</span>
-        </div>
-      </div>
-      <div class="memory-hud-pill">
-        <span class="hud-icon">⚠️</span>
-        <div class="hud-data">
-          <span class="hud-label">MISTAKES</span>
-          <span class="hud-val" id="memoryMistakesVal">0</span>
         </div>
       </div>
     </div>
@@ -60,16 +78,8 @@
     <!-- Controls / Action Strip -->
     <div class="memory-controls-bar">
       <button class="memory-action-btn memory-deal-btn" id="memoryStartBtn" onclick="startMemoryMatchGame()">
-        <span>🧠</span> Deal / New Game (16 Cards)
+        <span>🧠</span> Deal / New Game (Cost: 1 🧠 Coin)
       </button>
-      <div class="memory-secondary-actions">
-        <button class="memory-action-btn memory-ad-btn" id="memoryAdBtn" onclick="claimFreeBrainCoinAd()">
-          <span>📢</span> Free 🧠 (+1 Coin)
-        </button>
-        <button class="memory-action-btn memory-pursuit-btn" id="memoryPursuitBtn" onclick="openBalloonPursuitModal()">
-          <span>🎈</span> Balloon Pursuit
-        </button>
-      </div>
     </div>
   </section>
 
@@ -92,21 +102,17 @@
       <div class="memory-stats-breakdown">
         <div class="breakdown-row">
           <span>Time Remaining:</span>
-          <strong id="memoryStatTime">24s</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Mistakes Made:</span>
-          <strong id="memoryStatMistakes">2</strong>
+          <strong id="memoryStatTime">100s</strong>
         </div>
         <div class="breakdown-row highlight" id="memoryRewardRow">
           <span>Reward Calculated:</span>
-          <strong id="memoryStatReward">+5 Balloon Coins 🎈</strong>
+          <strong id="memoryStatReward">+10 Balloon Coins 🎈</strong>
         </div>
       </div>
 
       <div class="memory-modal-actions">
         <button class="memory-claim-btn" id="memoryClaimBtn" onclick="claimMemoryMatchReward()">
-          <span>🎈</span> Claim 5 Coins &amp; Use in Balloon Pursuit
+          <span>🎈</span> Claim 10 Coins &amp; Use in Balloon Pursuit
         </button>
         <button class="memory-retry-btn" onclick="startMemoryMatchGame()">
           <span>🔄</span> Play Again
@@ -121,22 +127,22 @@
   <div id="balloonPursuitModal" class="balloon-pursuit-modal fixed inset-0 z-50 flex items-center justify-center p-0 hidden" style="display: none; background: rgba(4, 3, 10, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
     <main class="bp-mobile-frame flex flex-col justify-between p-3.5 pb-2 overflow-y-auto max-h-screen">
       
-      <!-- TOP APP BAR: BACK BUTTON & BALLOON COIN PILL ONLY -->
-      <header class="flex items-center justify-between z-20 w-full mb-1 px-1">
-        <button onclick="closeBalloonPursuitModal()" class="btn-2d w-10 h-10 rounded-2xl bg-[#291c4d] border-2 border-[#47337a] shadow-[0_3px_0_#140b2a] flex items-center justify-center text-white" title="Back">
-          <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <!-- TOP APP BAR: PROMINENT BACK BUTTON & BALLOON COIN PILL -->
+      <header class="flex items-center justify-between z-30 w-full mb-1.5 px-1 sticky top-0 bg-[#0f0922]/95 backdrop-blur-md py-1.5 rounded-b-2xl border-b border-indigo-900/60 shadow-lg">
+        <button onclick="closeBalloonPursuitModal()" class="btn-2d flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#291c4d] border-2 border-[#6366f1] shadow-[0_3px_0_#140b2a] text-white font-game text-xs cursor-pointer hover:bg-[#3b276e] transition-all" title="Back to Memory Match">
+          <svg class="w-4 h-4 text-indigo-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
+          <span class="font-bold tracking-wide">BACK</span>
         </button>
 
-        <!-- Center Balloon Coin Balance Capsule (Tap to add coins if low) -->
-        <div onclick="addTestCoins()" title="Tap to add +100 coins" class="btn-2d flex items-center space-x-2 bg-[#251745] border-2 border-amber-400 rounded-2xl px-5 py-1.5 shadow-[0_3px_0_#140b2a] cursor-pointer">
+        <!-- Center Balloon Coin Balance Capsule -->
+        <div class="btn-2d flex items-center space-x-2 bg-[#251745] border-2 border-amber-400 rounded-2xl px-4 py-1.5 shadow-[0_3px_0_#140b2a]" title="Balloon Coins">
           <span class="text-xl filter drop-shadow">🎈</span>
           <span id="player-coins" class="font-game text-amber-300 text-base tracking-wider">0</span>
-          <span class="text-[10px] text-amber-400 bg-amber-400/20 px-1 rounded font-bold">+</span>
         </div>
 
-        <button onclick="closeBalloonPursuitModal()" class="btn-2d w-10 h-10 rounded-2xl bg-[#291c4d] border-2 border-[#47337a] shadow-[0_3px_0_#140b2a] flex items-center justify-center text-white font-game text-sm" title="Close">✕</button>
+        <button onclick="closeBalloonPursuitModal()" class="btn-2d w-8 h-8 rounded-xl bg-[#291c4d] border-2 border-[#47337a] shadow-[0_2px_0_#140b2a] flex items-center justify-center text-white font-game text-xs hover:bg-[#3b276e]" title="Close">✕</button>
       </header>
 
       <!-- 3D CARTOON TITLE BANNER WITH FLUFFY CLOUDS -->
@@ -225,13 +231,17 @@
         </div>
       </section>
 
-      <!-- EVENT TIMER FOOTER -->
-      <footer class="w-full flex flex-col items-center justify-center z-20 mt-0.5">
-        <div class="inline-flex items-center space-x-2 bg-[#170c2f] border-2 border-[#412c75] rounded-full px-4 py-0.5 shadow-inner">
+      <!-- EVENT TIMER & BOTTOM BACK BUTTON FOOTER -->
+      <footer class="w-full flex flex-col items-center justify-center z-20 mt-1 mb-2 gap-2">
+        <div class="inline-flex items-center space-x-2 bg-[#170c2f] border-2 border-[#412c75] rounded-full px-4 py-1 shadow-inner">
           <span class="text-xs">🧭</span>
           <span class="font-game text-[11px] text-amber-200 tracking-wider">ENDS IN: </span>
-          <span id="countdown-timer" class="font-game text-[11px] text-white tracking-widest">27:29:17</span>
+          <span id="countdown-timer" class="font-game text-[11px] text-white tracking-widest">30d 00:00:00</span>
         </div>
+
+        <button onclick="closeBalloonPursuitModal()" class="btn-2d w-full max-w-[380px] py-2.5 rounded-2xl font-game text-xs tracking-wider text-white bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-950 border-2 border-indigo-500 shadow-[0_4px_0_#1e1b4b] flex items-center justify-center gap-2 cursor-pointer hover:brightness-110 active:translate-y-0.5" title="Back to Memory Match">
+          <span>⬅ BACK TO MEMORY MATCH</span>
+        </button>
       </footer>
 
     </main>

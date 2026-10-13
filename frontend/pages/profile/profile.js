@@ -1216,11 +1216,15 @@ window.clickDirectLinkAd = function() {
     if (window.cloudAdsConfig.directRewardCoins) rewardCoins = Number(window.cloudAdsConfig.directRewardCoins) || 250;
   }
 
-  // Open direct sponsor ad link in new window/tab
+  // Open direct sponsor ad link in new window or Telegram browser
   try {
-    window.open(directUrl, '_blank', 'noopener,noreferrer');
+    if (window.Telegram?.WebApp?.openLink) {
+      window.Telegram.WebApp.openLink(directUrl);
+    } else {
+      window.open(directUrl, '_blank', 'noopener,noreferrer');
+    }
   } catch (e) {
-    location.href = directUrl;
+    console.warn('Could not open direct link:', e);
   }
 
   // Award player coins & increment direct ad clicks count

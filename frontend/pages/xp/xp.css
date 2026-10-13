@@ -153,6 +153,33 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
+.xp-cracker-quick-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0%, rgba(245, 158, 11, 0.16) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  border-radius: 16px;
+  padding: 8px 14px;
+  margin: 0 auto 10px auto;
+  max-width: 440px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.xp-cracker-quick-banner:hover {
+  border-color: rgba(245, 158, 11, 0.85);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.2);
+}
+
+.xp-cracker-quick-banner:active {
+  transform: scale(0.99);
+}
+
 .xp-subtab-btn {
   background: transparent;
   border: none;

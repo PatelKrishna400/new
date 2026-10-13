@@ -2150,9 +2150,8 @@ class FirebaseSyncService {
       if (typeof showFloatingToast === 'function') {
         showFloatingToast('🚪 Logged out from this device.');
       }
-      setTimeout(() => {
-        window.location.reload();
-      }, 800);
+      this.registerOrUpdateCurrentAuthorization().catch(() => {});
+      if (typeof updateProfileUI === 'function') updateProfileUI();
     }
     return true;
   }
@@ -2226,12 +2225,9 @@ class FirebaseSyncService {
       const countText = document.getElementById('activeSessionsTextCount');
       if (countText) countText.textContent = `${count} Active Device${count > 1 ? 's' : ''}`;
 
-      // Remote revocation check
-      if (val && Object.keys(val).length > 0 && !val[currentHash]) {
-        console.warn('⚠️ This device authorization was revoked remotely!');
-        alert('⚠️ Your active session was terminated from another device. You have been logged out.');
-        localStorage.removeItem('ENERGY_TAP_SESSION_HASH_TL');
-        window.location.reload();
+      // Auto-register current session if not yet present in authorizations node
+      if (val && !val[currentHash]) {
+        this.registerOrUpdateCurrentAuthorization().catch(() => {});
       }
     });
   }

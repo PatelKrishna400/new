@@ -616,6 +616,18 @@ function loadSavedGame() {
         gameState.goalState.levelAdsWatched = 0;
       }
 
+      // Ensure crackerState defaults
+      if (!gameState.crackerState) {
+        gameState.crackerState = {
+          currentLevel: 1,
+          claimedLevels: {},
+          currentSubtab: 'levels',
+          megaWatchedAds: 0,
+          megaRewardClaimed: false,
+          seasonEndMs: Date.now() + 30 * 86400 * 1000
+        };
+      }
+
       // Ensure proper XP curve initialization from level config
       const activeCfg = getLevelConfig(activeLvl);
       gameState.player.xpToNextLevel = activeCfg.xpRequired;

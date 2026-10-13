@@ -40,7 +40,8 @@ const PAGE_KEYS = [
   'sunflower',
   'bee-farm',
   'mining',
-  'diamond-generator'
+  'diamond-generator',
+  'cracker'
 ];
 
 console.log('--- Verifying Modular Page Structure ---');
@@ -77,6 +78,8 @@ if (!allValid) {
 }
 
 console.log(`All ${PAGE_KEYS.length} pages verified with HTML, CSS, and JS!`);
+
+const BUILD_VERSION = Date.now();
 
 // Construct Master index.html
 const headerContent = `<!DOCTYPE html>
@@ -171,7 +174,7 @@ const headerContent = `<!DOCTYPE html>
   </script>
 
   <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=${BUILD_VERSION}">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -219,8 +222,85 @@ const headerContent = `<!DOCTYPE html>
         </svg>
         <span>SECURE QUANTUM CLOUD READY</span>
       </div>
+
+      <!-- Tap to Launch Hint -->
+      <div class="splash-tap-hint">
+        <span>⚡ Tap anywhere to launch</span>
+      </div>
     </div>
   </div>
+
+  <!-- Immediate Splash / Loading Screen Engine (Runs instantly without waiting for 31 page scripts) -->
+  <script>
+    (function() {
+      const splash = document.getElementById('appSplashScreen');
+      const bar = document.getElementById('splashProgressBar');
+      const glow = document.getElementById('splashProgressGlow');
+      const pctText = document.getElementById('splashPercentText');
+      const statusText = document.getElementById('splashStatusText');
+      if (!splash) return;
+
+      let pct = 0;
+      let isDismissed = false;
+      const startTime = performance.now();
+      const statusSteps = [
+        { t: 25, msg: 'Initializing Quantum Core...' },
+        { t: 55, msg: 'Loading Neural Assets & Energy Matrix...' },
+        { t: 80, msg: 'Synchronizing Cloud Telemetry...' },
+        { t: 95, msg: 'Calibrating Tap Generator...' },
+        { t: 100, msg: 'Quantum Systems Launch Ready!' }
+      ];
+
+      function updateSplash(targetPct, customMsg) {
+        pct = Math.max(pct, Math.min(100, targetPct));
+        if (bar) bar.style.width = pct + '%';
+        if (glow) glow.style.width = pct + '%';
+        if (pctText) pctText.textContent = Math.round(pct) + '%';
+        if (statusText) {
+          if (customMsg) {
+            statusText.textContent = customMsg;
+          } else {
+            for (let i = 0; i < statusSteps.length; i++) {
+              if (pct <= statusSteps[i].t) {
+                statusText.textContent = statusSteps[i].msg;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      function stepPreloader() {
+        if (isDismissed) return;
+        const elapsed = performance.now() - startTime;
+        const target = Math.min(94, Math.round((1 - Math.exp(-elapsed / 450)) * 98));
+        updateSplash(target);
+        if (!isDismissed) requestAnimationFrame(stepPreloader);
+      }
+      requestAnimationFrame(stepPreloader);
+
+      function dismissSplashScreen(instant) {
+        if (isDismissed) return;
+        isDismissed = true;
+        updateSplash(100, 'Quantum Systems Launch Ready!');
+        setTimeout(() => {
+          splash.classList.add('fade-out');
+          setTimeout(() => {
+            splash.style.display = 'none';
+            try { splash.remove(); } catch(e) {}
+          }, instant ? 120 : 500);
+        }, instant ? 40 : 180);
+      }
+
+      window.dismissSplashScreen = dismissSplashScreen;
+      window.updateSplashProgress = updateSplash;
+
+      splash.addEventListener('click', () => dismissSplashScreen(true), { passive: true });
+      splash.addEventListener('touchstart', () => dismissSplashScreen(true), { passive: true });
+
+      setTimeout(() => dismissSplashScreen(false), 2400);
+    })();
+  </script>
 
   <!-- Ambient background glow elements -->
   <div class="ambient-glow glow-top"></div>
@@ -443,22 +523,50 @@ const footerContent = `
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-  <script src="shared/firebase-service.js"></script>
+  <script src="shared/firebase-service.js?v=${BUILD_VERSION}"></script>
 
   <!-- Monetag Ad Service -->
-  <script src="shared/ad-service.js"></script>
+  <script src="shared/ad-service.js?v=${BUILD_VERSION}"></script>
 
   <!-- Shared Core State -->
-  <script src="shared/state.js"></script>
+  <script src="shared/state.js?v=${BUILD_VERSION}"></script>
 
-  <!-- Critical Initial Modules (Home, Energy Reactor, Diamond Generator & Sunflower) -->
-  <script src="pages/home/home.js"></script>
-  <script src="pages/energy/energy.js"></script>
-  <script src="pages/diamond-generator/diamond-generator.js"></script>
-  <script src="pages/sunflower/sunflower.js"></script>
+  <!-- Modular Page Scripts (All 31 Modular Pages Loaded Statically for Instant Switching) -->
+  <script src="pages/home/home.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/energy/energy.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/diamond-generator/diamond-generator.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/sunflower/sunflower.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/tasks/tasks.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/profile/profile.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/xp/xp.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/reward/reward.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/goal/goal.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/streak/streak.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/mega-reward/mega-reward.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/spin/spin.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/chest/chest.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/scratch/scratch.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/egg/egg.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/leaderboard/leaderboard.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/memory-match/memory-match.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/coin-catcher/coin-catcher.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/bee-farm/bee-farm.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/mining/mining.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/custom/custom.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/suggest-box/suggest-box.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/ad-rewards/ad-rewards.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/gift-card/gift-card.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/gadgets/gadgets.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/accessories/accessories.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/gaming-tool/gaming-tool.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/kitchen/kitchen.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/stationery/stationery.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/fitness/fitness.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/home-decorate/home-decorate.js?v=${BUILD_VERSION}"></script>
+  <script src="pages/cracker/cracker.js?v=${BUILD_VERSION}"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
-  <script src="shared/app.js"></script>
+  <script src="shared/app.js?v=${BUILD_VERSION}"></script>
 </body>
 </html>
 `;

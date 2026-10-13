@@ -1176,7 +1176,9 @@ const server = http.createServer(async (req, res) => {
     if (clientEtag && clientEtag === cached.etag) {
       res.writeHead(304, {
         'ETag': cached.etag,
-        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400, stale-while-revalidate=604800',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
         'Access-Control-Allow-Origin': '*'
       });
       return res.end();
@@ -1188,7 +1190,9 @@ const server = http.createServer(async (req, res) => {
     const headers = {
       'Content-Type': cached.contentType,
       'ETag': cached.etag,
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400, stale-while-revalidate=604800',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
       'Access-Control-Allow-Origin': '*'
     };
 

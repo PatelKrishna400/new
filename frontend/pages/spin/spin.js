@@ -602,6 +602,9 @@ function applySpinPrize(prize, multiplier = 1) {
     gameState.player.blueCoins = gameState.player.partyCoins;
   } else if (prize.type === 'dynamite' || prize.type === 'dynamite_coins') {
     gameState.player.dynamiteCoins = (gameState.player.dynamiteCoins || 0) + finalAmount;
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🔥 +${finalAmount} 🧨 Crackers! Use in Cracker Missions (Levels 1-1000)!`);
+    }
   } else if (prize.type === 'keys') {
     gameState.player.chestKeys = (gameState.player.chestKeys || 0) + finalAmount;
     if (gameState.goal) gameState.goal.currentKeys = Math.min(gameState.goal.targetKeys, (gameState.goal.currentKeys || 0) + finalAmount);

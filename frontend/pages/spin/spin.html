@@ -23,9 +23,10 @@
         <span class="ticket-pill-val" id="spinPartyHeaderCount">0</span>
         <span class="ticket-add-btn">+</span>
       </div>
-      <div class="spin-dynamite-header-pill" id="spinDynamiteHeaderPill" title="Dynamite Coins Won">
+      <div class="spin-dynamite-header-pill" id="spinDynamiteHeaderPill" onclick="switchPage('cracker')" title="🧨 Crackers Won: Tap to Open Cracker Missions!" style="cursor: pointer;">
         <span class="ticket-pill-icon">🧨</span>
         <span class="ticket-pill-val" id="spinDynamiteHeaderCount">0</span>
+        <span class="ticket-add-btn" style="background: rgba(249, 115, 22, 0.35); border-color: rgba(249, 115, 22, 0.7); font-size: 10px;">➔</span>
       </div>
     </div>
   </div>
@@ -293,6 +294,20 @@
         <p class="spin-stage-subtitle">Spin with 🎉 Party Coins to win 🧨 Dynamite Coins (1, 2, 5, 10, 15, 20, 25, 50)!</p>
       </div>
 
+      <!-- Direct Cracker Missions Level Progression Banner -->
+      <div class="spin-cracker-missions-banner" onclick="switchPage('cracker')" title="Go to Cracker Level Missions (1-1000)">
+        <div class="cracker-banner-left">
+          <span class="cracker-banner-icon">🧨</span>
+          <div class="cracker-banner-info">
+            <span class="cracker-banner-title">CRACKER MISSIONS (LEVELS 1 - 1000)</span>
+            <span class="cracker-banner-desc">Use won 🧨 Crackers to level up &amp; win 5,000 💎 Mega Reward!</span>
+          </div>
+        </div>
+        <button type="button" class="cracker-banner-go-btn">
+          <span>GO</span> ➔
+        </button>
+      </div>
+
       <!-- Bet Multiplier Bar (1 🎉, 10 🎉, 20 🎉) -->
       <div class="spin-party-bet-bar">
         <div class="spin-bet-label">Select Bet:</div>
@@ -310,8 +325,8 @@
             <small>20x Win</small>
           </button>
         </div>
-        <button class="spin-ad-free-coins-btn" onclick="watchAdForPartyCoins()" title="Watch Ad for +20 Free Party Coins">
-          <span>📢 +20 Free 🎉</span>
+        <button class="spin-reward-hub-btn" onclick="switchPage('cracker')" title="Open Cracker Boom Level Rewards (1 - 1000)">
+          <span>🎁 REWARD ➔</span>
         </button>
       </div>
 

@@ -1762,6 +1762,25 @@ body.full-page-game-active div[id^="page"].active {
   border-radius: var(--radius-pill);
 }
 
+.splash-tap-hint {
+  margin-top: 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #7dd3fc;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  animation: splashTapPulse 1.8s infinite ease-in-out;
+  cursor: pointer;
+  user-select: none;
+}
+
+@keyframes splashTapPulse {
+  0%, 100% { opacity: 0.5; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}
+
 /* Hide cloud synced badge from header heading */
 .firebase-cloud-status-badge, #firebaseCloudStatus {
   display: none !important;

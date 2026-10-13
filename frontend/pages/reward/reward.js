@@ -42,7 +42,8 @@ function switchRewardSubtab(tabName) {
     'rewardTabScratch',
     'rewardTabEgg',
     'rewardTabMemory',
-    'rewardTabCatcher'
+    'rewardTabCatcher',
+    'rewardTabCracker'
   ];
 
   if (tabName === 'all') {
@@ -241,6 +242,13 @@ function updateRewardViewUI() {
   const eggPageEggsCount = document.getElementById('eggPageEggsCount');
   if (eggPageEggsCount) {
     eggPageEggsCount.textContent = eggs;
+  }
+
+  // Tab 7: Cracker Boom -> Dynamite / Cracker Count
+  const crackers = (gameState.player && gameState.player.dynamiteCoins) || 0;
+  const crackerCountEl = document.getElementById('rewardCrackerCount');
+  if (crackerCountEl) {
+    crackerCountEl.textContent = `${crackers.toLocaleString()} 🧨`;
   }
 
   if (gameState.currentTab === 'scratch' || gameState.rewardState.activeSubtab === 'scratch') {

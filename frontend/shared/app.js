@@ -16,7 +16,7 @@ const ALL_REWARD_SUB_PAGES = [
   'spin', 'chest', 'scratch', 'egg', 'streak', 'megaReward', 'mega-reward',
   'giftCard', 'gift-card', 'gadgets', 'accessories', 'gamingTool', 'gaming-tool',
   'kitchen', 'stationery', 'fitness', 'homeDecorate', 'home-decorate', 'custom',
-  'memoryMatch', 'memory-match', 'coinCatcher', 'coin-catcher'
+  'memoryMatch', 'memory-match', 'coinCatcher', 'coin-catcher', 'cracker', 'cracker-boom'
 ];
 const REWARD_SUB_PAGES_SET = new Set(ALL_REWARD_SUB_PAGES);
 
@@ -83,7 +83,10 @@ function getPageMap() {
       beefarm: document.getElementById('pageBeeFarm') || DOM.pageBeeFarm,
       mining: document.getElementById('pageMining') || DOM.pageMining,
       diamondGenerator: document.getElementById('pageDiamondGenerator'),
-      'diamond-generator': document.getElementById('pageDiamondGenerator')
+      'diamond-generator': document.getElementById('pageDiamondGenerator'),
+      cracker: document.getElementById('pageCracker'),
+      'cracker-boom': document.getElementById('pageCracker'),
+      crackerBoom: document.getElementById('pageCracker')
     };
   }
   return _cachedPageMap;
@@ -145,10 +148,21 @@ const PAGE_FILE_MAP = {
   'beefarm': 'bee-farm',
   'mining': 'mining',
   'diamond-generator': 'diamond-generator',
-  'diamondGenerator': 'diamond-generator'
+  'diamondGenerator': 'diamond-generator',
+  'cracker': 'cracker',
+  'cracker-boom': 'cracker',
+  'crackerBoom': 'cracker'
 };
 
-const _loadedPageScripts = new Set(['home', 'energy', 'diamond-generator', 'sunflower']);
+const _loadedPageScripts = new Set([
+  'home', 'energy', 'diamond-generator', 'sunflower', 'tasks', 'profile',
+  'xp', 'reward', 'rewards', 'wallet', 'goal', 'streak', 'mega-reward', 'megaReward',
+  'gift-card', 'giftCard', 'gadgets', 'accessories', 'gaming-tool', 'gamingTool',
+  'kitchen', 'stationery', 'fitness', 'home-decorate', 'homeDecorate', 'custom',
+  'suggest-box', 'suggestBox', 'ad-rewards', 'adRewards', 'spin', 'chest',
+  'scratch', 'egg', 'leaderboard', 'memory-match', 'memoryMatch',
+  'coin-catcher', 'coinCatcher', 'bee-farm', 'beefarm', 'mining', 'cracker'
+]);
 const _loadingPagePromises = new Map();
 
 function ensurePageLoaded(pageName) {
@@ -165,7 +179,7 @@ function ensurePageLoaded(pageName) {
     }
 
     const script = document.createElement('script');
-    script.src = `pages/${fileKey}/${fileKey}.js`;
+    script.src = `pages/${fileKey}/${fileKey}.js?v=${Date.now()}`;
     script.async = true;
     script.onload = () => {
       _loadedPageScripts.add(fileKey);
@@ -331,10 +345,18 @@ function switchPage(pageName) {
 
   // Cleanup game timers and modal overlays when leaving mini-games to other views
   if (pageName !== 'memoryMatch' && pageName !== 'memory-match') {
-    if (typeof cleanupMemoryMatchPage === 'function') cleanupMemoryMatchPage();
+    try {
+      if (typeof cleanupMemoryMatchPage === 'function') cleanupMemoryMatchPage();
+    } catch (e) {
+      console.warn('cleanupMemoryMatchPage error:', e);
+    }
   }
   if (pageName !== 'coinCatcher' && pageName !== 'coin-catcher') {
-    if (typeof cleanupCoinCatcherPage === 'function') cleanupCoinCatcherPage();
+    try {
+      if (typeof cleanupCoinCatcherPage === 'function') cleanupCoinCatcherPage();
+    } catch (e) {
+      console.warn('cleanupCoinCatcherPage error:', e);
+    }
   }
 
   // Close any legacy modal backdrop
@@ -416,6 +438,9 @@ function switchPage(pageName) {
     } else if (targetPage === 'goal') {
       if (typeof updateGoalPageUI === 'function') updateGoalPageUI();
       else if (typeof initGoalPage === 'function') initGoalPage();
+    } else if (targetPage === 'cracker' || targetPage === 'cracker-boom') {
+      if (typeof updateCrackerViewUI === 'function') updateCrackerViewUI();
+      else if (typeof initCrackerPage === 'function') initCrackerPage();
     }
   }
 
@@ -549,6 +574,9 @@ function updateUI(full = false) {
   if (curTab === 'coinCatcher' || curTab === 'coin-catcher' || full) {
     if (typeof updateBoomCoinBalances === 'function') updateBoomCoinBalances();
   }
+  if (curTab === 'cracker' || curTab === 'cracker-boom' || full) {
+    if (typeof updateCrackerViewUI === 'function') updateCrackerViewUI();
+  }
   if (curTab === 'leaderboard' || full) {
     if (typeof renderLeaderboardRoster === 'function') renderLeaderboardRoster();
   }
@@ -597,7 +625,7 @@ function initTelegramWebApp() {
         triggerTelegramHaptic('selection');
         if (gameState.currentTab === 'suggestBox' || gameState.currentTab === 'suggest-box') {
           switchPage('profile');
-        } else if (['spin', 'chest', 'scratch', 'egg', 'streak', 'adRewards', 'memoryMatch', 'memory-match', 'coinCatcher', 'coin-catcher'].includes(gameState.currentTab)) {
+        } else if (['spin', 'chest', 'scratch', 'egg', 'streak', 'adRewards', 'memoryMatch', 'memory-match', 'coinCatcher', 'coin-catcher', 'cracker', 'cracker-boom'].includes(gameState.currentTab)) {
           switchPage('reward');
         } else {
           switchPage('home');
@@ -707,89 +735,64 @@ function initEvents() {
       processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'windowFocus');
     }
   });
+
+  window.addEventListener('error', (event) => {
+    console.warn('[GlobalSafety] Caught error:', event.message);
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    console.warn('[GlobalSafety] Unhandled rejection:', event.reason);
+  });
 }
 
-// High-Tech Quantum Splash / Loading Screen Controller (requestAnimationFrame)
+// High-Tech Quantum Splash / Loading Screen Controller
 function initSplashScreen() {
-  const splash = document.getElementById('appSplashScreen');
-  const bar = document.getElementById('splashProgressBar');
-  const glow = document.getElementById('splashProgressGlow');
-  const percentText = document.getElementById('splashPercentText');
-  const statusText = document.getElementById('splashStatusText');
-
-  if (!splash) return;
-
-  let currentPercent = 0;
-  const startTime = performance.now();
-  const totalDuration = 1800; // 1.8 seconds smooth progress
-  let animFrameId = null;
-
-  const statusMessages = [
-    { threshold: 25, text: 'Initializing Quantum Core...' },
-    { threshold: 50, text: 'Loading Neural State & Assets...' },
-    { threshold: 75, text: 'Connecting to Realtime Cloud...' },
-    { threshold: 92, text: 'Calibrating Energy Generators...' },
-    { threshold: 100, text: 'Quantum Systems Launch Ready!' }
-  ];
-
-  function tickSplash(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(1, elapsed / totalDuration);
-    // Smooth cubic ease out
-    const easeProgress = 1 - Math.pow(1 - progress, 3);
-    currentPercent = Math.min(100, Math.round(easeProgress * 100));
-
-    if (bar) bar.style.width = `${currentPercent}%`;
-    if (glow) glow.style.width = `${currentPercent}%`;
-    if (percentText) percentText.textContent = `${currentPercent}%`;
-
-    if (statusText) {
-      for (let i = 0; i < statusMessages.length; i++) {
-        if (currentPercent <= statusMessages[i].threshold) {
-          statusText.textContent = statusMessages[i].text;
-          break;
-        }
-      }
-    }
-
-    if (progress < 1) {
-      animFrameId = requestAnimationFrame(tickSplash);
-    } else {
-      setTimeout(() => {
-        splash.classList.add('fade-out');
-        setTimeout(() => {
-          splash.style.display = 'none';
-        }, 700);
-      }, 250);
-    }
+  if (typeof window.dismissSplashScreen === 'function') {
+    // Already controlled by immediate inline engine
+    return;
   }
-
-  animFrameId = requestAnimationFrame(tickSplash);
-
-  // Safety fallback: guaranteed dismiss within 3.5s
-  setTimeout(() => {
-    if (splash && splash.style.display !== 'none') {
-      if (animFrameId) cancelAnimationFrame(animFrameId);
-      splash.classList.add('fade-out');
-      setTimeout(() => { splash.style.display = 'none'; }, 700);
-    }
-  }, 3500);
+  const splash = document.getElementById('appSplashScreen');
+  if (splash) {
+    splash.classList.add('fade-out');
+    setTimeout(() => { splash.style.display = 'none'; }, 600);
+  }
 }
 
 window.initSplashScreen = initSplashScreen;
 
-// Bootstrap
-document.addEventListener('DOMContentLoaded', () => {
-  initSplashScreen();
-  initTelegramWebApp();
-  loadSavedGame();
-  initAmbientParticles();
-  initEvents();
-  startEnergyEngine();
-  updateUI();
-  if (typeof fetchNotifications === 'function') fetchNotifications();
-  preloadNonCriticalPages();
-});
+// Robust Application Bootstrapper
+let _appBootstrapped = false;
+function bootstrapApp() {
+  if (_appBootstrapped) return;
+  _appBootstrapped = true;
+
+  try {
+    initTelegramWebApp();
+    loadSavedGame();
+    initAmbientParticles();
+    initEvents();
+    startEnergyEngine();
+    updateUI();
+    if (typeof fetchNotifications === 'function') fetchNotifications();
+    preloadNonCriticalPages();
+  } catch (err) {
+    console.error('[Bootstrap] Startup error:', err);
+  }
+
+  // Smoothly dismiss loading screen once app UI is fully ready
+  if (typeof window.dismissSplashScreen === 'function') {
+    setTimeout(() => {
+      window.dismissSplashScreen(false);
+    }, 120);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+  bootstrapApp();
+}
+window.addEventListener('load', bootstrapApp);
 
 // ==========================================================================
 // NOTIFICATION CENTER CLIENT CONTROLLER

@@ -25,29 +25,7 @@
     </div>
   </div>
 
-  <!-- Quick Info Strip -->
-  <div class="mini-game-info-strip">
-    <div class="info-strip-chip">
-      <span class="chip-dot amber"></span>
-      <span class="chip-label">COST:</span>
-      <span class="chip-val">1 💣 Boom Coin</span>
-    </div>
-    <div class="info-strip-chip">
-      <span class="chip-dot gold"></span>
-      <span class="chip-label">TARGET:</span>
-      <span class="chip-val">Tap 🪙 Coins</span>
-    </div>
-    <div class="info-strip-chip">
-      <span class="chip-dot red"></span>
-      <span class="chip-label">HAZARD:</span>
-      <span class="chip-val">Avoid 💣 Boom</span>
-    </div>
-    <div class="info-strip-chip">
-      <span class="chip-dot violet"></span>
-      <span class="chip-label">SPEED:</span>
-      <span class="chip-val">⚡ Increases</span>
-    </div>
-  </div>
+
 
   <!-- Puzzle Emoji Loading & Milestone Target Progress Bar -->
   <div class="catcher-puzzle-milestone-strip" onclick="openMorningCafePuzzleModal()" title="Tap to open Morning Café Puzzle!">
@@ -116,31 +94,66 @@
       <!-- Start Overlay -->
       <div class="catcher-start-overlay" id="catcherStartOverlay">
         <div class="catcher-intro-content">
-          <span class="catcher-big-icon">🪙💣</span>
-          <h4 class="catcher-intro-title">Ready for Coin Fall?</h4>
-          <p class="catcher-intro-desc">
-            Tap falling coins to fill your bank! Avoid 💣 booms! Fall speed increases over time. Cash out anytime with the button below!
-          </p>
-
-          <div class="catcher-entry-badge-row">
-            <span class="catcher-entry-cost-pill">💣 Entry Cost: 1 Boom Coin</span>
-            <span class="catcher-balance-pill">Your Boom Coins: <strong id="catcherIntroBoomBal">0</strong> 💣</span>
+          <div class="catcher-intro-header-badge">
+            <div class="catcher-big-icon-wrap">
+              <span class="catcher-big-icon">🪙</span>
+              <span class="catcher-bomb-float-icon">💣</span>
+            </div>
+            <div class="catcher-pulse-halo"></div>
           </div>
 
-          <div class="flex items-center gap-2 mt-2">
-            <button class="catcher-start-btn flex-1" onclick="startCoinCatcherGame()">
-              <span>💣</span> Play (1 Boom Coin)
+          <div class="catcher-intro-title-group">
+            <span class="catcher-intro-eyebrow">⚡ ARCADE DASH ⚡</span>
+            <h4 class="catcher-intro-title">COIN FALL</h4>
+          </div>
+
+          <!-- Feature & Rule Chips -->
+          <div class="catcher-rules-grid">
+            <div class="catcher-rule-chip">
+              <span class="rule-chip-icon">🪙</span>
+              <span class="rule-chip-text">Tap Falling Coins</span>
+            </div>
+            <div class="catcher-rule-chip danger">
+              <span class="rule-chip-icon">💣</span>
+              <span class="rule-chip-text">Avoid Booms</span>
+            </div>
+            <div class="catcher-rule-chip speed">
+              <span class="rule-chip-icon">⚡</span>
+              <span class="rule-chip-text">Speed Escalates</span>
+            </div>
+            <div class="catcher-rule-chip bounty">
+              <span class="rule-chip-icon">💰</span>
+              <span class="rule-chip-text">Cash Out Anytime</span>
+            </div>
+          </div>
+
+          <div class="catcher-entry-badge-row">
+            <span class="catcher-entry-cost-pill">
+              <span class="pill-spark">💣</span>
+              <span>Entry: <strong>1 Boom Coin</strong></span>
+            </span>
+            <span class="catcher-balance-pill">
+              <span>Balance:</span>
+              <strong id="catcherIntroBoomBal">0</strong> 💣
+            </span>
+          </div>
+
+          <div class="catcher-start-actions-row">
+            <button class="catcher-start-btn primary flex-1" onclick="startCoinCatcherGame()">
+              <span class="btn-icon">💣</span>
+              <span class="btn-text">PLAY (1 BOOM)</span>
             </button>
-            <button class="catcher-start-btn flex-1" onclick="claimFreeBoomCoinAd()" style="background: linear-gradient(135deg, #f97316, #ef4444); border: none;">
-              <span>📢</span> Free 💣 (+1 Coin)
+            <button class="catcher-start-btn free-ad flex-1" onclick="claimFreeBoomCoinAd()">
+              <span class="btn-icon">📢</span>
+              <span class="btn-text">FREE 💣 (+1)</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Prominent Collect Button Below the Page / Stage -->
-    <div class="catcher-bottom-action-bar">
+    <!-- Prominent Collect Button Below the Page / Stage (Shown during gameplay) -->
+    <div class="catcher-bottom-action-bar" id="catcherBottomActionBar">
       <button class="catcher-collect-bank-btn" id="btnCatcherCollectBank" onclick="collectAndExitCoinCatcher()" disabled>
         <span class="collect-btn-icon">💰</span>
         <span class="collect-btn-text" id="catcherCollectBtnText">COLLECT &amp; EXIT (0 🪙)</span>
@@ -209,7 +222,7 @@
           <span>📢</span> 2X Double Coins (Watch Ad)
         </button>
         <button class="catcher-retry-btn" onclick="startCoinCatcherGame()">
-          <span>🔄</span> Play Again (100 💎)
+          <span>🔄</span> Play Again (1 💣 Boom Coin)
         </button>
       </div>
     </div>

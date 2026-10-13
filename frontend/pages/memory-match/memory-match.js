@@ -22,9 +22,8 @@
 
   let isGameActive = false;
   let timerInterval = null;
-  let timeRemaining = 60;
+  let timeRemaining = 100;
   let matchesFound = 0;
-  let mistakes = 0;
   let flippedCards = [];
   let isBoardLocked = false;
   let lastCalculatedReward = null;
@@ -33,14 +32,12 @@
   let elGrid = null;
   let elTime = null;
   let elMatches = null;
-  let elMistakes = null;
   let elOverlay = null;
 
   function initDOMElements() {
     elGrid = document.getElementById('memoryGridContainer');
     elTime = document.getElementById('memoryTimeVal');
     elMatches = document.getElementById('memoryMatchesVal');
-    elMistakes = document.getElementById('memoryMistakesVal');
     elOverlay = document.getElementById('memoryModalOverlay');
   }
 
@@ -53,38 +50,69 @@
     return copy;
   }
 
+  function renderIdleBoard() {
+    initDOMElements();
+    if (!elGrid) return;
+    elGrid.innerHTML = '';
+
+    // Render 16 face-down preview cards awaiting player to start with 1 Brain Coin
+    for (let i = 0; i < 16; i++) {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'memory-card idle-preview';
+      cardEl.innerHTML = `
+        <div class="memory-card-front">
+          <span class="card-circuit-logo">🧠</span>
+          <span class="card-tap-hint">START</span>
+        </div>
+      `;
+      cardEl.addEventListener('click', () => {
+        if (!isGameActive) {
+          startMemoryMatchGame();
+        }
+      });
+      elGrid.appendChild(cardEl);
+    }
+
+    timeRemaining = 100;
+    matchesFound = 0;
+    updateHUD();
+  }
+
   function startMemoryMatchGame() {
     initDOMElements();
     if (!elGrid) return;
 
-    // Check entry cost (1 Brain Coin)
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      const currentBrainCoins = Number(gameState.player.brainCoins || 0);
-      if (currentBrainCoins < 1) {
-        // Grant starter brain coins so player can play immediately
-        gameState.player.brainCoins = 3;
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame(true);
-        updateBrainCoinPill();
-      }
+    // Strict Brain Coin verification: Player MUST have at least 1 Brain Coin!
+    const playerCoins = (typeof gameState !== 'undefined' && gameState.player)
+      ? Number(gameState.player.brainCoins || 0)
+      : 0;
 
-      // Deduct 1 Brain Coin entry fee for this round
-      if (gameState.player.brainCoins >= 1) {
-        gameState.player.brainCoins = Math.max(0, gameState.player.brainCoins - 1);
-        if (typeof recordTaskEvent === 'function') {
-          recordTaskEvent('use_brain', 1);
-        }
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof saveGame === 'function') saveGame(true);
-        updateBrainCoinPill();
+    if (playerCoins < 1) {
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('❌ Need 1 🧠 Brain Coin to start Memory Match!');
+      } else {
+        alert('❌ You need at least 1 🧠 Brain Coin to play Memory Match!\nEarn Brain Coins through Quests, Rewards, or the Shop.');
+      }
+      return; // DO NOT START GAME & DO NOT START TIMER!
+    }
+
+    // Deduct exactly 1 Brain Coin entry fee for this round
+    if (typeof gameState !== 'undefined' && gameState.player) {
+      gameState.player.brainCoins = Math.max(0, playerCoins - 1);
+      if (typeof recordTaskEvent === 'function') {
+        recordTaskEvent('use_brain', 1);
+      }
+      if (typeof updateUI === 'function') updateUI();
+      if (typeof saveGame === 'function') saveGame(true);
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
       }
     }
 
     // Reset game state
     clearInterval(timerInterval);
-    timeRemaining = 60;
+    timeRemaining = 100;
     matchesFound = 0;
-    mistakes = 0;
     flippedCards = [];
     isBoardLocked = false;
     isGameActive = true;
@@ -116,14 +144,13 @@
       cardEl.dataset.cardUid = card.uid;
 
       cardEl.innerHTML = `
-        <div class="memory-card-inner">
-          <div class="memory-card-back">
-            <span class="symbol">🎴</span>
-          </div>
-          <div class="memory-card-front" style="border-color: ${card.color}; box-shadow: 0 0 15px ${card.color}40;">
-            <span class="symbol">${card.symbol}</span>
-            <span class="label" style="color: ${card.color};">${card.title}</span>
-          </div>
+        <div class="memory-card-front">
+          <span class="card-circuit-logo">🎴</span>
+          <span class="card-tap-hint">TAP</span>
+        </div>
+        <div class="memory-card-back" style="border-color: ${card.color}; box-shadow: 0 0 15px ${card.color}40;">
+          <span class="card-symbol-emoji">${card.symbol}</span>
+          <span class="card-title" style="color: ${card.color};">${card.title}</span>
         </div>
       `;
 
@@ -131,7 +158,7 @@
       elGrid.appendChild(cardEl);
     });
 
-    // Start 60-second countdown
+    // Start 100-second countdown timer NOW
     timerInterval = setInterval(() => {
       timeRemaining--;
       updateHUD();
@@ -188,8 +215,6 @@
       }, 350);
     } else {
       // NO MATCH -> Flip back after preview
-      mistakes++;
-      updateHUD();
       setTimeout(() => {
         card1.el.classList.remove('flipped');
         card2.el.classList.remove('flipped');
@@ -202,7 +227,6 @@
   function updateHUD() {
     if (elTime) elTime.textContent = `${Math.max(0, timeRemaining)}s`;
     if (elMatches) elMatches.textContent = `${matchesFound} / 8`;
-    if (elMistakes) elMistakes.textContent = mistakes;
   }
 
   function endGame(isVictory) {
@@ -226,35 +250,33 @@
     const elClaimBtn = document.getElementById('memoryClaimBtn');
 
     if (isVictory) {
-      // All cards matched & hidden -> Award 5 Balloon Coins
+      // All cards matched & hidden -> Award 10 Balloon Coins
       lastCalculatedReward = {
         isVictory: true,
         type: 'balloon_coins',
-        amount: 5,
-        timeRemaining: timeRemaining,
-        mistakes: mistakes
+        amount: 10,
+        timeRemaining: timeRemaining
       };
 
       if (elIcon) elIcon.textContent = '🎈';
       if (elTitle) elTitle.textContent = 'PUZZLE COMPLETE!';
-      if (elDesc) elDesc.textContent = `All 8 pairs matched in ${60 - timeRemaining}s! You won 5 Balloon Coins!`;
+      if (elDesc) elDesc.textContent = `All 8 pairs matched in ${100 - timeRemaining}s! You won 10 Balloon Coins!`;
 
       if (elStars) {
         const starItems = elStars.querySelectorAll('.star-item');
-        const stars = mistakes <= 2 ? 3 : (mistakes <= 6 ? 2 : 1);
+        const stars = timeRemaining >= 50 ? 3 : (timeRemaining >= 25 ? 2 : 1);
         starItems.forEach((st, idx) => st.classList.toggle('active', idx < stars));
       }
 
       if (elStatTime) elStatTime.textContent = `${timeRemaining}s Remaining`;
-      if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
       if (elRewardRow) elRewardRow.style.display = 'flex';
       if (elStatReward) {
-        elStatReward.innerHTML = `<span style="color: #facc15; font-size: 16px; font-weight: 800;">+5 Balloon Coins 🎈</span>`;
+        elStatReward.innerHTML = `<span style="color: #facc15; font-size: 16px; font-weight: 800;">+10 Balloon Coins 🎈</span>`;
       }
       if (elClaimBtn) {
         elClaimBtn.style.display = 'flex';
         elClaimBtn.disabled = false;
-        elClaimBtn.innerHTML = '<span>🎈</span> Claim 5 Coins &amp; Use in Balloon Pursuit';
+        elClaimBtn.innerHTML = '<span>🎈</span> Claim 10 Coins &amp; Use in Balloon Pursuit';
       }
 
       if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
@@ -273,7 +295,6 @@
       }
 
       if (elStatTime) elStatTime.textContent = '0s';
-      if (elStatMistakes) elStatMistakes.textContent = `${mistakes} Mistakes`;
 
       // Reward is hidden otherwise
       if (elRewardRow) elRewardRow.style.display = 'none';
@@ -299,10 +320,10 @@
       elClaimBtn.textContent = '✓ Claimed!';
     }
 
-    // Award ONLY 5 Balloon Coins on victory
+    // Award ONLY 10 Balloon Coins on victory
     if (typeof gameState !== 'undefined' && gameState.player) {
       if (gameState.player.balloonCoins === undefined) gameState.player.balloonCoins = 0;
-      gameState.player.balloonCoins += 5;
+      gameState.player.balloonCoins += 10;
       if (typeof updateUI === 'function') updateUI();
       if (typeof saveGame === 'function') saveGame(true);
       if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
@@ -310,7 +331,7 @@
       }
     }
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('🎉 Victory! +5 🎈 Balloon Coins added! Opening Balloon Pursuit...');
+      showFloatingToast('🎉 Victory! +10 🎈 Balloon Coins added! Opening Balloon Pursuit...');
     }
     if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) {
       sfx.playLevelUpSound();
@@ -354,39 +375,10 @@
   }
 
   window.claimFreeBrainCoinAd = function() {
-    // Rewarded interstitial
-    if (typeof show_10676091 === 'function') {
-      show_10676091().then(() => {
-        // You need to add your user reward function here, which will be executed after the user watches the ad.
-        // For more details, please refer to the detailed instructions.
-        alert('You have seen an ad!');
-        grantBrainCoin();
-      }).catch(e => {
-        console.warn('show_10676091 notice:', e);
-        grantBrainCoin();
-      });
-    } else if (typeof window.showRewardedAd === 'function') {
-      window.showRewardedAd(grantBrainCoin, {
-        adTitle: 'Free Brain Coin Sponsor Ad',
-        adDesc: 'Watch full sponsored ad to earn 1 Brain Coin'
-      });
-    } else {
-      grantBrainCoin();
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('ℹ️ Brain Coins are earned through Daily Quests, Rewards, and the Shop!');
     }
   };
-
-  function grantBrainCoin() {
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      gameState.player.brainCoins = (gameState.player.brainCoins || 0) + 1;
-      if (typeof saveGame === 'function') saveGame(true);
-      if (typeof updateUI === 'function') updateUI();
-      updateBrainCoinPill();
-      if (typeof sfx !== 'undefined' && sfx.playUpgradeChime) sfx.playUpgradeChime();
-      if (typeof showFloatingToast === 'function') {
-        showFloatingToast('🎉 +1 🧠 Brain Coin received!');
-      }
-    }
-  }
 
   // =========================================================================
   // BALLOON PURSUIT PROGRESSION MAP ENGINE
@@ -467,6 +459,8 @@
     }
   }
 
+  const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
   function getBalloonPursuitState() {
     if (typeof gameState !== 'undefined') {
       if (!gameState.balloonPursuitState) {
@@ -474,8 +468,12 @@
           currentUnlockedStage: 1,
           jackpotAdsWatched: 0,
           stageAdsWatchedMap: {},
-          stageCoinsPaidMap: {}
+          stageCoinsPaidMap: {},
+          eventEndTime: Date.now() + THIRTY_DAYS_MS
         };
+      }
+      if (!gameState.balloonPursuitState.eventEndTime || typeof gameState.balloonPursuitState.eventEndTime !== 'number') {
+        gameState.balloonPursuitState.eventEndTime = Date.now() + THIRTY_DAYS_MS;
       }
       return gameState.balloonPursuitState;
     }
@@ -483,7 +481,8 @@
       currentUnlockedStage: 1,
       jackpotAdsWatched: 0,
       stageAdsWatchedMap: {},
-      stageCoinsPaidMap: {}
+      stageCoinsPaidMap: {},
+      eventEndTime: Date.now() + THIRTY_DAYS_MS
     };
   }
 
@@ -1182,26 +1181,82 @@
     st.jackpotAdsWatched = 0;
     st.stageAdsWatchedMap = {};
     st.stageCoinsPaidMap = {};
+    st.eventEndTime = Date.now() + THIRTY_DAYS_MS;
+    if (typeof saveGame === 'function') saveGame(true);
+    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    }
     renderStagesGrid();
     showBalloonToast('Balloon Pursuit Reset! Collect all 12 stages! 🎈');
     playBalloonSound('pop');
   }
 
-  // 27-Hour Countdown Timer
-  let bpSecondsLeft = 27 * 3600 + 29 * 60 + 17;
+  // 30-Day Balloon Pursuit Event Timer with Backend Sync & Auto-Restart
   let bpCountdownInterval = null;
+
+  function ensureBalloonEventCycle() {
+    const st = getBalloonPursuitState();
+    const now = Date.now();
+    if (!st.eventEndTime || typeof st.eventEndTime !== 'number') {
+      st.eventEndTime = now + THIRTY_DAYS_MS;
+      if (typeof saveGame === 'function') saveGame(true);
+    } else if (now >= st.eventEndTime) {
+      // 30 Days finished: Auto-restart event for next 30 days and reset stages
+      st.currentUnlockedStage = 1;
+      st.jackpotAdsWatched = 0;
+      st.stageAdsWatchedMap = {};
+      st.stageCoinsPaidMap = {};
+      while (st.eventEndTime <= now) {
+        st.eventEndTime += THIRTY_DAYS_MS;
+      }
+      if (typeof saveGame === 'function') saveGame(true);
+      if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+        window.firebaseSync.saveToCloudImmediate();
+      }
+      renderStagesGrid();
+      showBalloonToast('🎈 New 30-Day Balloon Pursuit Event Season Started!');
+    }
+    return st.eventEndTime;
+  }
+
+  function updateBalloonCountdownDisplay() {
+    const endTime = ensureBalloonEventCycle();
+    const diff = Math.max(0, endTime - Date.now());
+    const days = Math.floor(diff / (24 * 3600 * 1000));
+    const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
+    const mins = Math.floor((diff % (3600 * 1000)) / (60 * 1000));
+    const secs = Math.floor((diff % (60 * 1000)) / 1000);
+    const formatted = `${days}d ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+    const el = document.getElementById('countdown-timer');
+    if (el) el.innerText = formatted;
+
+    const pageTimerEl = document.getElementById('memoryPageEventTimer');
+    if (pageTimerEl) pageTimerEl.innerText = formatted;
+
+    const tabBadgeEl = document.getElementById('memoryTabTimerBadge');
+    if (tabBadgeEl) tabBadgeEl.innerText = `${days}d`;
+  }
+
   function startBalloonTimer() {
+    updateBalloonCountdownDisplay();
     if (bpCountdownInterval) return;
     bpCountdownInterval = setInterval(() => {
-      if (bpSecondsLeft > 0) {
-        bpSecondsLeft--;
-        const h = String(Math.floor(bpSecondsLeft / 3600)).padStart(2, '0');
-        const m = String(Math.floor((bpSecondsLeft % 3600) / 60)).padStart(2, '0');
-        const s = String(bpSecondsLeft % 60).padStart(2, '0');
-        const el = document.getElementById('countdown-timer');
-        if (el) el.innerText = `${h}:${m}:${s}`;
-      }
+      updateBalloonCountdownDisplay();
     }, 1000);
+  }
+
+  function switchMemoryModeTab(mode) {
+    const tabPuzzle = document.getElementById('tabMatchPuzzle');
+    const tabEvent = document.getElementById('tabBalloonEvent');
+    if (mode === 'puzzle') {
+      if (tabPuzzle) tabPuzzle.classList.add('active');
+      if (tabEvent) tabEvent.classList.remove('active');
+    } else if (mode === 'event') {
+      if (tabPuzzle) tabPuzzle.classList.remove('active');
+      if (tabEvent) tabEvent.classList.add('active');
+      openBalloonPursuitModal();
+    }
   }
 
   function cleanupMemoryMatchPage() {
@@ -1226,6 +1281,7 @@
   window.updateBalloonCoinPill = updateBalloonCoinPill;
   window.openBalloonPursuitModal = openBalloonPursuitModal;
   window.closeBalloonPursuitModal = closeBalloonPursuitModal;
+  window.switchMemoryModeTab = switchMemoryModeTab;
   window.handleGrandStageClick = handleGrandStageClick;
   window.handlePopupActionButton = handlePopupActionButton;
   window.finishAdEarlyIfReady = finishAdEarlyIfReady;
@@ -1240,8 +1296,12 @@
     initDOMElements();
     updateBrainCoinPill();
     updateBalloonCoinPill();
+    startBalloonTimer();
     if (!isGameActive) {
-      startMemoryMatchGame();
+      renderIdleBoard();
     }
   };
+
+  // Start live 30-day event countdown right away
+  startBalloonTimer();
 })();

@@ -10,7 +10,7 @@
    - Website Tasks: 10,000 Coins or 1,000 Coins open/buy, Diskwala links, 4-digit code, claim via Ad
    ========================================================================== */
 
-const THIRTY_DAY_STORAGE_KEY = 'ENERGY_TAP_30DAY_TASKS_V1';
+const THIRTY_DAY_STORAGE_KEY = 'ENERGY_TAP_7DAY_TASKS_V2';
 
 // Website Tasks List with Diskwala links and 1,000 / 10,000 coin options
 let WEBSITE_TASKS = [];
@@ -140,7 +140,7 @@ function loadThirtyDayState() {
   let defaultState = {
     streakCount: 1,
     lastLoginDate: todayStr,
-    activeDayIndex: 1, // 1 to 30
+    activeDayIndex: 1, // 1 to 7
     streakBroken: false,
     days: {}
   };
@@ -157,8 +157,8 @@ function loadThirtyDayState() {
     console.warn('Failed to load 30-day state:', e);
   }
 
-  // Ensure each day has a record
-  for (let d = 1; d <= 30; d++) {
+  // Ensure each day has a record (1 to 7 Days Only)
+  for (let d = 1; d <= 7; d++) {
     if (!defaultState.days[d]) {
       defaultState.days[d] = {
         progress: Array(10).fill(0),
@@ -179,9 +179,9 @@ function loadThirtyDayState() {
       // Consecutive day login!
       defaultState.streakCount++;
       defaultState.lastLoginDate = todayStr;
-      // If previous day was completed, advance activeDayIndex
+      // If previous day was completed, advance activeDayIndex (1 to 7)
       if (defaultState.days[defaultState.activeDayIndex].completedCount >= 10) {
-        defaultState.activeDayIndex = Math.min(30, defaultState.activeDayIndex + 1);
+        defaultState.activeDayIndex = Math.min(7, defaultState.activeDayIndex + 1);
       }
     } else if (diffDays > 1) {
       // Streak broken!
@@ -189,6 +189,7 @@ function loadThirtyDayState() {
     }
   }
 
+  defaultState.activeDayIndex = Math.min(7, defaultState.activeDayIndex || 1);
   return defaultState;
 }
 
@@ -367,7 +368,7 @@ function isMegaRewardUnlocked() {
   try {
     if (localStorage.getItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED') === 'true') return true;
   } catch (e) {}
-  if (thirtyDayState && thirtyDayState.days && thirtyDayState.days[30] && thirtyDayState.days[30].completedCount >= 8) return true;
+  if (thirtyDayState && thirtyDayState.days && thirtyDayState.days[7] && thirtyDayState.days[7].completedCount >= 8) return true;
   return false;
 }
 
@@ -377,7 +378,7 @@ function renderMegaRewardBanner() {
 
   const unlocked = isMegaRewardUnlocked();
   let completedDaysCount = 0;
-  for (let d = 1; d <= 30; d++) {
+  for (let d = 1; d <= 7; d++) {
     if (thirtyDayState.days[d] && thirtyDayState.days[d].completedCount >= 8) {
       completedDaysCount++;
     }
@@ -392,7 +393,7 @@ function renderMegaRewardBanner() {
             <span class="mega-banner-icon">👑</span>
           </div>
           <div class="mega-banner-text">
-            <div class="mega-banner-badge">30 DAYS COMPLETED 🎉</div>
+            <div class="mega-banner-badge">7 DAYS COMPLETED 🎉</div>
             <h4 class="mega-banner-heading">MEGA REWARD REQUEST UNLOCKED!</h4>
           </div>
         </div>
@@ -402,7 +403,7 @@ function renderMegaRewardBanner() {
       </div>
     `;
   } else {
-    const pct = Math.min(100, Math.round((completedDaysCount / 30) * 100));
+    const pct = Math.min(100, Math.round((completedDaysCount / 7) * 100));
     banner.className = 'daily-mega-reward-card locked';
     banner.innerHTML = `
       <div class="mega-banner-content">
@@ -411,8 +412,8 @@ function renderMegaRewardBanner() {
             <span class="mega-banner-icon">🔒</span>
           </div>
           <div class="mega-banner-text">
-            <div class="mega-banner-badge-locked">UNLOCKS AFTER 30 DAYS</div>
-            <h4 class="mega-banner-heading-locked">30-Day Grand Prize: Mega Reward</h4>
+            <div class="mega-banner-badge-locked">UNLOCKS AFTER 7 DAYS</div>
+            <h4 class="mega-banner-heading-locked">7-Day Grand Prize: Mega Reward</h4>
             <div class="mega-banner-progress-bar-wrap">
               <div class="mega-banner-progress-bar-fill" style="width: ${pct}%;"></div>
             </div>
@@ -420,7 +421,7 @@ function renderMegaRewardBanner() {
         </div>
         <div class="mega-banner-prog-box">
           <span class="mega-banner-prog-label">Days Cleared</span>
-          <span class="mega-banner-prog-val font-mono font-black">${completedDaysCount} / 30</span>
+          <span class="mega-banner-prog-val font-mono font-black">${completedDaysCount} / 7</span>
           <span class="mega-banner-prog-pct">${pct}% Completed</span>
         </div>
       </div>
@@ -432,53 +433,65 @@ function renderThirtyDayTabs() {
   const tabsStrip = document.getElementById('thirtyDayRectTabsStrip');
   if (!tabsStrip) return;
 
+  const chevronColors = [
+    '#e5001a', // 1: Red
+    '#ff7a00', // 2: Orange
+    '#f8b837', // 3: Golden Yellow
+    '#56b970', // 4: Leaf Green
+    '#009fd9', // 5: Sky Cyan
+    '#4355a8', // 6: Royal Indigo
+    '#782bcf'  // 7: Rich Purple
+  ];
+
   let html = '';
-  for (let d = 1; d <= 30; d++) {
+  for (let d = 1; d <= 7; d++) {
+    const color = chevronColors[d - 1];
     const dayData = thirtyDayState.days[d] || { completedCount: 0, dayRewardClaimed: false };
     const isCompleted = dayData.completedCount >= 10;
     const isPreviousDayCompleted = d === 1 || (thirtyDayState.days[d - 1] && thirtyDayState.days[d - 1].completedCount >= 8);
     const isUnlocked = isPreviousDayCompleted && d <= thirtyDayState.activeDayIndex;
     const isSelected = d === currentSelectedDay;
 
-    let tabClass = 'thirty-day-rect-tab';
-    let statusText = '🔒';
+    let statusText = '🔒 Lock';
     let pillClass = 'locked';
 
     if (isCompleted) {
-      tabClass += ' completed-tab';
       statusText = '✓ Done';
       pillClass = 'completed';
     } else if (isUnlocked) {
-      tabClass += ' active-tab';
       statusText = '⚡ Active';
       pillClass = 'active';
     } else {
-      tabClass += ' locked-tab';
       statusText = '🔒 Lock';
       pillClass = 'locked';
     }
 
-    if (isSelected) {
-      tabClass += ' selected';
-    }
-    if (d === 30) {
-      tabClass += ' mega-tab';
-    }
+    // Exact geometric chevron arrows matching reference image:
+    // Day 1 has flat left edge, right arrow point
+    // Days 2-7 have interlocking indented back notch (0,0 -> 30,35 -> 0,70) and matching right arrow point (70,0 -> 100,35 -> 70,70)
+    const svgPath = (d === 1)
+      ? `<polygon points="0,0 70,0 100,35 70,70 0,70" fill="${color}" />`
+      : `<polygon points="0,0 70,0 100,35 70,70 0,70 30,35" fill="${color}" />`;
 
-    const pct = Math.min(100, Math.round(((dayData.completedCount || 0) / 10) * 100));
+    const circleCx = (d === 1) ? 42 : 55;
 
     html += `
-      <button type="button" class="${tabClass}" onclick="selectDayTab(${d})" id="dayTab-${d}">
-        <div class="tab-top-row">
-          <span class="tab-day-label">${d === 30 ? '👑 DAY 30' : `DAY ${d}`}</span>
-          <span class="tab-badge-pill ${pillClass}">${statusText}</span>
+      <button type="button" 
+        class="chevron-arrow-btn ${pillClass} ${isSelected ? 'selected' : ''}" 
+        onclick="selectDayTab(${d})" 
+        id="dayTab-${d}" 
+        style="--chevron-glow: ${color};" 
+        title="Day ${d}: ${statusText}">
+        <div class="chevron-arrow-graphic">
+          <svg viewBox="0 0 100 70" preserveAspectRatio="none" class="chevron-arrow-svg">
+            ${svgPath}
+            <circle cx="${circleCx}" cy="35" r="16.5" fill="#ffffff" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.28))" />
+            <text x="${circleCx}" y="41.5" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="17" fill="${color}">${d}</text>
+          </svg>
         </div>
-        <div class="tab-bottom-row">
-          <span class="tab-task-count font-mono">${dayData.completedCount || 0}/10 Tasks</span>
-          <span class="tab-reward-note">+10🪙</span>
-        </div>
-        <div class="tab-mini-prog-track">
-          <div class="tab-mini-prog-fill ${pillClass}" style="width: ${pct}%;"></div>
+        <div class="chevron-arrow-meta">
+          <span class="chevron-day-tag">Day ${d}</span>
+          <span class="chevron-status-badge ${pillClass}">${statusText}</span>
         </div>
       </button>
     `;
@@ -488,11 +501,11 @@ function renderThirtyDayTabs() {
 }
 
 window.selectDayTab = function(dayNum) {
-  currentSelectedDay = dayNum;
+  currentSelectedDay = Math.max(1, Math.min(7, Number(dayNum) || 1));
   renderThirtyDayTabs();
-  renderSelectedDayQuests(dayNum);
+  renderSelectedDayQuests(currentSelectedDay);
 
-  const tabEl = document.getElementById(`dayTab-${dayNum}`);
+  const tabEl = document.getElementById(`dayTab-${currentSelectedDay}`);
   if (tabEl) {
     tabEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
@@ -502,6 +515,7 @@ function renderSelectedDayQuests(dayNum) {
   const panel = document.getElementById('selectedDayQuestsPanel');
   if (!panel) return;
 
+  const validDay = Math.max(1, Math.min(7, Number(dayNum) || 1));
   const titleEl = document.getElementById('selectedDayTitle');
   const subEl = document.getElementById('selectedDaySubtitle');
   const progTextEl = document.getElementById('selectedDayProgText');
@@ -510,8 +524,8 @@ function renderSelectedDayQuests(dayNum) {
   const statusTextEl = document.getElementById('selectedDayStatusText');
   const container = document.getElementById('selectedDayTasksList');
 
-  const tasks = generateTasksForDay(dayNum);
-  const dayData = thirtyDayState.days[dayNum] || { progress: Array(10).fill(0), claimed: Array(10).fill(false), completedCount: 0 };
+  const tasks = generateTasksForDay(validDay);
+  const dayData = thirtyDayState.days[validDay] || { progress: Array(10).fill(0), claimed: Array(10).fill(false), completedCount: 0 };
 
   // Calculate completion
   let doneCount = 0;
@@ -525,14 +539,14 @@ function renderSelectedDayQuests(dayNum) {
     dayData.progress[9] = 8;
   }
 
-  if (titleEl) titleEl.innerText = dayNum === 30 ? `👑 Day 30 Final Quests (10 Tasks)` : `Day ${dayNum} Quests (10 Tasks)`;
+  if (titleEl) titleEl.innerText = validDay === 7 ? `👑 Day 7 Grand Finale Quests (10 Tasks)` : `Day ${validDay} Quests (10 Tasks)`;
   if (subEl) subEl.innerHTML = '';
   if (progTextEl) progTextEl.innerText = `${doneCount} / 10 Completed`;
   if (barFillEl) barFillEl.style.width = `${Math.min(100, Math.round((doneCount / 10) * 100))}%`;
 
   const isCompleted = doneCount >= 10;
-  const isPreviousDayCompleted = dayNum === 1 || (thirtyDayState.days[dayNum - 1] && thirtyDayState.days[dayNum - 1].completedCount >= 8);
-  const isUnlocked = isPreviousDayCompleted && dayNum <= thirtyDayState.activeDayIndex;
+  const isPreviousDayCompleted = validDay === 1 || (thirtyDayState.days[validDay - 1] && thirtyDayState.days[validDay - 1].completedCount >= 8);
+  const isUnlocked = isPreviousDayCompleted && validDay <= thirtyDayState.activeDayIndex;
 
   if (statusPillEl && statusTextEl) {
     if (isCompleted) {
@@ -554,17 +568,17 @@ function renderSelectedDayQuests(dayNum) {
       gameState.player.diamonds = (gameState.player.diamonds || 0) + 10000;
       if (typeof window.updateUI === 'function') window.updateUI();
     }
-    alert(`🎉 DAY ${dayNum} 100% COMPLETED!\nYou won +10,000 💎 Diamonds!`);
+    alert(`🎉 DAY ${validDay} 100% COMPLETED!\nYou won +10,000 💎 Diamonds!`);
 
-    // If Day 30 completed, unlock Mega Reward Request!
-    if (dayNum === 30) {
+    // If Day 7 completed, unlock Mega Reward Request!
+    if (validDay === 7) {
       if (typeof gameState !== 'undefined') {
         gameState.megaRewardUnlocked = true;
       }
       try {
         localStorage.setItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED', 'true');
       } catch (e) {}
-      alert('👑 ALL 30 DAYS COMPLETED!\nMega Reward Request has been UNLOCKED!\nYou can now claim real Mega Rewards!');
+      alert('👑 ALL 7 DAYS COMPLETED!\nMega Reward Request has been UNLOCKED!\nYou can now claim real Mega Rewards!');
       renderMegaRewardBanner();
     }
     saveThirtyDayState();
@@ -624,7 +638,7 @@ function renderThirtyDayCards() {
   if (streakDisplay) streakDisplay.innerText = `${thirtyDayState.streakCount} Day${thirtyDayState.streakCount > 1 ? 's' : ''}`;
 
   const dayNumDisplay = document.getElementById('currentActiveDayNum');
-  if (dayNumDisplay) dayNumDisplay.innerText = thirtyDayState.activeDayIndex;
+  if (dayNumDisplay) dayNumDisplay.innerText = Math.min(7, thirtyDayState.activeDayIndex || 1);
 
   // Check if broken streak notice should popup
   if (thirtyDayState.streakBroken) {
@@ -635,13 +649,15 @@ function renderThirtyDayCards() {
   // Render Mega Reward Banner
   renderMegaRewardBanner();
 
-  // Render 30 Rectangular Tabs
+  // Render Current Selected Day Quests Panel (Synchronized with 7 Arrow Chevrons)
+  if (!currentSelectedDay || currentSelectedDay < 1 || currentSelectedDay > 7) {
+    currentSelectedDay = Math.min(7, thirtyDayState.activeDayIndex || 1);
+  }
+
+  // Render 7 Arrow Chevron Process Chain Tabs
   renderThirtyDayTabs();
 
   // Render Current Selected Day Quests Panel
-  if (!currentSelectedDay || currentSelectedDay < 1 || currentSelectedDay > 30) {
-    currentSelectedDay = thirtyDayState.activeDayIndex || 1;
-  }
   renderSelectedDayQuests(currentSelectedDay);
 }
 

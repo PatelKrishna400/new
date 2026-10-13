@@ -18,6 +18,7 @@
   let isBoomPaused = false;
   let animFrameId = null;
   let timerInterval = null;
+  let spawnInterval = null;
   let lastFrameTime = 0;
 
   // Gameplay Run State
@@ -42,6 +43,7 @@
   let elOverlay = null;
   let elBoomModal = null;
   let elStartOverlay = null;
+  let elBottomActionBar = null;
 
   // Puzzle HUD Elements Cache
   let elPuzzleProgressText = null;
@@ -136,6 +138,7 @@
     elOverlay = document.getElementById('catcherModalOverlay');
     elBoomModal = document.getElementById('catcherBoomModal');
     elStartOverlay = document.getElementById('catcherStartOverlay');
+    elBottomActionBar = document.getElementById('catcherBottomActionBar');
 
     // Puzzle Elements
     elPuzzleProgressText = document.getElementById('puzzleProgressText');
@@ -177,6 +180,14 @@
         if (elCollectBtnText) {
           elCollectBtnText.textContent = 'COLLECT & EXIT (0 🪙)';
         }
+      }
+    }
+
+    if (elBottomActionBar) {
+      if (isGameActive || isBoomPaused) {
+        elBottomActionBar.classList.add('active');
+      } else {
+        elBottomActionBar.classList.remove('active');
       }
     }
 
@@ -239,6 +250,7 @@
     if (elStartOverlay) elStartOverlay.style.display = 'none';
     if (elOverlay) elOverlay.classList.remove('open');
     if (elBoomModal) elBoomModal.classList.remove('open');
+    if (elBottomActionBar) elBottomActionBar.classList.add('active');
 
     updateHUD();
 
@@ -520,7 +532,8 @@
     }
 
     updateHUD();
-    updateDiamondBalances();
+    updateBoomCoinBalances();
+    if (elBottomActionBar) elBottomActionBar.classList.remove('active');
 
     // Show Start Overlay for next run
     if (elStartOverlay) elStartOverlay.style.display = 'flex';
@@ -542,6 +555,7 @@
     isBoomPaused = false;
     cancelAnimationFrame(animFrameId);
     clearInterval(timerInterval);
+    if (elBottomActionBar) elBottomActionBar.classList.remove('active');
 
     // Clear active items
     if (elStage) {
@@ -606,6 +620,7 @@
       bankedCoins = 0;
       updateHUD();
       updateBoomCoinBalances();
+      if (elBottomActionBar) elBottomActionBar.classList.remove('active');
 
       if (elStartOverlay) elStartOverlay.style.display = 'flex';
     };
@@ -1118,23 +1133,27 @@
 
   function cleanupCoinCatcherPage() {
     isGameActive = false;
-    if (timerInterval) {
+    if (typeof timerInterval !== 'undefined' && timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
     }
-    if (spawnInterval) {
+    if (typeof spawnInterval !== 'undefined' && spawnInterval) {
       clearInterval(spawnInterval);
       spawnInterval = null;
     }
-    if (animFrameId) {
+    if (typeof animFrameId !== 'undefined' && animFrameId) {
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
     }
-    closeMorningCafePuzzleModal();
+    try {
+      if (typeof closeMorningCafePuzzleModal === 'function') closeMorningCafePuzzleModal();
+    } catch (e) {}
     const overlay = document.getElementById('catcherModalOverlay');
     if (overlay) overlay.classList.remove('open');
     const boomModal = document.getElementById('catcherBoomModal');
     if (boomModal) boomModal.classList.remove('open');
+    const bottomBar = document.getElementById('catcherBottomActionBar');
+    if (bottomBar) bottomBar.classList.remove('active');
   }
 
   // Global Window Exports
