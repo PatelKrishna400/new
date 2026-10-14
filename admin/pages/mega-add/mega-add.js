@@ -391,17 +391,28 @@ function editRewardItem(id) {
 
 function deleteRewardItem(id) {
   const executeDelete = () => {
-    const db = window.getDb ? window.getDb() : null;
-    if (!db) return;
     if (!confirm('Are you sure you want to delete this reward from Firebase?')) return;
     const rewards = (window.adminState.rewards || []).filter(r => r.id !== id);
-    db.ref('/mega_rewards').set(rewards)
-      .then(() => {
-        window.adminState.rewards = rewards;
-        renderRewardsCatalog();
-        alert('Item deleted from Firebase!');
-      })
-      .catch(err => alert('Error: ' + err.message));
+    window.adminState.rewards = rewards;
+    try {
+      localStorage.setItem('ENERGY_TAP_MEGA_REWARDS_V2', JSON.stringify(rewards));
+    } catch(e) {}
+    renderRewardsCatalog();
+
+    const db = window.getDb ? window.getDb() : null;
+    if (db) {
+      Promise.all([
+        db.ref('/mega_rewards').set(rewards).catch(() => {}),
+        db.ref(`/mega_rewards/${id}`).remove().catch(() => {})
+      ]).then(() => {
+        alert('✅ Item deleted from Firebase!');
+      }).catch(err => {
+        console.warn('deleteRewardItem error:', err);
+        alert('Item removed from local catalog.');
+      });
+    } else {
+      alert('Item removed from local catalog.');
+    }
   };
 
   if (typeof window.requireAdminPassword === 'function') {

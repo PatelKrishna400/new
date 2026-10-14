@@ -117,28 +117,53 @@ function copyFirebaseRulesToClipboard() {
     "rules": {
       "players": {
         ".read": true,
+        ".write": "auth != null",
         "$uid": {
           ".read": true,
-          ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true || root.child('whitelist').child(auth.uid).exists())",
-          ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+          ".write": "auth != null",
+          "diamonds": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+          },
+          "coins": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+          },
+          "diamondWins": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+          },
+          "piggyBank": {
+            "totalStored": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            }
+          }
         }
       },
       "users": {
         ".read": true,
+        ".write": "auth != null",
         "$uid": {
           ".read": true,
-          ".write": "auth != null && (auth.uid === $uid || root.child('admin_users').child(auth.uid).exists() || auth.token.admin === true)"
+          ".write": "auth != null"
         }
       },
       "leaderboard": {
         ".read": true,
+        ".write": "auth != null",
+        ".indexOn": ["diamondWins", "coins", "level", "lastActive"],
         "$uid": {
-          ".write": "auth != null"
+          ".read": true,
+          ".write": "auth != null",
+          "diamondWins": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+          }
         }
       },
       "mega_rewards": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$rewardId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "reward_requests": {
         ".read": true,
@@ -148,10 +173,10 @@ function copyFirebaseRulesToClipboard() {
           ".write": "auth != null"
         }
       },
-      "ads_direct_clicks": {
+      "account_requests": {
         ".read": true,
         ".write": "auth != null",
-        "$clickId": {
+        "$accReqId": {
           ".read": true,
           ".write": "auth != null"
         }
@@ -164,17 +189,37 @@ function copyFirebaseRulesToClipboard() {
           ".write": "auth != null"
         }
       },
+      "ads_direct_clicks": {
+        ".read": true,
+        ".write": "auth != null",
+        "$clickId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      },
       "website_tasks_config": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$taskId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "telegram_tasks_config": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$taskId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "monthly_tasks_config": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$taskId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "monthly_competition": {
         ".read": true,
@@ -184,19 +229,37 @@ function copyFirebaseRulesToClipboard() {
         ".read": true,
         ".write": "auth != null"
       },
+      "ads_analytics": {
+        ".read": true,
+        ".write": "auth != null",
+        "directClicks": {
+          ".write": "auth != null",
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        },
+        "monetagViews": {
+          ".write": "auth != null",
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        }
+      },
       "ads_config": {
         ".read": true,
         ".write": "auth != null"
       },
       "whitelist": {
         ".read": true,
+        ".write": "auth != null",
         "$uid": {
+          ".read": true,
           ".write": "auth != null"
         }
       },
       "admin_users": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$adminId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "game_config": {
         ".read": true,
@@ -204,16 +267,36 @@ function copyFirebaseRulesToClipboard() {
       },
       "levels_config": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null",
+        "$levelId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       "fuel_cells_config": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "identityIndex": {
+        ".read": true,
+        ".write": "auth != null",
+        "$type": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      },
+      "auth_config": {
         ".read": true,
         ".write": "auth != null"
       },
       "activity_log": {
         ".read": true,
         ".write": "auth != null",
-        ".indexOn": ["timestamp"]
+        ".indexOn": ["timestamp"],
+        "$actId": {
+          ".read": true,
+          ".write": "auth != null"
+        }
       },
       ".info": {
         ".read": true
@@ -971,43 +1054,71 @@ function clearAllActivitiesFromFirebase() {
 window.clearAllActivitiesFromFirebase = clearAllActivitiesFromFirebase;
 
 function deleteUserFromFirebase(uid) {
-  if (!db || !uid) return Promise.reject(new Error('Invalid parameters'));
+  if (!uid) return Promise.reject(new Error('Invalid parameters'));
 
   const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
   const player = users.find(u => u.uid === uid || u.id === uid) || {};
   const playerName = player.name || player.username || uid;
 
-  const updates = {};
-  updates[`/players/${uid}`] = null;
-  updates[`/users/${uid}`] = null;
-  updates[`/leaderboard/${uid}`] = null;
-  updates[`/whitelist/${uid}`] = null;
+  // Immediately remove from in-memory adminState & caches so UI updates instantaneously
+  if (window.adminState && window.adminState.users) {
+    window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
+  }
+  if (window.adminState && window.adminState.activities) {
+    window.adminState.activities = window.adminState.activities.filter(a => {
+      const str = JSON.stringify(a);
+      return !str.includes(uid) && (!playerName || playerName.length <= 2 || !str.includes(playerName));
+    });
+  }
+  if (typeof playersCache !== 'undefined') delete playersCache[uid];
+  if (typeof legacyUsersCache !== 'undefined') delete legacyUsersCache[uid];
+  if (typeof leaderboardCache !== 'undefined') delete leaderboardCache[uid];
+  if (typeof knownUserUids !== 'undefined' && knownUserUids.delete) knownUserUids.delete(uid);
 
-  // Clean identityIndex if player has known telegram, phone, email
+  // Sync delete to backend REST API
+  fetch('/api/users/' + uid, { method: 'DELETE' }).catch(() => {});
+
+  if (!db) {
+    dispatchAdminEvent('userDeleted');
+    dispatchAdminEvent('usersUpdated');
+    dispatchAdminEvent('activitiesUpdated');
+    return Promise.resolve(true);
+  }
+
+  // Perform parallel Firebase removals for core user nodes
+  const removals = [
+    db.ref(`/players/${uid}`).remove().catch(e => console.warn('Could not remove /players/' + uid, e)),
+    db.ref(`/users/${uid}`).remove().catch(e => console.warn('Could not remove /users/' + uid, e)),
+    db.ref(`/leaderboard/${uid}`).remove().catch(e => console.warn('Could not remove /leaderboard/' + uid, e)),
+    db.ref(`/whitelist/${uid}`).remove().catch(e => console.warn('Could not remove /whitelist/' + uid, e))
+  ];
+
+  // Clean identityIndex entries safely
   if (player.telegramId || player.telegram) {
     const tgKey = String(player.telegramId || player.telegram).replace(/[^a-zA-Z0-9_]/g, '');
-    if (tgKey) updates[`/identityIndex/telegram/${tgKey}`] = null;
+    if (tgKey) removals.push(db.ref(`/identityIndex/telegram/${tgKey}`).remove().catch(() => {}));
   }
   if (player.phone) {
     const cleanPhone = String(player.phone).replace(/\D/g, '');
-    if (cleanPhone) updates[`/identityIndex/phone/${cleanPhone}`] = null;
+    if (cleanPhone) removals.push(db.ref(`/identityIndex/phone/${cleanPhone}`).remove().catch(() => {}));
   }
   if (player.email) {
     const safeEmail = String(player.email).replace(/[.#$\[\]]/g, '_');
-    if (safeEmail) updates[`/identityIndex/email/${safeEmail}`] = null;
+    if (safeEmail) removals.push(db.ref(`/identityIndex/email/${safeEmail}`).remove().catch(() => {}));
   }
 
-  // Clean up any reward requests for this user
+  // Clean associated reward requests safely
   if (window.adminState && window.adminState.rewardRequests) {
     window.adminState.rewardRequests.forEach(req => {
       if (req.userId === uid || req.uid === uid) {
-        updates[`/reward_requests/${req.id}`] = null;
+        removals.push(db.ref(`/reward_requests/${req.id}`).remove().catch(() => {}));
       }
     });
+    window.adminState.rewardRequests = window.adminState.rewardRequests.filter(r => r.userId !== uid && r.uid !== uid);
   }
 
-  // Directly query /activity_log from Firebase to purge ALL activity items for this user
-  return db.ref('/activity_log').once('value').then(actSnap => {
+  // Scan and clean activity_log asynchronously without blocking
+  db.ref('/activity_log').once('value').then(actSnap => {
     const actData = actSnap.val();
     if (actData && typeof actData === 'object') {
       Object.keys(actData).forEach(actId => {
@@ -1019,49 +1130,17 @@ function deleteUserFromFirebase(uid) {
           itemStr.includes(uid) ||
           (playerName && playerName.length > 2 && itemStr.includes(playerName))
         ) {
-          updates[`/activity_log/${actId}`] = null;
+          db.ref(`/activity_log/${actId}`).remove().catch(() => {});
         }
       });
     }
+  }).catch(() => {});
 
-    return db.ref().update(updates);
-  }).then(() => {
-    // Also scan identityIndex to ensure no orphaned mappings point to this user
-    db.ref('/identityIndex').once('value').then(idxSnap => {
-      const idxVal = idxSnap.val();
-      if (idxVal) {
-        const idxUpdates = {};
-        ['telegram', 'phone', 'email'].forEach(type => {
-          if (idxVal[type]) {
-            Object.keys(idxVal[type]).forEach(k => {
-              if (idxVal[type][k] === uid) {
-                idxUpdates[`/identityIndex/${type}/${k}`] = null;
-              }
-            });
-          }
-        });
-        if (Object.keys(idxUpdates).length > 0) {
-          db.ref().update(idxUpdates).catch(() => {});
-        }
-      }
-    }).catch(() => {});
-
-    // Update local state and backend REST API
-    fetch('/api/users/' + uid, { method: 'DELETE' }).catch(() => {});
-
-    if (window.adminState && window.adminState.users) {
-      window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
-    }
-    if (window.adminState && window.adminState.activities) {
-      window.adminState.activities = window.adminState.activities.filter(a => {
-        const str = JSON.stringify(a);
-        return !str.includes(uid) && (!playerName || playerName.length <= 2 || !str.includes(playerName));
-      });
-    }
-
+  return Promise.all(removals).then(() => {
     dispatchAdminEvent('userDeleted');
     dispatchAdminEvent('usersUpdated');
     dispatchAdminEvent('activitiesUpdated');
+    return true;
   });
 }
 window.deleteUserFromFirebase = deleteUserFromFirebase;

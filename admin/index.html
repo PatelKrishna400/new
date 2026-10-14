@@ -1537,9 +1537,14 @@
                 ⚡ <strong>Live Real-Time Save:</strong> Clicking Save will update Firebase Realtime Database at <code>/players/${uid}</code> immediately. All changes take effect live for the player!
               </div>
       
-              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
-                <button type="button" class="btn-secondary" onclick="closeEditPlayerModal()">Cancel</button>
-                <button type="submit" class="btn-primary" id="btnSubmitEditPlayer">💾 Save All Changes to Firebase</button>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                <button type="button" class="btn-secondary" onclick="deleteUserFromModal()" style="color: #ef4444; border-color: #fca5a5; background: rgba(239, 68, 68, 0.06);" title="Permanently delete user and purge data from Firebase">
+                  🗑️ Delete User
+                </button>
+                <div style="display: flex; gap: 10px;">
+                  <button type="button" class="btn-secondary" onclick="closeEditPlayerModal()">Cancel</button>
+                  <button type="submit" class="btn-primary" id="btnSubmitEditPlayer">💾 Save All Changes to Firebase</button>
+                </div>
               </div>
             </form>
           </div>

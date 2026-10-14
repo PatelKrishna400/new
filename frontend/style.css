@@ -7276,14 +7276,14 @@ body.full-page-game-active div[id^="page"].active {
   transform: scale(0.97);
 }
 
-/* Bee Farm Entry Card */
+/* Bee Farm Entry Card (Hidden from Home Menu Bar) */
 .beefarm-entry-tab-card {
+  display: none !important;
   position: relative;
   background: linear-gradient(135deg, #181512 0%, #0f172a 100%);
   border: 1.5px solid rgba(245, 158, 11, 0.45);
   border-radius: 18px;
   padding: 12px 14px;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -7484,14 +7484,14 @@ body.full-page-game-active div[id^="page"].active {
   transform: scale(1.04);
 }
 
-/* Mining Entry Card */
+/* Mining Entry Card (Hidden from Home Menu Bar) */
 .mining-entry-tab-card {
+  display: none !important;
   position: relative;
   background: linear-gradient(135deg, #091322 0%, #060b18 100%);
   border: 1.5px solid rgba(0, 240, 255, 0.45);
   border-radius: 18px;
   padding: 12px 14px;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -17512,6 +17512,10 @@ body.full-page-game-active div[id^="page"].active {
   color: #f1f5f9;
 }
 
+#rewardTabCracker {
+  display: none !important;
+}
+
 
 
 
@@ -26051,11 +26055,11 @@ body.full-page-game-active div[id^="page"].active {
   position: relative;
   background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
   border: 1.5px solid #f59e0b;
-  border-radius: 16px;
-  padding: 12px 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.35);
+  border-radius: 14px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.35);
   cursor: pointer;
-  overflow: visible !important;
+  overflow: hidden;
   transition: all 0.2s ease;
   margin: 4px 0 8px 0;
   width: 100%;
@@ -26066,7 +26070,7 @@ body.full-page-game-active div[id^="page"].active {
 .memory-event-banner-tab:active {
   border-color: #fbbf24;
   transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.5);
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.5);
 }
 
 .event-banner-glow {
@@ -26083,7 +26087,7 @@ body.full-page-game-active div[id^="page"].active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   position: relative;
   z-index: 2;
   width: 100%;
@@ -26093,52 +26097,25 @@ body.full-page-game-active div[id^="page"].active {
 .event-banner-left {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
   min-width: 0;
 }
 
-.event-tag-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(245, 158, 11, 0.22);
-  border: 1px solid rgba(245, 158, 11, 0.6);
-  border-radius: 6px;
-  padding: 2.5px 7px;
-  font-size: 9px;
-  font-weight: 800;
-  color: #fbbf24;
-  letter-spacing: 0.5px;
-  width: fit-content;
-}
-
 .event-tab-title {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 900;
   color: #fde047;
   font-family: 'Rajdhani', sans-serif;
   letter-spacing: 0.5px;
   margin: 0;
-  line-height: 1.25;
-}
-
-.event-tab-desc {
-  font-size: 10px;
-  color: #e2e8f0;
-  margin: 0;
-  line-height: 1.35;
-}
-
-.event-tab-desc strong {
-  color: #fbbf24;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .event-banner-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -26147,49 +26124,38 @@ body.full-page-game-active div[id^="page"].active {
   border: 1px solid rgba(245, 158, 11, 0.45);
   border-radius: 8px;
   padding: 3px 8px;
-  text-align: right;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .event-timer-capsule .timer-label {
-  font-size: 7.5px;
-  font-weight: 700;
+  font-size: 8px;
+  font-weight: 800;
   color: #fbbf24;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
 .event-timer-capsule .timer-digits {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   color: #ffffff;
   font-family: 'JetBrains Mono', monospace;
   letter-spacing: 0.5px;
 }
 
-.event-cta-btn {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border: none;
-  border-radius: 7px;
-  padding: 4px 9px;
-  font-size: 10px;
-  font-weight: 800;
-  color: #78350f;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.5);
-  font-family: 'Rajdhani', sans-serif;
-  letter-spacing: 0.5px;
-  transition: transform 0.15s ease, filter 0.15s ease;
+.event-tab-arrow {
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 900;
+  transition: transform 0.2s ease;
+  line-height: 1;
 }
 
-.event-cta-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+.memory-event-banner-tab:hover .event-tab-arrow {
+  transform: translateX(3px);
 }
   padding: 3px 8px;
   font-size: 9.5px;
@@ -26815,7 +26781,7 @@ body.full-page-game-active div[id^="page"].active {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   max-height: 100% !important;
-  padding: 10px 12px 140px 12px !important;
+  padding: 8px 10px 85px 10px !important;
   box-sizing: border-box !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -26852,13 +26818,17 @@ body.full-page-game-active div[id^="page"].active {
 
 .catcher-arena-card {
   position: relative;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(9, 14, 28, 0.99) 100%);
-  border: 1.5px solid rgba(234, 179, 8, 0.35);
-  border-radius: 22px;
-  padding: 14px 12px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 25px rgba(234, 179, 8, 0.08);
-  overflow: hidden;
-  margin-top: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  overflow: visible;
+  margin-top: 6px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .catcher-ambient-glow {
@@ -26956,8 +26926,8 @@ body.full-page-game-active div[id^="page"].active {
 .catcher-stage {
   position: relative;
   width: 100%;
-  min-height: 490px;
-  height: clamp(490px, 62vh, 680px);
+  min-height: 520px;
+  height: clamp(520px, calc(100vh - 210px), 860px);
   background-color: #030712;
   background-image: 
     radial-gradient(ellipse at 50% 0%, rgba(234, 179, 8, 0.22) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 70%),
@@ -26965,10 +26935,10 @@ body.full-page-game-active div[id^="page"].active {
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 100% 100%, 32px 32px, 32px 32px;
   border: 1.5px solid rgba(234, 179, 8, 0.35);
-  border-radius: 20px;
+  border-radius: 22px;
   overflow: hidden;
   touch-action: pan-y;
-  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9), 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(234, 179, 8, 0.1);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9), 0 12px 36px rgba(0, 0, 0, 0.75), 0 0 20px rgba(234, 179, 8, 0.1);
 }
 
 .catcher-stage::before {
@@ -29672,24 +29642,12 @@ body.page-sunflower-active #sfBottomMenuBar {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
 }
 
-/* Status Pills for Wells */
-.sf-status-pill.pill-well-automated {
-  background: #dcfce7;
-  color: #15803d;
-  border: 1px solid #86efac;
-}
-
-.sf-status-pill.pill-well-ready {
-  background: #e0f2fe;
-  color: #0369a1;
-  border: 1px solid #7dd3fc;
-  animation: pulseGlow 1.5s infinite;
-}
-
-.sf-status-pill.pill-well-filling {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
+/* Status Pills for Wells (Removed as per user request) */
+.sf-status-pill.pill-well-automated,
+.sf-status-pill.pill-well-ready,
+.sf-status-pill.pill-well-filling,
+.sf-status-pill.pill-well-idle {
+  display: none !important;
 }
 
 /* Well Action Buttons */
@@ -34973,4 +34931,219 @@ body.page-mining-active .mine-bottom-menu-bar {
   cursor: pointer;
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
+
+/* ==========================================================================
+   LEVEL 1000 GRAND REWARD ROW & POPUP MODAL STYLES (MATCHES SCREENSHOT)
+   ========================================================================== */
+
+/* Level 1000 Grand Reward Row Card in Scroll List */
+.cracker-grand-reward-row {
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(28, 15, 45, 0.95) 0%, rgba(15, 10, 30, 0.98) 100%) !important;
+  border: 1.5px solid rgba(249, 115, 22, 0.75) !important;
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  margin-top: 6px;
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.cracker-grand-reward-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 28px rgba(249, 115, 22, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.cracker-grand-badge {
+  background: linear-gradient(135deg, #dc2626 0%, #f97316 50%, #eab308 100%) !important;
+  border-color: #fef08a !important;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.8) !important;
+}
+
+.cracker-grand-badge .badge-letter {
+  font-size: 13px !important;
+  line-height: 1;
+}
+
+.cracker-grand-badge .badge-num {
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  color: #fffbeb !important;
+}
+
+.cracker-grand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cracker-grand-title {
+  color: #facc15 !important;
+  font-weight: 900 !important;
+}
+
+.cracker-grand-pill {
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #dc2626, #f97316);
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.grand-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: 175px;
+  justify-content: flex-end;
+}
+
+.cracker-reward-chip.darkgreen {
+  background: rgba(22, 101, 52, 0.3) !important;
+  border-color: rgba(34, 197, 94, 0.5) !important;
+  color: #4ade80 !important;
+}
+
+.cracker-reward-chip.green {
+  background: rgba(34, 197, 94, 0.25) !important;
+  border-color: rgba(74, 222, 128, 0.5) !important;
+  color: #86efac !important;
+}
+
+.cracker-reward-chip.yellow {
+  background: rgba(234, 179, 8, 0.25) !important;
+  border-color: rgba(250, 204, 21, 0.5) !important;
+  color: #fef08a !important;
+}
+
+.cracker-reward-chip.orange {
+  background: rgba(249, 115, 22, 0.25) !important;
+  border-color: rgba(251, 146, 60, 0.5) !important;
+  color: #fdba74 !important;
+}
+
+.cracker-reward-chip.energy {
+  background: rgba(59, 130, 246, 0.25) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  color: #93c5fd !important;
+}
+
+.cracker-claim-btn.grand-open-btn {
+  background: linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #f59e0b 100%) !important;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.8) !important;
+  border-color: #fef08a !important;
+}
+
+.cracker-jump-1000-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, rgba(30, 15, 45, 0.8) 0%, rgba(20, 10, 35, 0.9) 100%);
+  border: 1px dashed rgba(249, 115, 22, 0.6);
+  border-radius: 12px;
+  color: #fde047;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cracker-jump-1000-btn:hover {
+  background: linear-gradient(135deg, rgba(50, 20, 70, 0.9) 0%, rgba(30, 15, 50, 0.95) 100%);
+  border-color: #f97316;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   POPUP MODAL: LEVEL 1000 MEGA REWARD DIALOG (MATCHES SCREENSHOT)
+   ========================================================================== */
+.cracker-mega-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cracker-mega-modal-overlay.open {
+  display: flex !important;
+}
+
+.cracker-mega-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: radial-gradient(circle at 50% 0%, #151f38 0%, #090e1a 65%, #050811 100%);
+  border: 1.5px solid rgba(59, 130, 246, 0.35);
+  border-radius: 26px;
+  padding: 26px 20px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 45px rgba(249, 115, 22, 0.22);
+  max-height: 92vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  animation: crackerModalPop 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cracker-mega-modal-dialog::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes crackerModalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.cracker-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.cracker-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.cracker-modal-close-btn:active {
+  transform: scale(0.9);
+}
+
 

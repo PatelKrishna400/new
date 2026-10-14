@@ -20,30 +20,23 @@
     <div class="spin-ticket-header-pill" id="memoryBalloonCoinPill" onclick="openBalloonPursuitModal()" title="Balloon Pursuit Map (🎈 Balloon Coins)" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.15); cursor: pointer;">
       <span class="ticket-pill-icon">🎈</span>
       <span class="ticket-pill-val" id="memoryPlayerBalloonCoinsVal" style="color: #fde047;">0</span>
+      <span class="ticket-add-btn" style="background: rgba(245, 158, 11, 0.35); border-color: rgba(245, 158, 11, 0.7); font-size: 11px; margin-left: 2px;">➔</span>
     </div>
   </div>
 
-  <!-- Interactive 30-Day Balloon Pursuit Event Banner Tab Card -->
-  <div class="memory-event-banner-tab" id="memoryEventBannerTab" onclick="openBalloonPursuitModal()" title="Open Balloon Pursuit 30-Day Event Map" role="button" tabindex="0">
+  <!-- Interactive Balloon Pursuit Event Banner Tab Card -->
+  <div class="memory-event-banner-tab" id="memoryEventBannerTab" onclick="openBalloonPursuitModal()" title="Open Balloon Pursuit 12-Stage Event Map" role="button" tabindex="0">
     <div class="event-banner-glow"></div>
     <div class="event-banner-content">
       <div class="event-banner-left">
-        <div class="event-tag-pill">
-          <span class="event-flame-icon">🔥</span>
-          <span>SPECIAL 30-DAY EVENT ACTIVE</span>
-        </div>
-        <h3 class="event-tab-title">🎈 BALLOON PURSUIT ADVENTURE</h3>
-        <p class="event-tab-desc">Match 16 cards to win <strong>+10 🎈 Balloon Coins</strong> &amp; conquer 12 Stages for <strong>💎 10 Diamonds &amp; Mega Loot</strong>!</p>
+        <h3 class="event-tab-title">🎈 BALLOON PURSUIT (12 STAGES)</h3>
       </div>
       <div class="event-banner-right">
         <div class="event-timer-capsule">
-          <span class="timer-label">EVENT ENDS IN</span>
+          <span class="timer-label">EVENT ENDS IN:</span>
           <span class="timer-digits font-mono" id="memoryPageEventTimer">30d 00:00:00</span>
         </div>
-        <button class="event-cta-btn" type="button">
-          <span>EVENT MAP</span>
-          <span class="cta-arrow">➔</span>
-        </button>
+        <span class="event-tab-arrow">➔</span>
       </div>
     </div>
   </div>

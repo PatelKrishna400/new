@@ -358,6 +358,20 @@ function switchPage(pageName) {
       console.warn('cleanupCoinCatcherPage error:', e);
     }
   }
+  if (pageName !== 'bee-farm' && pageName !== 'beefarm') {
+    try {
+      if (typeof cleanupBeeFarmPage === 'function') cleanupBeeFarmPage();
+    } catch (e) {
+      console.warn('cleanupBeeFarmPage error:', e);
+    }
+  }
+  if (pageName !== 'mining') {
+    try {
+      if (typeof cleanupMiningPage === 'function') cleanupMiningPage();
+    } catch (e) {
+      console.warn('cleanupMiningPage error:', e);
+    }
+  }
 
   // Close any legacy modal backdrop
   closeTabModal();
@@ -393,9 +407,11 @@ function switchPage(pageName) {
       if (typeof initSunflowerPage === 'function') initSunflowerPage();
       else if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
     } else if (targetPage === 'bee-farm' || targetPage === 'beefarm') {
-      if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
+      if (typeof initBeeFarmTycoonGame === 'function') initBeeFarmTycoonGame();
+      else if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
     } else if (targetPage === 'mining') {
-      if (typeof updateMiningUI === 'function') updateMiningUI();
+      if (typeof initMiningTycoonGame === 'function') initMiningTycoonGame();
+      else if (typeof updateMiningUI === 'function') updateMiningUI();
     } else if (targetPage === 'tasks') {
       if (typeof renderTasksList === 'function') renderTasksList();
     } else if (targetPage === 'profile') {

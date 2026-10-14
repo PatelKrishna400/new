@@ -230,8 +230,14 @@
     }
 
     // Clean up any ongoing session
-    cancelAnimationFrame(animFrameId);
-    clearInterval(timerInterval);
+    if (animFrameId) {
+      cancelAnimationFrame(animFrameId);
+      animFrameId = null;
+    }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
     if (elStage) {
       const oldItems = elStage.querySelectorAll('.falling-item, .catcher-score-pop');
@@ -274,38 +280,47 @@
   function gameLoop(now) {
     if (!isGameActive || isBoomPaused) return;
 
-    if (!elStage || !elStage.isConnected || elStage.offsetParent === null) {
-      cancelAnimationFrame(animFrameId);
-      isGameActive = false;
+    const coinCatcherPage = document.getElementById('pageCoinCatcher');
+    if (!elStage || !elStage.isConnected || (coinCatcherPage && !coinCatcherPage.classList.contains('active'))) {
+      cleanupCoinCatcherPage();
       return;
     }
 
-    const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
-    lastFrameTime = now;
+    try {
+      const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
 
-    // Spawn new falling items
-    if (Date.now() >= nextSpawnTime) {
-      spawnFallingItem();
-      // Spawn interval accelerates slightly as time increases (between 250ms and 500ms)
-      const baseDelay = Math.max(260, 480 - (elapsedSeconds * 5));
-      nextSpawnTime = Date.now() + Math.floor(baseDelay + Math.random() * 200);
-    }
-
-    // Update active falling items
-    const stageHeight = elStage.clientHeight || 440;
-    for (let i = activeItems.length - 1; i >= 0; i--) {
-      const item = activeItems[i];
-      item.y += item.speed * (dt * 60);
-      item.el.style.top = `${item.y}px`;
-
-      // Item passed below the stage
-      if (item.y > stageHeight + 45) {
-        if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
-        activeItems.splice(i, 1);
+      // Spawn new falling items
+      if (Date.now() >= nextSpawnTime) {
+        spawnFallingItem();
+        // Spawn interval accelerates slightly as time increases (between 250ms and 500ms)
+        const baseDelay = Math.max(260, 480 - (elapsedSeconds * 5));
+        nextSpawnTime = Date.now() + Math.floor(baseDelay + Math.random() * 200);
       }
-    }
 
-    animFrameId = requestAnimationFrame(gameLoop);
+      // Update active falling items
+      const stageHeight = elStage.clientHeight || 440;
+      for (let i = activeItems.length - 1; i >= 0; i--) {
+        const item = activeItems[i];
+        if (!item || !item.el) {
+          activeItems.splice(i, 1);
+          continue;
+        }
+        item.y += item.speed * (dt * 60);
+        item.el.style.top = `${item.y}px`;
+
+        // Item passed below the stage
+        if (item.y > stageHeight + 45) {
+          if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+          activeItems.splice(i, 1);
+        }
+      }
+
+      animFrameId = requestAnimationFrame(gameLoop);
+    } catch (loopErr) {
+      console.warn('[CoinCatcher] loop frame error safely handled:', loopErr);
+      animFrameId = requestAnimationFrame(gameLoop);
+    }
   }
 
   /**

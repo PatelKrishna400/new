@@ -213,14 +213,16 @@ window.rejectAccountRequest = rejectAccountRequest;
 function deleteAccountRequest(reqId) {
   if (!confirm(`Permanently remove account request #${reqId}?`)) return;
 
-  const db = window.getDb ? window.getDb() : null;
-  if (!db) {
-    alert('Firebase is not connected!');
-    return;
+  if (window.adminState && window.adminState.accountRequests) {
+    window.adminState.accountRequests = window.adminState.accountRequests.filter(r => r.id !== reqId && r._id !== reqId);
   }
+  renderAccountRequestsTable();
 
-  db.ref(`account_requests/${reqId}`).remove().then(() => {
-    renderAccountRequestsTable();
-  }).catch(err => alert('Error: ' + err.message));
+  const db = window.getDb ? window.getDb() : null;
+  if (db) {
+    db.ref(`account_requests/${reqId}`).remove().catch(err => {
+      console.warn('Firebase remove error for account_requests:', err);
+    });
+  }
 }
 window.deleteAccountRequest = deleteAccountRequest;

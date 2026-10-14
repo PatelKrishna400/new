@@ -204,14 +204,88 @@
       `;
     }
 
-    // Show Next Chunk button if needed
+    // Show Next Chunk / Jump buttons if needed
     if (endLvl < 1000) {
       html += `
         <button type="button" class="cracker-need-btn" style="width: 100%; justify-content: center; padding: 10px; margin-top: 6px;" onclick="window.showMoreCrackerLevels()">
           ▼ Show More Levels (${endLvl + 1} to 1000)
         </button>
+        <button type="button" class="cracker-jump-1000-btn" onclick="window.jumpToCrackerLevel1000()">
+          👑 Jump to Level 1000 (Mega Cracker Prize) ▼
+        </button>
       `;
     }
+
+    // ==========================================
+    // LEVEL 1000 GRAND REWARD ROW (BELOW LEVEL 1000)
+    // Same level tab format, clicking opens popup modal
+    // ==========================================
+    const isLvl1000Completed = curLvl >= 1000 || !!(claimed && claimed[1000]);
+    const isMegaClaimed = !!(cs && cs.megaRewardClaimed);
+    const watchedAds = (cs && cs.megaWatchedAds) || 0;
+    const adsPct = Math.min(100, Math.floor((watchedAds / 1000) * 100));
+
+    let grandStatusSummary = '';
+    let grandActionBtn = '';
+
+    if (isMegaClaimed) {
+      grandStatusSummary = '✓ Grand Cracker Prize Claimed!';
+      grandActionBtn = `<div class="cracker-done-badge">✓ Claimed</div>`;
+    } else if (!isLvl1000Completed) {
+      grandStatusSummary = `🔒 Reach Cracker Lv 1000 to unlock`;
+      grandActionBtn = `
+        <button class="cracker-claim-btn grand-open-btn" onclick="window.openCrackerMegaRewardModal(event)" title="Tap to view Grand Reward">
+          🎁 VIEW PRIZE
+        </button>
+      `;
+    } else if (watchedAds < 1000) {
+      grandStatusSummary = `📢 Ads: ${watchedAds} / 1000 (${adsPct}%)`;
+      grandActionBtn = `
+        <button class="cracker-claim-btn grand-open-btn" onclick="window.openCrackerMegaRewardModal(event)" title="Tap to watch ads for Grand Reward">
+          📢 WATCH AD
+        </button>
+      `;
+    } else {
+      grandStatusSummary = `🎉 1,000 Ads Done! Ready to claim!`;
+      grandActionBtn = `
+        <button class="cracker-claim-btn grand-open-btn" onclick="window.openCrackerMegaRewardModal(event)" title="Tap to claim Grand Reward">
+          👑 CLAIM
+        </button>
+      `;
+    }
+
+    html += `
+      <div class="cracker-row-card cracker-grand-reward-row" id="crackerRow-grand" onclick="window.openCrackerMegaRewardModal(event)" title="Tap to view Level 1000 Grand Reward">
+        <div class="cracker-level-badge cracker-grand-badge">
+          <span class="badge-letter">👑</span>
+          <span class="badge-num">1000</span>
+        </div>
+
+        <div class="cracker-row-info">
+          <div class="cracker-grand-title-row">
+            <span class="cracker-row-title cracker-grand-title">Level 1000 Mega Cracker Boom Prize</span>
+            <span class="cracker-grand-pill">GRAND REWARD</span>
+          </div>
+          <span class="cracker-row-req">Req: Cracker Lv 1000 + Watch 1,000 Ads</span>
+          <div class="cracker-row-progress" style="color: #fb923c;">
+            ${grandStatusSummary}
+          </div>
+        </div>
+
+        <div class="cracker-row-rewards-col">
+          <div class="cracker-rewards-pill-wrap grand-pills-wrap">
+            <span class="cracker-reward-chip diamond">💎 +10</span>
+            <span class="cracker-reward-chip gold">🪙 +500</span>
+            <span class="cracker-reward-chip darkgreen">🧪 5 DG</span>
+            <span class="cracker-reward-chip green">🧪 5 G</span>
+            <span class="cracker-reward-chip yellow">🧪 5 Y</span>
+            <span class="cracker-reward-chip orange">🧪 5 O</span>
+            <span class="cracker-reward-chip energy">⚡ +100</span>
+          </div>
+          ${grandActionBtn}
+        </div>
+      </div>
+    `;
 
     listEl.innerHTML = html;
   }
@@ -224,6 +298,16 @@
   window.showMoreCrackerLevels = function() {
     visibleMaxLevel = Math.min(1000, visibleMaxLevel + 60);
     renderCrackerLevelsList();
+  };
+
+  window.jumpToCrackerLevel1000 = function() {
+    visibleMinLevel = 980;
+    visibleMaxLevel = 1000;
+    renderCrackerLevelsList();
+    setTimeout(() => {
+      const grandRow = document.getElementById('crackerRow-grand');
+      if (grandRow) grandRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   // Helper when clicking "Need X Crackers"
@@ -379,11 +463,29 @@
 
     // Claim Grand Prize
     cs.megaRewardClaimed = true;
-    if (typeof gameState !== 'undefined' && gameState.player) {
-      gameState.player.diamonds = (gameState.player.diamonds || 0) + 5000;
-      gameState.player.chestKeys = (gameState.player.chestKeys || 0) + 2000;
-      gameState.player.scratchCards = (gameState.player.scratchCards || 0) + 1000;
-      gameState.player.coins = (gameState.player.coins || 0) + 500000;
+    if (typeof gameState !== 'undefined') {
+      if (!gameState.player) gameState.player = {};
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + 10;
+      gameState.player.coins = (gameState.player.coins || 0) + 500;
+
+      if (!gameState.energyGenerator) gameState.energyGenerator = { fuelCells: {} };
+      if (!gameState.energyGenerator.fuelCells) {
+        gameState.energyGenerator.fuelCells = { green: 0, darkgreen: 0, yellow: 0, orange: 0, red: 0, darkred: 0, pink: 0, purple: 0, blue: 0, lightblue: 0 };
+      }
+      gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + 5;
+      gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + 5;
+      gameState.energyGenerator.fuelCells.yellow = (gameState.energyGenerator.fuelCells.yellow || 0) + 5;
+      gameState.energyGenerator.fuelCells.orange = (gameState.energyGenerator.fuelCells.orange || 0) + 5;
+
+      if (!gameState.reactor) gameState.reactor = {};
+      gameState.reactor.currentEnergy = (gameState.reactor.currentEnergy || 0) + 100;
+    }
+
+    if (typeof syncPlayerCurrenciesImmediate === 'function') {
+      syncPlayerCurrenciesImmediate();
+    }
+    if (window.firebaseSync && typeof window.firebaseSync.debouncedSave === 'function') {
+      window.firebaseSync.debouncedSave();
     }
 
     if (typeof confetti === 'function') {
@@ -398,7 +500,7 @@
 
     if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
     if (typeof showFloatingToast === 'function') {
-      showFloatingToast('👑 GRAND CRACKER PRIZE CLAIMED! +5,000 💎 +2,000 🔑 +1,000 🃏 +500,000 🪙');
+      showFloatingToast('👑 GRAND CRACKER PRIZE CLAIMED! +10 💎 • +500 🪙 • 5 DG • 5 G • 5 Y • 5 O • +100 ⚡');
     }
 
     if (typeof saveGame === 'function') saveGame(true);
@@ -445,79 +547,106 @@
       }
     }
 
-    // Step 1: Cracker Level 1000 Status
+    // Step 1: Cracker Level 1000 Status (Updates both SubView and Modal)
     const isLvl1000Completed = curLvl >= 1000 || !!(cs && cs.claimedLevels && cs.claimedLevels[1000]);
-    const step1Badge = document.getElementById('crackerMegaStep1Badge');
-    if (step1Badge) {
+    [document.getElementById('crackerMegaStep1Badge'), document.getElementById('modalCrackerStep1Badge')].forEach(badge => {
+      if (!badge) return;
       if (isLvl1000Completed) {
-        step1Badge.textContent = 'COMPLETED';
-        step1Badge.className = 'mega-step-badge completed';
+        badge.textContent = 'COMPLETED';
+        badge.className = 'mega-step-badge completed';
       } else {
-        step1Badge.textContent = 'LOCKED';
-        step1Badge.className = 'mega-step-badge locked';
+        badge.textContent = 'LOCKED';
+        badge.className = 'mega-step-badge locked';
       }
-    }
+    });
 
-    const step1SubText = document.getElementById('crackerMegaStep1SubText');
-    if (step1SubText) {
-      step1SubText.textContent = `Current: Cracker Level ${curLvl} / 1000`;
-    }
+    [document.getElementById('crackerMegaStep1SubText'), document.getElementById('modalCrackerStep1SubText')].forEach(sub => {
+      if (sub) sub.textContent = `Current: Cracker Level ${curLvl} / 1000`;
+    });
 
-    const step1Lock = document.getElementById('crackerMegaStep1Lock');
-    if (step1Lock) {
-      step1Lock.style.display = isLvl1000Completed ? 'none' : 'block';
-    }
+    [document.getElementById('crackerMegaStep1Lock'), document.getElementById('modalCrackerStep1Lock')].forEach(lock => {
+      if (lock) lock.style.display = isLvl1000Completed ? 'none' : 'block';
+    });
 
-    // Step 2: 1,000 Ads Progress
+    // Step 2: 1,000 Ads Progress (Updates both SubView and Modal)
     const watchedAds = (cs && cs.megaWatchedAds) || 0;
     const adsPct = Math.min(100, Math.floor((watchedAds / 1000) * 100));
 
-    const adsHeader = document.getElementById('crackerMegaAdsCounterHeader');
-    if (adsHeader) {
-      adsHeader.textContent = `${watchedAds} / 1000 Ads (${adsPct}%)`;
-    }
+    [document.getElementById('crackerMegaAdsCounterHeader'), document.getElementById('modalCrackerAdsCounterHeader')].forEach(hdr => {
+      if (hdr) hdr.textContent = `${watchedAds} / 1000 Ads (${adsPct}%)`;
+    });
 
-    const progressFill = document.getElementById('crackerMegaAdsProgressFill');
-    if (progressFill) {
-      progressFill.style.width = `${adsPct}%`;
-    }
+    [document.getElementById('crackerMegaAdsProgressFill'), document.getElementById('modalCrackerAdsProgressFill')].forEach(fill => {
+      if (fill) fill.style.width = `${adsPct}%`;
+    });
 
-    const adsRemainText = document.getElementById('crackerMegaAdsRemainText');
-    if (adsRemainText) {
-      adsRemainText.textContent = `${Math.max(0, 1000 - watchedAds)} ads remaining`;
-    }
+    [document.getElementById('crackerMegaAdsRemainText'), document.getElementById('modalCrackerAdsRemainText')].forEach(rem => {
+      if (rem) rem.textContent = `${Math.max(0, 1000 - watchedAds)} ads remaining`;
+    });
 
-    // Master Mega Action Button State
+    // Master Mega Action Button State (Updates both SubView and Modal)
     const isClaimed = !!(cs && cs.megaRewardClaimed);
-    const actionBtn = document.getElementById('crackerMegaActionBtn');
-    const actionBtnText = document.getElementById('crackerMegaActionBtnText');
-    const lockIcon = document.getElementById('crackerMegaActionLockIcon');
+    const actionBtns = [
+      { btn: document.getElementById('crackerMegaActionBtn'), text: document.getElementById('crackerMegaActionBtnText'), lock: document.getElementById('crackerMegaActionLockIcon') },
+      { btn: document.getElementById('modalCrackerActionBtn'), text: document.getElementById('modalCrackerActionBtnText'), lock: document.getElementById('modalCrackerActionLockIcon') }
+    ];
 
-    if (actionBtn) {
+    actionBtns.forEach(({ btn, text, lock }) => {
+      if (!btn) return;
       if (!isLvl1000Completed) {
-        actionBtn.className = 'mega-action-btn disabled cracker-mega-btn';
-        if (actionBtnText) actionBtnText.textContent = `REACH CRACKER LEVEL 1000 TO UNLOCK AD WATCHER`;
-        if (lockIcon) lockIcon.style.display = 'block';
+        btn.className = 'mega-action-btn disabled cracker-mega-btn';
+        if (text) text.textContent = `REACH CRACKER LEVEL 1000 TO UNLOCK AD WATCHER`;
+        if (lock) lock.style.display = 'block';
       } else if (watchedAds < 1000) {
-        actionBtn.className = 'mega-action-btn cracker-mega-btn';
-        if (actionBtnText) actionBtnText.textContent = `WATCH AD (${watchedAds}/1000) FOR CRACKER MEGA REWARD 📢`;
-        if (lockIcon) lockIcon.style.display = 'none';
+        btn.className = 'mega-action-btn cracker-mega-btn';
+        if (text) text.textContent = `WATCH AD (${watchedAds}/1000) FOR CRACKER MEGA REWARD 📢`;
+        if (lock) lock.style.display = 'none';
       } else if (!isClaimed) {
-        actionBtn.className = 'mega-action-btn claim-ready cracker-mega-btn';
-        if (actionBtnText) actionBtnText.textContent = `🎉 CLAIM GRAND CRACKER PRIZE (5,000 💎 • 2,000 🔑 • 1,000 🃏 • 500,000 🪙) 👑`;
-        if (lockIcon) lockIcon.style.display = 'none';
+        btn.className = 'mega-action-btn claim-ready cracker-mega-btn';
+        if (text) text.textContent = `🎉 CLAIM GRAND CRACKER PRIZE (10 💎 • 500 🪙 • 20 FUELS • 100 ⚡) 👑`;
+        if (lock) lock.style.display = 'none';
       } else {
-        actionBtn.className = 'mega-action-btn claimed cracker-mega-btn';
-        if (actionBtnText) actionBtnText.textContent = `✓ CRACKER MEGA REWARD CLAIMED`;
-        if (lockIcon) lockIcon.style.display = 'none';
+        btn.className = 'mega-action-btn claimed cracker-mega-btn';
+        if (text) text.textContent = `✓ CRACKER MEGA REWARD CLAIMED`;
+        if (lock) lock.style.display = 'none';
       }
-    }
+    });
 
     // If currently on levels subtab, refresh list
     if (cs && cs.currentSubtab === 'levels') {
       renderCrackerLevelsList();
     }
   }
+
+  // Modal Open & Close Functions
+  function openCrackerMegaRewardModal(e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const modal = document.getElementById('crackerMegaModalOverlay');
+    if (modal) {
+      modal.classList.add('open');
+      updateCrackerViewUI();
+    }
+    if (typeof sfx !== 'undefined' && sfx.playTapSound) sfx.playTapSound(1);
+  }
+
+  function closeCrackerMegaRewardModal(e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const modal = document.getElementById('crackerMegaModalOverlay');
+    if (modal) {
+      modal.classList.remove('open');
+    }
+    if (typeof sfx !== 'undefined' && sfx.playTapSound) sfx.playTapSound(1);
+  }
+
+  // Escape key closes modal
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('crackerMegaModalOverlay');
+      if (modal && modal.classList.contains('open')) {
+        closeCrackerMegaRewardModal();
+      }
+    }
+  });
 
   // Page Initializer
   function initCrackerPage() {
@@ -537,5 +666,7 @@
   window.handleCrackerMegaRewardAction = handleCrackerMegaRewardAction;
   window.getCrackerLevelRequirement = getCrackerLevelRequirement;
   window.getCrackerLevelRewards = getCrackerLevelRewards;
+  window.openCrackerMegaRewardModal = openCrackerMegaRewardModal;
+  window.closeCrackerMegaRewardModal = closeCrackerMegaRewardModal;
 
 })();

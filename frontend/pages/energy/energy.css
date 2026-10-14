@@ -1463,14 +1463,14 @@
   transform: scale(0.97);
 }
 
-/* Bee Farm Entry Card */
+/* Bee Farm Entry Card (Hidden from Home Menu Bar) */
 .beefarm-entry-tab-card {
+  display: none !important;
   position: relative;
   background: linear-gradient(135deg, #181512 0%, #0f172a 100%);
   border: 1.5px solid rgba(245, 158, 11, 0.45);
   border-radius: 18px;
   padding: 12px 14px;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -1671,14 +1671,14 @@
   transform: scale(1.04);
 }
 
-/* Mining Entry Card */
+/* Mining Entry Card (Hidden from Home Menu Bar) */
 .mining-entry-tab-card {
+  display: none !important;
   position: relative;
   background: linear-gradient(135deg, #091322 0%, #060b18 100%);
   border: 1.5px solid rgba(0, 240, 255, 0.45);
   border-radius: 18px;
   padding: 12px 14px;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;

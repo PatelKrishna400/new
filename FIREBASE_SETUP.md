@@ -62,36 +62,189 @@ This document outlines the complete Firebase Realtime Database setup, security r
   "rules": {
     "players": {
       ".read": true,
+      ".write": "auth != null",
       "$uid": {
         ".read": true,
-        ".write": true,
-        ".validate": "newData.hasChildren(['player']) || newData.hasChildren(['updatedAt'])"
+        ".write": "auth != null",
+        "diamonds": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        },
+        "coins": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        },
+        "diamondWins": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        },
+        "piggyBank": {
+          "totalStored": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+          }
+        }
+      }
+    },
+    "users": {
+      ".read": true,
+      ".write": "auth != null",
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null"
       }
     },
     "leaderboard": {
       ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["diamondWins", "coins", "level", "lastActive"],
       "$uid": {
-        ".write": true,
-        ".validate": "newData.hasChildren(['name', 'level', 'coins'])"
+        ".read": true,
+        ".write": "auth != null",
+        "diamondWins": {
+          ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+        }
       }
     },
     "mega_rewards": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null",
+      "$rewardId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
     },
     "reward_requests": {
       ".read": true,
-      ".write": true,
+      ".write": "auth != null",
       "$reqId": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null"
       }
+    },
+    "account_requests": {
+      ".read": true,
+      ".write": "auth != null",
+      "$accReqId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "suggestions": {
+      ".read": true,
+      ".write": "auth != null",
+      "$sugId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "ads_direct_clicks": {
+      ".read": true,
+      ".write": "auth != null",
+      "$clickId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "website_tasks_config": {
+      ".read": true,
+      ".write": "auth != null",
+      "$taskId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "telegram_tasks_config": {
+      ".read": true,
+      ".write": "auth != null",
+      "$taskId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "monthly_tasks_config": {
+      ".read": true,
+      ".write": "auth != null",
+      "$taskId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "monthly_competition": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "season": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "ads_analytics": {
+      ".read": true,
+      ".write": "auth != null",
+      "directClicks": {
+        ".write": "auth != null",
+        ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+      },
+      "monetagViews": {
+        ".write": "auth != null",
+        ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+      }
+    },
+    "ads_config": {
+      ".read": true,
+      ".write": "auth != null"
     },
     "whitelist": {
       ".read": true,
+      ".write": "auth != null",
       "$uid": {
-        ".write": true
+        ".read": true,
+        ".write": "auth != null"
       }
+    },
+    "admin_users": {
+      ".read": true,
+      ".write": "auth != null",
+      "$adminId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "game_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "levels_config": {
+      ".read": true,
+      ".write": "auth != null",
+      "$levelId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "fuel_cells_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "identityIndex": {
+      ".read": true,
+      ".write": "auth != null",
+      "$type": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "auth_config": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "activity_log": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["timestamp"],
+      "$actId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    ".info": {
+      ".read": true
     }
   }
 }

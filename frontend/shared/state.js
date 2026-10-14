@@ -563,6 +563,42 @@ function loadSavedGame() {
           tiles: [false, false, false, false, false, false, false, false, false]
         };
       }
+      if (parsed.crackerState) {
+        gameState.crackerState = Object.assign({
+          currentLevel: 1,
+          claimedLevels: {},
+          currentSubtab: 'levels',
+          megaWatchedAds: 0,
+          megaRewardClaimed: false,
+          seasonEndMs: Date.now() + 30 * 86400 * 1000
+        }, parsed.crackerState);
+      } else if (!gameState.crackerState) {
+        gameState.crackerState = {
+          currentLevel: 1,
+          claimedLevels: {},
+          currentSubtab: 'levels',
+          megaWatchedAds: 0,
+          megaRewardClaimed: false,
+          seasonEndMs: Date.now() + 30 * 86400 * 1000
+        };
+      }
+      if (parsed.balloonPursuitState) {
+        gameState.balloonPursuitState = Object.assign({
+          currentUnlockedStage: 1,
+          jackpotAdsWatched: 0,
+          stageAdsWatchedMap: {},
+          stageCoinsPaidMap: {},
+          eventEndTime: Date.now() + 30 * 86400 * 1000
+        }, parsed.balloonPursuitState);
+      } else if (!gameState.balloonPursuitState) {
+        gameState.balloonPursuitState = {
+          currentUnlockedStage: 1,
+          jackpotAdsWatched: 0,
+          stageAdsWatchedMap: {},
+          stageCoinsPaidMap: {},
+          eventEndTime: Date.now() + 30 * 86400 * 1000
+        };
+      }
       if (parsed.dailyStats) {
         gameState.dailyStats = Object.assign({
           spins: 0,
@@ -719,6 +755,10 @@ function loadSavedGame() {
       // Check and process offline EP generator progression from saved state
       if (typeof processEnergyGeneratorOfflineCatchup === 'function') {
         processEnergyGeneratorOfflineCatchup(gameState.energyGenerator.lastTickTime, 'localStorage');
+      }
+      if (typeof gameState !== 'undefined' && gameState.player) {
+        _lastSavedCoins = gameState.player.coins;
+        _lastSavedDiamonds = gameState.player.diamonds;
       }
     } catch (e) {
       console.warn('Failed to load saved state, using default restart', e);
@@ -1062,55 +1102,70 @@ window.checkDailyStatsDate = checkDailyStatsDate;
 // Season Expiration & Level Reward Restoration Logic (Per-User Individual Execution)
 function checkSeasonExpiration() {
   const now = Date.now();
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
   let needSave = false;
 
   // XP Page Season Check: Run for individual player
   if (gameState.xpState) {
-    if (!gameState.xpState.seasonEndMs || now >= gameState.xpState.seasonEndMs) {
-      // Re-fix and restore claimed levels so user can climb levels and claim new rewards
+    if (!gameState.xpState.seasonEndMs || typeof gameState.xpState.seasonEndMs !== 'number' || !isFinite(gameState.xpState.seasonEndMs)) {
+      // First-time initialization: simply establish the 30-day window WITHOUT wiping player progress!
+      gameState.xpState.seasonEndMs = now + thirtyDaysMs;
+      needSave = true;
+    } else if (now >= gameState.xpState.seasonEndMs) {
+      // Natural 30-day season expired: advance season window past current time
+      while (gameState.xpState.seasonEndMs <= now) {
+        gameState.xpState.seasonEndMs += thirtyDaysMs;
+      }
       gameState.xpState.claimedLevels = {};
       gameState.xpState.watchedAds = 0;
       gameState.xpState.megaRewardClaimed = false;
-      gameState.xpState.seasonEndMs = now + (30 * 24 * 60 * 60 * 1000);
-
-      // Restore player level to 0 and reset XP so the user starts fresh and climbs new levels level-wise!
-      if (gameState.player) {
-        gameState.player.level = 0;
-        gameState.player.xp = 0;
-        gameState.player.xpToNextLevel = 1000;
-      }
       needSave = true;
-      console.log('🔄 XP Season restarted: Level rewards restored and new 30-day season initialized for user!');
+      console.log('🔄 XP Season cycle updated for user!');
     }
   }
 
   // Goal Page Season Check: Run for individual player
   if (gameState.goalState) {
-    if (!gameState.goalState.seasonEndMs || now >= gameState.goalState.seasonEndMs) {
-      // Re-fix and restore claimed goals and level progress so user can progress level-wise anew
+    if (!gameState.goalState.seasonEndMs || typeof gameState.goalState.seasonEndMs !== 'number' || !isFinite(gameState.goalState.seasonEndMs)) {
+      // First-time initialization: establish the 30-day window WITHOUT wiping goals!
+      gameState.goalState.seasonEndMs = now + thirtyDaysMs;
+      needSave = true;
+    } else if (now >= gameState.goalState.seasonEndMs) {
+      // Natural 30-day season expired: advance season window past current time
+      while (gameState.goalState.seasonEndMs <= now) {
+        gameState.goalState.seasonEndMs += thirtyDaysMs;
+      }
       gameState.goalState.claimedGoals = {};
-      gameState.goalState.currentLevel = 0;
-      gameState.goalState.levelProgress = { cards: 0, keys: 0, tickets: 0 };
       gameState.goalState.levelAdsWatched = 0;
       gameState.goalState.megaWatchedAds = 0;
       gameState.goalState.megaRewardClaimed = false;
       gameState.goalState.grandChestClaimed = false;
-      gameState.goalState.seasonEndMs = now + (30 * 24 * 60 * 60 * 1000);
-      if (gameState.goal) {
-        gameState.goal.level = 0;
-        gameState.goal.currentCoins = 0;
-        gameState.goal.currentKeys = 0;
-        gameState.goal.currentTickets = 0;
-      }
       needSave = true;
-      console.log('🔄 Goal Season restarted: Goal levels and claim data restored for new 30-day season for user!');
+      console.log('🔄 Goal Season cycle updated for user!');
+    }
+  }
+
+  // Cracker Page Season Check: Run for individual player
+  if (gameState.crackerState) {
+    if (!gameState.crackerState.seasonEndMs || typeof gameState.crackerState.seasonEndMs !== 'number' || !isFinite(gameState.crackerState.seasonEndMs)) {
+      gameState.crackerState.seasonEndMs = now + thirtyDaysMs;
+      needSave = true;
+    } else if (now >= gameState.crackerState.seasonEndMs) {
+      while (gameState.crackerState.seasonEndMs <= now) {
+        gameState.crackerState.seasonEndMs += thirtyDaysMs;
+      }
+      gameState.crackerState.claimedLevels = {};
+      gameState.crackerState.megaWatchedAds = 0;
+      gameState.crackerState.megaRewardClaimed = false;
+      needSave = true;
+      console.log('🔄 Cracker Boom Season cycle updated for user!');
     }
   }
 
   if (needSave) {
     saveGame();
-    if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
-      window.firebaseSync.saveToCloudImmediate();
+    if (window.firebaseSync && typeof window.firebaseSync.debouncedSave === 'function') {
+      window.firebaseSync.debouncedSave();
     }
     if (typeof updateUI === 'function') updateUI();
     if (typeof renderLevelsList === 'function') renderLevelsList();
@@ -1121,13 +1176,34 @@ window.checkSeasonExpiration = checkSeasonExpiration;
 
 let _saveGameTimeout = null;
 let _saveGamePending = false;
+let _lastSavedCoins = undefined;
+let _lastSavedDiamonds = undefined;
 
-function _performActualSave() {
+function _performActualSave(immediate = false) {
   _saveGamePending = false;
   if (_saveGameTimeout) {
     clearTimeout(_saveGameTimeout);
     _saveGameTimeout = null;
   }
+
+  // Detect if player coins or diamonds were deducted since last save
+  const currentCoins = (gameState.player && typeof gameState.player.coins === 'number') ? gameState.player.coins : 0;
+  const currentDiamonds = (gameState.player && typeof gameState.player.diamonds === 'number') ? gameState.player.diamonds : 0;
+
+  let currencyDeducted = false;
+  if (_lastSavedCoins !== undefined && currentCoins < _lastSavedCoins) {
+    currencyDeducted = true;
+  }
+  if (_lastSavedDiamonds !== undefined && currentDiamonds < _lastSavedDiamonds) {
+    currencyDeducted = true;
+  }
+  _lastSavedCoins = currentCoins;
+  _lastSavedDiamonds = currentDiamonds;
+
+  if (currencyDeducted) {
+    window._lastCurrencyDeductionTime = Date.now();
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       resetVersion: GAME_RESET_VERSION,
@@ -1186,6 +1262,9 @@ function _performActualSave() {
       tasksState: gameState.tasksState,
       xpState: gameState.xpState,
       goalState: gameState.goalState,
+      crackerState: gameState.crackerState,
+      puzzleState: gameState.puzzleState,
+      balloonPursuitState: gameState.balloonPursuitState,
       spinState: gameState.spinState || {
         level: 1,
         crowns: 0,
@@ -1199,22 +1278,62 @@ function _performActualSave() {
   }
 
   // Real-time Cloud Save to Firebase
-  if (window.firebaseSync && typeof window.firebaseSync.debouncedSave === 'function') {
-    window.firebaseSync.debouncedSave();
+  if (window.firebaseSync) {
+    if (currencyDeducted && typeof window.firebaseSync.syncPlayerCurrenciesImmediate === 'function') {
+      window.firebaseSync.syncPlayerCurrenciesImmediate(currentCoins, currentDiamonds);
+    } else if (immediate && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
+      window.firebaseSync.saveToCloudImmediate();
+    } else if (typeof window.firebaseSync.debouncedSave === 'function') {
+      window.firebaseSync.debouncedSave();
+    }
   }
 }
 
 function saveGame(immediate = false) {
   if (immediate) {
-    _performActualSave();
+    _performActualSave(true);
     return;
   }
   if (_saveGameTimeout) return;
   _saveGamePending = true;
   _saveGameTimeout = setTimeout(() => {
-    _performActualSave();
+    _performActualSave(false);
   }, 350);
 }
+
+// Global Currency Deduct Helpers ensuring instant Firebase sync & preventing rollback recreation
+window.deductPlayerCurrency = function(currencyType, amount, reason = '') {
+  if (!gameState || !gameState.player) return false;
+  const num = Math.max(0, Number(amount) || 0);
+  if (num <= 0) return true;
+
+  if (currencyType === 'coins') {
+    if ((gameState.player.coins || 0) < num) return false;
+    gameState.player.coins -= num;
+  } else if (currencyType === 'diamonds') {
+    if ((gameState.player.diamonds || 0) < num) return false;
+    gameState.player.diamonds -= num;
+  } else {
+    return false;
+  }
+
+  window._lastCurrencyDeductionTime = Date.now();
+  if (typeof updateUI === 'function') updateUI();
+  saveGame(true);
+
+  if (window.firebaseSync && typeof window.firebaseSync.syncPlayerCurrenciesImmediate === 'function') {
+    window.firebaseSync.syncPlayerCurrenciesImmediate(gameState.player.coins, gameState.player.diamonds);
+  }
+  return true;
+};
+
+window.deductPlayerCoins = function(amount, reason = '') {
+  return window.deductPlayerCurrency('coins', amount, reason);
+};
+
+window.deductPlayerDiamonds = function(amount, reason = '') {
+  return window.deductPlayerCurrency('diamonds', amount, reason);
+};
 
 // Level Progression Completer (Unified across Goal, XP, Home)
 function canClaimActiveLevel() {

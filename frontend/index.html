@@ -90,7 +90,7 @@
   </script>
 
   <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
-  <link rel="stylesheet" href="style.css?v=1791733790338">
+  <link rel="stylesheet" href="style.css?v=1791947908485">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -906,8 +906,8 @@
                   </div>
                 </div>
       
-                <!-- Card 2: Honey Bee Farm Tycoon -->
-                <div class="beefarm-entry-tab-card" id="beeFarmEntryCard" onclick="switchEnergySubview('beefarm')">
+                <!-- Card 2: Honey Bee Farm Tycoon (Hidden from home menu bar) -->
+                <div class="beefarm-entry-tab-card hidden" id="beeFarmEntryCard" onclick="switchEnergySubview('beefarm')" style="display: none !important;">
                   <div class="bf-tab-honeycomb-bg"></div>
                   <div class="bf-entry-glow"></div>
                   <div class="bf-entry-left">
@@ -934,8 +934,8 @@
                   </div>
                 </div>
       
-                <!-- Card 3: Crystal Mining & Gem Forge Tycoon -->
-                <div class="mining-entry-tab-card" id="miningEntryCard" onclick="switchEnergySubview('mining')">
+                <!-- Card 3: Crystal Mining & Gem Forge Tycoon (Hidden from home menu bar) -->
+                <div class="mining-entry-tab-card hidden" id="miningEntryCard" onclick="switchEnergySubview('mining')" style="display: none !important;">
                   <div class="mining-tab-cyber-bg"></div>
                   <div class="mining-entry-glow"></div>
                   <div class="mining-entry-left">
@@ -2466,8 +2466,8 @@
                 </button>
               </section>
       
-              <!-- ==================== CARD 7: CRACKER BOOM MISSIONS (LEVELS 1 - 1000) ==================== -->
-              <section class="rewards-grand-rectangle-card" id="rewardTabCracker" onclick="switchPage('cracker')">
+              <!-- ==================== CARD 7: CRACKER BOOM MISSIONS (LEVELS 1 - 1000) (HIDDEN) ==================== -->
+              <section class="rewards-grand-rectangle-card" id="rewardTabCracker" style="display: none !important;" onclick="switchPage('cracker')">
                 <div class="grand-vault-aura" style="background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 80%);"></div>
                 
                 <div class="grand-vault-emblem-wrap">
@@ -2707,7 +2707,7 @@
                   </svg>
                 </div>
                 <h2 class="streak-hero-title" id="streakHeroTitle">0 Day Streak</h2>
-                <p class="streak-hero-subtitle">Check in every 24 hours to earn fuel cells, keys, tickets & scratch cards!</p>
+                <p class="streak-hero-subtitle">Check in every 24 hours to earn Gold Coins, Green Fuel, Keys, Tickets, Eggs, Spin Coins & Diamonds!</p>
               </section>
       
               <!-- 7-Day Rewards Grid -->
@@ -3580,9 +3580,6 @@
                   <small>20x Win</small>
                 </button>
               </div>
-              <button class="spin-reward-hub-btn" onclick="switchPage('cracker')" title="Open Cracker Boom Level Rewards (1 - 1000)">
-                <span>🎁 REWARD ➔</span>
-              </button>
             </div>
       
             <!-- Spin Wheel Stage Container -->
@@ -4538,30 +4535,23 @@
           <div class="spin-ticket-header-pill" id="memoryBalloonCoinPill" onclick="openBalloonPursuitModal()" title="Balloon Pursuit Map (🎈 Balloon Coins)" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.15); cursor: pointer;">
             <span class="ticket-pill-icon">🎈</span>
             <span class="ticket-pill-val" id="memoryPlayerBalloonCoinsVal" style="color: #fde047;">0</span>
+            <span class="ticket-add-btn" style="background: rgba(245, 158, 11, 0.35); border-color: rgba(245, 158, 11, 0.7); font-size: 11px; margin-left: 2px;">➔</span>
           </div>
         </div>
       
-        <!-- Interactive 30-Day Balloon Pursuit Event Banner Tab Card -->
-        <div class="memory-event-banner-tab" id="memoryEventBannerTab" onclick="openBalloonPursuitModal()" title="Open Balloon Pursuit 30-Day Event Map" role="button" tabindex="0">
+        <!-- Interactive Balloon Pursuit Event Banner Tab Card -->
+        <div class="memory-event-banner-tab" id="memoryEventBannerTab" onclick="openBalloonPursuitModal()" title="Open Balloon Pursuit 12-Stage Event Map" role="button" tabindex="0">
           <div class="event-banner-glow"></div>
           <div class="event-banner-content">
             <div class="event-banner-left">
-              <div class="event-tag-pill">
-                <span class="event-flame-icon">🔥</span>
-                <span>SPECIAL 30-DAY EVENT ACTIVE</span>
-              </div>
-              <h3 class="event-tab-title">🎈 BALLOON PURSUIT ADVENTURE</h3>
-              <p class="event-tab-desc">Match 16 cards to win <strong>+10 🎈 Balloon Coins</strong> &amp; conquer 12 Stages for <strong>💎 10 Diamonds &amp; Mega Loot</strong>!</p>
+              <h3 class="event-tab-title">🎈 BALLOON PURSUIT (12 STAGES)</h3>
             </div>
             <div class="event-banner-right">
               <div class="event-timer-capsule">
-                <span class="timer-label">EVENT ENDS IN</span>
+                <span class="timer-label">EVENT ENDS IN:</span>
                 <span class="timer-digits font-mono" id="memoryPageEventTimer">30d 00:00:00</span>
               </div>
-              <button class="event-cta-btn" type="button">
-                <span>EVENT MAP</span>
-                <span class="cta-arrow">➔</span>
-              </button>
+              <span class="event-tab-arrow">➔</span>
             </div>
           </div>
         </div>
@@ -4925,10 +4915,6 @@
           </div>
           <div class="puzzle-loading-bar-wrap">
             <div class="puzzle-loading-bar-fill" id="puzzleProgressBarFill" style="width: 0%;"></div>
-          </div>
-          <div class="puzzle-milestone-sub">
-            <span id="puzzleMilestoneSubText">Target: 20 🧩 • Win +1 Piece to unlock Morning Café tiles!</span>
-            <span class="open-cafe-link">Open Café Board ☕ ➔</span>
           </div>
         </div>
       
@@ -5478,7 +5464,7 @@
                 <div>
                   <h2 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
                     <span>Sunflower Valley (20 Lands)</span>
-                    <span class="text-[9px] bg-emerald-950 text-emerald-300 font-bold px-1.5 py-0.5 rounded-full border border-emerald-700">Land 1 Free</span>
+                    <span class="text-[9px] bg-amber-950 text-amber-300 font-bold px-1.5 py-0.5 rounded-full border border-amber-700">Land 1: 10 🪙</span>
                   </h2>
                 </div>
               </div>
@@ -5524,7 +5510,7 @@
                 <div>
                   <h2 class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-1.5">
                     <span>Water Aquifer (20 Wells)</span>
-                    <span class="text-[9px] bg-cyan-950 text-cyan-300 font-bold px-1.5 py-0.5 rounded-full border border-cyan-700">Well 1 Free</span>
+                    <span class="text-[9px] bg-cyan-950 text-cyan-300 font-bold px-1.5 py-0.5 rounded-full border border-cyan-700">Well 1 Free to Open</span>
                   </h2>
                 </div>
               </div>
@@ -7694,11 +7680,11 @@
             <!-- Loot Bundle Badge -->
             <div class="mega-coins-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.5); color: #fb923c;">
               <span class="sparkle-icon">👑</span>
-              <span>5,000 DIAMONDS • 2,000 KEYS • 1,000 CARDS • 500,000 COINS</span>
+              <span>10 DIAMONDS • 500 COINS • 5 DARK GREEN • 5 GREEN • 5 YELLOW • 5 ORANGE • 100 ENERGY</span>
             </div>
       
             <h3 class="mega-card-title">Level 1000 Mega Cracker Boom Prize</h3>
-            <p class="mega-card-desc">Complete Cracker Level 1000 with your 🧨 won from the Party Spinner, then watch 1,000 ads to claim your ultimate reward: 5,000 Diamonds, 2,000 Keys, 1,000 Cards, and 500,000 Coins!</p>
+            <p class="mega-card-desc">Complete Cracker Level 1000 with your 🧨 won from the Party Spinner, then watch 1,000 ads to claim your ultimate reward: 10 Diamonds, 500 Coins, 5 Dark Green Fuels, 5 Green Fuels, 5 Yellow Fuels, 5 Orange Fuels, and 100 Energy!</p>
       
             <!-- Step 1 Card -->
             <div class="mega-step-card" id="crackerMegaStep1Card">
@@ -7740,7 +7726,7 @@
       
                 <div class="mega-progress-footer">
                   <span class="ads-remain-text" id="crackerMegaAdsRemainText">1000 ads remaining</span>
-                  <span class="prize-tag" style="color: #fb923c;">5,000 💎 • 2,000 🔑 • 1,000 🃏 • 500,000 🪙</span>
+                  <span class="prize-tag" style="color: #fb923c;">10 💎 • 500 🪙 • 5 DG • 5 G • 5 Y • 5 O • 100 ⚡</span>
                 </div>
               </div>
             </div>
@@ -7774,6 +7760,86 @@
             </button>
           </div>
       
+        </div>
+      
+        <!-- ==================== POPUP MODAL: LEVEL 1000 MEGA REWARD (MATCHES SCREENSHOT) ==================== -->
+        <div class="cracker-mega-modal-overlay" id="crackerMegaModalOverlay" onclick="closeCrackerMegaRewardModal(event)">
+          <div class="cracker-mega-modal-dialog" onclick="event.stopPropagation()">
+            <button class="cracker-modal-close-btn" onclick="closeCrackerMegaRewardModal(event)" aria-label="Close modal">✕</button>
+      
+            <!-- Grand Glowing Fire Emblem -->
+            <div class="grand-reward-emblem-wrap">
+              <div class="grand-emblem-aura" style="background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(245, 158, 11, 0.25) 50%, transparent 70%);"></div>
+              <div class="grand-reward-circle" style="border-color: #f97316; box-shadow: 0 0 36px rgba(249, 115, 22, 0.65); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #450a0a 0%, #1c1917 100%);">
+                <span style="font-size: 46px; filter: drop-shadow(0 0 12px #f97316);">🧨</span>
+              </div>
+              <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #dc2626, #f97316, #eab308);">GRAND CRACKER REWARD</div>
+            </div>
+      
+            <!-- Loot Bundle Badge -->
+            <div class="mega-coins-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.5); color: #fb923c;">
+              <span class="sparkle-icon">👑</span>
+              <span>10 DIAMONDS • 500 COINS • 5 DARK GREEN • 5 GREEN • 5 YELLOW • 5 ORANGE • 100 ENERGY</span>
+            </div>
+      
+            <h3 class="mega-card-title">Level 1000 Mega Cracker Boom Prize</h3>
+            <p class="mega-card-desc">Complete Cracker Level 1000 with your 🧨 won from the Party Spinner, then watch 1,000 ads to claim your ultimate reward: 10 Diamonds, 500 Coins, 5 Dark Green Fuels, 5 Green Fuels, 5 Yellow Fuels, 5 Orange Fuels, and 100 Energy!</p>
+      
+            <!-- Step 1 Card -->
+            <div class="mega-step-card" id="modalCrackerStep1Card">
+              <div class="mega-step-icon-box" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.4); color: #f97316;">
+                <span style="font-size: 20px;">🧨</span>
+              </div>
+              <div class="mega-step-body">
+                <div class="mega-step-header">
+                  <span class="mega-step-title">Step 1: Complete Cracker Level 1000</span>
+                  <span class="mega-step-badge locked" id="modalCrackerStep1Badge">LOCKED</span>
+                </div>
+                <div class="mega-step-sub">
+                  <span id="modalCrackerStep1SubText">Current: Cracker Level 1 / 1000</span>
+                  <svg class="step-lock-icon" id="modalCrackerStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Step 2 Card -->
+            <div class="mega-step-card" id="modalCrackerStep2Card">
+              <div class="mega-step-icon-box cyan-icon-box" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #facc15;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#facc15" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                  <polyline points="17 2 12 7 7 2"/>
+                </svg>
+              </div>
+              <div class="mega-step-body">
+                <div class="mega-step-header">
+                  <span class="mega-step-title">Step 2: Watch 1,000 Ads</span>
+                  <span class="mega-ads-counter-text" id="modalCrackerAdsCounterHeader">0 / 1000 Ads (0%)</span>
+                </div>
+                
+                <div class="mega-progress-track">
+                  <div class="mega-progress-fill" id="modalCrackerAdsProgressFill" style="width: 0%; background: linear-gradient(90deg, #dc2626, #f97316, #eab308); box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);"></div>
+                </div>
+      
+                <div class="mega-progress-footer">
+                  <span class="ads-remain-text" id="modalCrackerAdsRemainText">1000 ads remaining</span>
+                  <span class="prize-tag" style="color: #fb923c;">10 💎 • 500 🪙 • 5 DG • 5 G • 5 Y • 5 O • 100 ⚡</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Master Action Button -->
+            <button class="mega-action-btn disabled cracker-mega-btn" id="modalCrackerActionBtn" onclick="handleCrackerMegaRewardAction()">
+              <svg class="action-lock-svg" id="modalCrackerActionLockIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span id="modalCrackerActionBtnText">REACH CRACKER LEVEL 1000 TO UNLOCK AD WATCHER</span>
+            </button>
+      
+          </div>
         </div>
       
       </div>
@@ -7874,49 +7940,49 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-  <script src="shared/firebase-service.js?v=1791733790338"></script>
+  <script src="shared/firebase-service.js?v=1791947908485"></script>
 
   <!-- Monetag Ad Service -->
-  <script src="shared/ad-service.js?v=1791733790338"></script>
+  <script src="shared/ad-service.js?v=1791947908485"></script>
 
   <!-- Shared Core State -->
-  <script src="shared/state.js?v=1791733790338"></script>
+  <script src="shared/state.js?v=1791947908485"></script>
 
   <!-- Modular Page Scripts (All 31 Modular Pages Loaded Statically for Instant Switching) -->
-  <script src="pages/home/home.js?v=1791733790338"></script>
-  <script src="pages/energy/energy.js?v=1791733790338"></script>
-  <script src="pages/diamond-generator/diamond-generator.js?v=1791733790338"></script>
-  <script src="pages/sunflower/sunflower.js?v=1791733790338"></script>
-  <script src="pages/tasks/tasks.js?v=1791733790338"></script>
-  <script src="pages/profile/profile.js?v=1791733790338"></script>
-  <script src="pages/xp/xp.js?v=1791733790338"></script>
-  <script src="pages/reward/reward.js?v=1791733790338"></script>
-  <script src="pages/goal/goal.js?v=1791733790338"></script>
-  <script src="pages/streak/streak.js?v=1791733790338"></script>
-  <script src="pages/mega-reward/mega-reward.js?v=1791733790338"></script>
-  <script src="pages/spin/spin.js?v=1791733790338"></script>
-  <script src="pages/chest/chest.js?v=1791733790338"></script>
-  <script src="pages/scratch/scratch.js?v=1791733790338"></script>
-  <script src="pages/egg/egg.js?v=1791733790338"></script>
-  <script src="pages/leaderboard/leaderboard.js?v=1791733790338"></script>
-  <script src="pages/memory-match/memory-match.js?v=1791733790338"></script>
-  <script src="pages/coin-catcher/coin-catcher.js?v=1791733790338"></script>
-  <script src="pages/bee-farm/bee-farm.js?v=1791733790338"></script>
-  <script src="pages/mining/mining.js?v=1791733790338"></script>
-  <script src="pages/custom/custom.js?v=1791733790338"></script>
-  <script src="pages/suggest-box/suggest-box.js?v=1791733790338"></script>
-  <script src="pages/ad-rewards/ad-rewards.js?v=1791733790338"></script>
-  <script src="pages/gift-card/gift-card.js?v=1791733790338"></script>
-  <script src="pages/gadgets/gadgets.js?v=1791733790338"></script>
-  <script src="pages/accessories/accessories.js?v=1791733790338"></script>
-  <script src="pages/gaming-tool/gaming-tool.js?v=1791733790338"></script>
-  <script src="pages/kitchen/kitchen.js?v=1791733790338"></script>
-  <script src="pages/stationery/stationery.js?v=1791733790338"></script>
-  <script src="pages/fitness/fitness.js?v=1791733790338"></script>
-  <script src="pages/home-decorate/home-decorate.js?v=1791733790338"></script>
-  <script src="pages/cracker/cracker.js?v=1791733790338"></script>
+  <script src="pages/home/home.js?v=1791947908485"></script>
+  <script src="pages/energy/energy.js?v=1791947908485"></script>
+  <script src="pages/diamond-generator/diamond-generator.js?v=1791947908485"></script>
+  <script src="pages/sunflower/sunflower.js?v=1791947908485"></script>
+  <script src="pages/tasks/tasks.js?v=1791947908485"></script>
+  <script src="pages/profile/profile.js?v=1791947908485"></script>
+  <script src="pages/xp/xp.js?v=1791947908485"></script>
+  <script src="pages/reward/reward.js?v=1791947908485"></script>
+  <script src="pages/goal/goal.js?v=1791947908485"></script>
+  <script src="pages/streak/streak.js?v=1791947908485"></script>
+  <script src="pages/mega-reward/mega-reward.js?v=1791947908485"></script>
+  <script src="pages/spin/spin.js?v=1791947908485"></script>
+  <script src="pages/chest/chest.js?v=1791947908485"></script>
+  <script src="pages/scratch/scratch.js?v=1791947908485"></script>
+  <script src="pages/egg/egg.js?v=1791947908485"></script>
+  <script src="pages/leaderboard/leaderboard.js?v=1791947908485"></script>
+  <script src="pages/memory-match/memory-match.js?v=1791947908485"></script>
+  <script src="pages/coin-catcher/coin-catcher.js?v=1791947908485"></script>
+  <script src="pages/bee-farm/bee-farm.js?v=1791947908485"></script>
+  <script src="pages/mining/mining.js?v=1791947908485"></script>
+  <script src="pages/custom/custom.js?v=1791947908485"></script>
+  <script src="pages/suggest-box/suggest-box.js?v=1791947908485"></script>
+  <script src="pages/ad-rewards/ad-rewards.js?v=1791947908485"></script>
+  <script src="pages/gift-card/gift-card.js?v=1791947908485"></script>
+  <script src="pages/gadgets/gadgets.js?v=1791947908485"></script>
+  <script src="pages/accessories/accessories.js?v=1791947908485"></script>
+  <script src="pages/gaming-tool/gaming-tool.js?v=1791947908485"></script>
+  <script src="pages/kitchen/kitchen.js?v=1791947908485"></script>
+  <script src="pages/stationery/stationery.js?v=1791947908485"></script>
+  <script src="pages/fitness/fitness.js?v=1791947908485"></script>
+  <script src="pages/home-decorate/home-decorate.js?v=1791947908485"></script>
+  <script src="pages/cracker/cracker.js?v=1791947908485"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
-  <script src="shared/app.js?v=1791733790338"></script>
+  <script src="shared/app.js?v=1791947908485"></script>
 </body>
 </html>

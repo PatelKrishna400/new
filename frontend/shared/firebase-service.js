@@ -422,13 +422,25 @@ class FirebaseSyncService {
           }
           hasChanged = true;
         }
+        const now = Date.now();
+        const lastCurrencyDeduction = (typeof window !== 'undefined' && window._lastCurrencyDeductionTime) ? window._lastCurrencyDeductionTime : 0;
+        const isRecentSpend = (now - lastCurrencyDeduction) < 6000;
+
         if (gameState.player.coins !== cloudData.player.coins) {
-          gameState.player.coins = cloudData.player.coins || 0;
-          hasChanged = true;
+          if (isRecentSpend && Number(cloudData.player.coins) > Number(gameState.player.coins)) {
+            console.log('🛡️ Guard: Ignoring stale cloud coins snapshot after recent spend. Keeping local:', gameState.player.coins, 'Cloud was:', cloudData.player.coins);
+          } else {
+            gameState.player.coins = cloudData.player.coins || 0;
+            hasChanged = true;
+          }
         }
         if (gameState.player.diamonds !== cloudData.player.diamonds) {
-          gameState.player.diamonds = cloudData.player.diamonds || 0;
-          hasChanged = true;
+          if (isRecentSpend && Number(cloudData.player.diamonds) > Number(gameState.player.diamonds)) {
+            console.log('🛡️ Guard: Ignoring stale cloud diamonds snapshot after recent spend. Keeping local:', gameState.player.diamonds, 'Cloud was:', cloudData.player.diamonds);
+          } else {
+            gameState.player.diamonds = cloudData.player.diamonds || 0;
+            hasChanged = true;
+          }
         }
         if (cloudData.player.blueCoins !== undefined && gameState.player.blueCoins !== cloudData.player.blueCoins) {
           gameState.player.blueCoins = cloudData.player.blueCoins || 0;
@@ -578,6 +590,27 @@ class FirebaseSyncService {
       if (cloudData.mining && typeof window !== 'undefined' && typeof window.syncMiningFromCloud === 'function') {
         window.syncMiningFromCloud(cloudData.mining);
       }
+      if (cloudData.crackerState && typeof gameState !== 'undefined') {
+        if (!gameState.crackerState || JSON.stringify(gameState.crackerState) !== JSON.stringify(cloudData.crackerState)) {
+          gameState.crackerState = Object.assign(gameState.crackerState || {}, cloudData.crackerState);
+          hasChanged = true;
+          if (typeof updateCrackerViewUI === 'function') updateCrackerViewUI();
+        }
+      }
+      if (cloudData.puzzleState && typeof gameState !== 'undefined') {
+        if (!gameState.puzzleState || JSON.stringify(gameState.puzzleState) !== JSON.stringify(cloudData.puzzleState)) {
+          gameState.puzzleState = Object.assign(gameState.puzzleState || {}, cloudData.puzzleState);
+          hasChanged = true;
+          if (typeof updatePuzzleHUD === 'function') updatePuzzleHUD();
+        }
+      }
+      if (cloudData.balloonPursuitState && typeof gameState !== 'undefined') {
+        if (!gameState.balloonPursuitState || JSON.stringify(gameState.balloonPursuitState) !== JSON.stringify(cloudData.balloonPursuitState)) {
+          gameState.balloonPursuitState = Object.assign(gameState.balloonPursuitState || {}, cloudData.balloonPursuitState);
+          hasChanged = true;
+          if (typeof renderStagesGrid === 'function') renderStagesGrid();
+        }
+      }
 
       if (hasChanged) {
         if (typeof saveGame === 'function') saveGame();
@@ -623,8 +656,11 @@ class FirebaseSyncService {
       const adminSeasonTimestamp = seasonData.forceRestartTimestamp || seasonData.seasonStartTime || 0;
       const localLastProcessed = Number(localStorage.getItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET') || 0);
 
-      // If admin triggered a new season reset after our last processed reset
-      if (adminSeasonTimestamp > localLastProcessed) {
+      // Guard: On first visit/session initialize timestamp WITHOUT wiping active player balances!
+      if (!localLastProcessed) {
+        localStorage.setItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET', adminSeasonTimestamp);
+      } else if (adminSeasonTimestamp > localLastProcessed) {
+        // Admin explicitly triggered a NEW season reset after this client's recorded timestamp
         localStorage.setItem('ENERGY_TAP_LAST_ADMIN_SEASON_RESET', adminSeasonTimestamp);
         console.log('🔄 Global Admin Season Reset received from Firebase! Restoring levels & zero balances for user:', this.userId);
 
@@ -780,8 +816,10 @@ class FirebaseSyncService {
       const adminResetTimestamp = compData.forceResetTimestamp || compData.startTime || 0;
       const localLastProcessed = Number(localStorage.getItem('ENERGY_TAP_LAST_MONTHLY_COMP_RESET') || 0);
 
-      // Trigger reset if new cycle or admin force-reset was triggered
-      if (adminResetTimestamp > localLastProcessed) {
+      // Guard: On first visit/session initialize timestamp WITHOUT wiping active tasks!
+      if (!localLastProcessed) {
+        localStorage.setItem('ENERGY_TAP_LAST_MONTHLY_COMP_RESET', adminResetTimestamp);
+      } else if (adminResetTimestamp > localLastProcessed) {
         localStorage.setItem('ENERGY_TAP_LAST_MONTHLY_COMP_RESET', adminResetTimestamp);
         console.log('🔄 Firebase Monthly Task Competition Reset applied for player:', this.userId);
 
@@ -998,6 +1036,9 @@ class FirebaseSyncService {
           targetCrowns: 5,
           giftsClaimed: 0
         },
+        crackerState: gameState.crackerState || null,
+        puzzleState: gameState.puzzleState || null,
+        balloonPursuitState: gameState.balloonPursuitState || null,
         sunflower: (typeof window !== 'undefined' && window.sunflowerState) ? window.sunflowerState : null,
         beeFarm: (typeof window !== 'undefined' && window.beeState) ? window.beeState : null,
         mining: (typeof window !== 'undefined' && window.miningState) ? window.miningState : null,
@@ -1044,6 +1085,32 @@ class FirebaseSyncService {
       console.warn('⚠️ User data store rejected: Authentication required!', err);
       this.setSyncStatus('auth_required');
     });
+  }
+
+  // Direct, Immediate Currency Sync to Firebase RTDB & server store when coins or diamonds are spent/earned
+  syncPlayerCurrenciesImmediate(explicitCoins, explicitDiamonds) {
+    if (!this.database || !this.userId) return;
+    const coins = (explicitCoins !== undefined) ? explicitCoins : ((typeof gameState !== 'undefined' && gameState.player) ? gameState.player.coins : 0);
+    const diamonds = (explicitDiamonds !== undefined) ? explicitDiamonds : ((typeof gameState !== 'undefined' && gameState.player) ? gameState.player.diamonds : 0);
+    const now = Date.now();
+    if (typeof window !== 'undefined') {
+      window._lastCurrencyDeductionTime = now;
+    }
+
+    const updates = {};
+    updates[`players/${this.userId}/player/coins`] = Number(coins) || 0;
+    updates[`players/${this.userId}/player/diamonds`] = Number(diamonds) || 0;
+    updates[`players/${this.userId}/updatedAt`] = now;
+    updates[`users/${this.userId}/coins`] = Number(coins) || 0;
+    updates[`users/${this.userId}/diamonds`] = Number(diamonds) || 0;
+    updates[`users/${this.userId}/updatedAt`] = now;
+
+    this.database.ref().update(updates).catch((err) => {
+      console.warn('Direct currency update note:', err ? err.message : '');
+    });
+
+    // Also trigger full cloud save immediate
+    this.saveToCloudImmediate();
   }
 
   // Live Leaderboard synchronization (Authentication required)

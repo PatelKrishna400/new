@@ -42,9 +42,11 @@ function switchRewardSubtab(tabName) {
     'rewardTabScratch',
     'rewardTabEgg',
     'rewardTabMemory',
-    'rewardTabCatcher',
-    'rewardTabCracker'
+    'rewardTabCatcher'
   ];
+
+  const crackerCard = document.getElementById('rewardTabCracker');
+  if (crackerCard) crackerCard.style.display = 'none';
 
   if (tabName === 'all') {
     allCards.forEach(id => {

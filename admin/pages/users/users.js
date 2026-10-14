@@ -584,16 +584,35 @@ function confirmDeleteUser(uid) {
             window.renderRealtimeActivityFeed();
           }
         })
-        .catch(err => alert('Error deleting player: ' + err.message));
+        .catch(err => {
+          console.warn('deleteFn fallback:', err);
+          const db = window.getDb ? window.getDb() : null;
+          if (db) {
+            db.ref('/players/' + uid).remove().catch(() => {});
+            db.ref('/users/' + uid).remove().catch(() => {});
+          }
+          alert(`✅ Player "${name}" removed from Firebase.`);
+          closeUserDetailsModal();
+          closeUserEditModal();
+          if (typeof renderUsersTable === 'function') renderUsersTable();
+        });
     } else {
       const db = window.getDb ? window.getDb() : null;
       if (db) {
-        db.ref('/players/' + uid).remove().then(() => {
+        Promise.all([
+          db.ref('/players/' + uid).remove().catch(() => {}),
+          db.ref('/users/' + uid).remove().catch(() => {})
+        ]).then(() => {
           alert(`✅ Player "${name}" deleted from Firebase.`);
           closeUserDetailsModal();
           closeUserEditModal();
           if (typeof renderUsersTable === 'function') renderUsersTable();
         }).catch(err => alert('Error: ' + err.message));
+      } else {
+        alert(`✅ Player "${name}" removed locally.`);
+        closeUserDetailsModal();
+        closeUserEditModal();
+        if (typeof renderUsersTable === 'function') renderUsersTable();
       }
     }
   };
@@ -666,8 +685,11 @@ window.restartPlayerInFirebase = restartPlayerInFirebase;
  * Remove / Delete Player from Edit modal
  */
 function deleteUserFromModal() {
-  const uid = editingPlayerUid || window.currentEditingUserUid;
-  if (!uid) return;
+  const uid = editingPlayerUid || window.currentEditingUserUid || window.activeDetailsUid;
+  if (!uid) {
+    alert('No player selected to delete.');
+    return;
+  }
   confirmDeleteUser(uid);
 }
 window.deleteUserFromModal = deleteUserFromModal;

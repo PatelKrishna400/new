@@ -717,14 +717,14 @@
             "hasWorker": false,
             "id": 1,
             "isProducing": true,
-            "lastTick": 1791733984805,
+            "lastTick": 1791946702072,
             "level": 1,
             "maxStorage": 999999999,
             "name": "Mountain Spring Well #1",
             "productionTime": 180,
-            "storedBaskets": 18,
-            "timer": 165.0163999999999,
-            "totalBasketsGenerated": 18,
+            "storedBaskets": 21,
+            "timer": 122.51659999999282,
+            "totalBasketsGenerated": 21,
             "unlockCost": 0,
             "unlocked": true,
             "upgradeCost": 50
@@ -1228,8 +1228,8 @@
         "darkRedRemainingSeconds": 0,
         "ratePerSec": 0.001,
         "ratePerMin": 0.001,
-        "lastTickTime": 1791733983534,
-        "lastSavedTime": 1791733984825,
+        "lastTickTime": 1791946702229,
+        "lastSavedTime": 1791946702229,
         "fuelCells": {
           "green": 0,
           "darkgreen": 0,
@@ -1321,7 +1321,7 @@
         "diamondsPerCycle": 0.000001,
         "cycleDuration": 60,
         "progressSeconds": 0,
-        "lastTickTime": 1791716988184,
+        "lastTickTime": 1791946702229,
         "totalDiamondsProduced": 0,
         "productionLevel": 1,
         "productionUpgradesCount": 0,
@@ -1358,7 +1358,7 @@
         "extensionDays": 0,
         "records": []
       },
-      "updatedAt": 1791733984885
+      "updatedAt": 1791946702275
     }
   },
   "rewards": [
@@ -1495,5 +1495,5 @@
       "timestamp": 1775810000000
     }
   ],
-  "updatedAt": 1791733985197
+  "updatedAt": 1791946702586
 }

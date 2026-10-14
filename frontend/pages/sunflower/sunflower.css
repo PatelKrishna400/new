@@ -1702,24 +1702,12 @@ body.page-sunflower-active #sfBottomMenuBar {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
 }
 
-/* Status Pills for Wells */
-.sf-status-pill.pill-well-automated {
-  background: #dcfce7;
-  color: #15803d;
-  border: 1px solid #86efac;
-}
-
-.sf-status-pill.pill-well-ready {
-  background: #e0f2fe;
-  color: #0369a1;
-  border: 1px solid #7dd3fc;
-  animation: pulseGlow 1.5s infinite;
-}
-
-.sf-status-pill.pill-well-filling {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
+/* Status Pills for Wells (Removed as per user request) */
+.sf-status-pill.pill-well-automated,
+.sf-status-pill.pill-well-ready,
+.sf-status-pill.pill-well-filling,
+.sf-status-pill.pill-well-idle {
+  display: none !important;
 }
 
 /* Well Action Buttons */

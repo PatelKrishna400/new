@@ -574,9 +574,6 @@ function renderMiningWells() {
               <span class="text-[9.5px] text-stone-400 font-mono ml-1.5">Lv. ${well.level}/5000</span>
             </div>
           </div>
-          <span class="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-700">
-            EXTRACTING
-          </span>
         </div>
 
         <div class="flex items-center justify-between text-[10px] text-stone-300">
@@ -1087,6 +1084,8 @@ function updateMiningStickyHeaderAndStats() {
    MAIN TICK LOOP
    ========================================================================== */
 let mineLastTime = performance.now();
+let mineAnimId = null;
+let isMineLoopRunning = false;
 function mineMainLoop(now) {
   const deltaSec = Math.min(1.0, (now - mineLastTime) / 1000);
   mineLastTime = now;
@@ -1174,7 +1173,9 @@ function mineMainLoop(now) {
     }
   }
 
-  requestAnimationFrame(mineMainLoop);
+  if (isMineLoopRunning) {
+    mineAnimId = requestAnimationFrame(mineMainLoop);
+  }
 }
 
 /* ==========================================================================
@@ -1205,10 +1206,27 @@ function initMiningTycoonGame() {
   renderMiningWells();
   renderMiningManagers();
   updateMiningStickyHeaderAndStats();
-  requestAnimationFrame(mineMainLoop);
+
+  if (mineAnimId) {
+    cancelAnimationFrame(mineAnimId);
+    mineAnimId = null;
+  }
+  isMineLoopRunning = true;
+  mineLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  mineAnimId = requestAnimationFrame(mineMainLoop);
+}
+
+function cleanupMiningPage() {
+  if (mineAnimId) {
+    cancelAnimationFrame(mineAnimId);
+    mineAnimId = null;
+  }
+  isMineLoopRunning = false;
 }
 
 window.initMiningTycoonGame = initMiningTycoonGame;
+window.cleanupMiningPage = cleanupMiningPage;
+window.updateMiningUI = initMiningTycoonGame;
 window.renderMiningPlots = renderMiningPlots;
 window.renderMiningWells = renderMiningWells;
 window.renderMiningManagers = renderMiningManagers;

@@ -1197,11 +1197,11 @@
   function ensureBalloonEventCycle() {
     const st = getBalloonPursuitState();
     const now = Date.now();
-    if (!st.eventEndTime || typeof st.eventEndTime !== 'number') {
+    if (!st.eventEndTime || typeof st.eventEndTime !== 'number' || !isFinite(st.eventEndTime) || isNaN(st.eventEndTime)) {
       st.eventEndTime = now + THIRTY_DAYS_MS;
       if (typeof saveGame === 'function') saveGame(true);
     } else if (now >= st.eventEndTime) {
-      // 30 Days finished: Auto-restart event for next 30 days and reset stages
+      // 30 Days finished: Advance event for next 30 days and reset stages
       st.currentUnlockedStage = 1;
       st.jackpotAdsWatched = 0;
       st.stageAdsWatchedMap = {};
@@ -1214,7 +1214,10 @@
         window.firebaseSync.saveToCloudImmediate();
       }
       renderStagesGrid();
-      showBalloonToast('🎈 New 30-Day Balloon Pursuit Event Season Started!');
+      const modal = document.getElementById('balloonPursuitModal');
+      if (modal && modal.style.display !== 'none' && !modal.classList.contains('hidden')) {
+        showBalloonToast('🎈 New 30-Day Balloon Pursuit Event Season Started!');
+      }
     }
     return st.eventEndTime;
   }

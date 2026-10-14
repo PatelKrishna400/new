@@ -365,12 +365,17 @@ const server = http.createServer(async (req, res) => {
 
       if (req.method === 'DELETE') {
         const uid = apiRoute.replace('/users/', '');
-        if (uid && memoryStore.users[uid]) {
-          delete memoryStore.users[uid];
+        if (uid) {
+          if (memoryStore.users[uid]) {
+            delete memoryStore.users[uid];
+          }
+          Object.keys(memoryStore.usersByProfileCode).forEach(code => {
+            if (memoryStore.usersByProfileCode[code] === uid) delete memoryStore.usersByProfileCode[code];
+          });
           saveDatabaseToDisk();
           return sendJson(res, 200, { ok: true, message: 'User deleted from database' });
         }
-        return sendJson(res, 404, { ok: false, error: 'User not found' });
+        return sendJson(res, 400, { ok: false, error: 'User UID required' });
       }
     }
 

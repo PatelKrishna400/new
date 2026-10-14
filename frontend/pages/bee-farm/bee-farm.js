@@ -746,8 +746,7 @@ function renderBeeWells() {
   if (!container || !Array.isArray(beeState.wells)) return;
 
   const mult = beeState.upgradeMultiplier || 1;
-  const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
-  const availableCoins = Math.max(beeState.honey || 0, playerGoldCoins);
+  const availableCoins = beeState.honey || 0;
 
   const unlockedCount = beeState.wells.filter(w => w.unlocked).length;
   const summaryLabel = document.getElementById('beeWellsSummaryLabel');
@@ -823,9 +822,6 @@ function renderBeeWells() {
           <span class="sf-card-title">${well.name || `Flower Meadow #${well.id}`}</span>
           <span class="sf-card-level-tag" id="beeWellLvBadge-${well.id}">Lv. ${well.level}/5000</span>
         </div>
-        <span class="sf-status-pill ${pillClass}" id="beeWellStatusPill-${well.id}">
-          ${pillText}
-        </span>
       </div>
 
       <div class="sf-card-body flex items-center justify-between gap-3 py-1.5">
@@ -934,22 +930,15 @@ window.upgradeBeeWell = function(wellId, event) {
   }
 
   const mult = beeState.upgradeMultiplier || 1;
-  const playerGoldCoins = (window.gameState && window.gameState.player && window.gameState.player.coins) || 0;
-  const availableCoins = Math.max(beeState.honey || 0, playerGoldCoins);
-  const upInfo = getBeeWellMultiUpgradeInfo(well.id - 1, well.level, mult, availableCoins);
+  const playerHoney = beeState.honey || 0;
+  const upInfo = getBeeWellMultiUpgradeInfo(well.id - 1, well.level, mult, playerHoney);
 
-  if (upInfo.totalCost > availableCoins) {
-    alert(`Need ${formatBeeNumber(upInfo.totalCost)} Coins!`);
+  if (upInfo.totalCost > playerHoney) {
+    alert(`Need ${formatBeeNumber(upInfo.totalCost)} 🍯 Honey!`);
     return;
   }
 
-  if ((beeState.honey || 0) >= upInfo.totalCost) {
-    beeState.honey -= upInfo.totalCost;
-  } else if (playerGoldCoins >= upInfo.totalCost) {
-    window.gameState.player.coins -= upInfo.totalCost;
-    if (typeof window.updateUI === 'function') window.updateUI();
-    if (typeof window.saveGame === 'function') window.saveGame(true);
-  }
+  beeState.honey -= upInfo.totalCost;
 
   well.level = upInfo.targetLevel;
   renderBeeWells();
@@ -1718,6 +1707,8 @@ function updateBeeStickyHeaderAndStats() {
    MAIN TICK LOOP
    ========================================================================== */
 let beeLastTime = performance.now();
+let beeAnimId = null;
+let isBeeLoopRunning = false;
 function beeMainLoop(now) {
   const deltaSec = Math.min(1.0, (now - beeLastTime) / 1000);
   beeLastTime = now;
@@ -1892,7 +1883,9 @@ function beeMainLoop(now) {
     }
   }
 
-  requestAnimationFrame(beeMainLoop);
+  if (isBeeLoopRunning) {
+    beeAnimId = requestAnimationFrame(beeMainLoop);
+  }
 }
 
 /* ==========================================================================
@@ -1923,10 +1916,27 @@ function initBeeFarmTycoonGame() {
   renderBeeWells();
   renderBeeManagers();
   updateBeeStickyHeaderAndStats();
-  requestAnimationFrame(beeMainLoop);
+
+  if (beeAnimId) {
+    cancelAnimationFrame(beeAnimId);
+    beeAnimId = null;
+  }
+  isBeeLoopRunning = true;
+  beeLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  beeAnimId = requestAnimationFrame(beeMainLoop);
+}
+
+function cleanupBeeFarmPage() {
+  if (beeAnimId) {
+    cancelAnimationFrame(beeAnimId);
+    beeAnimId = null;
+  }
+  isBeeLoopRunning = false;
 }
 
 window.initBeeFarmTycoonGame = initBeeFarmTycoonGame;
+window.cleanupBeeFarmPage = cleanupBeeFarmPage;
+window.updateBeeFarmUI = initBeeFarmTycoonGame;
 window.renderBeePlots = renderBeePlots;
 window.renderBeeWells = renderBeeWells;
 window.renderBeeManagers = renderBeeManagers;

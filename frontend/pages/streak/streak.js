@@ -2,13 +2,13 @@
    DAILY STREAK REWARDS (pages/streak/streak.js)
    ========================================================================== */
 const STREAK_DAYS_CONFIG = [
-  { day: 1, icon: '🔋', darkgreen: 1, label: '+1 Dark Green Fuel' },
-  { day: 2, icon: '💎', diamonds: 5, label: '+5 Diamonds' },
-  { day: 3, icon: '🔑', keys: 1, label: '+1 Key' },
+  { day: 1, icon: '🪙', coins: 10, label: '+10 Gold Coins' },
+  { day: 2, icon: '🟢', green: 1, label: '+1 Green Fuel' },
+  { day: 3, icon: '🗝️', keys: 1, label: '+1 Key' },
   { day: 4, icon: '🎟️', tickets: 1, label: '+1 Ticket' },
-  { day: 5, icon: '🎴', cards: 1, label: '+1 Card' },
-  { day: 6, icon: '🟢', green: 2, label: '+2 Green Fuel' },
-  { day: 7, icon: '💎', diamonds: 1, label: '+1 Diamond' }
+  { day: 5, icon: '🥚', eggs: 10, label: '+10 Eggs' },
+  { day: 6, icon: '🎰', partyCoins: 1, label: '+1 Spin Coin' },
+  { day: 7, icon: '💎', diamonds: 5, label: '+5 Diamonds' }
 ];
 
 const STREAK_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 Hours
@@ -41,21 +41,37 @@ function startStreakTimer() {
 }
 
 function renderStreakView() {
-  const currentStreak = gameState.player.streakDays || 0;
-  const currentDayIndex = currentStreak % 7; // 0 = Day 1, 6 = Day 7
-
   const now = Date.now();
   const lastClaim = gameState.player.lastStreakClaimTime || 0;
   const elapsed = now - lastClaim;
   const inCooldown = lastClaim > 0 && elapsed < STREAK_COOLDOWN_MS;
   const remainingMs = inCooldown ? (STREAK_COOLDOWN_MS - elapsed) : 0;
 
+  let currentStreak = gameState.player.streakDays || 0;
+
+  // If 7 days cycle completed and 24h cooldown has expired -> Automatically restart to Day 1!
+  if (currentStreak >= 7 && !inCooldown) {
+    gameState.player.streakDays = 0;
+    currentStreak = 0;
+    if (typeof saveGame === 'function') saveGame();
+  }
+
+  // During cooldown right after claiming Day 7, all 7 days were completed in this cycle
+  const allCompleted = (currentStreak >= 7 && inCooldown);
+  const currentDayIndex = allCompleted ? 6 : (currentStreak % 7);
+
   if (DOM.streakHeroTitle) {
-    DOM.streakHeroTitle.textContent = `${currentStreak} Day Streak`;
+    if (allCompleted) {
+      DOM.streakHeroTitle.textContent = `7 Day Streak • Complete!`;
+    } else {
+      DOM.streakHeroTitle.textContent = `${currentStreak} Day Streak`;
+    }
   }
 
   if (DOM.streakStatusText) {
-    if (inCooldown) {
+    if (allCompleted) {
+      DOM.streakStatusText.textContent = `🎉 All 7 Done • Restarts in ${formatStreakCooldownShort(remainingMs)}`;
+    } else if (inCooldown) {
       DOM.streakStatusText.textContent = `Next in ${formatStreakCooldownTime(remainingMs)}`;
     } else {
       DOM.streakStatusText.textContent = `Day ${currentDayIndex + 1} of 7 • Ready!`;
@@ -65,8 +81,8 @@ function renderStreakView() {
   if (DOM.streakCalendarGrid) {
     let gridHTML = '';
     STREAK_DAYS_CONFIG.forEach((cfg, idx) => {
-      const isClaimed = idx < currentDayIndex;
-      const isCurrentTarget = idx === currentDayIndex;
+      const isClaimed = allCompleted ? true : (idx < currentDayIndex);
+      const isCurrentTarget = allCompleted ? false : (idx === currentDayIndex);
       const isDay7 = idx === 6;
 
       let cardClass = 'streak-day-card';
@@ -100,8 +116,10 @@ function renderStreakView() {
   }
 
   if (DOM.streakClaimMainBtn) {
-    const todayCfg = STREAK_DAYS_CONFIG[currentDayIndex];
-    if (inCooldown) {
+    if (allCompleted) {
+      DOM.streakClaimMainBtn.className = 'streak-claim-main-btn cooldown disabled';
+      DOM.streakClaimMainBtn.innerHTML = `<span>🎉 CYCLE COMPLETE • RESTARTS IN ${formatStreakCooldownTime(remainingMs)}</span>`;
+    } else if (inCooldown) {
       DOM.streakClaimMainBtn.className = 'streak-claim-main-btn cooldown disabled';
       DOM.streakClaimMainBtn.innerHTML = `<span>⏳ NEXT REWARD IN ${formatStreakCooldownTime(remainingMs)}</span>`;
     } else {
@@ -138,37 +156,34 @@ function claimCurrentStreakDay() {
   }
 
   const executeStreakReward = () => {
-    const currentStreak = gameState.player.streakDays || 0;
+    let currentStreak = gameState.player.streakDays || 0;
+    if (currentStreak >= 7) {
+      currentStreak = 0;
+      gameState.player.streakDays = 0;
+    }
     const currentDayIndex = currentStreak % 7;
     const todayCfg = STREAK_DAYS_CONFIG[currentDayIndex];
 
-    // Ensure generator and fuelCells exist
+    // Ensure player and generator exist
+    if (!gameState.player) gameState.player = {};
     if (!gameState.energyGenerator) gameState.energyGenerator = { fuelCells: {} };
     if (!gameState.energyGenerator.fuelCells) gameState.energyGenerator.fuelCells = {};
 
-    // Award Fuel Cells
-    if (todayCfg.darkgreen) {
-      gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + todayCfg.darkgreen;
+    // 1. Award Gold Coins (Day 1: 10 Gold Coins)
+    if (todayCfg.coins) {
+      gameState.player.coins = (gameState.player.coins || 0) + todayCfg.coins;
+      window._lastCurrencyDeductionTime = Date.now();
     }
+
+    // 2. Award Fuel Cells (Day 2: 1 Green Fuel)
     if (todayCfg.green) {
       gameState.energyGenerator.fuelCells.green = (gameState.energyGenerator.fuelCells.green || 0) + todayCfg.green;
     }
-    if (todayCfg.yellow) {
-      gameState.energyGenerator.fuelCells.yellow = (gameState.energyGenerator.fuelCells.yellow || 0) + todayCfg.yellow;
-    }
-    if (todayCfg.orange) {
-      gameState.energyGenerator.fuelCells.orange = (gameState.energyGenerator.fuelCells.orange || 0) + todayCfg.orange;
+    if (todayCfg.darkgreen) {
+      gameState.energyGenerator.fuelCells.darkgreen = (gameState.energyGenerator.fuelCells.darkgreen || 0) + todayCfg.darkgreen;
     }
 
-    // Award Diamonds
-    if (todayCfg.diamonds) {
-      gameState.player.diamonds = (gameState.player.diamonds || 0) + todayCfg.diamonds;
-      if (gameState.player.blueCoins !== undefined) {
-        gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.diamonds;
-      }
-    }
-
-    // Award Keys
+    // 3. Award Keys (Day 3: 1 Key)
     if (todayCfg.keys) {
       gameState.player.chestKeys = (gameState.player.chestKeys || 0) + todayCfg.keys;
       if (gameState.goal) {
@@ -176,7 +191,7 @@ function claimCurrentStreakDay() {
       }
     }
 
-    // Award Tickets
+    // 4. Award Tickets (Day 4: 1 Ticket)
     if (todayCfg.tickets) {
       gameState.player.chestTickets = (gameState.player.chestTickets || 0) + todayCfg.tickets;
       if (gameState.goal) {
@@ -184,29 +199,58 @@ function claimCurrentStreakDay() {
       }
     }
 
-    // Award Cards
+    // 5. Award Eggs (Day 5: 10 Eggs)
+    if (todayCfg.eggs) {
+      gameState.player.eggs = (gameState.player.eggs || 0) + todayCfg.eggs;
+    }
+
+    // 6. Award Spin Coins (Day 6: 1 Spin Coin)
+    if (todayCfg.partyCoins) {
+      gameState.player.partyCoins = (gameState.player.partyCoins || 0) + todayCfg.partyCoins;
+      gameState.player.spinCoins = (gameState.player.spinCoins || 0) + todayCfg.partyCoins;
+      if (gameState.player.blueCoins !== undefined) {
+        gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.partyCoins;
+      }
+      if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+    }
+
+    // 7. Award Diamonds (Day 7: 5 Diamonds)
+    if (todayCfg.diamonds) {
+      gameState.player.diamonds = (gameState.player.diamonds || 0) + todayCfg.diamonds;
+      if (gameState.player.blueCoins !== undefined && !todayCfg.partyCoins) {
+        gameState.player.blueCoins = (gameState.player.blueCoins || 0) + todayCfg.diamonds;
+      }
+    }
+
+    // Fallback for Cards if configured
     if (todayCfg.cards) {
       gameState.player.scratchCards = (gameState.player.scratchCards || 0) + todayCfg.cards;
     }
 
     // Advance Streak & Record Timestamp
-    gameState.player.streakDays = currentStreak + 1;
+    const nextStreak = currentStreak + 1;
+    gameState.player.streakDays = nextStreak;
     gameState.player.lastStreakClaimTime = Date.now();
+
+    const isCycleComplete = nextStreak >= 7;
+    if (isCycleComplete) {
+      gameState.player.streakCyclesCompleted = (gameState.player.streakCyclesCompleted || 0) + 1;
+    }
 
     sfx.playLevelUpSound();
 
     // Show Reward Claim Modal
     if (DOM.sheetTitle && DOM.sheetContent && DOM.modalBackdrop) {
-      DOM.sheetTitle.textContent = `🎉 DAY ${todayCfg.day} REWARD CLAIMED!`;
+      DOM.sheetTitle.textContent = isCycleComplete ? `🎉 DAY 7 CLAIMED • ALL 7 DAYS COMPLETED!` : `🎉 DAY ${todayCfg.day} REWARD CLAIMED!`;
       DOM.sheetContent.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; gap: 14px; text-align: center;">
           <div style="font-size: 54px; animation: bounceGlow 1.2s infinite alternate;">${todayCfg.icon}</div>
-          <h3 style="font-size: 20px; font-weight: 800; color: #f97316;">Day ${todayCfg.day} Streak Unlocked!</h3>
-          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">Your daily rewards have been credited:</p>
+          <h3 style="font-size: 20px; font-weight: 800; color: #f97316;">${isCycleComplete ? 'Full 7-Day Streak Complete! 🏆' : `Day ${todayCfg.day} Streak Unlocked!`}</h3>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 280px;">Your daily reward has been credited:</p>
           <div style="background: rgba(249, 115, 22, 0.15); border: 1.5px solid #f97316; border-radius: 14px; padding: 12px 18px; width: 100%;">
             <div style="font-size: 16px; font-weight: 800; color: #fb923c;">${todayCfg.label}</div>
           </div>
-          <div style="font-size: 12px; color: #64748b;">⏳ 24-hour timer started! Next reward unlocks tomorrow.</div>
+          <div style="font-size: 12px; color: #64748b;">${isCycleComplete ? '🔄 Streak cycle completed! Restarts from Day 1 after the 24-hour cooldown.' : '⏳ 24-hour timer started! Next reward unlocks tomorrow.'}</div>
           <button class="feature-btn" onclick="closeTabModal()" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 12px; background: linear-gradient(90deg, #ea580c, #f97316);">Claimed ✨</button>
         </div>
       `;
@@ -218,7 +262,9 @@ function claimCurrentStreakDay() {
     if (typeof updateEnergyUI === 'function') updateEnergyUI();
     if (typeof updateProfileUI === 'function') updateProfileUI();
     if (typeof updateShopUI === 'function') updateShopUI();
-    saveGame();
+    if (typeof updateEggUI === 'function') updateEggUI();
+    if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+    saveGame(true);
     if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
       window.firebaseSync.saveToCloudImmediate();
     }
