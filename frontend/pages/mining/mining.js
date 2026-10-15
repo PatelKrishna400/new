@@ -1174,6 +1174,11 @@ function mineMainLoop(now) {
   }
 
   if (isMineLoopRunning) {
+    const minePage = document.getElementById('pageMining');
+    if (!minePage || !minePage.classList.contains('active')) {
+      cleanupMiningPage();
+      return;
+    }
     mineAnimId = requestAnimationFrame(mineMainLoop);
   }
 }
@@ -1207,13 +1212,13 @@ function initMiningTycoonGame() {
   renderMiningManagers();
   updateMiningStickyHeaderAndStats();
 
-  if (mineAnimId) {
-    cancelAnimationFrame(mineAnimId);
-    mineAnimId = null;
+  cleanupMiningPage();
+  const minePage = document.getElementById('pageMining');
+  if (minePage && minePage.classList.contains('active')) {
+    isMineLoopRunning = true;
+    mineLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    mineAnimId = requestAnimationFrame(mineMainLoop);
   }
-  isMineLoopRunning = true;
-  mineLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-  mineAnimId = requestAnimationFrame(mineMainLoop);
 }
 
 function cleanupMiningPage() {
@@ -1232,8 +1237,15 @@ window.renderMiningWells = renderMiningWells;
 window.renderMiningManagers = renderMiningManagers;
 window.updateMiningMiniStats = updateMiningStickyHeaderAndStats;
 
+function checkAndAutoStartMining() {
+  const minePage = document.getElementById('pageMining');
+  if (minePage && minePage.classList.contains('active')) {
+    initMiningTycoonGame();
+  }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initMiningTycoonGame);
+  document.addEventListener('DOMContentLoaded', checkAndAutoStartMining);
 } else {
-  initMiningTycoonGame();
+  checkAndAutoStartMining();
 }

@@ -3816,7 +3816,22 @@ let sfNeedRerender = false;
 let sfAnimationId = null;
 let sfIsLoopRunning = false;
 
+function cleanupSunflowerPage() {
+  if (sfAnimationId) {
+    cancelAnimationFrame(sfAnimationId);
+    sfAnimationId = null;
+  }
+  sfIsLoopRunning = false;
+}
+window.cleanupSunflowerPage = cleanupSunflowerPage;
+
 function sunflowerMainLoop(now) {
+  if (!sfIsLoopRunning) return;
+  const sfPage = document.getElementById('pageSunflower');
+  if (!sfPage || !sfPage.classList.contains('active')) {
+    cleanupSunflowerPage();
+    return;
+  }
   if (!now || typeof now !== 'number') {
     now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
   }
@@ -4874,13 +4889,13 @@ function initSunflowerTycoonGame() {
   updateWorkersUI();
   syncSunflowerToFirebase();
 
-  if (sfAnimationId) {
-    cancelAnimationFrame(sfAnimationId);
-    sfAnimationId = null;
+  cleanupSunflowerPage();
+  const sfPage = document.getElementById('pageSunflower');
+  if (sfPage && sfPage.classList.contains('active')) {
+    sfIsLoopRunning = true;
+    sfLastFrameTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    sfAnimationId = requestAnimationFrame(sunflowerMainLoop);
   }
-  sfIsLoopRunning = true;
-  sfLastFrameTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-  sfAnimationId = requestAnimationFrame(sunflowerMainLoop);
 }
 
 const SF_NUM_SUFFIXES = [
@@ -5255,8 +5270,26 @@ window.activateSunflowerSpeedBooster = typeof activateSunflowerSpeedBooster !== 
 window.getActiveSunflowerSpeedMultiplier = typeof getActiveSunflowerSpeedMultiplier !== 'undefined' ? getActiveSunflowerSpeedMultiplier : window.getActiveSunflowerSpeedMultiplier;
 window.switchSunflowerManagerTab = typeof switchSunflowerManagerTab !== 'undefined' ? switchSunflowerManagerTab : window.switchSunflowerManagerTab;
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initSunflowerTycoonGame);
-} else {
-  initSunflowerTycoonGame();
+window.openSunflowerImageViewer = function() {
+  const modal = document.getElementById('sfImageViewerModal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+window.closeSunflowerImageViewer = function() {
+  const modal = document.getElementById('sfImageViewerModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+function checkAndAutoStartSunflower() {
+  const sfPage = document.getElementById('pageSunflower');
+  if (sfPage && sfPage.classList.contains('active')) {
+    initSunflowerTycoonGame();
+  }
 }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkAndAutoStartSunflower);
+} else {
+  checkAndAutoStartSunflower();
+}
+

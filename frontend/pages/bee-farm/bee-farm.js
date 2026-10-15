@@ -1884,6 +1884,11 @@ function beeMainLoop(now) {
   }
 
   if (isBeeLoopRunning) {
+    const beePage = document.getElementById('pageBeeFarm');
+    if (!beePage || !beePage.classList.contains('active')) {
+      cleanupBeeFarmPage();
+      return;
+    }
     beeAnimId = requestAnimationFrame(beeMainLoop);
   }
 }
@@ -1917,13 +1922,13 @@ function initBeeFarmTycoonGame() {
   renderBeeManagers();
   updateBeeStickyHeaderAndStats();
 
-  if (beeAnimId) {
-    cancelAnimationFrame(beeAnimId);
-    beeAnimId = null;
+  cleanupBeeFarmPage();
+  const beePage = document.getElementById('pageBeeFarm');
+  if (beePage && beePage.classList.contains('active')) {
+    isBeeLoopRunning = true;
+    beeLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    beeAnimId = requestAnimationFrame(beeMainLoop);
   }
-  isBeeLoopRunning = true;
-  beeLastTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-  beeAnimId = requestAnimationFrame(beeMainLoop);
 }
 
 function cleanupBeeFarmPage() {
@@ -1942,8 +1947,15 @@ window.renderBeeWells = renderBeeWells;
 window.renderBeeManagers = renderBeeManagers;
 window.updateBeeFarmMiniStats = updateBeeStickyHeaderAndStats;
 
+function checkAndAutoStartBeeFarm() {
+  const beePage = document.getElementById('pageBeeFarm');
+  if (beePage && beePage.classList.contains('active')) {
+    initBeeFarmTycoonGame();
+  }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initBeeFarmTycoonGame);
+  document.addEventListener('DOMContentLoaded', checkAndAutoStartBeeFarm);
 } else {
-  initBeeFarmTycoonGame();
+  checkAndAutoStartBeeFarm();
 }

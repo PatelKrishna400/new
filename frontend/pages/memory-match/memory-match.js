@@ -1206,9 +1206,8 @@
       st.jackpotAdsWatched = 0;
       st.stageAdsWatchedMap = {};
       st.stageCoinsPaidMap = {};
-      while (st.eventEndTime <= now) {
-        st.eventEndTime += THIRTY_DAYS_MS;
-      }
+      const cycles = Math.floor((now - st.eventEndTime) / THIRTY_DAYS_MS) + 1;
+      st.eventEndTime += cycles * THIRTY_DAYS_MS;
       if (typeof saveGame === 'function') saveGame(true);
       if (window.firebaseSync && typeof window.firebaseSync.saveToCloudImmediate === 'function') {
         window.firebaseSync.saveToCloudImmediate();

@@ -1112,10 +1112,9 @@ function checkSeasonExpiration() {
       gameState.xpState.seasonEndMs = now + thirtyDaysMs;
       needSave = true;
     } else if (now >= gameState.xpState.seasonEndMs) {
-      // Natural 30-day season expired: advance season window past current time
-      while (gameState.xpState.seasonEndMs <= now) {
-        gameState.xpState.seasonEndMs += thirtyDaysMs;
-      }
+      // Natural 30-day season expired: advance season window past current time using safe O(1) math
+      const cycles = Math.floor((now - gameState.xpState.seasonEndMs) / thirtyDaysMs) + 1;
+      gameState.xpState.seasonEndMs += cycles * thirtyDaysMs;
       gameState.xpState.claimedLevels = {};
       gameState.xpState.watchedAds = 0;
       gameState.xpState.megaRewardClaimed = false;
@@ -1131,10 +1130,9 @@ function checkSeasonExpiration() {
       gameState.goalState.seasonEndMs = now + thirtyDaysMs;
       needSave = true;
     } else if (now >= gameState.goalState.seasonEndMs) {
-      // Natural 30-day season expired: advance season window past current time
-      while (gameState.goalState.seasonEndMs <= now) {
-        gameState.goalState.seasonEndMs += thirtyDaysMs;
-      }
+      // Natural 30-day season expired: advance season window past current time using safe O(1) math
+      const cycles = Math.floor((now - gameState.goalState.seasonEndMs) / thirtyDaysMs) + 1;
+      gameState.goalState.seasonEndMs += cycles * thirtyDaysMs;
       gameState.goalState.claimedGoals = {};
       gameState.goalState.levelAdsWatched = 0;
       gameState.goalState.megaWatchedAds = 0;
@@ -1151,9 +1149,8 @@ function checkSeasonExpiration() {
       gameState.crackerState.seasonEndMs = now + thirtyDaysMs;
       needSave = true;
     } else if (now >= gameState.crackerState.seasonEndMs) {
-      while (gameState.crackerState.seasonEndMs <= now) {
-        gameState.crackerState.seasonEndMs += thirtyDaysMs;
-      }
+      const cycles = Math.floor((now - gameState.crackerState.seasonEndMs) / thirtyDaysMs) + 1;
+      gameState.crackerState.seasonEndMs += cycles * thirtyDaysMs;
       gameState.crackerState.claimedLevels = {};
       gameState.crackerState.megaWatchedAds = 0;
       gameState.crackerState.megaRewardClaimed = false;

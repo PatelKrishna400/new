@@ -358,6 +358,13 @@ function switchPage(pageName) {
       console.warn('cleanupCoinCatcherPage error:', e);
     }
   }
+  if (pageName !== 'sunflower') {
+    try {
+      if (typeof cleanupSunflowerPage === 'function') cleanupSunflowerPage();
+    } catch (e) {
+      console.warn('cleanupSunflowerPage error:', e);
+    }
+  }
   if (pageName !== 'bee-farm' && pageName !== 'beefarm') {
     try {
       if (typeof cleanupBeeFarmPage === 'function') cleanupBeeFarmPage();
