@@ -53,8 +53,10 @@ window.renderLevelsList = function() {
   const curXp = Number(gameState.player.xp || 0);
   const claimedLevelsState = (gameState.xpState && gameState.xpState.claimedLevels) || {};
 
+  window._xpRenderLimit = 50;
+  const renderLimit = Math.min(1000, Math.max(window._xpRenderLimit || 50, activeLevel + 20));
   let html = '';
-  for (let lvl = 1; lvl <= 1000; lvl++) {
+  for (let lvl = 1; lvl <= renderLimit; lvl++) {
     const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(lvl) : null;
     const reqXp = cfg ? Number(cfg.xpRequired) : (lvl * 1000);
     const isLockedByAdmin = !!(cfg && cfg.isLocked);
@@ -135,6 +137,17 @@ window.renderLevelsList = function() {
       </div>
     `;
   }
+
+  if (renderLimit < 1000) {
+    html += `
+      <div style="text-align: center; padding: 14px 0 20px;">
+        <button class="level-claim-btn" type="button" style="width: auto; padding: 10px 22px; font-size: 13px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4); margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;" onclick="window._xpRenderLimit = Math.min(1000, (window._xpRenderLimit || 50) + 50); renderLevelsList();">
+          <span>Load Next 50 Levels (${renderLimit}/1000) ➔</span>
+        </button>
+      </div>
+    `;
+  }
+
   DOM.levelsScrollList.innerHTML = html;
 };
 

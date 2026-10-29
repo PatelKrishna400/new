@@ -90,7 +90,7 @@
   </script>
 
   <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
-  <link rel="stylesheet" href="style.css?v=1792044776530">
+  <link rel="stylesheet" href="style.css?v=1792351219606">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -331,7 +331,7 @@
       <!-- ================================================================
            MODULAR PAGES CONTAINER (LOADED FROM /pages/)
            ================================================================ -->
-      <main class="page-container" id="mainPagesContainer">
+      <div class="page-container" id="mainPagesContainer">
       <!-- PAGE: HOME -->
       <div class="page-view active" id="pageHome">
         <div class="home-reactor-container">
@@ -5925,6 +5925,7 @@
               <!-- 10 Fuel Cells List Container -->
               <div class="fuel-shop-vertical-list flex flex-col gap-3" id="sfFuelShopCardsList">
                 <!-- Dynamically populated by renderSunflowerFuelShopCards() in sunflower.js -->
+              </div>
             </div>
           </section>
       
@@ -7720,7 +7721,7 @@
       
       </div>
       
-      </main>
+      </div>
 
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
@@ -7763,52 +7764,53 @@
         </button>
       </nav>
 
-    <!-- Modal Sheets -->
-    <div class="modal-backdrop" id="modalBackdrop">
-      <div class="modal-sheet" id="modalSheet">
-        <div class="sheet-drag-handle"></div>
-        <div class="sheet-header">
-          <h3 class="sheet-title" id="sheetTitle">Title</h3>
-          <button class="sheet-close-btn" id="sheetCloseBtn">&times;</button>
+    </main>
+  </div>
+
+  <!-- Modal Sheets -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-sheet" id="modalSheet">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="sheetTitle">Title</h3>
+        <button class="sheet-close-btn" id="sheetCloseBtn">&times;</button>
+      </div>
+      <div class="sheet-content" id="sheetContent"></div>
+    </div>
+  </div>
+
+  <!-- Notification Center Modal / In-Game Inbox -->
+  <div class="notification-modal-overlay" id="notificationModalOverlay">
+    <div class="notification-modal-sheet">
+      <div class="notification-sheet-handle"></div>
+      
+      <div class="notification-modal-header">
+        <div class="notif-header-title-wrap">
+          <span class="notif-bell-icon">🔔</span>
+          <h3 class="notif-title">Command Center Inbox</h3>
+          <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
         </div>
-        <div class="sheet-content" id="sheetContent"></div>
+        <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
+      </div>
+
+      <!-- Filter Tabs: All, Rewards, System -->
+      <div class="notif-filter-tabs">
+        <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
+        <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
+        <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
+      </div>
+
+      <!-- Notification Messages List -->
+      <div class="notification-list" id="notificationItemsList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="notif-sheet-footer">
+        <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
+          <span>✓</span> Mark All as Read
+        </button>
       </div>
     </div>
-
-    <!-- Notification Center Modal / In-Game Inbox -->
-    <div class="notification-modal-overlay" id="notificationModalOverlay">
-      <div class="notification-modal-sheet">
-        <div class="notification-sheet-handle"></div>
-        
-        <div class="notification-modal-header">
-          <div class="notif-header-title-wrap">
-            <span class="notif-bell-icon">🔔</span>
-            <h3 class="notif-title">Command Center Inbox</h3>
-            <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
-          </div>
-          <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
-        </div>
-
-        <!-- Filter Tabs: All, Rewards, System -->
-        <div class="notif-filter-tabs">
-          <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
-          <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
-          <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
-        </div>
-
-        <!-- Notification Messages List -->
-        <div class="notification-list" id="notificationItemsList">
-          <!-- Rendered dynamically -->
-        </div>
-
-        <div class="notif-sheet-footer">
-          <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
-            <span>✓</span> Mark All as Read
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Firebase Cloud Realtime SDKs -->
@@ -7816,49 +7818,49 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-  <script src="shared/firebase-service.js?v=1792044776530"></script>
+  <script src="shared/firebase-service.js?v=1792351219606"></script>
 
   <!-- Monetag Ad Service -->
-  <script src="shared/ad-service.js?v=1792044776530"></script>
+  <script src="shared/ad-service.js?v=1792351219606"></script>
 
   <!-- Shared Core State -->
-  <script src="shared/state.js?v=1792044776530"></script>
+  <script src="shared/state.js?v=1792351219606"></script>
 
   <!-- Modular Page Scripts (All 31 Modular Pages Loaded Statically for Instant Switching) -->
-  <script src="pages/home/home.js?v=1792044776530"></script>
-  <script src="pages/energy/energy.js?v=1792044776530"></script>
-  <script src="pages/diamond-generator/diamond-generator.js?v=1792044776530"></script>
-  <script src="pages/sunflower/sunflower.js?v=1792044776530"></script>
-  <script src="pages/tasks/tasks.js?v=1792044776530"></script>
-  <script src="pages/profile/profile.js?v=1792044776530"></script>
-  <script src="pages/xp/xp.js?v=1792044776530"></script>
-  <script src="pages/reward/reward.js?v=1792044776530"></script>
-  <script src="pages/goal/goal.js?v=1792044776530"></script>
-  <script src="pages/streak/streak.js?v=1792044776530"></script>
-  <script src="pages/mega-reward/mega-reward.js?v=1792044776530"></script>
-  <script src="pages/spin/spin.js?v=1792044776530"></script>
-  <script src="pages/chest/chest.js?v=1792044776530"></script>
-  <script src="pages/scratch/scratch.js?v=1792044776530"></script>
-  <script src="pages/egg/egg.js?v=1792044776530"></script>
-  <script src="pages/leaderboard/leaderboard.js?v=1792044776530"></script>
-  <script src="pages/memory-match/memory-match.js?v=1792044776530"></script>
-  <script src="pages/coin-catcher/coin-catcher.js?v=1792044776530"></script>
-  <script src="pages/bee-farm/bee-farm.js?v=1792044776530"></script>
-  <script src="pages/mining/mining.js?v=1792044776530"></script>
-  <script src="pages/custom/custom.js?v=1792044776530"></script>
-  <script src="pages/suggest-box/suggest-box.js?v=1792044776530"></script>
-  <script src="pages/ad-rewards/ad-rewards.js?v=1792044776530"></script>
-  <script src="pages/gift-card/gift-card.js?v=1792044776530"></script>
-  <script src="pages/gadgets/gadgets.js?v=1792044776530"></script>
-  <script src="pages/accessories/accessories.js?v=1792044776530"></script>
-  <script src="pages/gaming-tool/gaming-tool.js?v=1792044776530"></script>
-  <script src="pages/kitchen/kitchen.js?v=1792044776530"></script>
-  <script src="pages/stationery/stationery.js?v=1792044776530"></script>
-  <script src="pages/fitness/fitness.js?v=1792044776530"></script>
-  <script src="pages/home-decorate/home-decorate.js?v=1792044776530"></script>
-  <script src="pages/cracker/cracker.js?v=1792044776530"></script>
+  <script src="pages/home/home.js?v=1792351219606"></script>
+  <script src="pages/energy/energy.js?v=1792351219606"></script>
+  <script src="pages/diamond-generator/diamond-generator.js?v=1792351219606"></script>
+  <script src="pages/sunflower/sunflower.js?v=1792351219606"></script>
+  <script src="pages/tasks/tasks.js?v=1792351219606"></script>
+  <script src="pages/profile/profile.js?v=1792351219606"></script>
+  <script src="pages/xp/xp.js?v=1792351219606"></script>
+  <script src="pages/reward/reward.js?v=1792351219606"></script>
+  <script src="pages/goal/goal.js?v=1792351219606"></script>
+  <script src="pages/streak/streak.js?v=1792351219606"></script>
+  <script src="pages/mega-reward/mega-reward.js?v=1792351219606"></script>
+  <script src="pages/spin/spin.js?v=1792351219606"></script>
+  <script src="pages/chest/chest.js?v=1792351219606"></script>
+  <script src="pages/scratch/scratch.js?v=1792351219606"></script>
+  <script src="pages/egg/egg.js?v=1792351219606"></script>
+  <script src="pages/leaderboard/leaderboard.js?v=1792351219606"></script>
+  <script src="pages/memory-match/memory-match.js?v=1792351219606"></script>
+  <script src="pages/coin-catcher/coin-catcher.js?v=1792351219606"></script>
+  <script src="pages/bee-farm/bee-farm.js?v=1792351219606"></script>
+  <script src="pages/mining/mining.js?v=1792351219606"></script>
+  <script src="pages/custom/custom.js?v=1792351219606"></script>
+  <script src="pages/suggest-box/suggest-box.js?v=1792351219606"></script>
+  <script src="pages/ad-rewards/ad-rewards.js?v=1792351219606"></script>
+  <script src="pages/gift-card/gift-card.js?v=1792351219606"></script>
+  <script src="pages/gadgets/gadgets.js?v=1792351219606"></script>
+  <script src="pages/accessories/accessories.js?v=1792351219606"></script>
+  <script src="pages/gaming-tool/gaming-tool.js?v=1792351219606"></script>
+  <script src="pages/kitchen/kitchen.js?v=1792351219606"></script>
+  <script src="pages/stationery/stationery.js?v=1792351219606"></script>
+  <script src="pages/fitness/fitness.js?v=1792351219606"></script>
+  <script src="pages/home-decorate/home-decorate.js?v=1792351219606"></script>
+  <script src="pages/cracker/cracker.js?v=1792351219606"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
-  <script src="shared/app.js?v=1792044776530"></script>
+  <script src="shared/app.js?v=1792351219606"></script>
 </body>
 </html>

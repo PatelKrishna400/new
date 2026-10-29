@@ -113,7 +113,8 @@ window.toggleGoalSubView = function() {
   }
 };
 
-// Render Goals 1 to 1000 Roadmap List (Admin-Controlled & Synced)
+// Render Goals 1 to 1000 Roadmap List (High-Performance Windowed Rendering)
+window._goalRenderLimit = 50;
 window.renderGoalsList = function() {
   if (!DOM.goalsScrollList) return;
   if (gameState.currentTab !== 'goal' || (gameState.goalState && gameState.goalState.currentSubtab !== 'goals')) {
@@ -130,9 +131,10 @@ window.renderGoalsList = function() {
   const completed = (gameState.progression && gameState.progression.completedLevels) || {};
   const claimedGoals = (gameState.goalState && gameState.goalState.claimedGoals) || {};
 
+  const renderLimit = Math.min(1000, Math.max(window._goalRenderLimit || 50, curLvl + 20));
   let html = '';
 
-  for (let g = 1; g <= 1000; g++) {
+  for (let g = 1; g <= renderLimit; g++) {
     const cfg = typeof getLevelConfig === 'function' ? getLevelConfig(g) : null;
     const req = (cfg && cfg.targets)
       ? { cards: Number(cfg.targets.cards) || 20, keys: Number(cfg.targets.keys) || 50, tickets: Number(cfg.targets.tickets) || 35 }
@@ -216,6 +218,17 @@ window.renderGoalsList = function() {
       </div>
     `;
   }
+
+  if (renderLimit < 1000) {
+    html += `
+      <div style="text-align: center; padding: 14px 0 20px;">
+        <button class="level-claim-btn" type="button" style="width: auto; padding: 10px 22px; font-size: 13px; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;" onclick="window._goalRenderLimit = Math.min(1000, (window._goalRenderLimit || 50) + 50); renderGoalsList();">
+          <span>Load Next 50 Goals (${renderLimit}/1000) ➔</span>
+        </button>
+      </div>
+    `;
+  }
+
   DOM.goalsScrollList.innerHTML = html;
 };
 

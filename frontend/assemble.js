@@ -415,7 +415,7 @@ const headerContent = `<!DOCTYPE html>
       <!-- ================================================================
            MODULAR PAGES CONTAINER (LOADED FROM /pages/)
            ================================================================ -->
-      <main class="page-container" id="mainPagesContainer">
+      <div class="page-container" id="mainPagesContainer">
 `;
 
 const pagesContent = PAGE_KEYS.map(k => {
@@ -427,7 +427,7 @@ const pagesContent = PAGE_KEYS.map(k => {
 }).join('\n\n');
 
 const footerContent = `
-      </main>
+      </div>
 
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
@@ -470,52 +470,53 @@ const footerContent = `
         </button>
       </nav>
 
-    <!-- Modal Sheets -->
-    <div class="modal-backdrop" id="modalBackdrop">
-      <div class="modal-sheet" id="modalSheet">
-        <div class="sheet-drag-handle"></div>
-        <div class="sheet-header">
-          <h3 class="sheet-title" id="sheetTitle">Title</h3>
-          <button class="sheet-close-btn" id="sheetCloseBtn">&times;</button>
+    </main>
+  </div>
+
+  <!-- Modal Sheets -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-sheet" id="modalSheet">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="sheetTitle">Title</h3>
+        <button class="sheet-close-btn" id="sheetCloseBtn">&times;</button>
+      </div>
+      <div class="sheet-content" id="sheetContent"></div>
+    </div>
+  </div>
+
+  <!-- Notification Center Modal / In-Game Inbox -->
+  <div class="notification-modal-overlay" id="notificationModalOverlay">
+    <div class="notification-modal-sheet">
+      <div class="notification-sheet-handle"></div>
+      
+      <div class="notification-modal-header">
+        <div class="notif-header-title-wrap">
+          <span class="notif-bell-icon">🔔</span>
+          <h3 class="notif-title">Command Center Inbox</h3>
+          <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
         </div>
-        <div class="sheet-content" id="sheetContent"></div>
+        <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
+      </div>
+
+      <!-- Filter Tabs: All, Rewards, System -->
+      <div class="notif-filter-tabs">
+        <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
+        <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
+        <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
+      </div>
+
+      <!-- Notification Messages List -->
+      <div class="notification-list" id="notificationItemsList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="notif-sheet-footer">
+        <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
+          <span>✓</span> Mark All as Read
+        </button>
       </div>
     </div>
-
-    <!-- Notification Center Modal / In-Game Inbox -->
-    <div class="notification-modal-overlay" id="notificationModalOverlay">
-      <div class="notification-modal-sheet">
-        <div class="notification-sheet-handle"></div>
-        
-        <div class="notification-modal-header">
-          <div class="notif-header-title-wrap">
-            <span class="notif-bell-icon">🔔</span>
-            <h3 class="notif-title">Command Center Inbox</h3>
-            <span class="notif-unread-count-pill" id="inboxUnreadCountBadge">0 New</span>
-          </div>
-          <button class="notif-close-btn" onclick="toggleNotificationInbox(false)">✕</button>
-        </div>
-
-        <!-- Filter Tabs: All, Rewards, System -->
-        <div class="notif-filter-tabs">
-          <button class="notif-filter-btn active" id="notifFilterAll" onclick="filterNotifications('all')">All</button>
-          <button class="notif-filter-btn" id="notifFilterRewards" onclick="filterNotifications('rewards')">Rewards 🎁</button>
-          <button class="notif-filter-btn" id="notifFilterSystem" onclick="filterNotifications('system')">Announcements 📢</button>
-        </div>
-
-        <!-- Notification Messages List -->
-        <div class="notification-list" id="notificationItemsList">
-          <!-- Rendered dynamically -->
-        </div>
-
-        <div class="notif-sheet-footer">
-          <button class="notif-mark-all-read-btn" onclick="markAllNotificationsRead()">
-            <span>✓</span> Mark All as Read
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Firebase Cloud Realtime SDKs -->

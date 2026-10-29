@@ -251,7 +251,7 @@ class FirebaseSyncService {
       .then((snapshot) => {
         const cloudData = snapshot.val();
         if (cloudData && typeof cloudData === 'object') {
-          console.log('🔥 Cloud state retrieved from Firebase:', cloudData);
+          console.log('🔥 Cloud state retrieved from Firebase (STEP 0):', typeof cloudData);
 
           // Check if cloud state is from older version before Global Zero Reset
           const cloudResetVer = cloudData.resetVersion || 0;
@@ -260,12 +260,18 @@ class FirebaseSyncService {
           const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8;
 
           if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
+            if (this._isResettingZero) return;
+            this._isResettingZero = true;
             console.log('🔄 Cloud player record is from prior season/version. Resetting player to Level 0, zero balances, and new event timers!');
             if (typeof resetAllDataToZero === 'function') {
               resetAllDataToZero();
             }
+            this.saveToCloudImmediate();
+            setTimeout(() => { this._isResettingZero = false; }, 3000);
             return;
           }
+
+          console.log('🔥 loadFromCloud STEP 1: reset check passed');
 
           // Merge cloud data into gameState
           if (cloudData.player) Object.assign(gameState.player, cloudData.player);
@@ -291,15 +297,22 @@ class FirebaseSyncService {
           if (cloudData.piggyBank) {
             gameState.piggyBank = Object.assign(gameState.piggyBank || {}, cloudData.piggyBank);
           }
+          console.log('🔥 loadFromCloud STEP 2: state objects merged');
+
           if (cloudData.sunflower && typeof window !== 'undefined' && typeof window.syncSunflowerFromCloud === 'function') {
             window.syncSunflowerFromCloud(cloudData.sunflower);
           }
+          console.log('🔥 loadFromCloud STEP 3: sunflower synced');
+
           if (cloudData.beeFarm && typeof window !== 'undefined' && typeof window.syncBeeFarmFromCloud === 'function') {
             window.syncBeeFarmFromCloud(cloudData.beeFarm);
           }
+          console.log('🔥 loadFromCloud STEP 4: beefarm synced');
+
           if (cloudData.mining && typeof window !== 'undefined' && typeof window.syncMiningFromCloud === 'function') {
             window.syncMiningFromCloud(cloudData.mining);
           }
+          console.log('🔥 loadFromCloud STEP 5: mining synced');
 
           let shouldCatchup = false;
           let catchupTimestamp = null;
@@ -339,6 +352,7 @@ class FirebaseSyncService {
           if (shouldCatchup && catchupTimestamp && typeof processEnergyGeneratorOfflineCatchup === 'function') {
             processEnergyGeneratorOfflineCatchup(catchupTimestamp, 'firebaseCloud');
           }
+          console.log('🔥 loadFromCloud STEP 6: energy catchup done');
 
           // Synchronize Energy Counters on both Home and Energy pages
           const curEnergy = Math.floor(gameState.reactor.currentEnergy || 0);
@@ -349,11 +363,17 @@ class FirebaseSyncService {
           if (epBadgeIconEl) epBadgeIconEl.textContent = (Number(gameState.reactor.currentEnergy) || 0).toFixed(2);
 
           // Update UI with cloud loaded state
+          console.log('🔥 loadFromCloud STEP 7: calling updateUI');
           if (typeof updateUI === 'function') updateUI();
+          console.log('🔥 loadFromCloud STEP 8: calling renderTasksList');
           if (typeof renderTasksList === 'function') renderTasksList();
+          console.log('🔥 loadFromCloud STEP 9: calling renderLevelsList');
           if (typeof renderLevelsList === 'function') renderLevelsList();
+          console.log('🔥 loadFromCloud STEP 10: calling renderGoalsList');
           if (typeof renderGoalsList === 'function') renderGoalsList();
+          console.log('🔥 loadFromCloud STEP 11: calling updateMegaDiamondDisplay');
           if (typeof updateMegaDiamondDisplay === 'function') updateMegaDiamondDisplay();
+          console.log('🔥 loadFromCloud STEP 12: ALL FINISHED!');
         } else {
           // Data was removed from Firebase or first time: initialize clean 0 state
           if (typeof gameState !== 'undefined' && gameState.player) {
@@ -403,12 +423,15 @@ class FirebaseSyncService {
       const cloudUpdatedAt = cloudData.updatedAt || 0;
       const resetEpoch = (typeof GLOBAL_RESET_TIMESTAMP !== 'undefined') ? GLOBAL_RESET_TIMESTAMP : 1775750000000;
       const requiredVer = (typeof GAME_RESET_VERSION !== 'undefined') ? GAME_RESET_VERSION : 8;
-
       if (cloudResetVer < requiredVer || cloudUpdatedAt < resetEpoch) {
+        if (this._isResettingZero) return;
+        this._isResettingZero = true;
         console.log('🔄 Remote cloud player record is older than Global Zero Reset. Enforcing fresh zero state!');
         if (typeof resetAllDataToZero === 'function') {
           resetAllDataToZero();
         }
+        this.saveToCloudImmediate();
+        setTimeout(() => { this._isResettingZero = false; }, 3000);
         return;
       }
 
