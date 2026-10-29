@@ -69,8 +69,17 @@
 }
 
 @keyframes pulseSparkle {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.2); opacity: 1; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* Header Live Ticket Balance Pill */
@@ -139,7 +148,7 @@
   border: 1.5px solid rgba(251, 191, 36, 0.4);
   border-radius: 16px;
   padding: 5px;
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.18),
     inset 0 -3px 0 rgba(0, 0, 0, 0.6),
     0 4px 0 rgba(2, 6, 23, 0.9),
@@ -205,7 +214,7 @@
   background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
   color: #ffffff;
   border: 1px solid #fde047;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.65),
     inset 0 -2px 0 rgba(0, 0, 0, 0.45),
     0 3px 0 #78350f,
@@ -217,7 +226,7 @@
   background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%);
   color: #ffffff;
   border: 1px solid #7dd3fc;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.65),
     inset 0 -2px 0 rgba(0, 0, 0, 0.45),
     0 3px 0 #0c4a6e,
@@ -229,7 +238,7 @@
   background: linear-gradient(180deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%);
   color: #ffffff;
   border: 1px solid #d8b4fe;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.65),
     inset 0 -2px 0 rgba(0, 0, 0, 0.45),
     0 3px 0 #581c87,
@@ -247,8 +256,15 @@
 }
 
 @keyframes fadeInSpinSubtab {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
@@ -266,7 +282,7 @@
   flex: 1 0 auto;
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.2),
     inset 0 -4px 0 rgba(0, 0, 0, 0.65),
     0 6px 0 rgba(2, 6, 23, 0.9),
@@ -319,8 +335,17 @@
 }
 
 @keyframes haloBreathe {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.75; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
 }
 
 /* Wheel Stage Container */
@@ -353,10 +378,21 @@
 }
 
 @keyframes pointerVibrate {
-  0% { transform: translateX(-50%) rotate(0deg); }
-  35% { transform: translateX(-50%) rotate(-15deg); }
-  70% { transform: translateX(-50%) rotate(8deg); }
-  100% { transform: translateX(-50%) rotate(0deg); }
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  35% {
+    transform: translateX(-50%) rotate(-15deg);
+  }
+
+  70% {
+    transform: translateX(-50%) rotate(8deg);
+  }
+
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
 }
 
 /* Responsive Large Spin Wheel Frame */
@@ -401,8 +437,16 @@
 }
 
 @keyframes bulbStrobe {
-  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.4; }
-  100% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; filter: brightness(1.5); }
+  0% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.35);
+    opacity: 1;
+    filter: brightness(1.5);
+  }
 }
 
 /* Rotating Wheel Disc */
@@ -462,8 +506,13 @@
 }
 
 @keyframes gearSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .hub-pulsing-glow {
@@ -476,8 +525,17 @@
 }
 
 @keyframes pulseHubGlow {
-  0%, 100% { opacity: 0.5; transform: scale(0.95); }
-  50% { opacity: 1; transform: scale(1.05); }
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 .hub-content {
@@ -511,7 +569,7 @@
   border: 1.5px solid rgba(56, 189, 248, 0.4);
   border-radius: var(--radius-lg);
   padding: 10px 16px;
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.16),
     inset 0 -2.5px 0 rgba(0, 0, 0, 0.6),
     0 4px 0 rgba(2, 6, 23, 0.9),
@@ -683,13 +741,27 @@
 }
 
 @keyframes pulseBadge {
-  0% { opacity: 0.7; transform: scale(0.97); }
-  100% { opacity: 1; transform: scale(1.03); }
+  0% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
 }
 
 @keyframes pulseJackpot {
-  0% { transform: scale(1); filter: brightness(1); }
-  100% { transform: scale(1.06); filter: brightness(1.3); }
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  100% {
+    transform: scale(1.06);
+    filter: brightness(1.3);
+  }
 }
 
 .spin-win-content {
@@ -729,8 +801,13 @@
 }
 
 @keyframes winIconBounce {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-4px) scale(1.1); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    transform: translateY(-4px) scale(1.1);
+  }
 }
 
 .spin-win-icon {
@@ -804,8 +881,13 @@
 }
 
 @keyframes crownBob {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-2px) scale(1.08); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    transform: translateY(-2px) scale(1.08);
+  }
 }
 
 .spin-crown-track {
@@ -904,7 +986,7 @@
   background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%);
   color: #030712;
   border: 1.8px solid #fef08a;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.75),
     inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
     0 5px 0 #92400e,
@@ -913,7 +995,7 @@
 
 .spin-action-main-btn.spin-mode:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.85),
     inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
     0 6px 0 #92400e,
@@ -922,7 +1004,7 @@
 
 .spin-action-main-btn.spin-mode:active {
   transform: translateY(3.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -1.5px 0 rgba(0, 0, 0, 0.45),
     0 1.5px 0 #92400e,
@@ -934,7 +1016,7 @@
   background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #1d4ed8 100%);
   color: #ffffff;
   border: 1.8px solid #7dd3fc;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.65),
     inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
     0 5px 0 #075985,
@@ -943,7 +1025,7 @@
 
 .spin-action-main-btn.ad-mode:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.8),
     inset 0 -3.5px 0 rgba(0, 0, 0, 0.45),
     0 6px 0 #075985,
@@ -952,7 +1034,7 @@
 
 .spin-action-main-btn.ad-mode:active {
   transform: translateY(3.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1.5px 0 rgba(0, 0, 0, 0.45),
     0 1.5px 0 #075985,
@@ -978,8 +1060,14 @@
 }
 
 @keyframes shineSwipe {
-  0% { left: -100%; }
-  35%, 100% { left: 160%; }
+  0% {
+    left: -100%;
+  }
+
+  35%,
+  100% {
+    left: 160%;
+  }
 }
 
 /* No Ticket Mode (when tickets === 0) */
@@ -987,7 +1075,7 @@
   background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
   color: #94a3b8;
   border: 1.8px solid rgba(148, 163, 184, 0.35);
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.1),
     inset 0 -3px 0 rgba(0, 0, 0, 0.5),
     0 4px 0 rgba(2, 6, 23, 0.8),
@@ -998,7 +1086,7 @@
   border-color: rgba(251, 191, 36, 0.6);
   color: #fde047;
   transform: translateY(-1.5px);
-  box-shadow: 
+  box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
     inset 0 -3px 0 rgba(0, 0, 0, 0.5),
     0 5px 0 rgba(2, 6, 23, 0.8),
@@ -1028,45 +1116,57 @@
     padding: 12px 12px 14px 12px;
     min-height: calc(100vh - 250px);
   }
+
   .spin-stage-intro {
     margin-bottom: 2px;
   }
+
   .spin-stage-title {
     font-size: 14px;
     margin-bottom: 1px;
   }
+
   .spin-stage-subtitle {
     font-size: 10px;
   }
+
   .spin-wheel-stage-wrap {
     margin: 8px 0 10px 0;
   }
+
   .spin-wheel-frame {
     width: clamp(240px, 68vw, 280px);
     height: clamp(240px, 68vw, 280px);
   }
+
   .spin-wheel-center-hub {
     width: 58px;
     height: 58px;
   }
+
   .spin-result-display {
     padding: 9px 12px;
     margin-bottom: 8px;
     gap: 6px;
   }
+
   .spin-win-icon-wrapper {
     width: 40px;
     height: 40px;
   }
+
   .spin-win-icon {
     font-size: 20px;
   }
+
   .spin-win-title {
     font-size: 13px;
   }
+
   .spin-win-desc {
     font-size: 10px;
   }
+
   .spin-action-main-btn {
     padding: 12px 16px;
     font-size: 13.5px;
@@ -1187,12 +1287,29 @@
   transition: width 0.3s ease;
 }
 
-.spin-prob-seg.gold { background: linear-gradient(90deg, #f59e0b, #fde047); }
-.spin-prob-seg.blue { background: linear-gradient(90deg, #0284c7, #38bdf8); }
-.spin-prob-seg.purple { background: linear-gradient(90deg, #7e22ce, #c084fc); }
-.spin-prob-seg.pink { background: linear-gradient(90deg, #db2777, #f472b6); }
-.spin-prob-seg.cyan { background: linear-gradient(90deg, #0891b2, #22d3ee); }
-.spin-prob-seg.slate { background: linear-gradient(90deg, #334155, #64748b); }
+.spin-prob-seg.gold {
+  background: linear-gradient(90deg, #f59e0b, #fde047);
+}
+
+.spin-prob-seg.blue {
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+}
+
+.spin-prob-seg.purple {
+  background: linear-gradient(90deg, #7e22ce, #c084fc);
+}
+
+.spin-prob-seg.pink {
+  background: linear-gradient(90deg, #db2777, #f472b6);
+}
+
+.spin-prob-seg.cyan {
+  background: linear-gradient(90deg, #0891b2, #22d3ee);
+}
+
+.spin-prob-seg.slate {
+  background: linear-gradient(90deg, #334155, #64748b);
+}
 
 .spin-prob-legend {
   display: flex;
@@ -1217,7 +1334,7 @@
   border-radius: var(--radius-xl, 20px);
   padding: 16px;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 0 24px rgba(251, 191, 36, 0.25),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.3),
     0 8px 24px rgba(0, 0, 0, 0.6);
@@ -1378,11 +1495,25 @@
   font-weight: 900;
 }
 
-.slice-odds-rate.blue .slice-rate-val { color: #38bdf8; }
-.slice-odds-rate.purple .slice-rate-val { color: #c084fc; }
-.slice-odds-rate.pink .slice-rate-val { color: #f472b6; }
-.slice-odds-rate.cyan .slice-rate-val { color: #22d3ee; }
-.slice-odds-rate.slate .slice-rate-val { color: #94a3b8; }
+.slice-odds-rate.blue .slice-rate-val {
+  color: #38bdf8;
+}
+
+.slice-odds-rate.purple .slice-rate-val {
+  color: #c084fc;
+}
+
+.slice-odds-rate.pink .slice-rate-val {
+  color: #f472b6;
+}
+
+.slice-odds-rate.cyan .slice-rate-val {
+  color: #22d3ee;
+}
+
+.slice-odds-rate.slate .slice-rate-val {
+  color: #94a3b8;
+}
 
 .slice-rate-sub {
   display: block;
@@ -1524,7 +1655,7 @@
 .spin-subtab-cta-btn.amber {
   background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
   color: #ffffff;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.6),
     inset 0 -3px 0 rgba(0, 0, 0, 0.4),
     0 4px 0 #78350f,
@@ -1534,7 +1665,7 @@
 .spin-subtab-cta-btn.cyan {
   background: linear-gradient(180deg, #06b6d4 0%, #0284c7 50%, #0369a1 100%);
   color: #ffffff;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.6),
     inset 0 -3px 0 rgba(0, 0, 0, 0.4),
     0 4px 0 #075985,
@@ -1559,6 +1690,9 @@
   -webkit-backdrop-filter: blur(12px);
   z-index: 10000;
   display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -1568,810 +1702,917 @@
 }
 
 .spin-reward-backdrop.active {
-  opacity: 1;
-  pointer-events: auto;
-}
 
-.spin-reward-modal {
-  position: relative;
-  width: 100%;
-  max-width: 360px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 14, 30, 0.99) 100%);
-  border: 1.5px solid rgba(251, 191, 36, 0.45);
-  border-radius: 24px;
-  padding: 24px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: 
-    0 0 50px rgba(245, 158, 11, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.8),
-    0 20px 40px rgba(0, 0, 0, 0.8);
-  transform: scale(0.86) translateY(12px);
-  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
-}
+  .spin-reward-backdrop.active,
+  .spin-reward-backdrop.open {
+    display: flex !important;
+    opacity: 1;
+    pointer-events: auto;
+  }
 
-.spin-reward-backdrop.active .spin-reward-modal {
-  transform: scale(1) translateY(0);
-}
+  .spin-reward-modal {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 14, 30, 0.99) 100%);
+    border: 1.5px solid rgba(251, 191, 36, 0.45);
+    border-radius: 24px;
+    padding: 24px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow:
+      0 0 50px rgba(245, 158, 11, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.8),
+      0 20px 40px rgba(0, 0, 0, 0.8);
+    transform: scale(0.86) translateY(12px);
+    transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
 
-.spin-modal-glow {
-  position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.28) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 75%);
-  pointer-events: none;
-}
+  .spin-reward-backdrop.active .spin-reward-modal {
+    transform: scale(1) translateY(0);
+  }
 
-.spin-modal-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
+  .spin-modal-glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.28) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 75%);
+    pointer-events: none;
+  }
 
-.spin-modal-badge.winner {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.35) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.6);
-  color: #fde047;
-  box-shadow: 0 0 16px rgba(251, 191, 36, 0.3);
-}
+  .spin-modal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
 
-.spin-modal-badge.miss {
-  background: linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(100, 116, 139, 0.2) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  color: #cbd5e1;
-}
+  .spin-modal-badge.winner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.35) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.6);
+    color: #fde047;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.3);
+  }
 
-.spin-modal-icon-wrap {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border: 2px solid rgba(251, 191, 36, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 
-    0 0 24px rgba(251, 191, 36, 0.35),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
-  margin-bottom: 14px;
-  animation: prizeIconBounce 2.5s ease-in-out infinite;
-}
+  .spin-modal-badge.miss {
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(100, 116, 139, 0.2) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    color: #cbd5e1;
+  }
 
-@keyframes prizeIconBounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-4px) scale(1.04); }
-}
+  .spin-modal-icon-wrap {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+    border: 2px solid rgba(251, 191, 36, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 24px rgba(251, 191, 36, 0.35),
+      inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    margin-bottom: 14px;
+    animation: prizeIconBounce 2.5s ease-in-out infinite;
+  }
 
-.spin-modal-icon {
-  font-size: 38px;
-  line-height: 1;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
-}
+  @keyframes prizeIconBounce {
 
-.spin-modal-title {
-  font-family: var(--font-primary, sans-serif);
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: 0.4px;
-  line-height: 1.25;
-  color: #ffffff;
-  margin: 0 0 6px 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
 
-.spin-modal-subtitle {
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
-  margin: 0 0 16px 0;
-  line-height: 1.4;
-}
+    50% {
+      transform: translateY(-4px) scale(1.04);
+    }
+  }
 
-.spin-modal-2x-preview {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(180, 83, 9, 0.16) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  border-radius: 12px;
-  padding: 9px 12px;
-  margin-bottom: 18px;
-  box-sizing: border-box;
-}
+  .spin-modal-icon {
+    font-size: 38px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+  }
 
-.spin-modal-2x-preview .preview-sparkle {
-  font-size: 18px;
-  color: #fde047;
-  flex-shrink: 0;
-  animation: pulseHubGlow 1.5s infinite;
-}
+  .spin-modal-title {
+    font-family: var(--font-primary, sans-serif);
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    line-height: 1.25;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
 
-.spin-modal-2x-preview .preview-text {
-  font-size: 11.5px;
-  color: #e2e8f0;
-  line-height: 1.35;
-  text-align: left;
-}
+  .spin-modal-subtitle {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+  }
 
-.spin-modal-2x-preview .preview-text strong {
-  color: #fde047;
-}
+  .spin-modal-2x-preview {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(180, 83, 9, 0.16) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 12px;
+    padding: 9px 12px;
+    margin-bottom: 18px;
+    box-sizing: border-box;
+  }
 
-.spin-modal-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  .spin-modal-2x-preview .preview-sparkle {
+    font-size: 18px;
+    color: #fde047;
+    flex-shrink: 0;
+    animation: pulseHubGlow 1.5s infinite;
+  }
 
-.spin-modal-btn {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px 16px;
-  border-radius: 14px;
-  border: none;
-  font-family: var(--font-primary, sans-serif);
-  cursor: pointer;
-  user-select: none;
-  box-sizing: border-box;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
-}
+  .spin-modal-2x-preview .preview-text {
+    font-size: 11.5px;
+    color: #e2e8f0;
+    line-height: 1.35;
+    text-align: left;
+  }
 
-.spin-modal-btn:hover {
-  transform: translateY(-1.5px);
-  filter: brightness(1.06);
-}
+  .spin-modal-2x-preview .preview-text strong {
+    color: #fde047;
+  }
 
-.spin-modal-btn:active {
-  transform: translateY(1.5px);
-  filter: brightness(0.95);
-}
+  .spin-modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-/* 2X Profit Button */
-.spin-btn-2x {
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  color: #ffffff;
-  box-shadow: 
-    inset 0 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.4),
-    0 4px 0 #78350f,
-    0 10px 24px rgba(245, 158, 11, 0.55);
-}
+  .spin-modal-btn {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: none;
+    font-family: var(--font-primary, sans-serif);
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+  }
 
-.btn-2x-badge {
-  background: #ffffff;
-  color: #b45309;
-  font-size: 9.5px;
-  font-weight: 900;
-  padding: 2px 6px;
-  border-radius: 6px;
-  letter-spacing: 0.6px;
-}
+  .spin-modal-btn:hover {
+    transform: translateY(-1.5px);
+    filter: brightness(1.06);
+  }
 
-.btn-2x-icon {
-  font-size: 15px;
-}
+  .spin-modal-btn:active {
+    transform: translateY(1.5px);
+    filter: brightness(0.95);
+  }
 
-.btn-2x-text {
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-}
+  /* 2X Profit Button */
+  .spin-btn-2x {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+    color: #ffffff;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+      0 4px 0 #78350f,
+      0 10px 24px rgba(245, 158, 11, 0.55);
+  }
 
-/* Claim Regular Button */
-.spin-btn-claim {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1.5px solid rgba(148, 163, 184, 0.35);
-  color: #cbd5e1;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 3px 0 rgba(15, 23, 42, 0.9);
-}
+  .btn-2x-badge {
+    background: #ffffff;
+    color: #b45309;
+    font-size: 9.5px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.6px;
+  }
 
-.btn-claim-icon {
-  font-size: 13px;
-  font-weight: 900;
-  color: #38bdf8;
-}
+  .btn-2x-icon {
+    font-size: 15px;
+  }
 
-.btn-claim-text {
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
+  .btn-2x-text {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+  }
+
+  /* Claim Regular Button */
+  .spin-btn-claim {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1.5px solid rgba(148, 163, 184, 0.35);
+    color: #cbd5e1;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 3px 0 rgba(15, 23, 42, 0.9);
+  }
+
+  .btn-claim-icon {
+    font-size: 13px;
+    font-weight: 900;
+    color: #38bdf8;
+  }
+
+  .btn-claim-text {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
 
 
 
 
 
-/* ==========================================================================
+  /* ==========================================================================
    CROWN LEVEL QUEST TAB (REPLACES READY TO SPIN TAB)
    ========================================================================== */
-.spin-level-display {
-  width: 100%;
-  max-width: 380px;
-  margin: 10px auto 4px auto;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.4);
-  border-radius: 18px;
-  padding: 14px 16px;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.6),
-    0 0 20px rgba(245, 158, 11, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
+  .spin-level-display {
+    width: 100%;
+    max-width: 380px;
+    margin: 10px auto 4px auto;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+    border: 1.5px solid rgba(245, 158, 11, 0.4);
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.6),
+      0 0 20px rgba(245, 158, 11, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
 
-.spin-level-display::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #fbbf24, #f59e0b, transparent);
-}
+  .spin-level-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fbbf24, #f59e0b, transparent);
+  }
 
-.spin-level-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
+  .spin-level-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
 
-.spin-level-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  .spin-level-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.spin-level-crown-badge {
-  font-size: 24px;
-  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
-  animation: crownBob 2s infinite ease-in-out;
-}
+  .spin-level-crown-badge {
+    font-size: 24px;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+    animation: crownBob 2s infinite ease-in-out;
+  }
 
-@keyframes crownBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px) scale(1.08); }
-}
+  @keyframes crownBob {
 
-.spin-level-name {
-  font-size: 13px;
-  font-weight: 900;
-  color: #fbbf24;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
+    0%,
+    100% {
+      transform: translateY(0);
+    }
 
-.spin-level-sub {
-  font-size: 10.5px;
-  color: #94a3b8;
-  margin-top: 1px;
-}
+    50% {
+      transform: translateY(-3px) scale(1.08);
+    }
+  }
 
-.spin-level-gift-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(245, 158, 11, 0.25) 100%);
-  border: 1.2px solid rgba(245, 158, 11, 0.5);
-  border-radius: 99px;
-  padding: 4px 10px;
-  font-size: 10px;
-  font-weight: 800;
-  color: #fef08a;
-  letter-spacing: 0.5px;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
-  cursor: pointer;
-  animation: pulseGiftBadge 2.2s infinite ease-in-out;
-}
+  .spin-level-name {
+    font-size: 13px;
+    font-weight: 900;
+    color: #fbbf24;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
 
-@keyframes pulseGiftBadge {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
-}
+  .spin-level-sub {
+    font-size: 10.5px;
+    color: #94a3b8;
+    margin-top: 1px;
+  }
 
-.gift-badge-icon {
-  font-size: 13px;
-}
+  .spin-level-gift-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(245, 158, 11, 0.25) 100%);
+    border: 1.2px solid rgba(245, 158, 11, 0.5);
+    border-radius: 99px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fef08a;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    cursor: pointer;
+    animation: pulseGiftBadge 2.2s infinite ease-in-out;
+  }
 
-.spin-level-progress-container {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
+  @keyframes pulseGiftBadge {
 
-.spin-crown-track {
-  width: 100%;
-  height: 10px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 99px;
-  overflow: hidden;
-  position: relative;
-}
+    0%,
+    100% {
+      transform: scale(1);
+    }
 
-.spin-crown-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #fde047 100%);
-  border-radius: 99px;
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
-}
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+    }
+  }
 
-.spin-crown-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-}
+  .gift-badge-icon {
+    font-size: 13px;
+  }
 
-.spin-crown-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  color: #fbbf24;
-}
+  .spin-level-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
 
-.spin-crown-status {
-  color: #94a3b8;
-  font-size: 10.5px;
-}
+  .spin-crown-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+  }
 
-/* King Event Wave Badges */
-.spin-wave-badge {
-  font-size: 9.5px;
-  font-weight: 900;
-  letter-spacing: 0.6px;
-  padding: 2px 7px;
-  border-radius: 99px;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  text-transform: uppercase;
-}
+  .spin-crown-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #fde047 100%);
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+  }
 
-.spin-wave-badge.crest {
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.6);
-  color: #fde047;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-  animation: pulseCrestBadge 1.8s infinite ease-in-out;
-}
+  .spin-crown-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+  }
 
-@keyframes pulseCrestBadge {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
-}
+  .spin-crown-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    color: #fbbf24;
+  }
 
-.spin-wave-badge.trough {
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(52, 211, 153, 0.6);
-  color: #6ee7b7;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
-}
+  .spin-crown-status {
+    color: #94a3b8;
+    font-size: 10.5px;
+  }
 
-.spin-wave-badge.normal {
-  background: rgba(6, 182, 212, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.5);
-  color: #7dd3fc;
-}
+  /* King Event Wave Badges */
+  .spin-wave-badge {
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    text-transform: uppercase;
+  }
 
-/* King Event Level Reward Preview Strip */
-.spin-level-reward-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 4px 10px;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px dashed rgba(251, 191, 36, 0.3);
-  border-radius: 8px;
-  box-sizing: border-box;
-}
+  .spin-wave-badge.crest {
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(251, 191, 36, 0.6);
+    color: #fde047;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    animation: pulseCrestBadge 1.8s infinite ease-in-out;
+  }
 
-.spin-reward-preview-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 800;
-  color: #fef08a;
-  letter-spacing: 0.3px;
-}
+  @keyframes pulseCrestBadge {
+
+    0%,
+    100% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+
+  .spin-wave-badge.trough {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(52, 211, 153, 0.6);
+    color: #6ee7b7;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+  }
+
+  .spin-wave-badge.normal {
+    background: rgba(6, 182, 212, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    color: #7dd3fc;
+  }
+
+  /* King Event Level Reward Preview Strip */
+  .spin-level-reward-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 4px 10px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px dashed rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+  .spin-reward-preview-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fef08a;
+    letter-spacing: 0.3px;
+  }
 
 
-/* ==========================================================================
+  /* ==========================================================================
    MYSTERY GIFT WINNING MODAL (TRIGGERED WHEN CROWN GOAL REACHED)
    ========================================================================== */
-.spin-gift-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100000;
-  background: rgba(3, 7, 18, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  box-sizing: border-box;
-}
+  .spin-gift-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(3, 7, 18, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: none;
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    box-sizing: border-box;
+  }
 
-.spin-gift-backdrop.active {
-  display: flex !important;
-  animation: fadeInGiftBackdrop 0.3s ease-out;
-}
+  .spin-gift-backdrop.active {
 
-@keyframes fadeInGiftBackdrop {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+    .spin-gift-backdrop.active,
+    .spin-gift-backdrop.open {
+      display: flex !important;
+      opacity: 1;
+      pointer-events: auto;
+      animation: fadeInGiftBackdrop 0.3s ease-out;
+    }
 
-.spin-gift-modal {
-  width: 100%;
-  max-width: 360px;
-  background: linear-gradient(165deg, rgba(26, 32, 53, 0.98) 0%, rgba(11, 17, 36, 0.99) 100%);
-  border: 2px solid #fbbf24;
-  border-radius: 24px;
-  padding: 26px 20px;
-  text-align: center;
-  box-shadow: 
-    0 25px 60px rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(251, 191, 36, 0.35);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  position: relative;
-  overflow: hidden;
-  animation: scaleUpGiftModal 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-}
+    @keyframes fadeInGiftBackdrop {
+      from {
+        opacity: 0;
+      }
 
-@keyframes scaleUpGiftModal {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+      to {
+        opacity: 1;
+      }
+    }
 
-.spin-gift-badge {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  color: #040919;
-  background: linear-gradient(90deg, #fde047 0%, #f59e0b 100%);
-  padding: 4px 14px;
-  border-radius: 99px;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
-  text-transform: uppercase;
-}
+    .spin-gift-modal {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(165deg, rgba(26, 32, 53, 0.98) 0%, rgba(11, 17, 36, 0.99) 100%);
+      border: 2px solid #fbbf24;
+      border-radius: 24px;
+      padding: 26px 20px;
+      text-align: center;
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.9),
+        0 0 40px rgba(251, 191, 36, 0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      animation: scaleUpGiftModal 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
 
-.spin-gift-chest-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 4px 0;
-}
+    @keyframes scaleUpGiftModal {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
 
-.spin-gift-chest-icon {
-  font-size: 64px;
-  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
-  animation: giftChestBounce 1.5s infinite ease-in-out;
-}
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
 
-@keyframes giftChestBounce {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-6px) rotate(-4deg); }
-  75% { transform: translateY(-6px) rotate(4deg); }
-}
+    .spin-gift-badge {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #040919;
+      background: linear-gradient(90deg, #fde047 0%, #f59e0b 100%);
+      padding: 4px 14px;
+      border-radius: 99px;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+      text-transform: uppercase;
+    }
 
-.spin-gift-sparkles {
-  position: absolute;
-  font-size: 20px;
-  top: -4px;
-  right: -4px;
-  animation: spinSparklePulse 1.2s infinite ease-in-out;
-}
+    .spin-gift-chest-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+    }
 
-@keyframes spinSparklePulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.3); opacity: 1; }
-}
+    .spin-gift-chest-icon {
+      font-size: 64px;
+      filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
+      animation: giftChestBounce 1.5s infinite ease-in-out;
+    }
 
-.spin-gift-title {
-  font-size: 20px;
-  font-weight: 900;
-  color: #fef08a;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
+    @keyframes giftChestBounce {
 
-.spin-gift-sub {
-  font-size: 12.5px;
-  color: #cbd5e1;
-  margin: 0;
-  line-height: 1.4;
-}
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
 
-.spin-gift-rewards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  width: 100%;
-  margin: 6px 0;
-}
+      25% {
+        transform: translateY(-6px) rotate(-4deg);
+      }
 
-.gift-reward-card {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 8px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
+      75% {
+        transform: translateY(-6px) rotate(4deg);
+      }
+    }
 
-.gift-reward-card.gold { border-color: rgba(245, 158, 11, 0.5); }
-.gift-reward-card.blue { border-color: rgba(56, 189, 248, 0.5); }
-.gift-reward-card.purple { border-color: rgba(168, 85, 247, 0.5); }
-.gift-reward-card.cyan { border-color: rgba(6, 182, 212, 0.5); }
+    .spin-gift-sparkles {
+      position: absolute;
+      font-size: 20px;
+      top: -4px;
+      right: -4px;
+      animation: spinSparklePulse 1.2s infinite ease-in-out;
+    }
 
-.gift-reward-card .reward-icon { font-size: 18px; }
-.gift-reward-card .reward-val { font-size: 12px; font-weight: 900; color: #f1f5f9; font-family: 'JetBrains Mono', monospace; }
-.gift-reward-card .reward-label { font-size: 9px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+    @keyframes spinSparklePulse {
 
-.spin-gift-claim-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #040919;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 0.6px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
-  transition: all 0.2s ease;
-  margin-top: 4px;
-}
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
 
-.spin-gift-claim-btn:active {
-  transform: scale(0.96);
-}
+      50% {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+    }
 
-/* ==========================================================================
+    .spin-gift-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #fef08a;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .spin-gift-sub {
+      font-size: 12.5px;
+      color: #cbd5e1;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .spin-gift-rewards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      width: 100%;
+      margin: 6px 0;
+    }
+
+    .gift-reward-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .gift-reward-card.gold {
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    .gift-reward-card.blue {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .gift-reward-card.purple {
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+
+    .gift-reward-card.cyan {
+      border-color: rgba(6, 182, 212, 0.5);
+    }
+
+    .gift-reward-card .reward-icon {
+      font-size: 18px;
+    }
+
+    .gift-reward-card .reward-val {
+      font-size: 12px;
+      font-weight: 900;
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .gift-reward-card .reward-label {
+      font-size: 9px;
+      color: #94a3b8;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .spin-gift-claim-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #040919;
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+      transition: all 0.2s ease;
+      margin-top: 4px;
+    }
+
+    .spin-gift-claim-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ==========================================================================
    DYNAMITE WHEEL (🎉 SPINNER WITH 🧨 PRIZES) STYLES
    ========================================================================== */
-.spin-header-balances-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
-}
+    .spin-header-balances-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
 
-.spin-party-header-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1.5px solid rgba(244, 114, 182, 0.55);
-  padding: 5px 9px;
-  border-radius: var(--radius-pill, 999px);
-  cursor: pointer;
-  box-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-.spin-party-header-pill:active { transform: scale(0.94); }
-.spin-party-header-pill .ticket-pill-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #f472b6;
-}
+    .spin-party-header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1.5px solid rgba(244, 114, 182, 0.55);
+      padding: 5px 9px;
+      border-radius: var(--radius-pill, 999px);
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
 
-.spin-dynamite-header-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1.5px solid rgba(248, 113, 113, 0.55);
-  padding: 5px 9px;
-  border-radius: var(--radius-pill, 999px);
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
-  flex-shrink: 0;
-}
-.spin-dynamite-header-pill .ticket-pill-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #f87171;
-}
+    .spin-party-header-pill:active {
+      transform: scale(0.94);
+    }
 
-/* Wheel Mode Tabs Header (2 Tabs) */
-.spin-tab-header {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  width: 100%;
-  margin: 0 auto;
-  background: linear-gradient(180deg, rgba(14, 28, 64, 0.95) 0%, rgba(6, 14, 34, 0.98) 100%);
-  border: 1.5px solid rgba(251, 191, 36, 0.4);
-  border-radius: 14px;
-  padding: 4px;
-  box-sizing: border-box;
-}
+    .spin-party-header-pill .ticket-pill-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #f472b6;
+    }
 
-.spin-subtab-btn.active {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 0.95) 100%) !important;
-  color: #040919 !important;
-  font-weight: 900 !important;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4) !important;
-}
+    .spin-dynamite-header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1.5px solid rgba(248, 113, 113, 0.55);
+      padding: 5px 9px;
+      border-radius: var(--radius-pill, 999px);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+      flex-shrink: 0;
+    }
 
-/* Bet Multiplier Bar */
-.spin-party-bet-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1.5px solid rgba(245, 158, 11, 0.35);
-  border-radius: 14px;
-  padding: 6px 10px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
+    .spin-dynamite-header-pill .ticket-pill-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #f87171;
+    }
 
-.spin-bet-label {
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+    /* Wheel Mode Tabs Header (2 Tabs) */
+    .spin-tab-header {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(14, 28, 64, 0.95) 0%, rgba(6, 14, 34, 0.98) 100%);
+      border: 1.5px solid rgba(251, 191, 36, 0.4);
+      border-radius: 14px;
+      padding: 4px;
+      box-sizing: border-box;
+    }
 
-.spin-bet-options {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+    .spin-subtab-btn.active {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 0.95) 100%) !important;
+      color: #040919 !important;
+      font-weight: 900 !important;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4) !important;
+    }
 
-.spin-party-bet-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(30, 41, 59, 0.9);
-  border: 1.5px solid rgba(148, 163, 184, 0.25);
-  border-radius: 10px;
-  padding: 4px 8px;
-  cursor: pointer;
-  color: #cbd5e1;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 800;
-  transition: all 0.18s ease;
-  min-width: 54px;
-}
+    /* Bet Multiplier Bar */
+    .spin-party-bet-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      border-radius: 14px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
 
-.spin-party-bet-btn small {
-  font-size: 8.5px;
-  font-weight: 700;
-  color: #94a3b8;
-  margin-top: 1px;
-}
+    .spin-bet-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-.spin-party-bet-btn.active {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(220, 38, 38, 0.95) 100%) !important;
-  border-color: #fca5a5 !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5) !important;
-}
+    .spin-bet-options {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-.spin-party-bet-btn.active small {
-  color: #fef08a !important;
-}
+    .spin-party-bet-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1.5px solid rgba(148, 163, 184, 0.25);
+      border-radius: 10px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      transition: all 0.18s ease;
+      min-width: 54px;
+    }
 
-.spin-reward-hub-btn {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  color: #ffffff;
-  border: 1.5px solid #fef08a;
-  border-radius: 12px;
-  padding: 7px 12px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.55), 0 3px 0 #78350f;
-  transition: all 0.18s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  white-space: nowrap;
-  animation: pulseRewardHub 2.2s infinite ease-in-out;
-  font-family: inherit;
-}
+    .spin-party-bet-btn small {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
 
-.spin-reward-hub-btn:hover {
-  filter: brightness(1.15);
-  transform: translateY(-1px);
-}
+    .spin-party-bet-btn.active {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(220, 38, 38, 0.95) 100%) !important;
+      border-color: #fca5a5 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5) !important;
+    }
 
-.spin-reward-hub-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #78350f;
-}
+    .spin-party-bet-btn.active small {
+      color: #fef08a !important;
+    }
 
-@keyframes pulseRewardHub {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.45), 0 3px 0 #78350f;
-    border-color: #fef08a;
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 3px 0 #78350f;
-    border-color: #ffffff;
-  }
-}
+    .spin-reward-hub-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+      color: #ffffff;
+      border: 1.5px solid #fef08a;
+      border-radius: 12px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.55), 0 3px 0 #78350f;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+      animation: pulseRewardHub 2.2s infinite ease-in-out;
+      font-family: inherit;
+    }
 
-.spin-ad-free-coins-btn {
-  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-  color: #ffffff;
-  border: 1.5px solid #fbcfe8;
-  border-radius: 10px;
-  padding: 6px 10px;
-  font-size: 10.5px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
-  transition: all 0.2s ease;
-}
+    .spin-reward-hub-btn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
 
-.spin-ad-free-coins-btn:active {
-  transform: scale(0.95);
-}
+    .spin-reward-hub-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #78350f;
+    }
 
-/* Dynamite Arena Glow & Button */
-.dynamite-halo {
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.1) 45%, transparent 70%) !important;
-}
+    @keyframes pulseRewardHub {
 
-.spin-action-main-btn.dynamite-mode {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
-  border-color: #fca5a5 !important;
-  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-}
+      0%,
+      100% {
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.45), 0 3px 0 #78350f;
+        border-color: #fef08a;
+      }
 
-.spin-action-main-btn.dynamite-mode:active {
-  transform: scale(0.97);
-}
+      50% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 3px 0 #78350f;
+        border-color: #ffffff;
+      }
+    }
+
+    .spin-ad-free-coins-btn {
+      background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      color: #ffffff;
+      border: 1.5px solid #fbcfe8;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 10.5px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .spin-ad-free-coins-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Dynamite Arena Glow & Button */
+    .dynamite-halo {
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.1) 45%, transparent 70%) !important;
+    }
+
+    .spin-action-main-btn.dynamite-mode {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+      border-color: #fca5a5 !important;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .spin-action-main-btn.dynamite-mode:active {
+      transform: scale(0.97);
+    }

@@ -623,6 +623,7 @@
     if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
     const modal = document.getElementById('crackerMegaModalOverlay');
     if (modal) {
+      modal.style.display = 'flex';
       modal.classList.add('open');
       updateCrackerViewUI();
     }
@@ -634,6 +635,7 @@
     const modal = document.getElementById('crackerMegaModalOverlay');
     if (modal) {
       modal.classList.remove('open');
+      modal.style.display = 'none';
     }
     if (typeof sfx !== 'undefined' && sfx.playTapSound) sfx.playTapSound(1);
   }

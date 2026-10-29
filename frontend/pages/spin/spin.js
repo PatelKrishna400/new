@@ -156,7 +156,7 @@ function initSpinChaserBulbs() {
   ['spinChaserRing', 'spinPartyChaserRing'].forEach(ringId => {
     const ring = document.getElementById(ringId);
     if (!ring) return;
-    if (ring.children.length === 24) return;
+    if (ring.children && ring.children.length === 24) return;
     ring.innerHTML = '';
 
     const totalBulbs = 24;
@@ -586,6 +586,7 @@ function showSpinPrizeModal(prize) {
   }
 
   if (backdrop) {
+    backdrop.style.display = 'flex';
     backdrop.classList.add('active');
   }
 }
@@ -632,7 +633,10 @@ function claimDoubleSpinReward() {
   window.currentPendingSpinPrize = null;
 
   const backdrop = document.getElementById('spinRewardBackdrop');
-  if (backdrop) backdrop.classList.remove('active');
+  if (backdrop) {
+    backdrop.classList.remove('active');
+    backdrop.style.display = 'none';
+  }
 
   const handleDoubleSuccess = () => {
     applySpinPrize(prize, 2);
@@ -649,7 +653,7 @@ function claimDoubleSpinReward() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       handleDoubleSuccess();
     }).catch(e => {
       console.warn('show_10676091 notice:', e);
@@ -674,7 +678,10 @@ function claimRegularSpinReward() {
   window.currentPendingSpinPrize = null;
 
   const backdrop = document.getElementById('spinRewardBackdrop');
-  if (backdrop) backdrop.classList.remove('active');
+  if (backdrop) {
+    backdrop.classList.remove('active');
+    backdrop.style.display = 'none';
+  }
 
   applySpinPrize(prize, 1);
   if (typeof showFloatingToast === 'function') {
@@ -688,7 +695,10 @@ function claimRegularSpinReward() {
 // Close Modal Backdrop
 function closeSpinRewardModal(event) {
   const backdrop = document.getElementById('spinRewardBackdrop');
-  if (backdrop) backdrop.classList.remove('active');
+  if (backdrop) {
+    backdrop.classList.remove('active');
+    backdrop.style.display = 'none';
+  }
 
   if (window.currentPendingSpinPrize) {
     const prize = window.currentPendingSpinPrize;
@@ -731,7 +741,10 @@ function showMysteryGiftModal() {
     if (btnSpan) btnSpan.textContent = '🎉 CLAIM ALL GIFTS';
   }
 
-  if (backdrop) backdrop.classList.add('active');
+  if (backdrop) {
+    backdrop.style.display = 'flex';
+    backdrop.classList.add('active');
+  }
   triggerSpinConfetti();
   if (typeof sfx !== 'undefined' && typeof sfx.playLevelUpSound === 'function') {
     sfx.playLevelUpSound();
@@ -763,20 +776,29 @@ function showMysteryGiftPreview() {
 
   if (claimBtn) {
     claimBtn.onclick = () => {
-      if (backdrop) backdrop.classList.remove('active');
+      if (backdrop) {
+        backdrop.classList.remove('active');
+        backdrop.style.display = 'none';
+      }
     };
     const btnSpan = claimBtn.querySelector('span');
     if (btnSpan) btnSpan.textContent = 'GOT IT (BACK TO SPIN)';
   }
 
-  if (backdrop) backdrop.classList.add('active');
+  if (backdrop) {
+    backdrop.style.display = 'flex';
+    backdrop.classList.add('active');
+  }
 }
 window.showMysteryGiftPreview = showMysteryGiftPreview;
 
 function claimMysteryGiftReward() {
   const spinState = getSpinState();
   const backdrop = document.getElementById('spinGiftModalBackdrop');
-  if (backdrop) backdrop.classList.remove('active');
+  if (backdrop) {
+    backdrop.classList.remove('active');
+    backdrop.style.display = 'none';
+  }
 
   const currentLevel = Math.max(1, Math.min(1000, spinState.level || 1));
   const rewards = getKingLevelRewards(currentLevel);
@@ -818,7 +840,10 @@ function closeMysteryGiftModal(event) {
     claimMysteryGiftReward();
   } else {
     const backdrop = document.getElementById('spinGiftModalBackdrop');
-    if (backdrop) backdrop.classList.remove('active');
+    if (backdrop) {
+      backdrop.classList.remove('active');
+      backdrop.style.display = 'none';
+    }
   }
 }
 window.closeMysteryGiftModal = closeMysteryGiftModal;

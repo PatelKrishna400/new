@@ -504,15 +504,15 @@ window.claimHourlyShopCoinsAd = function() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerReward();
   }
 };
@@ -665,15 +665,15 @@ window.claimPassItemViaAd = function(itemType) {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     doReward();
   }
 };
@@ -1516,10 +1516,12 @@ function updateProfileUI() {
     if (isUnlocked) unlockedBadgesCount++;
     const bEl = document.getElementById(`badge${bKey.charAt(0).toUpperCase() + bKey.slice(1)}`);
     if (bEl) {
-      bEl.classList.toggle('unlocked', isUnlocked);
-      const tagEl = bEl.querySelector('.badge-status-tag');
+      if (bEl.classList && typeof bEl.classList.toggle === 'function') {
+        bEl.classList.toggle('unlocked', isUnlocked);
+      }
+      const tagEl = (typeof bEl.querySelector === 'function') ? bEl.querySelector('.badge-status-tag') : null;
       if (tagEl) {
-        tagEl.textContent = isUnlocked ? 'UNLOCKED ✓' : tagEl.dataset.req || tagEl.textContent;
+        tagEl.textContent = isUnlocked ? 'UNLOCKED ✓' : (tagEl.dataset?.req || tagEl.textContent);
       }
     }
   });
@@ -2113,15 +2115,15 @@ window.startReelGiftAdFlow = function() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       openReelGiftStudioModal();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       openReelGiftStudioModal();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     openReelGiftStudioModal();
   }
 };
@@ -2174,6 +2176,7 @@ window.openReelGiftStudioModal = function() {
   }
 
   // Open modal
+  backdrop.style.display = 'flex';
   backdrop.classList.add('open');
   modal.classList.add('open');
 
@@ -2188,7 +2191,10 @@ window.openReelGiftStudioModal = function() {
 window.closeReelStudioModal = function() {
   const backdrop = document.getElementById('reelStudioBackdrop');
   const modal = document.getElementById('reelStudioModal');
-  if (backdrop) backdrop.classList.remove('open');
+  if (backdrop) {
+    backdrop.classList.remove('open');
+    backdrop.style.display = 'none';
+  }
   if (modal) modal.classList.remove('open');
 
   if (_reelAnimFrameId) {
@@ -2818,7 +2824,7 @@ window.activateQuantumBlueTapsWithAd = function() {
   // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
     show_10676091().then(() => {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       executeReward();
     }).catch(e => {
       console.warn('show_10676091 notice:', e);
@@ -2918,7 +2924,7 @@ window.watchAdForBlueCoins = function() {
   // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
     show_10676091().then(() => {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doReward();
     }).catch(e => {
       console.warn('show_10676091 notice:', e);

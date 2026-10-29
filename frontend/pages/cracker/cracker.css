@@ -202,7 +202,8 @@
   transition: all 0.18s ease;
 }
 
-.cracker-nav-pill-btn:hover, .cracker-nav-pill-btn:active {
+.cracker-nav-pill-btn:hover,
+.cracker-nav-pill-btn:active {
   background: rgba(30, 41, 59, 0.95);
   color: #ffffff;
   border-color: rgba(249, 115, 22, 0.5);
@@ -215,7 +216,8 @@
   color: #fde047;
 }
 
-.cracker-nav-pill-btn.grand-jump:hover, .cracker-nav-pill-btn.grand-jump:active {
+.cracker-nav-pill-btn.grand-jump:hover,
+.cracker-nav-pill-btn.grand-jump:active {
   border-color: #f59e0b;
   box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
 }
@@ -393,10 +395,13 @@
 }
 
 @keyframes pulseCrackerClaim {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
     transform: scale(1);
   }
+
   50% {
     box-shadow: 0 0 20px rgba(249, 115, 22, 0.85);
     transform: scale(1.02);
@@ -660,7 +665,9 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 99999;
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -670,6 +677,8 @@
 
 .cracker-mega-modal-overlay.open {
   display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .cracker-mega-modal-dialog {
@@ -699,6 +708,7 @@
     opacity: 0;
     transform: scale(0.92) translateY(14px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -735,4 +745,3 @@
 .cracker-modal-close-btn:active {
   transform: scale(0.9);
 }
-

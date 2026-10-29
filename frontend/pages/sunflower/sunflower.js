@@ -3394,7 +3394,7 @@ window.confirmSfCollect = function(isWatchAd) {
       show_10676091().then(() => {
         // You need to add your user reward function here, which will be executed after the user watches the ad.
         // For more details, please refer to the detailed instructions.
-        alert('You have seen an ad!');
+        if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
         doDoubleClaim();
       }).catch(e => {
         console.warn('show_10676091 notice:', e);
@@ -3822,6 +3822,10 @@ function cleanupSunflowerPage() {
     sfAnimationId = null;
   }
   sfIsLoopRunning = false;
+  try { if (typeof closeSfCollectModal === 'function') closeSfCollectModal(); } catch (e) {}
+  try { if (typeof closeSfImageModal === 'function') closeSfImageModal(); } catch (e) {}
+  const adModal = document.getElementById('sfAdReelModal');
+  if (adModal) adModal.classList.add('hidden');
 }
 window.cleanupSunflowerPage = cleanupSunflowerPage;
 
@@ -4956,7 +4960,7 @@ window.openSunflowerAdModal = function(itemType) {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doReward();
     }).catch(e => {
       console.warn('show_10676091 notice in sunflower shop:', e);

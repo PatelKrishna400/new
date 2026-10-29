@@ -198,12 +198,18 @@ function showPiggyWebsiteTaskNotice(completedCount) {
   const modal = document.getElementById('piggyWebTasksModal');
   const countLabel = document.getElementById('piggyWebTasksCountLabel');
   if (countLabel) countLabel.textContent = `${completedCount} / 5 Completed`;
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+  }
 }
 
 function closePiggyWebTasksModal() {
   const modal = document.getElementById('piggyWebTasksModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.classList.remove('open');
+    modal.style.display = 'none';
+  }
 }
 
 function goToWebsiteTasksFromPiggy() {
@@ -294,15 +300,15 @@ function extendPiggyBankWithAd() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerExtension();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerExtension();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerExtension();
   }
 }
@@ -475,15 +481,15 @@ function watchPowerAdDiscount() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerReward();
   }
 }
@@ -515,15 +521,15 @@ function watchSpeedAdDiscount() {
   // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
     show_10676091().then(() => {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerReward();
   }
 }
@@ -548,15 +554,15 @@ function watchPowerMilestoneAd() {
   // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
     show_10676091().then(() => {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerReward();
   }
 }
@@ -580,15 +586,15 @@ function watchSpeedMilestoneAd() {
   // Rewarded interstitial
   if (typeof show_10676091 === 'function') {
     show_10676091().then(() => {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     });
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     triggerReward();
   }
 }
@@ -659,15 +665,15 @@ function hireDgManager(method) {
       show_10676091().then(() => {
         // You need to add your user reward function here, which will be executed after the user watches the ad.
         // For more details, please refer to the detailed instructions.
-        alert('You have seen an ad!');
+        if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
         triggerReward();
       }).catch((e) => {
         console.warn('show_10676091 notice:', e);
-        alert('You have seen an ad!');
+        if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
         triggerReward();
       });
     } else {
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       triggerReward();
     }
   }

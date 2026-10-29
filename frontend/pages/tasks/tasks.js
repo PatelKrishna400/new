@@ -210,7 +210,7 @@ let activeVerifyingTaskId = null;
 /* ==========================================================================
    SUBTAB SWITCHER (1. Daily Task, 2. Telegram Task, 3. Website Task)
    ========================================================================== */
-window.switchTaskSubtab = function(tabName) {
+window.switchTaskSubtab = function (tabName) {
   const dailyBtn = document.getElementById('subtabDaily');
   const tgBtn = document.getElementById('subtabTelegram');
   const webBtn = document.getElementById('subtabWebsite');
@@ -263,7 +263,7 @@ function getTelegramTasksList() {
         tagText: ct.tag || ct.tagText || 'TELEGRAM'
       }));
     }
-  } catch (e) {}
+  } catch (e) { }
   return [];
 }
 window.getTelegramTasksList = getTelegramTasksList;
@@ -335,7 +335,9 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     if (!gameState.tasksState.claimedTelegram) gameState.tasksState.claimedTelegram = {};
 
     if (gameState.tasksState.claimedTelegram[taskId]) {
-      alert('This Telegram task has already been completed!');
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('This Telegram task has already been completed!');
+      }
       return;
     }
   }
@@ -352,7 +354,9 @@ function joinTelegramTask(taskId, title, rewardKeys, url, event) {
     }
   }
 
-  alert(`🎉 Completed! +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'} added to your Inventory!`);
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast(`🎉 Completed! +${rewardKeys} Key${rewardKeys === 1 ? '' : 's'} added to your Inventory!`);
+  }
 
   if (typeof window.updateUI === 'function') window.updateUI();
   if (typeof window.saveGame === 'function') window.saveGame();
@@ -367,7 +371,7 @@ function isMegaRewardUnlocked() {
   if (typeof gameState !== 'undefined' && gameState.megaRewardUnlocked) return true;
   try {
     if (localStorage.getItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED') === 'true') return true;
-  } catch (e) {}
+  } catch (e) { }
   if (thirtyDayState && thirtyDayState.days && thirtyDayState.days[7] && thirtyDayState.days[7].completedCount >= 8) return true;
   return false;
 }
@@ -500,7 +504,7 @@ function renderThirtyDayTabs() {
   tabsStrip.innerHTML = html;
 }
 
-window.selectDayTab = function(dayNum) {
+window.selectDayTab = function (dayNum) {
   currentSelectedDay = Math.max(1, Math.min(7, Number(dayNum) || 1));
   renderThirtyDayTabs();
   renderSelectedDayQuests(currentSelectedDay);
@@ -568,7 +572,9 @@ function renderSelectedDayQuests(dayNum) {
       gameState.player.diamonds = (gameState.player.diamonds || 0) + 10000;
       if (typeof window.updateUI === 'function') window.updateUI();
     }
-    alert(`🎉 DAY ${validDay} 100% COMPLETED!\nYou won +10,000 💎 Diamonds!`);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎉 DAY ${validDay} 100% COMPLETED! +10,000 💎 Diamonds!`);
+    }
 
     // If Day 7 completed, unlock Mega Reward Request!
     if (validDay === 7) {
@@ -577,8 +583,10 @@ function renderSelectedDayQuests(dayNum) {
       }
       try {
         localStorage.setItem('ENERGY_TAP_MEGA_REWARD_UNLOCKED', 'true');
-      } catch (e) {}
-      alert('👑 ALL 7 DAYS COMPLETED!\nMega Reward Request has been UNLOCKED!\nYou can now claim real Mega Rewards!');
+      } catch (e) { }
+      if (typeof showFloatingToast === 'function') {
+        showFloatingToast('👑 ALL 7 DAYS COMPLETED! Mega Reward Request UNLOCKED!');
+      }
       renderMegaRewardBanner();
     }
     saveThirtyDayState();
@@ -664,11 +672,11 @@ function renderThirtyDayCards() {
 /* ==========================================================================
    DAY 10-TASKS DETAIL MODAL (Backward-compatibility sheet)
    ========================================================================== */
-window.openDayDetailModal = function(dayNum) {
+window.openDayDetailModal = function (dayNum) {
   selectDayTab(dayNum);
 };
 
-window.closeDayDetailModal = function(event) {
+window.closeDayDetailModal = function (event) {
   if (event) event.stopPropagation();
   const modal = document.getElementById('dayDetailModalBackdrop');
   if (modal) modal.style.display = 'none';
@@ -678,7 +686,7 @@ function renderDayTasksList(dayNum) {
   renderSelectedDayQuests(dayNum);
 }
 
-window.claimDayTaskReward = function(dayNum, taskIdx) {
+window.claimDayTaskReward = function (dayNum, taskIdx) {
   const dayData = thirtyDayState.days[dayNum];
   if (!dayData || dayData.claimed[taskIdx]) return;
 
@@ -705,22 +713,22 @@ window.claimDayTaskReward = function(dayNum, taskIdx) {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doClaim();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doClaim();
     });
   } else if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(doClaim);
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     doClaim();
   }
 };
 
-window.executeTaskQuickAction = function(taskType) {
+window.executeTaskQuickAction = function (taskType) {
   closeDayDetailModal();
   if (taskType === 'diamond_gen') switchPage('diamond-generator');
   else if (taskType === 'web_task') switchTaskSubtab('website');
@@ -739,7 +747,7 @@ window.executeTaskQuickAction = function(taskType) {
 /* ==========================================================================
    STREAK REPAIR POPUP
    ========================================================================== */
-window.repairDailyStreakWithAd = function() {
+window.repairDailyStreakWithAd = function () {
   const doRepair = () => {
     thirtyDayState.streakBroken = false;
     thirtyDayState.lastLoginDate = new Date().toISOString().slice(0, 10);
@@ -747,7 +755,9 @@ window.repairDailyStreakWithAd = function() {
     if (modal) modal.style.display = 'none';
     saveThirtyDayState();
     renderThirtyDayCards();
-    alert('🔥 Daily Streak Repaired! You can now continue your 30-Day Quests.');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('🔥 Daily Streak Repaired! You can now continue your 30-Day Quests.');
+    }
   };
 
   // Rewarded interstitial
@@ -755,25 +765,27 @@ window.repairDailyStreakWithAd = function() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doRepair();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doRepair();
     });
   } else if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(doRepair);
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     doRepair();
   }
 };
 
-window.repairDailyStreakWithDiamonds = function() {
+window.repairDailyStreakWithDiamonds = function () {
   if (typeof gameState === 'undefined' || !gameState.player) return;
   if ((gameState.player.diamonds || 0) < 100) {
-    alert(`Need 100 💎 Diamonds! (Have: ${gameState.player.diamonds || 0})`);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`Need 100 💎 Diamonds! (Have: ${gameState.player.diamonds || 0})`);
+    }
     return;
   }
 
@@ -785,7 +797,9 @@ window.repairDailyStreakWithDiamonds = function() {
   if (typeof window.updateUI === 'function') window.updateUI();
   saveThirtyDayState();
   renderThirtyDayCards();
-  alert('🔥 Daily Streak Repaired with 100 💎 Diamonds!');
+  if (typeof showFloatingToast === 'function') {
+    showFloatingToast('🔥 Daily Streak Repaired with 100 💎 Diamonds!');
+  }
 };
 
 /* ==========================================================================
@@ -812,7 +826,7 @@ function getActiveWebsiteTasks() {
         tagText: ct.tag || ct.tagText || 'DISKWALA SPONSOR'
       }));
     }
-  } catch (e) {}
+  } catch (e) { }
   return [];
 }
 
@@ -878,7 +892,7 @@ function renderWebsiteTasks() {
   container.innerHTML = html;
 }
 
-window.openWebsiteTaskPopup = function(taskId) {
+window.openWebsiteTaskPopup = function (taskId) {
   activeVerifyingTaskId = taskId;
   const task = getActiveWebsiteTasks().find(t => t.id === taskId);
   if (!task) return;
@@ -930,7 +944,7 @@ window.openWebsiteTaskPopup = function(taskId) {
 // Backward-compatible alias for existing callers
 window.openWebsitePinModal = window.openWebsiteTaskPopup;
 
-window.unlockCurrentWebsiteTask = function() {
+window.unlockCurrentWebsiteTask = function () {
   if (!activeVerifyingTaskId) return;
   const task = getActiveWebsiteTasks().find(t => t.id === activeVerifyingTaskId);
   if (!task) return;
@@ -938,7 +952,9 @@ window.unlockCurrentWebsiteTask = function() {
   const cost = 10000;
   if (typeof gameState === 'undefined' || !gameState.player) return;
   if ((gameState.player.coins || 0) < cost) {
-    alert(`Need 10,000 🪙 Coins to unlock this quest! (Current: ${Math.floor(gameState.player.coins || 0).toLocaleString()} 🪙)`);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`Need 10,000 🪙 Coins to unlock this quest! (Current: ${Math.floor(gameState.player.coins || 0).toLocaleString()} 🪙)`);
+    }
     return;
   }
 
@@ -972,21 +988,21 @@ window.unlockCurrentWebsiteTask = function() {
   }
 };
 
-window.revisitWebsiteTaskUrl = function() {
+window.revisitWebsiteTaskUrl = function () {
   if (!activeVerifyingTaskId) return;
   const task = getActiveWebsiteTasks().find(t => t.id === activeVerifyingTaskId);
   if (!task) return;
   if (task.url) window.open(task.url, '_blank');
 };
 
-window.closeWebCodeModal = function(event) {
+window.closeWebCodeModal = function (event) {
   if (event) event.stopPropagation();
   const modal = document.getElementById('webCodeModalBackdrop');
   if (modal) modal.style.display = 'none';
   activeVerifyingTaskId = null;
 };
 
-window.submitWebsiteCodeVerification = function() {
+window.submitWebsiteCodeVerification = function () {
   if (!activeVerifyingTaskId) return;
   const task = getActiveWebsiteTasks().find(t => t.id === activeVerifyingTaskId);
   if (!task) return;
@@ -998,13 +1014,17 @@ window.submitWebsiteCodeVerification = function() {
   }
 
   if (enteredPin.length < 4) {
-    alert('Please enter the complete 4-digit PIN code!');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('Please enter the complete 4-digit PIN code!');
+    }
     return;
   }
 
   const expectedPin = String(task.correctPin || task.code || '4821').trim();
   if (enteredPin !== expectedPin) {
-    alert('❌ Incorrect 4-Digit Code! Please browse the site carefully and try again.');
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast('❌ Incorrect 4-Digit Code! Please browse the site carefully and try again.');
+    }
     return;
   }
 
@@ -1036,7 +1056,9 @@ window.submitWebsiteCodeVerification = function() {
       window.renderCurrentCategoryRewards();
     }
 
-    alert(`🎉 Verified! You won +${rewardDiamonds} 💎 Diamonds!`);
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(`🎉 Verified! You won +${rewardDiamonds} 💎 Diamonds!`);
+    }
   };
 
   // Rewarded interstitial
@@ -1044,17 +1066,17 @@ window.submitWebsiteCodeVerification = function() {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doClaim();
     }).catch((e) => {
       console.warn('show_10676091 notice:', e);
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       doClaim();
     });
   } else if (typeof window.showRewardedAd === 'function') {
     window.showRewardedAd(doClaim);
   } else {
-    alert('You have seen an ad!');
+    if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
     doClaim();
   }
 };
@@ -1062,7 +1084,7 @@ window.submitWebsiteCodeVerification = function() {
 /* ==========================================================================
    GLOBAL EVENT HOOK: Record progress for 30-Day Tasks
    ========================================================================== */
-window.recordTaskEvent = function(eventType, amount = 1) {
+window.recordTaskEvent = function (eventType, amount = 1) {
   const activeDay = thirtyDayState.activeDayIndex;
   const dayData = thirtyDayState.days[activeDay];
   if (!dayData) return;
@@ -1135,7 +1157,7 @@ function syncTasksFromServerIfEmpty() {
           try {
             localStorage.setItem('ENERGY_TAP_TELEGRAM_TASKS_CONFIG_V1', JSON.stringify(data.telegramTasks));
             localStorage.setItem('ENERGY_TAP_TG_TASKS', JSON.stringify(data.telegramTasks));
-          } catch(e){}
+          } catch (e) { }
           changed = true;
         }
         if (Array.isArray(data.websiteTasks) && (window.cloudWebsiteTasks === undefined || window.cloudWebsiteTasks === null)) {
@@ -1143,7 +1165,7 @@ function syncTasksFromServerIfEmpty() {
           try {
             localStorage.setItem('ENERGY_TAP_WEBSITE_TASKS_CONFIG_V1', JSON.stringify(data.websiteTasks));
             localStorage.setItem('ENERGY_TAP_WEB_TASKS', JSON.stringify(data.websiteTasks));
-          } catch(e){}
+          } catch (e) { }
           changed = true;
         }
         if (changed) {
@@ -1152,11 +1174,11 @@ function syncTasksFromServerIfEmpty() {
         }
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 // Window Exports
-window.renderTasksList = function() {
+window.renderTasksList = function () {
   const activeSubtab = document.querySelector('.task-subtab-btn.active');
   const subtabId = activeSubtab ? activeSubtab.id : 'subtabDaily';
   if (subtabId === 'subtabTelegram') {

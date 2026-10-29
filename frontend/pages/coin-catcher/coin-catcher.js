@@ -254,8 +254,8 @@
     nextSpawnTime = Date.now() + 250;
 
     if (elStartOverlay) elStartOverlay.style.display = 'none';
-    if (elOverlay) elOverlay.classList.remove('open');
-    if (elBoomModal) elBoomModal.classList.remove('open');
+    if (elOverlay) { elOverlay.classList.remove('open'); elOverlay.style.display = 'none'; }
+    if (elBoomModal) { elBoomModal.classList.remove('open'); elBoomModal.style.display = 'none'; }
     if (elBottomActionBar) elBottomActionBar.classList.add('active');
 
     updateHUD();
@@ -472,6 +472,7 @@
     if (resumeCoinsEl) resumeCoinsEl.textContent = bankedCoins.toLocaleString();
 
     if (elBoomModal) {
+      elBoomModal.style.display = 'flex';
       elBoomModal.classList.add('open');
     }
   }
@@ -481,7 +482,10 @@
    */
   function resumeAfterBombAd() {
     const handleAdSuccess = () => {
-      if (elBoomModal) elBoomModal.classList.remove('open');
+      if (elBoomModal) {
+        elBoomModal.classList.remove('open');
+        elBoomModal.style.display = 'none';
+      }
 
       // Clear all existing bombs from stage to give player a clean resume
       for (let i = activeItems.length - 1; i >= 0; i--) {
@@ -526,7 +530,10 @@
    * Boom Modal Option 2: Exit & Forfeit Coins (Coins are NOT collected)
    */
   function exitAndForfeitCoins() {
-    if (elBoomModal) elBoomModal.classList.remove('open');
+    if (elBoomModal) {
+      elBoomModal.classList.remove('open');
+      elBoomModal.style.display = 'none';
+    }
 
     // Coins are not collected
     bankedCoins = 0;
@@ -591,7 +598,10 @@
     if (statRewardEl) statRewardEl.textContent = `+${bankedCoins.toLocaleString()} Coins 🪙`;
 
     if (typeof sfx !== 'undefined' && sfx.playLevelUpSound) sfx.playLevelUpSound();
-    if (elOverlay) elOverlay.classList.add('open');
+    if (elOverlay) {
+      elOverlay.style.display = 'flex';
+      elOverlay.classList.add('open');
+    }
   }
 
   /**
@@ -599,7 +609,10 @@
    */
   async function claimCoinCatcherReward(watchDoubleAd = false) {
     if (bankedCoins <= 0) {
-      if (elOverlay) elOverlay.classList.remove('open');
+      if (elOverlay) {
+        elOverlay.classList.remove('open');
+        elOverlay.style.display = 'none';
+      }
       if (elStartOverlay) elStartOverlay.style.display = 'flex';
       return;
     }
@@ -631,7 +644,10 @@
         }
       }
 
-      if (elOverlay) elOverlay.classList.remove('open');
+      if (elOverlay) {
+        elOverlay.classList.remove('open');
+        elOverlay.style.display = 'none';
+      }
       bankedCoins = 0;
       updateHUD();
       updateBoomCoinBalances();
@@ -1164,9 +1180,15 @@
       if (typeof closeMorningCafePuzzleModal === 'function') closeMorningCafePuzzleModal();
     } catch (e) {}
     const overlay = document.getElementById('catcherModalOverlay');
-    if (overlay) overlay.classList.remove('open');
+    if (overlay) {
+      overlay.classList.remove('open');
+      overlay.style.display = 'none';
+    }
     const boomModal = document.getElementById('catcherBoomModal');
-    if (boomModal) boomModal.classList.remove('open');
+    if (boomModal) {
+      boomModal.classList.remove('open');
+      boomModal.style.display = 'none';
+    }
     const bottomBar = document.getElementById('catcherBottomActionBar');
     if (bottomBar) bottomBar.classList.remove('active');
   }

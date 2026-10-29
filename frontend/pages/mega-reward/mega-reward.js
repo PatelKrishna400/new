@@ -531,10 +531,14 @@ function openRewardRedemptionModal(rewardId) {
 }
 
 function closeRewardRedemptionModal(event) {
-  if (event && event.target && event.target.id !== 'rewardRedemptionBackdrop' && !event.target.classList.contains('redemption-close-btn')) {
-    return;
-  }
   const backdrop = document.getElementById('rewardRedemptionBackdrop');
+  if (event && event.target && backdrop) {
+    const isBackdrop = (event.target === backdrop || event.target.id === 'rewardRedemptionBackdrop');
+    const isCloseBtn = (event.target.classList?.contains('redemption-close-btn') || (typeof event.target.closest === 'function' && event.target.closest('.redemption-close-btn')));
+    if (!isBackdrop && !isCloseBtn) {
+      return;
+    }
+  }
   if (backdrop) backdrop.classList.remove('open');
   activeRedeemReward = null;
 }

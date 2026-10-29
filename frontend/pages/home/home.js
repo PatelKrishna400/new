@@ -1496,10 +1496,14 @@ function openHomeActionPopup(type) {
 }
 
 function closeHomeActionPopup(e) {
-  if (e && e.target && e.target.id !== 'homePopupBackdrop' && e.target.id !== 'homePopupCloseBtn') {
-    return;
-  }
   const backdrop = document.getElementById('homePopupBackdrop');
+  if (e && e.target && backdrop) {
+    const isBackdrop = (e.target === backdrop || e.target.id === 'homePopupBackdrop');
+    const isCloseBtn = (e.target.id === 'homePopupCloseBtn' || (typeof e.target.closest === 'function' && e.target.closest('#homePopupCloseBtn')));
+    if (!isBackdrop && !isCloseBtn) {
+      return;
+    }
+  }
   if (backdrop) backdrop.classList.remove('open');
   currentHomePopupType = null;
 }

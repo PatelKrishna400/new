@@ -126,110 +126,124 @@
   </div>
 
   <!-- Day 10-Task Detail Modal / Sheet -->
-  <div class="task-notes-backdrop" id="dayDetailModalBackdrop" onclick="closeDayDetailModal(event)">
-    <div class="day-detail-modal" id="dayDetailModal" onclick="event.stopPropagation()">
-      <div class="task-notes-handle"></div>
+    <div class="task-notes-backdrop" id="dayDetailModalBackdrop" onclick="closeDayDetailModal(event)"
+      style="display: none;">
+      <div class="day-detail-modal" id="dayDetailModal" onclick="event.stopPropagation()">
+        <div class="task-notes-handle"></div>
 
-      <!-- Day Modal Header -->
-      <div class="day-modal-header flex items-center justify-between border-b border-stone-800 pb-2.5">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl" id="dayModalEmoji">📅</span>
-          <div>
-            <h3 class="text-xs sm:text-sm font-black text-amber-300" id="dayModalTitle">Day 1 Quests (10 Tasks)</h3>
-            <span id="dayModalSubtitle" style="display: none;"></span>
-          </div>
-        </div>
-        <button class="w-7 h-7 rounded-full bg-stone-800 text-stone-300 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-stone-700" onclick="closeDayDetailModal()">&times;</button>
-      </div>
-
-      <!-- Day Progress Track -->
-      <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 my-2 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-stone-300">Day Progress:</span>
-          <span class="text-xs font-mono font-black text-amber-300" id="dayTasksProgressLabel">0 / 10 Completed</span>
-        </div>
-        <div class="bg-cyan-950 border border-cyan-500/40 px-2 py-0.5 rounded text-[10px] font-mono font-bold text-cyan-300">
-          Reward: 10,000 💎
-        </div>
-      </div>
-
-      <!-- 10 Tasks Vertical Stack -->
-      <div class="day-tasks-vertical-list flex flex-col gap-2 overflow-y-auto max-h-[60vh] pr-1" id="dayTasksVerticalList">
-        <!-- Injected dynamically by renderDayTasksList() -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Broken Streak Notice Popup Modal -->
-  <div class="broken-streak-modal-backdrop" id="brokenStreakModal" style="display: none;">
-    <div class="broken-streak-card">
-      <div class="broken-streak-icon-wrap">💔🔥</div>
-      <h3 class="broken-streak-title">Daily Streak Broken!</h3>
-
-      <div class="broken-streak-actions">
-        <button type="button" onclick="repairDailyStreakWithAd()" class="broken-streak-btn-ad">
-          <span>📢 Watch Ad to Repair</span>
-        </button>
-        <button type="button" onclick="repairDailyStreakWithDiamonds()" class="broken-streak-btn-dia">
-          <span>💎 Use 100 Diamonds</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Website Task Popup Modal (10,000 Coins Unlock & 4-Digit PIN Verify) -->
-  <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)" style="display: none;">
-    <div class="web-code-modal" id="webCodeModal" onclick="event.stopPropagation()">
-      <div class="web-code-header">
-        <div class="web-code-icon-badge">🌐</div>
-        <div class="web-code-header-text">
+        <!-- Day Modal Header -->
+        <div class="day-modal-header flex items-center justify-between border-b border-stone-800 pb-2.5">
           <div class="flex items-center gap-2">
-            <span class="web-code-subtag" id="webModalSubtag">DISKWALA SPONSOR</span>
-            <span class="text-[10px] font-mono font-black text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40" id="webModalPrizeTag">+50 💎</span>
+            <span class="text-2xl" id="dayModalEmoji">📅</span>
+            <div>
+              <h3 class="text-xs sm:text-sm font-black text-amber-300" id="dayModalTitle">Day 1 Quests (10 Tasks)</h3>
+              <span id="dayModalSubtitle" style="display: none;"></span>
+            </div>
           </div>
-          <h3 class="web-code-title" id="webModalTitle">Website Quest</h3>
+          <button
+            class="w-7 h-7 rounded-full bg-stone-800 text-stone-300 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-stone-700"
+            onclick="closeDayDetailModal()">&times;</button>
         </div>
-        <button class="web-code-close-btn" onclick="closeWebCodeModal()" aria-label="Close modal">&times;</button>
-      </div>
 
-      <div class="web-code-body">
-        <!-- View A: Locked (Requires 10,000 Coins) -->
-        <div id="webModalLockedView" class="flex flex-col gap-3 py-1">
-          <div class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-bold text-amber-200">
-            <span>Entry Cost:</span>
-            <span class="font-mono text-amber-300 font-black">10,000 🪙 Coins</span>
+        <!-- Day Progress Track -->
+        <div class="bg-stone-950/80 p-2.5 rounded-xl border border-stone-800 my-2 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-stone-300">Day Progress:</span>
+            <span class="text-xs font-mono font-black text-amber-300" id="dayTasksProgressLabel">0 / 10 Completed</span>
           </div>
-          <button type="button" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2" id="webModalUnlockBtn" onclick="unlockCurrentWebsiteTask()">
-            <span>🪙 Unlock Quest (10,000 Coins)</span>
+          <div
+            class="bg-cyan-950 border border-cyan-500/40 px-2 py-0.5 rounded text-[10px] font-mono font-bold text-cyan-300">
+            Reward: 10,000 💎
+          </div>
+        </div>
+
+        <!-- 10 Tasks Vertical Stack -->
+        <div class="day-tasks-vertical-list flex flex-col gap-2 overflow-y-auto max-h-[60vh] pr-1"
+          id="dayTasksVerticalList">
+          <!-- Injected dynamically by renderDayTasksList() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Broken Streak Notice Popup Modal -->
+    <div class="broken-streak-modal-backdrop" id="brokenStreakModal" style="display: none;">
+      <div class="broken-streak-card">
+        <div class="broken-streak-icon-wrap">💔🔥</div>
+        <h3 class="broken-streak-title">Daily Streak Broken!</h3>
+
+        <div class="broken-streak-actions">
+          <button type="button" onclick="repairDailyStreakWithAd()" class="broken-streak-btn-ad">
+            <span>📢 Watch Ad to Repair</span>
+          </button>
+          <button type="button" onclick="repairDailyStreakWithDiamonds()" class="broken-streak-btn-dia">
+            <span>💎 Use 100 Diamonds</span>
           </button>
         </div>
+      </div>
+    </div>
 
-        <!-- View B: Unlocked (PIN input & Verify Ad) -->
-        <div id="webModalUnlockedView" class="flex flex-col gap-2.5 py-1" style="display: none;">
-          <div class="web-pin-container my-1">
-            <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric">
-            <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
-            <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
-            <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
+    <!-- Website Task Popup Modal (10,000 Coins Unlock & 4-Digit PIN Verify) -->
+    <div class="web-code-modal-backdrop" id="webCodeModalBackdrop" onclick="closeWebCodeModal(event)"
+      style="display: none;">
+      <div class="web-code-modal" id="webCodeModal" onclick="event.stopPropagation()">
+        <div class="web-code-header">
+          <div class="web-code-icon-badge">🌐</div>
+          <div class="web-code-header-text">
+            <div class="flex items-center gap-2">
+              <span class="web-code-subtag" id="webModalSubtag">DISKWALA SPONSOR</span>
+              <span
+                class="text-[10px] font-mono font-black text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40"
+                id="webModalPrizeTag">+50 💎</span>
+            </div>
+            <h3 class="web-code-title" id="webModalTitle">Website Quest</h3>
           </div>
-
-          <div class="web-code-modal-actions">
-            <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn" onclick="revisitWebsiteTaskUrl()">
-              <span>🔗 Open Site</span>
-            </button>
-            <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn" onclick="submitWebsiteCodeVerification()">
-              <span>📢 Verify &amp; Claim (+50 💎)</span>
-            </button>
-          </div>
+          <button class="web-code-close-btn" onclick="closeWebCodeModal()" aria-label="Close modal">&times;</button>
         </div>
 
-        <!-- View C: Claimed -->
-        <div id="webModalClaimedView" class="flex flex-col items-center gap-2 py-3 text-center" style="display: none;">
-          <span class="text-3xl">🎉</span>
-          <span class="text-sm font-black text-emerald-400">Quest Completed!</span>
+        <div class="web-code-body">
+          <!-- View A: Locked (Requires 10,000 Coins) -->
+          <div id="webModalLockedView" class="flex flex-col gap-3 py-1">
+            <div
+              class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-bold text-amber-200">
+              <span>Entry Cost:</span>
+              <span class="font-mono text-amber-300 font-black">10,000 🪙 Coins</span>
+            </div>
+            <button type="button"
+              class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2"
+              id="webModalUnlockBtn" onclick="unlockCurrentWebsiteTask()">
+              <span>🪙 Unlock Quest (10,000 Coins)</span>
+            </button>
+          </div>
+
+          <!-- View B: Unlocked (PIN input & Verify Ad) -->
+          <div id="webModalUnlockedView" class="flex flex-col gap-2.5 py-1" style="display: none;">
+            <div class="web-pin-container my-1">
+              <input type="tel" maxlength="1" class="web-pin-input" id="webPin0" data-idx="0" inputmode="numeric">
+              <input type="tel" maxlength="1" class="web-pin-input" id="webPin1" data-idx="1" inputmode="numeric">
+              <input type="tel" maxlength="1" class="web-pin-input" id="webPin2" data-idx="2" inputmode="numeric">
+              <input type="tel" maxlength="1" class="web-pin-input" id="webPin3" data-idx="3" inputmode="numeric">
+            </div>
+
+            <div class="web-code-modal-actions">
+              <button type="button" class="web-code-revisit-btn" id="webModalRevisitBtn"
+                onclick="revisitWebsiteTaskUrl()">
+                <span>🔗 Open Site</span>
+              </button>
+              <button type="button" class="web-code-submit-btn" id="webModalSubmitBtn"
+                onclick="submitWebsiteCodeVerification()">
+                <span>📢 Verify &amp; Claim (+50 💎)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- View C: Claimed -->
+          <div id="webModalClaimedView" class="flex flex-col items-center gap-2 py-3 text-center"
+            style="display: none;">
+            <span class="text-3xl">🎉</span>
+            <span class="text-sm font-black text-emerald-400">Quest Completed!</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-</div>
+  </div>

@@ -1898,12 +1898,20 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(2, 6, 23, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   z-index: 99999;
   padding: 16px;
   animation: adModalFadeIn 0.25s ease-out;
+}
+
+.rewarded-ad-modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .rewarded-ad-modal-backdrop.fade-out {
@@ -2358,14 +2366,18 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(4, 9, 25, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: flex-end;
   justify-content: center;
   z-index: 10000;
 }
 
 .notification-modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .notification-modal-sheet {

@@ -32,7 +32,7 @@ function startAdSimulation(fuelType, title, desc, callback) {
     show_10676091().then(() => {
       // You need to add your user reward function here, which will be executed after the user watches the ad.
       // For more details, please refer to the detailed instructions.
-      alert('You have seen an ad!');
+      if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       _onceCallback();
     }).catch(e => {
       console.warn('show_10676091 notice:', e);

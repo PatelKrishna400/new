@@ -1899,12 +1899,20 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(2, 6, 23, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   z-index: 99999;
   padding: 16px;
   animation: adModalFadeIn 0.25s ease-out;
+}
+
+.rewarded-ad-modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .rewarded-ad-modal-backdrop.fade-out {
@@ -2359,14 +2367,18 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(4, 9, 25, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: flex-end;
   justify-content: center;
   z-index: 10000;
 }
 
 .notification-modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .notification-modal-sheet {
@@ -3563,7 +3575,7 @@ body.full-page-game-active div[id^="page"].active {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   z-index: 10000;
-  display: flex;
+  display: none !important;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -3573,6 +3585,7 @@ body.full-page-game-active div[id^="page"].active {
 }
 
 .home-popup-backdrop.open {
+  display: flex !important;
   opacity: 1;
   pointer-events: auto;
 }
@@ -9359,11 +9372,20 @@ body.full-page-game-active div[id^="page"].active {
   z-index: 99999;
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(8px);
-  display: flex;
+  -webkit-backdrop-filter: blur(8px);
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
   animation: fadeIn 0.2s ease-out;
+}
+
+.web-code-modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .web-code-modal {
@@ -9712,10 +9734,18 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(3, 7, 18, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: flex-end;
   justify-content: center;
   animation: fadeInModal 0.2s ease-out;
+}
+
+.task-notes-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 @keyframes fadeInModal {
@@ -11006,11 +11036,19 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(3, 7, 18, 0.88);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
   animation: fadeInModal 0.2s ease-out;
+}
+
+.broken-streak-modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .broken-streak-card {
@@ -12794,11 +12832,19 @@ body.full-page-game-active div[id^="page"].active {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   z-index: 9999;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 12px;
   animation: reelModalFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reel-studio-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 @keyframes reelModalFade {
@@ -21483,16 +21529,18 @@ body.full-page-game-active div[id^="page"].active {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 10000;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  opacity: 0;
-  pointer-events: none;
   transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.spin-reward-backdrop.active {
+.spin-reward-backdrop.active,
+.spin-reward-backdrop.open {
+  display: flex !important;
   opacity: 1;
   pointer-events: auto;
 }
@@ -21940,15 +21988,20 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(3, 7, 18, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 18px;
   box-sizing: border-box;
 }
 
-.spin-gift-backdrop.active {
+.spin-gift-backdrop.active,
+.spin-gift-backdrop.open {
   display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
   animation: fadeInGiftBackdrop 0.3s ease-out;
 }
 
@@ -24666,11 +24719,19 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(3, 7, 18, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
   animation: fadeInModal 0.25s ease forwards;
+}
+
+.egg-win-modal-overlay.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .egg-win-modal-card {
@@ -26337,8 +26398,21 @@ body.full-page-game-active div[id^="page"].active {
 #pageCoinCatcher:not(.active) #catcherModalOverlay,
 #pageCoinCatcher:not(.active) #catcherBoomModal,
 #pageCoinCatcher:not(.active) #morningCafePuzzleModal,
-#pageCoinCatcher:not(.active) .cafe-submodal {
+.cafe-submodal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
   display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cafe-submodal.open:not(.hidden) {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Hide Scrollbar for Chrome, Safari, and Opera on Coin Catcher */
@@ -26888,7 +26962,9 @@ body.full-page-game-active div[id^="page"].active {
   background: rgba(4, 9, 25, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 18px;
@@ -26896,7 +26972,9 @@ body.full-page-game-active div[id^="page"].active {
 }
 
 .catcher-modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
   animation: fadeInModal 0.25s ease-out forwards;
 }
 
@@ -27314,13 +27392,21 @@ body.full-page-game-active div[id^="page"].active {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 10px;
   overflow-y: auto;
   scrollbar-width: thin !important;
   scrollbar-color: rgba(245, 158, 11, 0.7) rgba(15, 23, 42, 0.7) !important;
+}
+
+.cafe-puzzle-modal-overlay.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .cafe-puzzle-modal-overlay::-webkit-scrollbar {
@@ -27460,12 +27546,21 @@ body.full-page-game-active div[id^="page"].active {
   position: fixed;
   inset: 0;
   z-index: 1050;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
 }
+.cafe-submodal.open:not(.hidden) {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
+}
 .cafe-submodal.hidden {
   display: none !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
 
@@ -33897,10 +33992,18 @@ body.page-mining-active .mine-bottom-menu-bar {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
+}
+
+.dg-modal-overlay.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .dg-modal-card {
@@ -34647,7 +34750,9 @@ body.page-mining-active .mine-bottom-menu-bar {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 99999;
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -34657,6 +34762,8 @@ body.page-mining-active .mine-bottom-menu-bar {
 
 .cracker-mega-modal-overlay.open {
   display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .cracker-mega-modal-dialog {

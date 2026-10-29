@@ -90,7 +90,7 @@
   </script>
 
   <!-- Consolidated Unified Stylesheet (Replaces 29 separate blocking HTTP round-trips) -->
-  <link rel="stylesheet" href="style.css?v=1792351219606">
+  <link rel="stylesheet" href="style.css?v=1793262857142">
 </head>
 <body>
   <!-- High-Tech Quantum Loading Splash Screen -->
@@ -1095,7 +1095,7 @@
         </div>
       
         <!-- Day 10-Task Detail Modal / Sheet -->
-        <div class="task-notes-backdrop" id="dayDetailModalBackdrop" onclick="closeDayDetailModal(event)">
+        <div class="task-notes-backdrop" id="dayDetailModalBackdrop" onclick="closeDayDetailModal(event)" style="display: none;">
           <div class="day-detail-modal" id="dayDetailModal" onclick="event.stopPropagation()">
             <div class="task-notes-handle"></div>
       
@@ -3735,7 +3735,7 @@
         </div>
       
         <!-- Interactive Winning Prize Popup Modal (with 2X Profit & Claim Regular Buttons) -->
-        <div class="spin-reward-backdrop" id="spinRewardBackdrop" onclick="closeSpinRewardModal(event)">
+        <div class="spin-reward-backdrop" id="spinRewardBackdrop" onclick="closeSpinRewardModal(event)" style="display: none;">
           <div class="spin-reward-modal" id="spinRewardModal" onclick="event.stopPropagation()">
             <div class="spin-modal-glow" id="spinModalGlow"></div>
             
@@ -3776,7 +3776,7 @@
         </div>
       
         <!-- Grand Mystery Gift Winning Modal (Triggered when 👑 Crown Level Goal is Reached) -->
-        <div class="spin-gift-backdrop" id="spinGiftModalBackdrop" onclick="closeMysteryGiftModal(event)">
+        <div class="spin-gift-backdrop" id="spinGiftModalBackdrop" onclick="closeMysteryGiftModal(event)" style="display: none;">
           <div class="spin-gift-modal" id="spinGiftModal" onclick="event.stopPropagation()">
             <div class="spin-gift-glow"></div>
             
@@ -5029,7 +5029,7 @@
         </section>
       
         <!-- Boom Hit / Try Again Modal (Watch Ad to Resume OR Exit and Forfeit) -->
-        <div class="catcher-modal-overlay" id="catcherBoomModal">
+        <div class="catcher-modal-overlay" id="catcherBoomModal" style="display: none;">
           <div class="catcher-modal-card boom-card">
             <div class="catcher-boom-glow"></div>
             <div class="catcher-modal-header">
@@ -5053,7 +5053,7 @@
         </div>
       
         <!-- Victory / Banked Reward Modal -->
-        <div class="catcher-modal-overlay" id="catcherModalOverlay">
+        <div class="catcher-modal-overlay" id="catcherModalOverlay" style="display: none;">
           <div class="catcher-modal-card">
             <div class="catcher-modal-glow"></div>
             <div class="catcher-modal-header">
@@ -7640,7 +7640,7 @@
         </div>
       
         <!-- ==================== POPUP MODAL: LEVEL 1000 MEGA REWARD (MATCHES SCREENSHOT) ==================== -->
-        <div class="cracker-mega-modal-overlay" id="crackerMegaModalOverlay" onclick="closeCrackerMegaRewardModal(event)">
+        <div class="cracker-mega-modal-overlay" id="crackerMegaModalOverlay" onclick="closeCrackerMegaRewardModal(event)" style="display: none;">
           <div class="cracker-mega-modal-dialog" onclick="event.stopPropagation()">
             <button class="cracker-modal-close-btn" onclick="closeCrackerMegaRewardModal(event)" aria-label="Close modal">✕</button>
       
@@ -7818,49 +7818,49 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-  <script src="shared/firebase-service.js?v=1792351219606"></script>
+  <script src="shared/firebase-service.js?v=1793262857142"></script>
 
   <!-- Monetag Ad Service -->
-  <script src="shared/ad-service.js?v=1792351219606"></script>
+  <script src="shared/ad-service.js?v=1793262857142"></script>
 
   <!-- Shared Core State -->
-  <script src="shared/state.js?v=1792351219606"></script>
+  <script src="shared/state.js?v=1793262857142"></script>
 
   <!-- Modular Page Scripts (All 31 Modular Pages Loaded Statically for Instant Switching) -->
-  <script src="pages/home/home.js?v=1792351219606"></script>
-  <script src="pages/energy/energy.js?v=1792351219606"></script>
-  <script src="pages/diamond-generator/diamond-generator.js?v=1792351219606"></script>
-  <script src="pages/sunflower/sunflower.js?v=1792351219606"></script>
-  <script src="pages/tasks/tasks.js?v=1792351219606"></script>
-  <script src="pages/profile/profile.js?v=1792351219606"></script>
-  <script src="pages/xp/xp.js?v=1792351219606"></script>
-  <script src="pages/reward/reward.js?v=1792351219606"></script>
-  <script src="pages/goal/goal.js?v=1792351219606"></script>
-  <script src="pages/streak/streak.js?v=1792351219606"></script>
-  <script src="pages/mega-reward/mega-reward.js?v=1792351219606"></script>
-  <script src="pages/spin/spin.js?v=1792351219606"></script>
-  <script src="pages/chest/chest.js?v=1792351219606"></script>
-  <script src="pages/scratch/scratch.js?v=1792351219606"></script>
-  <script src="pages/egg/egg.js?v=1792351219606"></script>
-  <script src="pages/leaderboard/leaderboard.js?v=1792351219606"></script>
-  <script src="pages/memory-match/memory-match.js?v=1792351219606"></script>
-  <script src="pages/coin-catcher/coin-catcher.js?v=1792351219606"></script>
-  <script src="pages/bee-farm/bee-farm.js?v=1792351219606"></script>
-  <script src="pages/mining/mining.js?v=1792351219606"></script>
-  <script src="pages/custom/custom.js?v=1792351219606"></script>
-  <script src="pages/suggest-box/suggest-box.js?v=1792351219606"></script>
-  <script src="pages/ad-rewards/ad-rewards.js?v=1792351219606"></script>
-  <script src="pages/gift-card/gift-card.js?v=1792351219606"></script>
-  <script src="pages/gadgets/gadgets.js?v=1792351219606"></script>
-  <script src="pages/accessories/accessories.js?v=1792351219606"></script>
-  <script src="pages/gaming-tool/gaming-tool.js?v=1792351219606"></script>
-  <script src="pages/kitchen/kitchen.js?v=1792351219606"></script>
-  <script src="pages/stationery/stationery.js?v=1792351219606"></script>
-  <script src="pages/fitness/fitness.js?v=1792351219606"></script>
-  <script src="pages/home-decorate/home-decorate.js?v=1792351219606"></script>
-  <script src="pages/cracker/cracker.js?v=1792351219606"></script>
+  <script src="pages/home/home.js?v=1793262857142"></script>
+  <script src="pages/energy/energy.js?v=1793262857142"></script>
+  <script src="pages/diamond-generator/diamond-generator.js?v=1793262857142"></script>
+  <script src="pages/sunflower/sunflower.js?v=1793262857142"></script>
+  <script src="pages/tasks/tasks.js?v=1793262857142"></script>
+  <script src="pages/profile/profile.js?v=1793262857142"></script>
+  <script src="pages/xp/xp.js?v=1793262857142"></script>
+  <script src="pages/reward/reward.js?v=1793262857142"></script>
+  <script src="pages/goal/goal.js?v=1793262857142"></script>
+  <script src="pages/streak/streak.js?v=1793262857142"></script>
+  <script src="pages/mega-reward/mega-reward.js?v=1793262857142"></script>
+  <script src="pages/spin/spin.js?v=1793262857142"></script>
+  <script src="pages/chest/chest.js?v=1793262857142"></script>
+  <script src="pages/scratch/scratch.js?v=1793262857142"></script>
+  <script src="pages/egg/egg.js?v=1793262857142"></script>
+  <script src="pages/leaderboard/leaderboard.js?v=1793262857142"></script>
+  <script src="pages/memory-match/memory-match.js?v=1793262857142"></script>
+  <script src="pages/coin-catcher/coin-catcher.js?v=1793262857142"></script>
+  <script src="pages/bee-farm/bee-farm.js?v=1793262857142"></script>
+  <script src="pages/mining/mining.js?v=1793262857142"></script>
+  <script src="pages/custom/custom.js?v=1793262857142"></script>
+  <script src="pages/suggest-box/suggest-box.js?v=1793262857142"></script>
+  <script src="pages/ad-rewards/ad-rewards.js?v=1793262857142"></script>
+  <script src="pages/gift-card/gift-card.js?v=1793262857142"></script>
+  <script src="pages/gadgets/gadgets.js?v=1793262857142"></script>
+  <script src="pages/accessories/accessories.js?v=1793262857142"></script>
+  <script src="pages/gaming-tool/gaming-tool.js?v=1793262857142"></script>
+  <script src="pages/kitchen/kitchen.js?v=1793262857142"></script>
+  <script src="pages/stationery/stationery.js?v=1793262857142"></script>
+  <script src="pages/fitness/fitness.js?v=1793262857142"></script>
+  <script src="pages/home-decorate/home-decorate.js?v=1793262857142"></script>
+  <script src="pages/cracker/cracker.js?v=1793262857142"></script>
 
   <!-- App Shell, Dynamic On-Demand Loader & Router -->
-  <script src="shared/app.js?v=1792351219606"></script>
+  <script src="shared/app.js?v=1793262857142"></script>
 </body>
 </html>

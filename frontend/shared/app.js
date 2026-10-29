@@ -57,6 +57,8 @@ function getPageMap() {
       stationery: document.getElementById('pageStationery'),
       fitness: document.getElementById('pageFitness'),
       homeDecorate: document.getElementById('pageHomeDecorate'),
+      'home-decorate': document.getElementById('pageHomeDecorate'),
+      'home_decorate': document.getElementById('pageHomeDecorate'),
       custom: document.getElementById('pageCustom'),
       suggestBox: document.getElementById('pageSuggestBox'),
       'suggest-box': document.getElementById('pageSuggestBox'),
@@ -383,9 +385,30 @@ function switchPage(pageName) {
   // Close any legacy modal backdrop
   closeTabModal();
 
+  // Close all lingering modals across pages so they never block clicks
+  try { if (typeof closeHomeActionPopup === 'function') closeHomeActionPopup(); } catch (e) {}
+  try { if (typeof closeDayDetailModal === 'function') closeDayDetailModal(); } catch (e) {}
+  try { if (typeof closeWebCodeModal === 'function') closeWebCodeModal(); } catch (e) {}
+  try { if (typeof closeRewardRedemptionModal === 'function') closeRewardRedemptionModal(); } catch (e) {}
+  try { if (typeof closeGameEntryRequirementModal === 'function') closeGameEntryRequirementModal(); } catch (e) {}
+  try { if (typeof closeCrackerMegaRewardModal === 'function') closeCrackerMegaRewardModal(); } catch (e) {}
+  try { if (typeof closeEggWinModal === 'function') closeEggWinModal(false); } catch (e) {}
+  try { if (typeof closePiggyWebTasksModal === 'function') closePiggyWebTasksModal(); } catch (e) {}
+  try { if (typeof closeMorningCafePuzzleModal === 'function') closeMorningCafePuzzleModal(); } catch (e) {}
+  try { if (typeof closeBalloonPursuitModal === 'function') closeBalloonPursuitModal(); } catch (e) {}
+  try { if (typeof closeReelStudioModal === 'function') closeReelStudioModal(); } catch (e) {}
+  try { if (typeof closeSpinRewardModal === 'function') closeSpinRewardModal(); } catch (e) {}
+  try { if (typeof closeMysteryGiftModal === 'function') closeMysteryGiftModal(); } catch (e) {}
+  try { if (typeof toggleNotificationInbox === 'function') toggleNotificationInbox(false); } catch (e) {}
+
   // Activate target page from cached map immediately
   const pageMap = getPageMap();
-  const targetElem = pageMap[pageName];
+  let targetElem = pageMap[pageName];
+  if (!targetElem) {
+    const norm = pageName.replace(/[-_]([a-z])/g, (_, c) => c.toUpperCase());
+    const capitalized = norm.charAt(0).toUpperCase() + norm.slice(1);
+    targetElem = document.getElementById(`page${capitalized}`) || document.getElementById(`page${pageName}`) || document.getElementById(pageName);
+  }
   if (targetElem) {
     targetElem.classList.add('active');
     _currentActivePageElem = targetElem;
@@ -403,67 +426,71 @@ function switchPage(pageName) {
 
   // Page-specific initializers runner
   function runPageInitializers(targetPage) {
-    if (targetPage === 'leaderboard') {
-      if (typeof updateLeaderboardUI === 'function') updateLeaderboardUI();
-    } else if (targetPage === 'home') {
-      if (typeof updateHomeUI === 'function') updateHomeUI();
-    } else if (targetPage === 'energy') {
-      if (typeof updateEnergyUI === 'function') updateEnergyUI();
-      if (typeof refreshEnergyStationMiniStats === 'function') refreshEnergyStationMiniStats();
-    } else if (targetPage === 'sunflower') {
-      if (typeof initSunflowerPage === 'function') initSunflowerPage();
-      else if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
-    } else if (targetPage === 'bee-farm' || targetPage === 'beefarm') {
-      if (typeof initBeeFarmTycoonGame === 'function') initBeeFarmTycoonGame();
-      else if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
-    } else if (targetPage === 'mining') {
-      if (typeof initMiningTycoonGame === 'function') initMiningTycoonGame();
-      else if (typeof updateMiningUI === 'function') updateMiningUI();
-    } else if (targetPage === 'tasks') {
-      if (typeof renderTasksList === 'function') renderTasksList();
-    } else if (targetPage === 'profile') {
-      if (typeof updateProfileUI === 'function') updateProfileUI();
-    } else if (targetPage === 'reward' || targetPage === 'rewards' || targetPage === 'wallet') {
-      if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-    } else if (targetPage === 'streak') {
-      if (typeof renderStreakView === 'function') renderStreakView();
-      if (typeof startStreakTimer === 'function') startStreakTimer();
-    } else if (targetPage === 'spin') {
-      if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-      if (typeof initSpinChaserBulbs === 'function') initSpinChaserBulbs();
-      if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
-    } else if (targetPage === 'chest') {
-      if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-      if (typeof updateChestUI === 'function') updateChestUI();
-    } else if (targetPage === 'scratch') {
-      if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-      if (typeof initScratchPage === 'function') initScratchPage();
-      if (typeof updateScratchUI === 'function') updateScratchUI();
-      else if (typeof renderScratchGrid === 'function') renderScratchGrid();
-    } else if (targetPage === 'egg') {
-      if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
-      if (typeof renderEggPageContent === 'function') renderEggPageContent();
-    } else if (targetPage === 'megaReward' || targetPage === 'mega-reward') {
-      if (typeof renderMegaRewardPage === 'function') renderMegaRewardPage();
-    } else if (['giftCard', 'gift-card', 'gadgets', 'accessories', 'gamingTool', 'gaming-tool', 'kitchen', 'stationery', 'fitness', 'homeDecorate', 'home-decorate'].includes(targetPage)) {
-      if (typeof renderCategoryProducts === 'function') renderCategoryProducts(targetPage);
-    } else if (targetPage === 'custom') {
-      if (typeof initCustomPage === 'function') initCustomPage();
-    } else if (targetPage === 'suggestBox' || targetPage === 'suggest-box') {
-      if (typeof initSuggestBoxPage === 'function') initSuggestBoxPage();
-    } else if (targetPage === 'memoryMatch' || targetPage === 'memory-match') {
-      if (typeof initMemoryMatchPage === 'function') initMemoryMatchPage();
-    } else if (targetPage === 'coinCatcher' || targetPage === 'coin-catcher') {
-      if (typeof initCoinCatcherPage === 'function') initCoinCatcherPage();
-    } else if (targetPage === 'xp') {
-      if (typeof updateXpPageUI === 'function') updateXpPageUI();
-      else if (typeof initXpPage === 'function') initXpPage();
-    } else if (targetPage === 'goal') {
-      if (typeof updateGoalPageUI === 'function') updateGoalPageUI();
-      else if (typeof initGoalPage === 'function') initGoalPage();
-    } else if (targetPage === 'cracker' || targetPage === 'cracker-boom') {
-      if (typeof updateCrackerViewUI === 'function') updateCrackerViewUI();
-      else if (typeof initCrackerPage === 'function') initCrackerPage();
+    try {
+      if (targetPage === 'leaderboard') {
+        if (typeof updateLeaderboardUI === 'function') updateLeaderboardUI();
+      } else if (targetPage === 'home') {
+        if (typeof updateHomeUI === 'function') updateHomeUI();
+      } else if (targetPage === 'energy') {
+        if (typeof updateEnergyUI === 'function') updateEnergyUI();
+        if (typeof refreshEnergyStationMiniStats === 'function') refreshEnergyStationMiniStats();
+      } else if (targetPage === 'sunflower') {
+        if (typeof initSunflowerPage === 'function') initSunflowerPage();
+        else if (typeof updateSunflowerUI === 'function') updateSunflowerUI();
+      } else if (targetPage === 'bee-farm' || targetPage === 'beefarm') {
+        if (typeof initBeeFarmTycoonGame === 'function') initBeeFarmTycoonGame();
+        else if (typeof updateBeeFarmUI === 'function') updateBeeFarmUI();
+      } else if (targetPage === 'mining') {
+        if (typeof initMiningTycoonGame === 'function') initMiningTycoonGame();
+        else if (typeof updateMiningUI === 'function') updateMiningUI();
+      } else if (targetPage === 'tasks') {
+        if (typeof renderTasksList === 'function') renderTasksList();
+      } else if (targetPage === 'profile') {
+        if (typeof updateProfileUI === 'function') updateProfileUI();
+      } else if (targetPage === 'reward' || targetPage === 'rewards' || targetPage === 'wallet') {
+        if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+      } else if (targetPage === 'streak') {
+        if (typeof renderStreakView === 'function') renderStreakView();
+        if (typeof startStreakTimer === 'function') startStreakTimer();
+      } else if (targetPage === 'spin') {
+        if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+        if (typeof initSpinChaserBulbs === 'function') initSpinChaserBulbs();
+        if (typeof updateSpinTicketUI === 'function') updateSpinTicketUI();
+      } else if (targetPage === 'chest') {
+        if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+        if (typeof updateChestUI === 'function') updateChestUI();
+      } else if (targetPage === 'scratch') {
+        if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+        if (typeof initScratchPage === 'function') initScratchPage();
+        if (typeof updateScratchUI === 'function') updateScratchUI();
+        else if (typeof renderScratchGrid === 'function') renderScratchGrid();
+      } else if (targetPage === 'egg') {
+        if (typeof updateRewardViewUI === 'function') updateRewardViewUI();
+        if (typeof renderEggPageContent === 'function') renderEggPageContent();
+      } else if (targetPage === 'megaReward' || targetPage === 'mega-reward') {
+        if (typeof renderMegaRewardPage === 'function') renderMegaRewardPage();
+      } else if (['giftCard', 'gift-card', 'gadgets', 'accessories', 'gamingTool', 'gaming-tool', 'kitchen', 'stationery', 'fitness', 'homeDecorate', 'home-decorate'].includes(targetPage)) {
+        if (typeof renderCategoryProducts === 'function') renderCategoryProducts(targetPage);
+      } else if (targetPage === 'custom') {
+        if (typeof initCustomPage === 'function') initCustomPage();
+      } else if (targetPage === 'suggestBox' || targetPage === 'suggest-box') {
+        if (typeof initSuggestBoxPage === 'function') initSuggestBoxPage();
+      } else if (targetPage === 'memoryMatch' || targetPage === 'memory-match') {
+        if (typeof initMemoryMatchPage === 'function') initMemoryMatchPage();
+      } else if (targetPage === 'coinCatcher' || targetPage === 'coin-catcher') {
+        if (typeof initCoinCatcherPage === 'function') initCoinCatcherPage();
+      } else if (targetPage === 'xp') {
+        if (typeof updateXpPageUI === 'function') updateXpPageUI();
+        else if (typeof initXpPage === 'function') initXpPage();
+      } else if (targetPage === 'goal') {
+        if (typeof updateGoalPageUI === 'function') updateGoalPageUI();
+        else if (typeof initGoalPage === 'function') initGoalPage();
+      } else if (targetPage === 'cracker' || targetPage === 'cracker-boom') {
+        if (typeof updateCrackerViewUI === 'function') updateCrackerViewUI();
+        else if (typeof initCrackerPage === 'function') initCrackerPage();
+      }
+    } catch (err) {
+      console.warn('[Router] Error in runPageInitializers for ' + targetPage + ':', err);
     }
   }
 
@@ -766,6 +793,15 @@ function initEvents() {
   window.addEventListener('unhandledrejection', (event) => {
     console.warn('[GlobalSafety] Unhandled rejection:', event.reason);
   });
+
+  // Non-blocking Mobile Alert Polyfill: Prevents UI touch freeze in mobile WebViews / Telegram Mini App
+  window.alert = function(msg) {
+    if (typeof showFloatingToast === 'function') {
+      showFloatingToast(String(msg));
+    } else {
+      console.log('[AppNotice]', msg);
+    }
+  };
 }
 
 // High-Tech Quantum Splash / Loading Screen Controller
@@ -790,14 +826,14 @@ function bootstrapApp() {
   _appBootstrapped = true;
 
   try {
-    initTelegramWebApp();
-    loadSavedGame();
-    initAmbientParticles();
-    initEvents();
-    startEnergyEngine();
-    updateUI();
+    if (typeof initTelegramWebApp === 'function') initTelegramWebApp();
+    if (typeof loadSavedGame === 'function') loadSavedGame();
+    if (typeof initAmbientParticles === 'function') initAmbientParticles();
+    if (typeof initEvents === 'function') initEvents();
+    if (typeof startEnergyEngine === 'function') startEnergyEngine();
+    if (typeof updateUI === 'function') updateUI();
     if (typeof fetchNotifications === 'function') fetchNotifications();
-    preloadNonCriticalPages();
+    if (typeof preloadNonCriticalPages === 'function') preloadNonCriticalPages();
   } catch (err) {
     console.error('[Bootstrap] Startup error:', err);
   }

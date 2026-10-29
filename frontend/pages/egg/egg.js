@@ -266,6 +266,7 @@ function triggerEggWinCelebration(itemType, rewardDef) {
 
   if (modal) {
     modal.style.display = 'flex';
+    modal.classList.add('open');
   }
 
   updateUI();
@@ -279,6 +280,7 @@ function triggerEggWinCelebration(itemType, rewardDef) {
 function closeEggWinModal(autoReshuffle = true) {
   const modal = document.getElementById('eggWinResultModal');
   if (modal) {
+    modal.classList.remove('open');
     modal.style.display = 'none';
   }
   if (autoReshuffle) {

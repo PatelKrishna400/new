@@ -2,7 +2,8 @@
   <!-- Top Season Countdown Banner -->
   <div class="cracker-season-banner">
     <div class="season-timer-box">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
@@ -14,8 +15,9 @@
   <!-- Top Action Nav Row -->
   <div class="xp-top-actions-row">
     <button class="xp-back-btn" onclick="switchPage('spin')" aria-label="Back to Spin" title="Back to Spinner">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
       </svg>
     </button>
 
@@ -24,13 +26,15 @@
     </div>
 
     <!-- Live Cracker Balance Pill -->
-    <div class="spin-ticket-header-pill cracker-balance-pill" onclick="switchPage('spin')" title="Crackers from Spinner (Tap to Spin for more!)">
+    <div class="spin-ticket-header-pill cracker-balance-pill" onclick="switchPage('spin')"
+      title="Crackers from Spinner (Tap to Spin for more!)">
       <span class="ticket-pill-icon">🧨</span>
       <span class="ticket-pill-val" id="crackerHeaderBalance">0</span>
       <span class="ticket-add-btn" title="Spin for more Crackers">+</span>
     </div>
 
-    <button class="xp-level-badge-btn cracker-badge-btn" id="btnToggleCrackerSubView" onclick="window.jumpToCrackerCurrentLevel()" title="Tap to jump to your current level">
+    <button class="xp-level-badge-btn cracker-badge-btn" id="btnToggleCrackerSubView"
+      onclick="window.jumpToCrackerCurrentLevel()" title="Tap to jump to your current level">
       <span class="btn-sparkle">💥</span>
       <span id="toggleCrackerBtnText">CRACKER LV. 1</span>
     </button>
@@ -42,7 +46,8 @@
       <span class="cracker-boost-icon">🎡</span>
       <div class="cracker-boost-text">
         <span class="cracker-boost-title">Need More 🧨 Crackers?</span>
-        <span class="cracker-boost-desc">Spin the Party Wheel with 🎉 Party Coins to win up to 50 🧨 Crackers per spin!</span>
+        <span class="cracker-boost-desc">Spin the Party Wheel with 🎉 Party Coins to win up to 50 🧨 Crackers per
+          spin!</span>
       </div>
     </div>
     <div class="cracker-boost-actions">
@@ -80,83 +85,100 @@
   </div>
 
   <!-- ==================== POPUP MODAL: LEVEL 1000 MEGA REWARD (MATCHES SCREENSHOT) ==================== -->
-  <div class="cracker-mega-modal-overlay" id="crackerMegaModalOverlay" onclick="closeCrackerMegaRewardModal(event)">
-    <div class="cracker-mega-modal-dialog" onclick="event.stopPropagation()">
-      <button class="cracker-modal-close-btn" onclick="closeCrackerMegaRewardModal(event)" aria-label="Close modal">✕</button>
+    <div class="cracker-mega-modal-overlay" id="crackerMegaModalOverlay" onclick="closeCrackerMegaRewardModal(event)"
+      style="display: none;">
+      <div class="cracker-mega-modal-dialog" onclick="event.stopPropagation()">
+        <button class="cracker-modal-close-btn" onclick="closeCrackerMegaRewardModal(event)"
+          aria-label="Close modal">✕</button>
 
-      <!-- Grand Glowing Fire Emblem -->
-      <div class="grand-reward-emblem-wrap">
-        <div class="grand-emblem-aura" style="background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(245, 158, 11, 0.25) 50%, transparent 70%);"></div>
-        <div class="grand-reward-circle" style="border-color: #f97316; box-shadow: 0 0 36px rgba(249, 115, 22, 0.65); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #450a0a 0%, #1c1917 100%);">
-          <span style="font-size: 46px; filter: drop-shadow(0 0 12px #f97316);">🧨</span>
-        </div>
-        <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #dc2626, #f97316, #eab308);">GRAND CRACKER REWARD</div>
-      </div>
-
-      <!-- Loot Bundle Badge -->
-      <div class="mega-coins-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.5); color: #fb923c;">
-        <span class="sparkle-icon">👑</span>
-        <span>10 DIAMONDS • 500 COINS • 5 DARK GREEN • 5 GREEN • 5 YELLOW • 5 ORANGE • 100 ENERGY</span>
-      </div>
-
-      <h3 class="mega-card-title">Level 1000 Mega Cracker Boom Prize</h3>
-      <p class="mega-card-desc">Complete Cracker Level 1000 with your 🧨 won from the Party Spinner, then watch 1,000 ads to claim your ultimate reward: 10 Diamonds, 500 Coins, 5 Dark Green Fuels, 5 Green Fuels, 5 Yellow Fuels, 5 Orange Fuels, and 100 Energy!</p>
-
-      <!-- Step 1 Card -->
-      <div class="mega-step-card" id="modalCrackerStep1Card">
-        <div class="mega-step-icon-box" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.4); color: #f97316;">
-          <span style="font-size: 20px;">🧨</span>
-        </div>
-        <div class="mega-step-body">
-          <div class="mega-step-header">
-            <span class="mega-step-title">Step 1: Complete Cracker Level 1000</span>
-            <span class="mega-step-badge locked" id="modalCrackerStep1Badge">LOCKED</span>
+        <!-- Grand Glowing Fire Emblem -->
+        <div class="grand-reward-emblem-wrap">
+          <div class="grand-emblem-aura"
+            style="background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(245, 158, 11, 0.25) 50%, transparent 70%);">
           </div>
-          <div class="mega-step-sub">
-            <span id="modalCrackerStep1SubText">Current: Cracker Level 1 / 1000</span>
-            <svg class="step-lock-icon" id="modalCrackerStep1Lock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          <div class="grand-reward-circle"
+            style="border-color: #f97316; box-shadow: 0 0 36px rgba(249, 115, 22, 0.65); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #450a0a 0%, #1c1917 100%);">
+            <span style="font-size: 46px; filter: drop-shadow(0 0 12px #f97316);">🧨</span>
+          </div>
+          <div class="grand-reward-pill-tag" style="background: linear-gradient(90deg, #dc2626, #f97316, #eab308);">
+            GRAND CRACKER REWARD</div>
+        </div>
+
+        <!-- Loot Bundle Badge -->
+        <div class="mega-coins-badge"
+          style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.5); color: #fb923c;">
+          <span class="sparkle-icon">👑</span>
+          <span>10 DIAMONDS • 500 COINS • 5 DARK GREEN • 5 GREEN • 5 YELLOW • 5 ORANGE • 100 ENERGY</span>
+        </div>
+
+        <h3 class="mega-card-title">Level 1000 Mega Cracker Boom Prize</h3>
+        <p class="mega-card-desc">Complete Cracker Level 1000 with your 🧨 won from the Party Spinner, then watch 1,000
+          ads to claim your ultimate reward: 10 Diamonds, 500 Coins, 5 Dark Green Fuels, 5 Green Fuels, 5 Yellow Fuels,
+          5 Orange Fuels, and 100 Energy!</p>
+
+        <!-- Step 1 Card -->
+        <div class="mega-step-card" id="modalCrackerStep1Card">
+          <div class="mega-step-icon-box"
+            style="background: rgba(239, 68, 68, 0.15); border-color: rgba(249, 115, 22, 0.4); color: #f97316;">
+            <span style="font-size: 20px;">🧨</span>
+          </div>
+          <div class="mega-step-body">
+            <div class="mega-step-header">
+              <span class="mega-step-title">Step 1: Complete Cracker Level 1000</span>
+              <span class="mega-step-badge locked" id="modalCrackerStep1Badge">LOCKED</span>
+            </div>
+            <div class="mega-step-sub">
+              <span id="modalCrackerStep1SubText">Current: Cracker Level 1 / 1000</span>
+              <svg class="step-lock-icon" id="modalCrackerStep1Lock" viewBox="0 0 24 24" width="16" height="16"
+                fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 Card -->
+        <div class="mega-step-card" id="modalCrackerStep2Card">
+          <div class="mega-step-icon-box cyan-icon-box"
+            style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #facc15;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#facc15" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+              <polyline points="17 2 12 7 7 2" />
             </svg>
           </div>
-        </div>
-      </div>
+          <div class="mega-step-body">
+            <div class="mega-step-header">
+              <span class="mega-step-title">Step 2: Watch 1,000 Ads</span>
+              <span class="mega-ads-counter-text" id="modalCrackerAdsCounterHeader">0 / 1000 Ads (0%)</span>
+            </div>
 
-      <!-- Step 2 Card -->
-      <div class="mega-step-card" id="modalCrackerStep2Card">
-        <div class="mega-step-icon-box cyan-icon-box" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #facc15;">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#facc15" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-            <polyline points="17 2 12 7 7 2"/>
+            <div class="mega-progress-track">
+              <div class="mega-progress-fill" id="modalCrackerAdsProgressFill"
+                style="width: 0%; background: linear-gradient(90deg, #dc2626, #f97316, #eab308); box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);">
+              </div>
+            </div>
+
+            <div class="mega-progress-footer">
+              <span class="ads-remain-text" id="modalCrackerAdsRemainText">1000 ads remaining</span>
+              <span class="prize-tag" style="color: #fb923c;">10 💎 • 500 🪙 • 5 DG • 5 G • 5 Y • 5 O • 100 ⚡</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Action Button -->
+        <button class="mega-action-btn disabled cracker-mega-btn" id="modalCrackerActionBtn"
+          onclick="handleCrackerMegaRewardAction()">
+          <svg class="action-lock-svg" id="modalCrackerActionLockIcon" viewBox="0 0 24 24" width="16" height="16"
+            fill="none" stroke="currentColor" stroke-width="2.4">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-        </div>
-        <div class="mega-step-body">
-          <div class="mega-step-header">
-            <span class="mega-step-title">Step 2: Watch 1,000 Ads</span>
-            <span class="mega-ads-counter-text" id="modalCrackerAdsCounterHeader">0 / 1000 Ads (0%)</span>
-          </div>
-          
-          <div class="mega-progress-track">
-            <div class="mega-progress-fill" id="modalCrackerAdsProgressFill" style="width: 0%; background: linear-gradient(90deg, #dc2626, #f97316, #eab308); box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);"></div>
-          </div>
+          <span id="modalCrackerActionBtnText">REACH CRACKER LEVEL 1000 TO UNLOCK AD WATCHER</span>
+        </button>
 
-          <div class="mega-progress-footer">
-            <span class="ads-remain-text" id="modalCrackerAdsRemainText">1000 ads remaining</span>
-            <span class="prize-tag" style="color: #fb923c;">10 💎 • 500 🪙 • 5 DG • 5 G • 5 Y • 5 O • 100 ⚡</span>
-          </div>
-        </div>
       </div>
-
-      <!-- Master Action Button -->
-      <button class="mega-action-btn disabled cracker-mega-btn" id="modalCrackerActionBtn" onclick="handleCrackerMegaRewardAction()">
-        <svg class="action-lock-svg" id="modalCrackerActionLockIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        <span id="modalCrackerActionBtnText">REACH CRACKER LEVEL 1000 TO UNLOCK AD WATCHER</span>
-      </button>
-
     </div>
-  </div>
 
-</div>
+  </div>

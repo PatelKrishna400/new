@@ -167,15 +167,15 @@
         show_10676091().then(() => {
           // You need to add your user reward function here, which will be executed after the user watches the ad.
           // For more details, please refer to the detailed instructions.
-          alert('You have seen an ad!');
+          
           executeReward();
         }).catch((err) => {
           console.warn('show_10676091 error or dismissed:', err);
-          alert('You have seen an ad!');
+          
           executeReward();
         });
       } else {
-        alert('You have seen an ad!');
+        
         executeReward();
       }
     });
@@ -189,15 +189,15 @@
       show_10676091().then(() => {
         // You need to add your user reward function here, which will be executed after the user watches the ad.
         // For more details, please refer to the detailed instructions.
-        alert('You have seen an ad!');
+        
         if (typeof rewardCb === 'function') rewardCb();
       }).catch((e) => {
         console.warn('show_10676091 notice:', e);
-        alert('You have seen an ad!');
+        
         if (typeof rewardCb === 'function') rewardCb();
       });
     } else {
-      alert('You have seen an ad!');
+      
       if (typeof rewardCb === 'function') rewardCb();
     }
   };

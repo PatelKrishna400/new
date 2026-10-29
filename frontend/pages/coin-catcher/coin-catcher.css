@@ -21,8 +21,10 @@
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   scroll-behavior: smooth;
-  scrollbar-width: none !important; /* Hide Firefox scrollbar */
-  -ms-overflow-style: none !important; /* Hide IE/Edge scrollbar */
+  scrollbar-width: none !important;
+  /* Hide Firefox scrollbar */
+  -ms-overflow-style: none !important;
+  /* Hide IE/Edge scrollbar */
 }
 
 /* Modals inside Coin Catcher */
@@ -39,8 +41,21 @@
 #pageCoinCatcher:not(.active) #catcherModalOverlay,
 #pageCoinCatcher:not(.active) #catcherBoomModal,
 #pageCoinCatcher:not(.active) #morningCafePuzzleModal,
-#pageCoinCatcher:not(.active) .cafe-submodal {
+.cafe-submodal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
   display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cafe-submodal.open:not(.hidden) {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Hide Scrollbar for Chrome, Safari, and Opera on Coin Catcher */
@@ -103,30 +118,58 @@
   background: linear-gradient(180deg, rgba(56, 189, 248, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%);
   border-color: rgba(56, 189, 248, 0.4);
 }
-.catcher-hud-pill:nth-child(1) .hud-label { color: #7dd3fc; }
-.catcher-hud-pill:nth-child(1) .hud-val { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.5); }
+
+.catcher-hud-pill:nth-child(1) .hud-label {
+  color: #7dd3fc;
+}
+
+.catcher-hud-pill:nth-child(1) .hud-val {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
 
 .catcher-hud-pill:nth-child(2) {
   background: linear-gradient(180deg, rgba(250, 204, 21, 0.16) 0%, rgba(15, 23, 42, 0.9) 100%);
   border-color: rgba(250, 204, 21, 0.55);
   box-shadow: 0 4px 14px rgba(250, 204, 21, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-.catcher-hud-pill:nth-child(2) .hud-label { color: #fde047; }
-.catcher-hud-pill:nth-child(2) .hud-val { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.7); }
+
+.catcher-hud-pill:nth-child(2) .hud-label {
+  color: #fde047;
+}
+
+.catcher-hud-pill:nth-child(2) .hud-val {
+  color: #facc15;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.7);
+}
 
 .catcher-hud-pill:nth-child(3) {
   background: linear-gradient(180deg, rgba(251, 146, 60, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%);
   border-color: rgba(251, 146, 60, 0.4);
 }
-.catcher-hud-pill:nth-child(3) .hud-label { color: #fed7aa; }
-.catcher-hud-pill:nth-child(3) .hud-val { color: #fb923c; text-shadow: 0 0 8px rgba(251, 146, 60, 0.5); }
+
+.catcher-hud-pill:nth-child(3) .hud-label {
+  color: #fed7aa;
+}
+
+.catcher-hud-pill:nth-child(3) .hud-val {
+  color: #fb923c;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.5);
+}
 
 .catcher-hud-pill:nth-child(4) {
   background: linear-gradient(180deg, rgba(244, 63, 94, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%);
   border-color: rgba(244, 63, 94, 0.4);
 }
-.catcher-hud-pill:nth-child(4) .hud-label { color: #fecdd3; }
-.catcher-hud-pill:nth-child(4) .hud-val { color: #fb7185; text-shadow: 0 0 8px rgba(244, 63, 94, 0.5); }
+
+.catcher-hud-pill:nth-child(4) .hud-label {
+  color: #fecdd3;
+}
+
+.catcher-hud-pill:nth-child(4) .hud-val {
+  color: #fb7185;
+  text-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+}
 
 .catcher-hud-pill .hud-icon {
   font-size: 16px;
@@ -163,7 +206,7 @@
   min-height: 520px;
   height: clamp(520px, calc(100vh - 210px), 860px);
   background-color: #030712;
-  background-image: 
+  background-image:
     radial-gradient(ellipse at 50% 0%, rgba(234, 179, 8, 0.22) 0%, rgba(56, 189, 248, 0.08) 35%, transparent 70%),
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
@@ -222,8 +265,15 @@
 }
 
 @keyframes catcherCardPop {
-  0% { transform: scale(0.92); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .catcher-intro-header-badge {
@@ -265,18 +315,37 @@
 }
 
 @keyframes floatCoinBadge {
-  0% { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(-6px) rotate(4deg); }
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-6px) rotate(4deg);
+  }
 }
 
 @keyframes floatBombMini {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-4px) scale(1.1); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    transform: translateY(-4px) scale(1.1);
+  }
 }
 
 @keyframes pulseHalo {
-  0%, 100% { transform: scale(0.95); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 0.95; }
+
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.95;
+  }
 }
 
 .catcher-intro-title-group {
@@ -342,19 +411,28 @@
   border-color: rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.08);
 }
-.catcher-rule-chip.danger .rule-chip-text { color: #fca5a5; }
+
+.catcher-rule-chip.danger .rule-chip-text {
+  color: #fca5a5;
+}
 
 .catcher-rule-chip.speed {
   border-color: rgba(251, 146, 60, 0.35);
   background: rgba(251, 146, 60, 0.08);
 }
-.catcher-rule-chip.speed .rule-chip-text { color: #fed7aa; }
+
+.catcher-rule-chip.speed .rule-chip-text {
+  color: #fed7aa;
+}
 
 .catcher-rule-chip.bounty {
   border-color: rgba(16, 185, 129, 0.35);
   background: rgba(16, 185, 129, 0.08);
 }
-.catcher-rule-chip.bounty .rule-chip-text { color: #6ee7b7; }
+
+.catcher-rule-chip.bounty .rule-chip-text {
+  color: #6ee7b7;
+}
 
 /* Entry Badges in Start Overlay */
 .catcher-entry-badge-row {
@@ -492,9 +570,19 @@
 }
 
 @keyframes floatScoreUp {
-  0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  50% { transform: translate(-50%, -20px) scale(1.25); }
-  100% { opacity: 0; transform: translate(-50%, -40px) scale(1.1); }
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -20px) scale(1.25);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -40px) scale(1.1);
+  }
 }
 
 /* Screen Shake on Bomb */
@@ -503,15 +591,33 @@
 }
 
 @keyframes screenShake {
-  10%, 90% { transform: translate3d(-3px, 0, 0); }
-  20%, 80% { transform: translate3d(4px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
-  40%, 60% { transform: translate3d(5px, 0, 0); }
+
+  10%,
+  90% {
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(4px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-5px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(5px, 0, 0);
+  }
 }
 
 /* Bottom Action Bar Below the Stage - Sticky Arcade CTA (Active ONLY during gameplay) */
 .catcher-bottom-action-bar {
-  display: none; /* Hidden during idle/start screen to prevent overlapping buttons */
+  display: none;
+  /* Hidden during idle/start screen to prevent overlapping buttons */
   position: sticky;
   bottom: 12px;
   z-index: 50;
@@ -573,10 +679,13 @@
 }
 
 @keyframes pulseBountyCollect {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 5px 0 #065f46, 0 8px 20px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.3);
     border-color: #6ee7b7;
   }
+
   50% {
     box-shadow: 0 5px 0 #065f46, 0 12px 30px rgba(16, 185, 129, 0.7), 0 0 25px rgba(255, 255, 255, 0.8);
     border-color: #ffffff;
@@ -590,7 +699,9 @@
   background: rgba(4, 9, 25, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  display: none;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 18px;
@@ -598,7 +709,9 @@
 }
 
 .catcher-modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
   animation: fadeInModal 0.25s ease-out forwards;
 }
 
@@ -781,8 +894,13 @@
 }
 
 @keyframes pulseBombIcon {
-  from { transform: scale(1); }
-  to { transform: scale(1.18); }
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.18);
+  }
 }
 
 .catcher-ad-resume-btn {
@@ -854,9 +972,17 @@
 }
 
 @keyframes puzzleFastSpin {
-  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
-  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.15); }
-  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1.15);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1);
+  }
 }
 
 /* Score popup for puzzle piece */
@@ -982,8 +1108,13 @@
 }
 
 @keyframes puzzleBarShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .puzzle-milestone-sub {
@@ -1016,13 +1147,21 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
   padding: 10px;
   overflow-y: auto;
   scrollbar-width: thin !important;
   scrollbar-color: rgba(245, 158, 11, 0.7) rgba(15, 23, 42, 0.7) !important;
+}
+
+.cafe-puzzle-modal-overlay.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .cafe-puzzle-modal-overlay::-webkit-scrollbar {
@@ -1066,20 +1205,24 @@
 .cafe-ribbon-banner {
   position: relative;
   background: linear-gradient(180deg, #b8194b 0%, #870f37 100%);
-  box-shadow: 0 5px 0 #540620, 0 10px 15px rgba(0,0,0,0.4);
+  box-shadow: 0 5px 0 #540620, 0 10px 15px rgba(0, 0, 0, 0.4);
 }
-.cafe-ribbon-banner::before, .cafe-ribbon-banner::after {
+
+.cafe-ribbon-banner::before,
+.cafe-ribbon-banner::after {
   content: '';
   position: absolute;
   top: 6px;
   border: 14px solid #4a041c;
   z-index: -1;
 }
+
 .cafe-ribbon-banner::before {
   left: -18px;
   border-right-width: 10px;
   border-left-color: transparent;
 }
+
 .cafe-ribbon-banner::after {
   right: -18px;
   border-left-width: 10px;
@@ -1090,7 +1233,7 @@
 .cafe-puzzle-board-container {
   background: #ffe3ed;
   border: 5px solid #8e153b;
-  box-shadow: 0 8px 0 #580822, 0 16px 25px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 0 #580822, 0 16px 25px rgba(0, 0, 0, 0.5);
   border-radius: 28px;
 }
 
@@ -1101,9 +1244,11 @@
   transform-origin: center;
   transition: filter 0.15s ease;
 }
+
 .puzzle-piece-group:hover path.piece-body {
   filter: brightness(1.05);
 }
+
 .puzzle-piece-group:active path.piece-body {
   filter: brightness(0.92);
 }
@@ -1113,10 +1258,22 @@
   animation: svgPopVanish 0.38s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
   pointer-events: none;
 }
+
 @keyframes svgPopVanish {
-  0% { transform: scale(1) rotate(0deg); opacity: 1; }
-  40% { transform: scale(1.15) rotate(4deg); opacity: 0.9; }
-  100% { transform: scale(0) rotate(-16deg); opacity: 0; }
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+
+  40% {
+    transform: scale(1.15) rotate(4deg);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(0) rotate(-16deg);
+    opacity: 0;
+  }
 }
 
 /* 2D Tactile Push Buttons */
@@ -1124,6 +1281,7 @@
   border-style: solid;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
+
 .cafe-btn-2d:active {
   transform: translateY(3px);
   box-shadow: none !important;
@@ -1140,6 +1298,7 @@
   position: relative;
   overflow: hidden;
 }
+
 .cafe-shimmer::after {
   content: '';
   position: absolute;
@@ -1147,14 +1306,23 @@
   left: -60%;
   width: 40%;
   height: 200%;
-  background: linear-gradient(60deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   transform: rotate(25deg);
   animation: shimmerLoop 3s infinite;
 }
+
 @keyframes shimmerLoop {
-  0% { left: -60%; }
-  30% { left: 140%; }
-  100% { left: 140%; }
+  0% {
+    left: -60%;
+  }
+
+  30% {
+    left: 140%;
+  }
+
+  100% {
+    left: 140%;
+  }
 }
 
 /* Cafe Submodals */
@@ -1162,10 +1330,21 @@
   position: fixed;
   inset: 0;
   z-index: 1050;
-  display: flex;
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
   align-items: center;
   justify-content: center;
 }
+
+.cafe-submodal.open:not(.hidden) {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .cafe-submodal.hidden {
   display: none !important;
+  opacity: 0;
+  pointer-events: none;
 }

@@ -873,7 +873,7 @@
     // Rewarded interstitial
     if (typeof show_10676091 === 'function') {
       show_10676091().then(() => {
-        alert('You have seen an ad!');
+        if (typeof showFloatingToast === 'function') showFloatingToast('🎬 Ad Watched! Reward Claimed!');
       }).catch(e => {
         console.warn('show_10676091 notice in Balloon Pursuit:', e);
       });
