@@ -654,19 +654,24 @@
 
 /* Modals */
 .modal-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.7);
   backdrop-filter: blur(8px);
-  z-index: 50;
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  display: flex;
+  display: none !important;
   align-items: flex-end;
 }
 
-.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.modal-backdrop.open {
+  display: flex !important;
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .modal-sheet {
   width: 100%;

@@ -91,8 +91,32 @@ const headerContent = `<!DOCTYPE html>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Energy Tap Reactor - Telegram Mini App</title>
-  <!-- Telegram WebApp SDK -->
+  <!-- Telegram WebApp SDK & Immediate TMA Viewport Sync -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    (function() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        try {
+          var tg = window.Telegram.WebApp;
+          tg.ready();
+          tg.expand();
+          if (typeof tg.enableClosingConfirmation === 'function') tg.enableClosingConfirmation();
+          if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+          if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#040919');
+          if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#01040a');
+          function syncTgViewport() {
+            var h = (tg.viewportHeight ? tg.viewportHeight : window.innerHeight);
+            document.documentElement.style.setProperty('--tg-viewport-height', h + 'px');
+          }
+          syncTgViewport();
+          tg.onEvent('viewportChanged', syncTgViewport);
+          window.addEventListener('resize', syncTgViewport);
+        } catch(e) {
+          console.warn('Telegram early init notice:', e);
+        }
+      }
+    })();
+  </script>
   <!-- Monetag Rewarded Interstitial SDK (Zone: 10676091) -->
   <script async src="https://libtl.com/sdk.js" data-zone="10676091" data-sdk="show_10676091"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -431,20 +455,20 @@ const footerContent = `
 
       <!-- Floating Bottom Navigation -->
       <nav class="bottom-nav">
-        <button class="nav-tab-btn" data-tab="tasks" id="navTasks" aria-label="Tasks">
+        <button class="nav-tab-btn" data-tab="tasks" id="navTasks" onclick="switchPage('tasks')" aria-label="Tasks">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 11l3 3L22 4"/>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
           </svg>
         </button>
 
-        <button class="nav-tab-btn" data-tab="energy" id="navEnergy" aria-label="Energy">
+        <button class="nav-tab-btn" data-tab="energy" id="navEnergy" onclick="switchPage('energy')" aria-label="Energy">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
           </svg>
         </button>
 
-        <button class="nav-tab-btn home-center-btn active" data-tab="home" id="navHome" aria-label="Home">
+        <button class="nav-tab-btn home-center-btn active" data-tab="home" id="navHome" onclick="switchPage('home')" aria-label="Home">
           <div class="home-btn-glow"></div>
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -452,7 +476,7 @@ const footerContent = `
           </svg>
         </button>
 
-        <button class="nav-tab-btn" data-tab="reward" id="navReward" aria-label="Rewards">
+        <button class="nav-tab-btn" data-tab="reward" id="navReward" onclick="switchPage('reward')" aria-label="Rewards">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 12 20 22 4 22 4 12"/>
             <rect x="2" y="7" width="20" height="5" rx="1"/>
@@ -462,7 +486,7 @@ const footerContent = `
           </svg>
         </button>
 
-        <button class="nav-tab-btn" data-tab="profile" id="navProfile" aria-label="Profile">
+        <button class="nav-tab-btn" data-tab="profile" id="navProfile" onclick="switchPage('profile')" aria-label="Profile">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
@@ -474,7 +498,7 @@ const footerContent = `
   </div>
 
   <!-- Modal Sheets -->
-  <div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-backdrop" id="modalBackdrop" style="display: none;">
     <div class="modal-sheet" id="modalSheet">
       <div class="sheet-drag-handle"></div>
       <div class="sheet-header">
@@ -486,7 +510,7 @@ const footerContent = `
   </div>
 
   <!-- Notification Center Modal / In-Game Inbox -->
-  <div class="notification-modal-overlay" id="notificationModalOverlay">
+  <div class="notification-modal-overlay" id="notificationModalOverlay" style="display: none;">
     <div class="notification-modal-sheet">
       <div class="notification-sheet-handle"></div>
       

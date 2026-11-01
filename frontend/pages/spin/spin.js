@@ -199,7 +199,7 @@ function playWheelTickSound() {
 
     osc.start(now);
     osc.stop(now + 0.035);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 // Unified Spin click handler

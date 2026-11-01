@@ -563,56 +563,87 @@ window.toggleUserAccountStatus = toggleUserAccountStatus;
  * Confirm and Delete User from Firebase
  */
 function confirmDeleteUser(uid) {
+  if (!uid) {
+    alert('No player selected to delete.');
+    return;
+  }
   const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
-  const player = users.find(u => u.uid === uid || u.id === uid);
-  const name = player ? (player.name || player.username) : uid;
+  const player = users.find(u => u.uid === uid || u.id === uid) || {};
+  const name = player.name || player.username || uid;
 
   const executeDelete = () => {
     if (!confirm(`⚠️ PERMANENT ACTION:\nAre you sure you want to permanently DELETE user "${name}" (${uid}) from Firebase?\n\n• Player data will be completely wiped from Firebase\n• User panel will be immediately locked & secured\n• All associated activity logs will be deleted through Firebase\n• This action cannot be undone.`)) {
       return;
     }
 
+    const onDeletedSuccess = () => {
+      // Remove from adminState.users
+      if (window.adminState && window.adminState.users) {
+        window.adminState.users = window.adminState.users.filter(u => u.uid !== uid && u.id !== uid);
+      }
+      // Update badge
+      const badge = document.getElementById('badgeUsersCount');
+      if (badge && window.adminState && window.adminState.users) {
+        badge.textContent = window.adminState.users.length;
+      }
+      // Close all modals
+      closeUserDetailsModal();
+      closeUserEditModal();
+      closeEditPlayerModal();
+      const editModal = document.getElementById('editPlayerModal');
+      if (editModal) {
+        editModal.style.display = 'none';
+        editModal.classList.remove('open');
+        editModal.classList.remove('active');
+      }
+      // Render
+      if (typeof renderUsersTable === 'function') renderUsersTable();
+      if (typeof window.renderRealtimeActivityFeed === 'function') {
+        window.renderRealtimeActivityFeed();
+      }
+      alert(`✅ Player "${name}" and all associated data/activity have been permanently deleted through Firebase.\nUser panel has been secured.`);
+    };
+
     const deleteFn = window.deleteUserFromFirebase;
     if (typeof deleteFn === 'function') {
       deleteFn(uid)
-        .then(() => {
-          alert(`✅ Player "${name}" and all associated data/activity have been permanently deleted through Firebase.\nUser panel has been secured.`);
-          closeUserDetailsModal();
-          closeUserEditModal();
-          if (typeof renderUsersTable === 'function') renderUsersTable();
-          if (typeof window.renderRealtimeActivityFeed === 'function') {
-            window.renderRealtimeActivityFeed();
-          }
-        })
+        .then(onDeletedSuccess)
         .catch(err => {
           console.warn('deleteFn fallback:', err);
-          const db = window.getDb ? window.getDb() : null;
+          const db = (window.getDb ? window.getDb() : null) || (window.firebase && window.firebase.apps && window.firebase.apps.length ? window.firebase.database() : null);
           if (db) {
-            db.ref('/players/' + uid).remove().catch(() => {});
-            db.ref('/users/' + uid).remove().catch(() => {});
+            Promise.all([
+              db.ref('/players/' + uid).remove().catch(() => {}),
+              db.ref('/users/' + uid).remove().catch(() => {}),
+              db.ref('/leaderboard/' + uid).remove().catch(() => {}),
+              db.ref('/whitelist/' + uid).remove().catch(() => {}),
+              db.ref('/accounts/' + uid).remove().catch(() => {}),
+              db.ref('/account_requests/' + uid).remove().catch(() => {})
+            ]).finally(() => {
+              onDeletedSuccess();
+            });
+          } else {
+            onDeletedSuccess();
           }
-          alert(`✅ Player "${name}" removed from Firebase.`);
-          closeUserDetailsModal();
-          closeUserEditModal();
-          if (typeof renderUsersTable === 'function') renderUsersTable();
         });
     } else {
-      const db = window.getDb ? window.getDb() : null;
+      const db = (window.getDb ? window.getDb() : null) || (window.firebase && window.firebase.apps && window.firebase.apps.length ? window.firebase.database() : null);
       if (db) {
         Promise.all([
           db.ref('/players/' + uid).remove().catch(() => {}),
-          db.ref('/users/' + uid).remove().catch(() => {})
+          db.ref('/users/' + uid).remove().catch(() => {}),
+          db.ref('/leaderboard/' + uid).remove().catch(() => {}),
+          db.ref('/whitelist/' + uid).remove().catch(() => {}),
+          db.ref('/accounts/' + uid).remove().catch(() => {}),
+          db.ref('/account_requests/' + uid).remove().catch(() => {})
         ]).then(() => {
-          alert(`✅ Player "${name}" deleted from Firebase.`);
-          closeUserDetailsModal();
-          closeUserEditModal();
-          if (typeof renderUsersTable === 'function') renderUsersTable();
-        }).catch(err => alert('Error: ' + err.message));
+          onDeletedSuccess();
+        }).catch(err => {
+          alert('Error: ' + err.message);
+          onDeletedSuccess();
+        });
       } else {
-        alert(`✅ Player "${name}" removed locally.`);
-        closeUserDetailsModal();
-        closeUserEditModal();
-        if (typeof renderUsersTable === 'function') renderUsersTable();
+        onDeletedSuccess();
       }
     }
   };
@@ -685,7 +716,12 @@ window.restartPlayerInFirebase = restartPlayerInFirebase;
  * Remove / Delete Player from Edit modal
  */
 function deleteUserFromModal() {
-  const uid = editingPlayerUid || window.currentEditingUserUid || window.activeDetailsUid;
+  const uid = editingPlayerUid 
+    || window.currentEditingUserUid 
+    || window.activeDetailsUid 
+    || document.getElementById('editInpUid')?.value
+    || (document.getElementById('editModalPlayerUid')?.textContent || '').replace(/UID:\s*/i, '').trim()
+    || (document.getElementById('detailUid')?.textContent || '').replace(/UID:\s*/i, '').trim();
   if (!uid) {
     alert('No player selected to delete.');
     return;
@@ -984,6 +1020,9 @@ window.saveNewPlayerToFirebase = saveNewPlayerToFirebase;
    ========================================================================== */
 function openEditPlayerModal(uid) {
   if (!uid) return;
+  editingPlayerUid = uid;
+  window.currentEditingUserUid = uid;
+  window.activeDetailsUid = uid;
   const users = (window.adminState && window.adminState.users) ? window.adminState.users : [];
   const u = users.find(user => user.uid === uid);
   if (!u) {
@@ -1056,6 +1095,7 @@ function openEditPlayerModal(uid) {
   if (modal) {
     modal.style.display = 'flex';
     modal.classList.add('open');
+    modal.classList.add('active');
   }
 }
 window.openEditPlayerModal = openEditPlayerModal;
@@ -1066,7 +1106,10 @@ function closeEditPlayerModal() {
   if (modal) {
     modal.style.display = 'none';
     modal.classList.remove('open');
+    modal.classList.remove('active');
   }
+  editingPlayerUid = null;
+  window.currentEditingUserUid = null;
 }
 window.closeEditPlayerModal = closeEditPlayerModal;
 

@@ -3455,3 +3455,13 @@ window.showBadgeDetails = function(badgeKey) {
   }
 };
 
+function openAdminPortal() {
+  if (window.location.protocol === 'file:') {
+    window.open('../admin/index.html', '_blank');
+  } else {
+    window.open('/admin', '_blank');
+  }
+}
+window.openAdminPortal = openAdminPortal;
+
+

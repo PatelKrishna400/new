@@ -1907,6 +1907,13 @@ if (typeof window !== 'undefined') {
   window.completeActiveLevel = completeActiveLevel;
   window.claimServerAuthoritativeReward = claimServerAuthoritativeReward;
   window.getCompletedWebsiteTasksCount = getCompletedWebsiteTasksCount;
+  if (typeof formatTimerDisplay === 'function') window.formatTimerDisplay = formatTimerDisplay;
+  if (typeof saveGame === 'function') window.saveGame = saveGame;
+  if (typeof loadSavedGame === 'function') window.loadSavedGame = loadSavedGame;
+  if (typeof getComboMultiplier === 'function') window.getComboMultiplier = getComboMultiplier;
+  if (typeof initAmbientParticles === 'function') window.initAmbientParticles = initAmbientParticles;
+  if (typeof checkDailyStatsDate === 'function') window.checkDailyStatsDate = checkDailyStatsDate;
+  if (typeof checkSeasonExpiration === 'function') window.checkSeasonExpiration = checkSeasonExpiration;
 }
 
 function getCompletedWebsiteTasksCount() {
@@ -1977,6 +1984,19 @@ async function claimServerAuthoritativeReward(action, payload) {
     if (typeof saveGame === 'function') saveGame(true);
     return { ok: true, offline: true };
   }
+}
+
+function openAdminPortal() {
+  if (typeof window !== 'undefined') {
+    if (window.location.protocol === 'file:') {
+      window.open('../admin/index.html', '_blank');
+    } else {
+      window.open('/admin', '_blank');
+    }
+  }
+}
+if (typeof window !== 'undefined') {
+  window.openAdminPortal = openAdminPortal;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

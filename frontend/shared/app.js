@@ -717,16 +717,19 @@ function initEvents() {
     });
   }
 
-  DOM.streakBtn.addEventListener('click', () => {
-    triggerTelegramHaptic('selection');
-    switchPage('streak');
-  });
+  if (DOM.streakBtn) {
+    DOM.streakBtn.addEventListener('click', () => {
+      triggerTelegramHaptic('selection');
+      switchPage('streak');
+    });
+  }
 
-  DOM.navButtons.forEach(btn => {
+  const navBtns = (DOM.navButtons && DOM.navButtons.length) ? DOM.navButtons : document.querySelectorAll('.nav-tab-btn');
+  navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       triggerTelegramHaptic('selection');
       const tab = btn.dataset.tab;
-      switchPage(tab);
+      if (tab) switchPage(tab);
     });
   });
 

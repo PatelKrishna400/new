@@ -1078,7 +1078,9 @@ function deleteUserFromFirebase(uid) {
   // Sync delete to backend REST API
   fetch('/api/users/' + uid, { method: 'DELETE' }).catch(() => {});
 
-  if (!db) {
+  const currentDb = db || (window.firebase && window.firebase.apps && window.firebase.apps.length ? window.firebase.database() : null) || (window.getDb ? window.getDb() : null);
+
+  if (!currentDb) {
     dispatchAdminEvent('userDeleted');
     dispatchAdminEvent('usersUpdated');
     dispatchAdminEvent('activitiesUpdated');
@@ -1087,38 +1089,42 @@ function deleteUserFromFirebase(uid) {
 
   // Perform parallel Firebase removals for core user nodes
   const removals = [
-    db.ref(`/players/${uid}`).remove().catch(e => console.warn('Could not remove /players/' + uid, e)),
-    db.ref(`/users/${uid}`).remove().catch(e => console.warn('Could not remove /users/' + uid, e)),
-    db.ref(`/leaderboard/${uid}`).remove().catch(e => console.warn('Could not remove /leaderboard/' + uid, e)),
-    db.ref(`/whitelist/${uid}`).remove().catch(e => console.warn('Could not remove /whitelist/' + uid, e))
+    currentDb.ref(`/players/${uid}`).remove().catch(e => console.warn('Could not remove /players/' + uid, e)),
+    currentDb.ref(`/users/${uid}`).remove().catch(e => console.warn('Could not remove /users/' + uid, e)),
+    currentDb.ref(`/leaderboard/${uid}`).remove().catch(e => console.warn('Could not remove /leaderboard/' + uid, e)),
+    currentDb.ref(`/whitelist/${uid}`).remove().catch(e => console.warn('Could not remove /whitelist/' + uid, e)),
+    currentDb.ref(`/accounts/${uid}`).remove().catch(() => {}),
+    currentDb.ref(`/account_requests/${uid}`).remove().catch(() => {}),
+    currentDb.ref(`/user_levels/${uid}`).remove().catch(() => {}),
+    currentDb.ref(`/referrals/${uid}`).remove().catch(() => {})
   ];
 
   // Clean identityIndex entries safely
   if (player.telegramId || player.telegram) {
     const tgKey = String(player.telegramId || player.telegram).replace(/[^a-zA-Z0-9_]/g, '');
-    if (tgKey) removals.push(db.ref(`/identityIndex/telegram/${tgKey}`).remove().catch(() => {}));
+    if (tgKey) removals.push(currentDb.ref(`/identityIndex/telegram/${tgKey}`).remove().catch(() => {}));
   }
   if (player.phone) {
     const cleanPhone = String(player.phone).replace(/\D/g, '');
-    if (cleanPhone) removals.push(db.ref(`/identityIndex/phone/${cleanPhone}`).remove().catch(() => {}));
+    if (cleanPhone) removals.push(currentDb.ref(`/identityIndex/phone/${cleanPhone}`).remove().catch(() => {}));
   }
   if (player.email) {
     const safeEmail = String(player.email).replace(/[.#$\[\]]/g, '_');
-    if (safeEmail) removals.push(db.ref(`/identityIndex/email/${safeEmail}`).remove().catch(() => {}));
+    if (safeEmail) removals.push(currentDb.ref(`/identityIndex/email/${safeEmail}`).remove().catch(() => {}));
   }
 
   // Clean associated reward requests safely
   if (window.adminState && window.adminState.rewardRequests) {
     window.adminState.rewardRequests.forEach(req => {
       if (req.userId === uid || req.uid === uid) {
-        removals.push(db.ref(`/reward_requests/${req.id}`).remove().catch(() => {}));
+        removals.push(currentDb.ref(`/reward_requests/${req.id}`).remove().catch(() => {}));
       }
     });
     window.adminState.rewardRequests = window.adminState.rewardRequests.filter(r => r.userId !== uid && r.uid !== uid);
   }
 
   // Scan and clean activity_log asynchronously without blocking
-  db.ref('/activity_log').once('value').then(actSnap => {
+  currentDb.ref('/activity_log').once('value').then(actSnap => {
     const actData = actSnap.val();
     if (actData && typeof actData === 'object') {
       Object.keys(actData).forEach(actId => {
@@ -1130,7 +1136,7 @@ function deleteUserFromFirebase(uid) {
           itemStr.includes(uid) ||
           (playerName && playerName.length > 2 && itemStr.includes(playerName))
         ) {
-          db.ref(`/activity_log/${actId}`).remove().catch(() => {});
+          currentDb.ref(`/activity_log/${actId}`).remove().catch(() => {});
         }
       });
     }

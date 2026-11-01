@@ -158,9 +158,9 @@ function testFirebase() {
   })();
 }
 
-// 4. FRONTEND MODULAR INTEGRITY
+// 4. FRONTEND MODULAR INTEGRITY & HANDLERS CHECK
 function checkFrontendIntegrity() {
-  console.log('\n--- [4/4] Verifying Frontend 31 Triplet Pages Integrity ---');
+  console.log('\n--- [4/5] Verifying Frontend 31 Triplet Pages Integrity ---');
   const PAGE_KEYS = [
     'home', 'energy', 'diamond-generator', 'sunflower', 'bee-farm', 'mining',
     'tasks', 'profile', 'xp', 'reward', 'goal', 'streak', 'mega-reward',
@@ -189,6 +189,62 @@ function checkFrontendIntegrity() {
   return ok;
 }
 
+function checkFrontendHandlers() {
+  console.log('\n--- [5/5] Checking Frontend Inline Event Handlers & Exports ---');
+  const htmlPath = path.join(FRONTEND_DIR, 'index.html');
+  if (!fs.existsSync(htmlPath)) return false;
+  const html = fs.readFileSync(htmlPath, 'utf8');
+
+  const sharedFiles = ['state.js', 'app.js', 'firebase-service.js', 'ad-service.js'].map(f => path.join(FRONTEND_DIR, 'shared', f));
+  let allJs = html;
+  sharedFiles.forEach(f => {
+    if (fs.existsSync(f)) allJs += '\n' + fs.readFileSync(f, 'utf8');
+  });
+
+  const PAGE_KEYS = [
+    'home', 'energy', 'diamond-generator', 'sunflower', 'bee-farm', 'mining',
+    'tasks', 'profile', 'xp', 'reward', 'goal', 'streak', 'mega-reward',
+    'gift-card', 'gadgets', 'accessories', 'gaming-tool', 'kitchen',
+    'stationery', 'fitness', 'home-decorate', 'custom', 'suggest-box',
+    'ad-rewards', 'spin', 'chest', 'scratch', 'egg', 'leaderboard',
+    'memory-match', 'coin-catcher', 'cracker'
+  ];
+
+  PAGE_KEYS.forEach(k => {
+    const p = path.join(FRONTEND_DIR, 'pages', k, `${k}.js`);
+    if (fs.existsSync(p)) allJs += '\n' + fs.readFileSync(p, 'utf8');
+  });
+
+  const onclickMatches = html.match(/onclick="([^"]+)"/g) || [];
+  const onchangeMatches = html.match(/onchange="([^"]+)"/g) || [];
+  const onsubmitMatches = html.match(/onsubmit="([^"]+)"/g) || [];
+  const oninputMatches = html.match(/oninput="([^"]+)"/g) || [];
+
+  const allMatches = [...onclickMatches, ...onchangeMatches, ...onsubmitMatches, ...oninputMatches];
+  const functionNames = new Set();
+  allMatches.forEach(m => {
+    const fnMatch = m.match(/on[a-z]+="([a-zA-Z0-9_]+)\(/);
+    if (fnMatch) functionNames.add(fnMatch[1]);
+  });
+
+  let missing = [];
+  functionNames.forEach(fn => {
+    const hasDef = allJs.includes(`function ${fn}`) || 
+                   allJs.includes(`window.${fn}`) || 
+                   allJs.includes(`${fn} =`) || 
+                   allJs.includes(`${fn}:`);
+    if (!hasDef) missing.push(fn);
+  });
+
+  if (missing.length === 0) {
+    console.log(`✅ All ${functionNames.size} inline handler functions are defined in frontend scripts!`);
+    return true;
+  } else {
+    console.warn(`❌ Missing frontend functions (${missing.length}):`, missing);
+    return false;
+  }
+}
+
 // RUNNER
 async function runAll() {
   console.log('================================================================');
@@ -198,10 +254,11 @@ async function runAll() {
   const adminIdsOk = checkAdminIds();
   const adminHandlersOk = checkAdminHandlers();
   const frontendOk = checkFrontendIntegrity();
+  const frontendHandlersOk = checkFrontendHandlers();
   await testFirebase();
 
   console.log('\n================================================================');
-  console.log(`Summary: Admin IDs (${adminIdsOk ? 'PASS' : 'WARN'}), Admin Handlers (${adminHandlersOk ? 'PASS' : 'WARN'}), Frontend 31 Pages (${frontendOk ? 'PASS' : 'FAIL'})`);
+  console.log(`Summary: Admin IDs (${adminIdsOk ? 'PASS' : 'WARN'}), Admin Handlers (${adminHandlersOk ? 'PASS' : 'WARN'}), Frontend Pages (${frontendOk ? 'PASS' : 'FAIL'}), Frontend Handlers (${frontendHandlersOk ? 'PASS' : 'FAIL'})`);
   console.log('================================================================\n');
 }
 

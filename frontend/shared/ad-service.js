@@ -226,6 +226,7 @@
       } else if (typeof window.show_10676091 === 'undefined') {
         window.show_10676091 = function(opts) {
           (window.show_10676091.q = window.show_10676091.q || []).push(opts);
+          return Promise.resolve();
         };
         window.show_10676091({
           type: 'inApp',

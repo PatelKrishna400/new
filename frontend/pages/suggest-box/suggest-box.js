@@ -184,3 +184,13 @@ function escapeSuggestHtml(str) {
 window.initSuggestBoxPage = initSuggestBoxPage;
 window.handleSuggestionSubmit = handleSuggestionSubmit;
 window.renderSuggestionsHistory = renderSuggestionsHistory;
+
+
+function openAdminPortal() {
+  if (window.location.protocol === 'file:') {
+    window.open('../admin/index.html', '_blank');
+  } else {
+    window.open('/admin', '_blank');
+  }
+}
+window.openAdminPortal = openAdminPortal;

@@ -128,6 +128,7 @@ function advanceEnergyGenerator(deltaSeconds, isOffline = false) {
   );
   return { epGain: totalEpGained, fuelSecondsConsumed: totalFuelSecondsConsumed };
 }
+window.advanceEnergyGenerator = advanceEnergyGenerator;
 
 // Process offline catchup when reopening the app, returning from background, or cloud sync
 function processEnergyGeneratorOfflineCatchup(fromTimestamp, source = 'offline') {
@@ -148,10 +149,18 @@ function processEnergyGeneratorOfflineCatchup(fromTimestamp, source = 'offline')
     }
   }
 
-  formatTimerDisplay();
+  if (typeof formatTimerDisplay === 'function') {
+    formatTimerDisplay();
+  } else if (typeof window.formatTimerDisplay === 'function') {
+    window.formatTimerDisplay();
+  }
   updateEnergyUI();
   if (typeof updateHomeUI === 'function') updateHomeUI();
-  saveGame();
+  if (typeof saveGame === 'function') {
+    saveGame();
+  } else if (typeof window.saveGame === 'function') {
+    window.saveGame();
+  }
 }
 
 let energyAutoSaveTicks = 0;
@@ -171,7 +180,11 @@ function startEnergyEngine() {
     const dt = Math.floor((now - lastTick) / 1000);
 
     if (dt >= 1) {
-      advanceEnergyGenerator(dt, false);
+      if (typeof advanceEnergyGenerator === 'function') {
+        advanceEnergyGenerator(dt, false);
+      } else if (typeof window.advanceEnergyGenerator === 'function') {
+        window.advanceEnergyGenerator(dt, false);
+      }
       gameState.energyGenerator.lastTickTime = now;
     }
 
@@ -179,7 +192,11 @@ function startEnergyEngine() {
       (gameState.energyGenerator.remainingSeconds > 0) || 
       ((gameState.energyGenerator.darkRedRemainingSeconds || 0) > 0)
     );
-    formatTimerDisplay();
+    if (typeof formatTimerDisplay === 'function') {
+      formatTimerDisplay();
+    } else if (typeof window.formatTimerDisplay === 'function') {
+      window.formatTimerDisplay();
+    }
     updateEnergyUI();
     if (typeof updateHomeUI === 'function') updateHomeUI();
 
@@ -188,7 +205,11 @@ function startEnergyEngine() {
     if (energyAutoSaveTicks >= 6) {
       energyAutoSaveTicks = 0;
       if (gameState.energyGenerator.isActive) {
-        saveGame();
+        if (typeof saveGame === 'function') {
+          saveGame();
+        } else if (typeof window.saveGame === 'function') {
+          window.saveGame();
+        }
       }
     }
   }, 1000);

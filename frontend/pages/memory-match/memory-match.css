@@ -465,7 +465,9 @@
   background: rgba(4, 9, 25, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: none;
+  display: none !important;
+  pointer-events: none;
+  opacity: 0;
   align-items: center;
   justify-content: center;
   padding: 20px;
@@ -473,7 +475,9 @@
 }
 
 .memory-modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  pointer-events: auto;
+  opacity: 1;
   animation: fadeInModal 0.25s ease-out forwards;
 }
 

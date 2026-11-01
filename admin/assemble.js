@@ -182,16 +182,26 @@ const headerContent = `<!DOCTYPE html>
 
   <!-- Main Content Workspace -->
   <main class="main-content">
-    <!-- Top Heading Bar: Only Game Name (tap_energy) & Shown ONLY in Dashboard -->
+    <!-- Top Navigation Header: Permanent & Fully Responsive across all admin pages -->
     <header class="top-header" id="mainTopHeader">
-      <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
+      <div class="header-left">
         <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleAdminSidebar()" aria-label="Open Navigation Menu">
           <span>☰</span>
         </button>
-        <div class="header-game-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 99px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-          <span style="font-size: 14px; color: #0284c7;">⚡</span>
-          <span style="font-size: 13.5px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.8px;">tap_energy</span>
+        <div class="header-game-badge" onclick="switchAdminPage('dashboard', 'Dashboard Overview')" style="cursor: pointer;" title="Back to Dashboard">
+          <span class="game-badge-icon">⚡</span>
+          <span class="game-badge-text">tap_energy</span>
         </div>
+        <div class="header-page-badge" id="headerPageTitleBadge">
+          <span id="headerPageIcon">📊</span>
+          <span id="headerPageText">Dashboard</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button type="button" class="header-app-link-btn" onclick="openUserApp()" title="Open Player WebApp">
+          <span>🎮</span>
+          <span class="app-link-text">Play Game</span>
+        </button>
       </div>
     </header>
 
@@ -487,6 +497,30 @@ const footerContent = `
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+  <!-- Mobile Docked Bottom Navigation Bar (Active on screens <= 992px) -->
+  <nav class="admin-mobile-nav" id="adminMobileNav">
+    <button type="button" class="admin-mob-tab active" data-tab="dashboard" onclick="switchAdminPage('dashboard', 'Dashboard Overview')">
+      <span class="mob-tab-icon">📊</span>
+      <span class="mob-tab-label">Dashboard</span>
+    </button>
+    <button type="button" class="admin-mob-tab" data-tab="users" onclick="switchAdminPage('users', 'User Analytics & Players')">
+      <span class="mob-tab-icon">👥</span>
+      <span class="mob-tab-label">Users</span>
+    </button>
+    <button type="button" class="admin-mob-tab" data-tab="mega-request" onclick="switchAdminPage('mega-request', 'Wallet & Withdrawal Management')">
+      <span class="mob-tab-icon">💳</span>
+      <span class="mob-tab-label">Wallet</span>
+    </button>
+    <button type="button" class="admin-mob-tab" data-tab="tasks-web" onclick="switchAdminPage('tasks-web', 'Task Manager (Telegram & Web)')">
+      <span class="mob-tab-icon">🎯</span>
+      <span class="mob-tab-label">Tasks</span>
+    </button>
+    <button type="button" class="admin-mob-tab" data-tab="more" onclick="toggleAdminSidebar(true)">
+      <span class="mob-tab-icon">☰</span>
+      <span class="mob-tab-label">Menu</span>
+    </button>
+  </nav>
+
   <!-- Shared Firebase Service -->
   <script src="shared/firebase.js"></script>
 
@@ -515,6 +549,16 @@ const footerContent = `
       }
     }
     window.toggleAdminSidebar = toggleAdminSidebar;
+
+    function openUserApp() {
+      if (window.location.protocol === 'file:') {
+        window.open('../frontend/index.html', '_blank');
+      } else {
+        window.open('/', '_blank');
+      }
+    }
+    window.openUserApp = openUserApp;
+
 
     // Auto-Tucking Edge Menu Trigger logic (Point 5)
     let edgeMenuTimer = null;
@@ -591,21 +635,52 @@ const footerContent = `
         }
       });
 
-      // Heading bar visible ONLY on dashboard as requested:
+      // Heading bar is always visible across all pages for consistent mobile/desktop navigation
       const mainHeader = document.getElementById('mainTopHeader');
       if (mainHeader) {
-        mainHeader.style.display = (pageKey === 'dashboard') ? 'flex' : 'none';
+        mainHeader.style.display = 'flex';
       }
 
-      // Moving menu button: hidden on dashboard, visible on all other pages
-      const edgeBtn = document.getElementById('edgeMenuTrigger');
-      if (edgeBtn) {
-        if (pageKey === 'dashboard') {
-          edgeBtn.style.display = 'none';
+      // Update header active page title badge
+      const pageIconMap = {
+        'dashboard': '📊',
+        'users': '👥',
+        'account-requests': '👤+',
+        'mega-add': '🎁',
+        'mega-request': '💳',
+        'tasks-web': '🎯',
+        'firebase-manage': '🔥',
+        'ads-manage': '🎬',
+        'settings': '⚙️'
+      };
+      const pageTitleMap = {
+        'dashboard': 'Dashboard',
+        'users': 'Users',
+        'account-requests': 'Requests',
+        'mega-add': 'Mega Add',
+        'mega-request': 'Withdrawals',
+        'tasks-web': 'Tasks',
+        'firebase-manage': 'Firebase',
+        'ads-manage': 'Ads',
+        'settings': 'Settings'
+      };
+      const pageIcon = document.getElementById('headerPageIcon');
+      const pageText = document.getElementById('headerPageText');
+      if (pageIcon) pageIcon.textContent = pageIconMap[pageKey] || '⚡';
+      if (pageText) pageText.textContent = pageTitleMap[pageKey] || pageTitle || pageKey;
+
+      // Update mobile bottom nav active tabs
+      document.querySelectorAll('.admin-mob-tab').forEach(t => {
+        if (t.getAttribute('data-tab') === pageKey) {
+          t.classList.add('active');
         } else {
-          edgeBtn.style.display = 'inline-flex';
-          resetEdgeMenuTimer();
+          t.classList.remove('active');
         }
+      });
+
+      // Auto-close sidebar on mobile after selection
+      if (window.innerWidth <= 992 && typeof toggleAdminSidebar === 'function') {
+        toggleAdminSidebar(false);
       }
 
       // Auto-trigger page renders

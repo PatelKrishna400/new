@@ -137,3 +137,38 @@
   border-color: #0284c7;
   color: #ffffff;
 }
+
+
+/* Mobile Responsive Overrides */
+@media (max-width: 768px) {
+  .plain-user-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .plain-header-right {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .plain-search-wrap,
+  .plain-search-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .plain-search-input:focus {
+    width: 100% !important;
+  }
+
+  .plain-table-card {
+    border-radius: 12px !important;
+  }
+
+  .plain-data-table {
+    min-width: 580px !important;
+  }
+}

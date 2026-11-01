@@ -712,7 +712,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 999;
-  display: flex;
+  display: none !important;
   align-items: flex-end;
   justify-content: center;
   opacity: 0;
@@ -721,6 +721,7 @@
 }
 
 .task-notes-backdrop.open {
+  display: flex !important;
   opacity: 1;
   pointer-events: auto;
 }
@@ -1217,7 +1218,7 @@
   background: rgba(1, 4, 14, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  display: flex;
+  display: none !important;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -1228,6 +1229,7 @@
 
 .web-code-modal-backdrop.open,
 .web-result-modal-backdrop.open {
+  display: flex !important;
   opacity: 1;
   pointer-events: auto;
 }
